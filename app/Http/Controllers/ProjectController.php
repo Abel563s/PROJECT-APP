@@ -164,9 +164,20 @@ class ProjectController extends Controller
         return redirect()->route('admin.projects.index')->with('success', 'Project updated successfully.');
     }
 
-    public function closeoutIndex()
+    public function closeoutIndex(Request $request)
     {
-        $projects = Project::latest()->get();
+        $query = Project::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('project_name', 'like', "%{$search}%")
+                    ->orWhere('project_code', 'like', "%{$search}%")
+                    ->orWhere('custom_id', 'like', "%{$search}%");
+            });
+        }
+
+        $projects = $query->latest()->get();
         return view('admin.projects.closeout_index', compact('projects'));
     }
 

@@ -10,9 +10,20 @@ use App\Models\ProjectWeeklyUpdate;
 
 class ProjectWeeklyUpdateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $updates = ProjectWeeklyUpdate::with('project')->latest()->get();
+        $query = ProjectWeeklyUpdate::with('project');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('project', function ($q) use ($search) {
+                $q->where('project_name', 'like', "%{$search}%")
+                    ->orWhere('project_code', 'like', "%{$search}%")
+                    ->orWhere('custom_id', 'like', "%{$search}%");
+            });
+        }
+
+        $updates = $query->latest()->get();
         return view('admin.weekly-updates.index', compact('updates'));
     }
 

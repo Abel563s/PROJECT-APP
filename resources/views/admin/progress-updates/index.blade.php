@@ -31,6 +31,26 @@
             </div>
         </div>
 
+        <!-- Search & Filter -->
+        <form action="{{ route('admin.progress-updates.index') }}" method="GET" class="space-y-4">
+            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center gap-4">
+                <div class="flex-1 relative min-w-[280px] group">
+                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Search by project name, code or ID..."
+                        class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                </div>
+
+                @if(request()->anyFilled('search'))
+                    <a href="{{ route('admin.progress-updates.index') }}"
+                        class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
+                        title="Clear Filters">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </a>
+                @endif
+            </div>
+        </form>
+
         <!-- Data Table -->
         <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-50 overflow-hidden">
             <div class="overflow-x-auto">
@@ -55,7 +75,7 @@
                                         </div>
                                         <div class="space-y-1">
                                             <p class="text-sm font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">
-                                                {{ $update->project->project_name }}
+                                                {{ $update->project->project_code }}
                                             </p>
                                             <span class="text-[8px] font-black text-[#00ADC5] uppercase tracking-widest">{{ $update->project->custom_id }}</span>
                                         </div>

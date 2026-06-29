@@ -13,9 +13,20 @@ class ProjectPaymentController extends Controller
     /**
      * Display a listing of projects for payment management.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::all();
+        $query = Project::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('project_name', 'like', "%{$search}%")
+                    ->orWhere('project_code', 'like', "%{$search}%")
+                    ->orWhere('custom_id', 'like', "%{$search}%");
+            });
+        }
+
+        $projects = $query->latest()->get();
         return view('admin.projects.payments.index', compact('projects'));
     }
 

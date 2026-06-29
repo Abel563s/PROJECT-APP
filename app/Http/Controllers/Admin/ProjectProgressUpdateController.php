@@ -9,9 +9,20 @@ use App\Models\ProjectProgressUpdate;
 
 class ProjectProgressUpdateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $updates = ProjectProgressUpdate::with('project')->latest()->get();
+        $query = ProjectProgressUpdate::with('project');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('project', function ($q) use ($search) {
+                $q->where('project_name', 'like', "%{$search}%")
+                    ->orWhere('project_code', 'like', "%{$search}%")
+                    ->orWhere('custom_id', 'like', "%{$search}%");
+            });
+        }
+
+        $updates = $query->latest()->get();
         return view('admin.progress-updates.index', compact('updates'));
     }
 
