@@ -153,7 +153,7 @@
                                             </div>
                                             <div>
                                                 <p class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">
-                                                    {{ $project->project_name }}
+                                                    {{ $project->project_code }}
                                                 </p>
                                                 <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-widest">{{ $project->project_code }}</p>
                                             </div>
