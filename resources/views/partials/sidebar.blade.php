@@ -1,5 +1,5 @@
 <aside id="sidebar"
-    class="w-64 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] bg-gradient-to-b from-[#00ADC5] to-[#008C9E] flex flex-col z-40 relative shadow-[0_10px_40px_rgba(0,0,0,0.12)] group/sidebar overflow-visible">
+    class="w-64 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] bg-[#00515f] flex flex-col z-40 relative shadow-[0_10px_40px_rgba(0,0,0,0.12)] group/sidebar overflow-visible">
 
     <div
         class="h-16 flex items-center justify-between px-6 border-b border-white/10 shrink-0 overflow-hidden relative z-10 transition-all duration-500">
@@ -9,8 +9,8 @@
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-6 h-6 object-contain brightness-0 invert">
             </div>
             <div class="flex flex-col leading-none sidebar-text animate-pop-in">
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Planning</span>
-                <span class="text-sm font-black tracking-tighter mt-0.5 text-white">Intelligence</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Portfolio</span>
+                <span class="text-sm font-black tracking-tighter mt-0.5 text-white">Management</span>
             </div>
         </div>
     </div>
@@ -32,63 +32,120 @@
                 if (Auth::user()->isAdmin()) {
                     // 1. Dashboard
                     $menu[] = [
-                        'label' => 'Dashboard',
+                        'label' => 'Projects Dashboard',
                         'icon' => 'layout-dashboard',
                         'route' => 'admin.dashboard',
                         'active' => request()->routeIs('admin.dashboard')
                     ];
 
-                    // 2. Project Management
+                    // 2. Project Registry
                     $menu[] = [
-                        'label' => 'Project',
+                        'label' => 'Project Registry',
+                        'icon' => 'folder-open',
+                        'route' => 'admin.projects.index',
+                        'active' => request()->routeIs('admin.projects.index') && !request()->routeIs('admin.projects.create')
+                    ];
+
+                    // 3. Monitor & Control
+                    $menu[] = [
+                        'label' => 'Monitor & Control',
                         'icon' => 'briefcase',
-                        'active' => request()->routeIs('admin.projects.*') && !request()->routeIs('admin.projects.analytics'),
+                        'active' => request()->routeIs('admin.progress-updates.*') || request()->routeIs('admin.projects.analytics') || request()->routeIs('admin.projects.payments.*') || request()->routeIs('admin.projects.issues.*') || request()->routeIs('admin.projects.ror.*') || request()->routeIs('admin.projects.sep.*') || request()->routeIs('admin.projects.mpt.*'),
                         'submenu' => [
                             [
-                                'label' => 'Project Registry',
-                                'route' => 'admin.projects.index',
-                                'active' => request()->routeIs('admin.projects.index') && !request()->routeIs('admin.projects.create')
+                                'label' => 'Progress Update',
+                                'icon' => 'trending-up',
+                                'route' => 'admin.progress-updates.index',
+                                'active' => request()->routeIs('admin.progress-updates.*')
                             ],
                             [
-                                'label' => 'Project Closeout',
-                                'route' => 'admin.projects.closeout.index',
-                                'active' => request()->routeIs('admin.projects.closeout.*')
+                                'label' => 'Report Analysis',
+                                'icon' => 'bar-chart-3',
+                                'route' => 'admin.projects.analytics',
+                                'active' => request()->routeIs('admin.projects.analytics')
                             ],
                             [
-                                'label' => 'Project Payments',
+                                'label' => 'Payment Status',
+                                'icon' => 'banknote',
                                 'route' => 'admin.projects.payments.index',
                                 'active' => request()->routeIs('admin.projects.payments.*')
+                            ],
+                            [
+                                'label' => 'Issue Log',
+                                'icon' => 'alert-circle',
+                                'route' => 'admin.projects.issues.index',
+                                'active' => request()->routeIs('admin.projects.issues.*')
+                            ],
+                            [
+                                'label' => 'RoR',
+                                'icon' => 'file-text',
+                                'route' => 'admin.projects.ror.index',
+                                'active' => request()->routeIs('admin.projects.ror.*')
+                            ],
+                            [
+                                'label' => 'SEP',
+                                'icon' => 'file-check',
+                                'route' => 'admin.projects.sep.index',
+                                'active' => request()->routeIs('admin.projects.sep.*')
+                            ],
+                            [
+                                'label' => 'MPT',
+                                'icon' => 'ruler',
+                                'route' => 'admin.projects.mpt.index',
+                                'active' => request()->routeIs('admin.projects.mpt.*')
                             ],
                         ]
                     ];
 
-                    // 3. Project Reconnaissance
+                    // 4. Project Closeout
                     $menu[] = [
-                        'label' => 'Progress Updates',
-                        'icon' => 'trending-up',
-                        'route' => 'admin.progress-updates.index',
-                        'active' => request()->routeIs('admin.progress-updates.*'),
-                        'pop' => true
+                        'label' => 'Project Closeout',
+                        'icon' => 'clipboard-check',
+                        'active' => request()->routeIs('admin.projects.closeout.*') || request()->routeIs('admin.weekly-updates.*'),
+                        'submenu' => [
+                            [
+                                'label' => 'Closeout Status',
+                                'icon' => 'clipboard-check',
+                                'route' => 'admin.projects.closeout.index',
+                                'active' => request()->routeIs('admin.projects.closeout.*')
+                            ],
+                            [
+                                'label' => 'Weekly Closeout',
+                                'icon' => 'calendar-days',
+                                'route' => 'admin.weekly-updates.index',
+                                'active' => request()->routeIs('admin.weekly-updates.*')
+                            ],
+                        ]
                     ];
 
+                    // 5. Material Tracker
                     $menu[] = [
-                        'label' => 'Weekly Closing',
-                        'icon' => 'calendar-days',
-                        'route' => 'admin.weekly-updates.index',
-                        'active' => request()->routeIs('admin.weekly-updates.*'),
-                        'pop' => true
+                        'label' => 'Material Tracker',
+                        'icon' => 'package',
+                        'active' => request()->routeIs('admin.material.*') || request()->routeIs('admin.material-progress.*') || request()->routeIs('admin.material.report'),
+                        'submenu' => [
+                            [
+                                'label' => 'Manage Material',
+                                'icon' => 'archive',
+                                'route' => 'admin.material.index',
+                                'active' => request()->routeIs('admin.material.*')
+                            ],
+                            [
+                                'label' => 'Material Progress',
+                                'icon' => 'activity',
+                                'route' => 'admin.material-progress.index',
+                                'active' => request()->routeIs('admin.material-progress.*')
+                            ],
+                            [
+                                'label' => 'Material Report',
+                                'icon' => 'file-text',
+                                'route' => 'admin.material.report',
+                                'active' => request()->routeIs('admin.material.report')
+                            ],
+                        ]
                     ];
 
-                    // 4. Reports (Moved out of dropdown)
-                    $menu[] = [
-                        'label' => 'Reports',
-                        'icon' => 'bar-chart-3',
-                        'route' => 'admin.projects.analytics',
-                        'active' => request()->routeIs('admin.projects.analytics'),
-                        'pop' => true
-                    ];
-
-                    // 5. Roles (User Management)
+                    // 6. Roles (User Management)
                     $menu[] = [
                         'label' => 'Access Control',
                         'icon' => 'users-2',
@@ -111,22 +168,25 @@
             @elseif(isset($item['submenu']))
                 <div x-data="{ open: {{ $item['active'] ? 'true' : 'false' }} }" x-on:sidebar:collapsed.window="open = false" class="space-y-1">
                     <button @click="open = !open"
-                        class="w-full flex items-center gap-3.5 p-3 rounded-xl transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group/item relative {{ $item['active'] ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
+                        class="w-full flex items-center gap-3.5 p-3 rounded-xl transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group/item relative {{ $item['active'] ? 'bg-white text-slate-900' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
 
                         <i data-lucide="{{ $item['icon'] }}"
-                            class="w-5 h-5 shrink-0 transition-all duration-500 {{ $item['active'] ? 'stroke-[2.5px] text-white' : 'opacity-70 group-hover/item:opacity-100' }}"></i>
+                            class="w-5 h-5 shrink-0 transition-all duration-500 {{ $item['active'] ? 'text-[#00ADC5]' : 'opacity-70 group-hover/item:opacity-100' }}"></i>
 
                         <span
                             class="sidebar-text font-semibold text-sm whitespace-nowrap tracking-tight transition-all duration-500">{{ $item['label'] }}</span>
 
-                        <i data-lucide="chevron-down" class="w-4 h-4 ml-auto transition-transform duration-300 sidebar-text"
+                        <i data-lucide="chevron-down" class="w-4 h-4 ml-auto transition-transform duration-300 sidebar-text {{ $item['active'] ? 'text-slate-900' : '' }}"
                             :class="open ? 'rotate-180' : ''"></i>
                     </button>
 
                     <div x-show="open" x-collapse x-cloak class="pl-12 space-y-1 overflow-hidden">
                         @foreach ($item['submenu'] as $subitem)
                             <a href="{{ route($subitem['route']) }}"
-                                class="flex items-center gap-3 p-2 rounded-lg text-sm transition-all duration-200 {{ $subitem['active'] ? 'text-white font-bold bg-white/10' : 'text-white/60 hover:text-white hover:bg-white/10' }}">
+                                class="flex items-center gap-3 p-2 rounded-lg text-sm transition-all duration-200 hover:scale-[1.03] hover:translate-x-0.5 {{ $subitem['active'] ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/10' }}">
+                                @if(isset($subitem['icon']))
+                                    <i data-lucide="{{ $subitem['icon'] }}" class="w-4 h-4 shrink-0 {{ $subitem['active'] ? 'text-[#00ADC5]' : 'opacity-70' }}"></i>
+                                @endif
                                 <span class="sidebar-text">{{ $subitem['label'] }}</span>
                             </a>
                         @endforeach
@@ -135,17 +195,17 @@
             @else
                 <a href="{{ route($item['route']) }}"
                     class="flex items-center gap-3.5 p-3 rounded-xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group/item relative 
-                                                                                     {{ $item['active'] ? 'bg-white/15 text-white scale-[1.05] shadow-[0_15px_30px_rgba(0,0,0,0.15)] z-20' : 'text-white/70 hover:bg-white/10 hover:text-white hover:scale-[1.05] hover:shadow-[0_10px_20px_rgba(0,0,0,0.1)]' }}
-                                                                                     {{ isset($item['pop']) && $item['pop'] ? 'border border-transparent hover:border-white/20 hover:bg-white/10 hover:shadow-xl hover:shadow-black/5' : '' }}">
+                    {{ $item['active'] ? 'bg-white text-slate-900 scale-[1.05] shadow-[0_15px_30px_rgba(0,0,0,0.15)] z-20' : 'text-white/70 hover:bg-white/10 hover:text-white hover:scale-[1.05] hover:shadow-[0_10px_20px_rgba(0,0,0,0.1)]' }}
+                    {{ isset($item['pop']) && $item['pop'] ? 'border border-transparent hover:border-white/20 hover:bg-white/10 hover:shadow-xl hover:shadow-black/5' : '' }}">
 
                     @if($item['active'])
                         <div
-                            class="absolute inset-y-2 left-0 w-1.5 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.6)]">
+                            class="absolute inset-y-2 left-0 w-1.5 bg-[#00ADC5] rounded-full shadow-[0_0_15px_rgba(0,0,0,0.15)]">
                         </div>
                     @endif
 
                     <i data-lucide="{{ $item['icon'] }}"
-                        class="w-5 h-5 shrink-0 transition-all duration-500 {{ $item['active'] ? 'stroke-[2.5px] scale-110 text-white' : 'opacity-70 group-hover/item:opacity-100 group-hover/item:scale-125 group-hover/item:rotate-[5deg]' }}"></i>
+                        class="w-5 h-5 shrink-0 transition-all duration-500 {{ $item['active'] ? 'text-[#00ADC5] scale-110' : 'opacity-70 group-hover/item:opacity-100 group-hover/item:scale-125 group-hover/item:rotate-[5deg]' }}"></i>
 
                     <span
                         class="sidebar-text font-bold text-sm whitespace-nowrap tracking-tight transition-all duration-500">{{ $item['label'] }}</span>

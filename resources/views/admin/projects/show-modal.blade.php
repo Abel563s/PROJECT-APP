@@ -54,6 +54,16 @@
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Method</p>
                 <p class="text-xs font-black text-slate-900">{{ $project->delivery_method }}</p>
             </div>
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Status</p>
+                <span class="inline-flex px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider {{ $project->status === 'active' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600' }}">
+                    {{ ucfirst($project->status) }}
+                </span>
+            </div>
+        </div>
+        <div class="col-span-2">
+            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Scope</p>
+            <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $project->scope ?: 'No scope definition provided.' }}</p>
         </div>
     </div>
 
@@ -81,10 +91,6 @@
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Sector</p>
                 <p class="text-xs font-black text-slate-900">{{ $project->consultancy_sector ?: 'Not Specified' }}</p>
             </div>
-        </div>
-        <div>
-            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Scope</p>
-            <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $project->scope ?: 'No scope definition provided.' }}</p>
         </div>
     </div>
 
@@ -192,32 +198,6 @@
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Status</p>
                 <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $color }} border">
-                    {{ $project->closing_status }}
-                </span>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">PPA Received</p>
-                <p class="text-xs font-black text-slate-900">{{ $project->ppa_received_at ? $project->ppa_received_at->format('M d, Y') : '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">PA Received</p>
-                <p class="text-xs font-black text-slate-900">{{ $project->pa_received_at ? $project->pa_received_at->format('M d, Y') : '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">FA Received</p>
-                <p class="text-xs font-black text-slate-900">{{ $project->fa_received_at ? $project->fa_received_at->format('M d, Y') : '---' }}</p>
-            </div>
-        </div>
-    </div>
-            <div>
-                <h4 class="text-sm font-black text-slate-900">Closing Status</h4>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Operational state</p>
-            </div>
-        </div>
-        <div class="grid grid-cols-4 gap-3">
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Status</p>
-                <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $color ?? 'bg-slate-100 text-slate-400 border-slate-200' }} border">
                     {{ $project->closing_status }}
                 </span>
             </div>

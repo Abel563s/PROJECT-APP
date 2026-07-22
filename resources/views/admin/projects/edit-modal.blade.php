@@ -52,6 +52,19 @@
                     <option value="DB-CP" {{ $project->delivery_method == 'DB-CP' ? 'selected' : '' }}>DB-CP</option>
                 </select>
             </div>
+            <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Project Status</label>
+                <select name="status"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
+                    <option value="active" {{ $project->status == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ $project->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                </select>
+            </div>
+            <div class="col-span-2 space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Scope</label>
+                <textarea name="scope" rows="2"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $project->scope }}</textarea>
+            </div>
         </div>
     </div>
 
@@ -86,11 +99,6 @@
                     <option value="Client / Engineering Team" {{ $project->consultancy_sector == 'Client / Engineering Team' ? 'selected' : '' }}>Client / Engineering Team</option>
                 </select>
             </div>
-        </div>
-        <div class="space-y-1">
-            <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Scope</label>
-                <textarea name="scope" rows="2"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $project->scope }}</textarea>
         </div>
     </div>
 

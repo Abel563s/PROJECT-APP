@@ -78,4 +78,20 @@ class User extends Authenticatable
         return $this->role === 'user';
     }
 
+    /**
+     * Check if user is DCEO.
+     */
+    public function isDceo(): bool
+    {
+        return $this->role === 'dceo';
+    }
+
+    /**
+     * Get the user's department.
+     */
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
 }

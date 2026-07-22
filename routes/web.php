@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Admin\MaterialController;
+use App\Http\Controllers\Admin\MaterialProgressController;
+use App\Http\Controllers\Admin\ProjectSiteController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -38,6 +41,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/projects/closeout', [\App\Http\Controllers\ProjectController::class, 'closeoutIndex'])->name('projects.closeout.index');
         Route::get('/projects/{project}/closeout', [\App\Http\Controllers\ProjectController::class, 'closeoutShow'])->name('projects.closeout.show');
         Route::get('/projects/analytics', [\App\Http\Controllers\ProjectController::class, 'analytics'])->name('projects.analytics');
+        Route::get('/projects/issues', [\App\Http\Controllers\ProjectController::class, 'issuesIndex'])->name('projects.issues.index');
+        Route::get('/projects/ror', [\App\Http\Controllers\ProjectController::class, 'rorIndex'])->name('projects.ror.index');
+        Route::get('/projects/sep', [\App\Http\Controllers\ProjectController::class, 'sepIndex'])->name('projects.sep.index');
+        Route::get('/projects/mpt', [\App\Http\Controllers\ProjectController::class, 'mptIndex'])->name('projects.mpt.index');
 
         // Project Payments
         Route::get('/projects/payments', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'index'])->name('projects.payments.index');
@@ -48,6 +55,14 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('projects', \App\Http\Controllers\ProjectController::class);
         Route::resource('progress-updates', \App\Http\Controllers\Admin\ProjectProgressUpdateController::class);
         Route::resource('weekly-updates', \App\Http\Controllers\Admin\ProjectWeeklyUpdateController::class);
+
+        // Material Tracker
+        Route::resource('material', MaterialController::class);
+        Route::get('material-progress', [MaterialProgressController::class, 'index'])->name('material-progress.index');
+        Route::get('material-progress/{material}', [MaterialProgressController::class, 'show'])->name('material-progress.show');
+        Route::get('material-report', [MaterialProgressController::class, 'report'])->name('material.report');
+        Route::get('projects/search', [\App\Http\Controllers\ProjectController::class, 'search'])->name('projects.search');
+        Route::resource('project-sites', ProjectSiteController::class)->only(['index','create','store','update','destroy']);
 
         // System Settings
         Route::get('/settings', [SystemSettingController::class, 'index'])->name('settings.index');

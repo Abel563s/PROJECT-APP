@@ -80,19 +80,19 @@
             <div class="overflow-x-auto overflow-y-visible">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-50/50 border-b border-slate-100">
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                        <tr class="bg-[#00515f] border-b border-[#00515f]/30">
+                            <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">
                                 Requirement Reference</th>
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">
                                 Structural Element</th>
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">
                                 Technical Specs</th>
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">
                                 Quantity</th>
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">
                                 Drawing Info</th>
                             <th
-                                class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">
+                                class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em] text-right">
                                 Actions</th>
                         </tr>
                     </thead>

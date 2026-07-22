@@ -136,11 +136,11 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
-                            <tr class="bg-gradient-to-r from-[#00ADC5] to-[#00ADC5]">
-                                <th class="px-4 py-2.5 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00ADC5]/30">Identity</th>
-                                <th class="px-4 py-2.5 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00ADC5]/30">Metric</th>
-                                <th class="px-4 py-2.5 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00ADC5]/30">Timeframe</th>
-                                <th class="px-4 py-2.5 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00ADC5]/30 text-right">Status</th>
+                            <tr class="bg-[#00515f]">
+                                <th class="px-4 py-2.5 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Identity</th>
+                                <th class="px-4 py-2.5 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Metric</th>
+                                <th class="px-4 py-2.5 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Timeframe</th>
+                                <th class="px-4 py-2.5 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">

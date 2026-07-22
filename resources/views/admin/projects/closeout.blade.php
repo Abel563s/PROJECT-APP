@@ -263,7 +263,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
-                            <tr class="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                            <tr class="bg-[#00515f] text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">
                                 <th class="pb-2">Document</th>
                                 <th class="pb-2">Status</th>
                                 <th class="pb-2 text-right">Action</th>

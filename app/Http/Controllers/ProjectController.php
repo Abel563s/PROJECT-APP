@@ -46,6 +46,7 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'project_code' => 'nullable|string',
             'project_name' => 'required|string',
+            'status' => 'required|in:active,inactive',
             'project_type' => 'nullable|in:Building,Fit-Out,Infrastructure,Mixed (Bui/Road),Mixed (Bui/Fit-Out)',
             'delivery_method' => 'nullable|in:DB,DBB,DB-LS,DB-ADM,DBB-ADM,DB-CP',
             'project_client' => 'nullable|string',
@@ -136,6 +137,7 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'project_code' => 'nullable|string',
             'project_name' => 'required|string',
+            'status' => 'required|in:active,inactive',
             'project_type' => 'nullable|in:Building,Fit-Out,Infrastructure,Mixed (Bui/Road),Mixed (Bui/Fit-Out)',
             'delivery_method' => 'nullable|in:DB,DBB,DB-LS,DB-ADM,DBB-ADM,DB-CP',
             'project_client' => 'nullable|string',
@@ -184,6 +186,49 @@ class ProjectController extends Controller
     public function closeoutShow(Project $project)
     {
         return view('admin.projects.closeout', compact('project'));
+    }
+
+    public function issuesIndex()
+    {
+        return view('admin.projects.issues');
+    }
+
+    public function rorIndex()
+    {
+        return view('admin.projects.ror');
+    }
+
+    public function sepIndex()
+    {
+        return view('admin.projects.sep');
+    }
+
+    public function mptIndex()
+    {
+        return view('admin.projects.mpt');
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->get('q', '');
+        $projects = Project::where('status', 'active')
+            ->where(function ($query) use ($search) {
+                $query->where('project_name', 'like', "%{$search}%")
+                    ->orWhere('project_code', 'like', "%{$search}%")
+                    ->orWhere('custom_id', 'like', "%{$search}%");
+            })
+            ->orderBy('project_name')
+            ->limit(20)
+            ->get(['id', 'project_code', 'project_name']);
+
+        return response()->json($projects->map(function ($project) {
+            return [
+                'id' => $project->id,
+                'text' => $project->project_code . ' - ' . $project->project_name,
+                'project_code' => $project->project_code,
+                'project_name' => $project->project_name,
+            ];
+        }));
     }
 
     public function destroy(Project $project)

@@ -13,6 +13,7 @@ class Project extends Model
         'custom_id',
         'project_code',
         'project_name',
+        'status',
         'project_type',
         'delivery_method',
         'project_client',

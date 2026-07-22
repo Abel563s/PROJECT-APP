@@ -99,7 +99,7 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead>
-                                <tr class="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                                <tr class="bg-[#00515f] text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">
                                     <th class="px-4 py-3">Cert Details</th>
                                     <th class="px-4 py-3 text-center">Submitted</th>
                                     <th class="px-4 py-3 text-center">Certified</th>

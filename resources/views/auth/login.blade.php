@@ -33,7 +33,7 @@
             <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#00ADC5] mb-4 shadow-xl shadow-[#00ADC5]/30">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-8 h-8 object-contain brightness-0 invert">
             </div>
-            <h1 class="text-2xl font-black text-slate-900 tracking-tight">Projects <span class="text-[#00ADC5]">RCF</span></h1>
+            <h1 class="text-2xl font-black text-slate-900 tracking-tight">Portfolio <span class="text-[#00ADC5]">Management</span></h1>
             <p class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Authenticate to continue</p>
         </div>
 

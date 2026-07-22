@@ -8,7 +8,7 @@
                 <i data-lucide="fingerprint" class="w-4 h-4"></i>
             </div>
             <div>
-                <h4 class="text-sm font-black text-slate-900">Project Identity</h4>
+                <h4 class="text-sm font-black text-slate-900">Project Information</h4>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Core deployment</p>
             </div>
         </div>
@@ -24,7 +24,7 @@
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Type</label>
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Sector</label>
                 <select name="project_type" required
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
                     <option value="Building">Building</option>
@@ -46,6 +46,19 @@
                     <option value="DB-CP">DB-CP</option>
                 </select>
             </div>
+            <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Project Status</label>
+                <select name="status"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            <div class="col-span-2 space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Scope</label>
+                <textarea name="scope" rows="2"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all"></textarea>
+            </div>
         </div>
     </div>
 
@@ -56,7 +69,7 @@
                 <i data-lucide="users" class="w-4 h-4"></i>
             </div>
             <div>
-                <h4 class="text-sm font-black text-slate-900">Stakeholders & Scope</h4>
+                <h4 class="text-sm font-black text-slate-900">Stakeholders </h4>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Partners</p>
             </div>
         </div>
@@ -72,7 +85,7 @@
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Sector</label>
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Consultant Type</label>
                 <select name="consultancy_sector"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
                     <option value="Government">Government</option>
@@ -80,11 +93,6 @@
                     <option value="Client / Engineering Team">Client / Engineering Team</option>
                 </select>
             </div>
-        </div>
-        <div class="space-y-1">
-            <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Scope</label>
-                <textarea name="scope" rows="2"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all"></textarea>
         </div>
     </div>
 

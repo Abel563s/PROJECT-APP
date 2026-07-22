@@ -62,19 +62,19 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-50/50 border-b border-slate-100">
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                        <tr class="bg-[#00515f] border-b border-[#00515f]/30">
+                            <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">
                                 Off-Cut Code</th>
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">
                                 Specifications</th>
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">
                                 Status</th>
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">
                                 Site/Location</th>
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Last
+                            <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">Last
                                 Updated</th>
                             <th
-                                class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">
+                                class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em] text-right">
                                 Actions</th>
                         </tr>
                     </thead>
