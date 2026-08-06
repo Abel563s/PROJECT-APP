@@ -19,7 +19,7 @@ class RebarCuttingLogController extends Controller
             $query->where('rebar_requirement_id', request('requirement_id'));
         }
 
-        $logs = $query->latest()->paginate(10)->withQueryString();
+        $logs = $query->latest()->paginate(15)->withQueryString();
 
         return view('admin.rebar.cutting_logs.index', compact('logs'));
     }

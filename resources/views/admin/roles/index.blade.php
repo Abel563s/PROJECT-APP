@@ -87,7 +87,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-50/50">
                         @php
-                            $users = $users ?? \App\Models\User::latest()->take(10)->get();
+                            $users = $users ?? collect();
                         @endphp
                         @forelse($users as $user)
                             <tr class="group hover:bg-slate-50/80 transition-all duration-300 odd:bg-white even:bg-slate-50/20">
@@ -165,6 +165,12 @@
                 </table>
             </div>
         </div>
+
+        @if(method_exists($users, 'hasPages') && $users->hasPages())
+            <div class="px-4 py-4 border-t border-slate-50 bg-slate-50/30 rounded-b-3xl">
+                {{ $users->links() }}
+            </div>
+        @endif
     </div>
 
     <!-- Create Identity Modal -->

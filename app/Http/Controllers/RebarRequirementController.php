@@ -40,7 +40,7 @@ class RebarRequirementController extends Controller
         $totalRequirements = (clone $query)->count();
         $totalLength = (clone $query)->sum('total_length'); // stored in meters
 
-        $requirements = $query->latest()->paginate(10)->withQueryString();
+        $requirements = $query->latest()->paginate(15)->withQueryString();
 
         return view('admin.rebar.requirements.index', compact('requirements', 'totalRequirements', 'totalLength'));
     }

@@ -38,7 +38,7 @@ class ProjectController extends Controller
             $query->where('consultant', $request->consultant);
         }
 
-        $projects = $query->orderByDesc('baseline_start_date')->get();
+        $projects = $query->orderByDesc('baseline_start_date')->paginate(15)->withQueryString();
 
         $consultantTypes = Project::whereNotNull('consultant')
             ->where('consultant', '!=', '')
@@ -377,7 +377,7 @@ class ProjectController extends Controller
             });
         }
 
-        $projects = $query->latest()->get();
+        $projects = $query->latest()->paginate(15)->withQueryString();
         return view('admin.projects.closeout_index', compact('projects'));
     }
 
@@ -483,7 +483,7 @@ class ProjectController extends Controller
             return view('admin.projects.issues.create-modal', compact('projects'))->render();
         }
 
-        $issues = $query->orderByDesc('raised_date')->paginate(50);
+        $issues = $query->orderByDesc('raised_date')->paginate(15)->withQueryString();
         $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name', 'project_type', 'consultancy_sector']);
 
         return view('admin.projects.issues', compact('issues', 'projects'));

@@ -49,7 +49,7 @@ class MaterialController extends Controller
             $query->where('approval', $request->closing_status);
         }
 
-        $records = $query->latest()->paginate(10);
+        $records = $query->latest()->paginate(15);
         $departments = $this->departmentsForUser();
         $projects = \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
 

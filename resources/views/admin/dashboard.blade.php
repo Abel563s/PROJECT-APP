@@ -29,43 +29,43 @@
 
         <!-- Filters -->
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-            <div class="flex flex-wrap items-center gap-3">
-                <div class="flex-1 min-w-[240px] relative">
+            <div class="flex flex-nowrap items-center gap-3 overflow-x-auto pb-1">
+                <div class="flex-1 min-w-[220px] max-w-[320px] relative shrink-0">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300"></i>
                     <input type="text" id="searchInput" placeholder="Search project..."
                         oninput="handleSearch(this.value)"
                         class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                 </div>
 
-                <div class="relative min-w-[160px]">
+                <div class="relative min-w-[160px] shrink-0">
                     <select id="filterProjectType" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
                         <option value="all">All Project Types</option>
                     </select>
                     <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
                 </div>
 
-                <div class="relative min-w-[160px]">
+                <div class="relative min-w-[160px] shrink-0">
                     <select id="filterProjectStatus" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
                         <option value="all">All Statuses</option>
                     </select>
                     <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
                 </div>
 
-                <div class="relative min-w-[160px]">
+                <div class="relative min-w-[160px] shrink-0">
                     <select id="filterClient" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
                         <option value="all">All Clients</option>
                     </select>
                     <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
                 </div>
 
-                <div class="relative min-w-[160px]">
+                <div class="relative min-w-[160px] shrink-0">
                     <select id="filterSector" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
                         <option value="all">All Sectors</option>
                     </select>
                     <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
                 </div>
 
-                <button onclick="clearFilters()" class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm" title="Clear Filters">
+                <button onclick="clearFilters()" class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm shrink-0" title="Clear Filters">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
@@ -680,6 +680,12 @@
             `;
         }
 
+        function formatChartLabel(project, index) {
+            const rawLabel = project.project_code || project.project_name || `Project ${index + 1}`;
+            const label = String(rawLabel).trim();
+            return label.length > 24 ? `${label.substring(0, 21)}…` : label;
+        }
+
         function getChartData() {
             const sorted = [...filteredProjects].sort((a, b) => {
                 const valA = currentTab === 'schedule' ? a.schedule_performance_percent : currentTab === 'budget' ? a.budget_index_percent : a.cost_performance_percent;
@@ -687,30 +693,49 @@
                 return valB - valA;
             });
 
-            const categories = sorted.map((p, idx) => `#${idx + 1} ${p.project_name.length > 35 ? p.project_name.substring(0, 35) + '...' : p.project_name}`);
-            const values = sorted.map(p => {
-                if (currentTab === 'schedule') return p.schedule_performance_percent;
-                if (currentTab === 'budget') return p.budget_index_percent;
-                return p.cost_performance_percent;
-            });
+            const visibleProjects = sorted.slice(0, 15);
+            const remainingProjects = sorted.slice(15);
+            const categories = [];
+            const values = [];
+            const colors = [];
+            const sortedProjects = [];
 
-            const colors = values.map(v => {
+            visibleProjects.forEach((p, idx) => {
+                categories.push(`#${idx + 1} ${formatChartLabel(p, idx)}`);
+                const val = currentTab === 'schedule' ? p.schedule_performance_percent : currentTab === 'budget' ? p.budget_index_percent : p.cost_performance_percent;
+                values.push(val);
                 if (currentTab === 'schedule') {
-                    if (v > 20) return '#059669';
-                    if (v > 0) return '#10b981';
-                    if (v === 0) return '#94a3b8';
-                    if (v > -20) return '#f59e0b';
-                    return '#ef4444';
+                    if (val > 20) colors.push('#059669');
+                    else if (val > 0) colors.push('#10b981');
+                    else if (val === 0) colors.push('#94a3b8');
+                    else if (val > -20) colors.push('#f59e0b');
+                    else colors.push('#ef4444');
+                } else if (currentTab === 'budget' || currentTab === 'cost') {
+                    if (val < 0) colors.push('#10b981');
+                    else if (val === 0) colors.push('#94a3b8');
+                    else colors.push('#ef4444');
+                } else {
+                    colors.push('#00ADC5');
                 }
-                if (currentTab === 'budget' || currentTab === 'cost') {
-                    if (v < 0) return '#10b981';
-                    if (v === 0) return '#94a3b8';
-                    return '#ef4444';
-                }
-                return '#00ADC5';
+                sortedProjects.push(p);
             });
 
-            return { categories, values, colors, sortedProjects: sorted };
+            if (remainingProjects.length > 0) {
+                const remainingValues = remainingProjects.map(p => currentTab === 'schedule' ? p.schedule_performance_percent : currentTab === 'budget' ? p.budget_index_percent : p.cost_performance_percent);
+                const summaryValue = remainingValues.reduce((sum, value) => sum + value, 0) / remainingValues.length;
+                categories.push(`Others (${remainingProjects.length})`);
+                values.push(summaryValue);
+                colors.push('#64748b');
+                sortedProjects.push({
+                    project_name: `Other ${remainingProjects.length} projects`,
+                    project_code: '',
+                    isSummary: true,
+                    remainingCount: remainingProjects.length,
+                    summaryValue
+                });
+            }
+
+            return { categories, values, colors, sortedProjects };
         }
 
         function renderChart() {

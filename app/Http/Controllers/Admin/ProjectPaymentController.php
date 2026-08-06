@@ -26,7 +26,7 @@ class ProjectPaymentController extends Controller
             });
         }
 
-        $projects = $query->latest()->get();
+        $projects = $query->latest()->paginate(15)->withQueryString();
         return view('admin.projects.payments.index', compact('projects'));
     }
 

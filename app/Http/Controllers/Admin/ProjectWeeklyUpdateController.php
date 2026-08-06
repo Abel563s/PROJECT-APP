@@ -23,7 +23,7 @@ class ProjectWeeklyUpdateController extends Controller
             });
         }
 
-        $updates = $query->latest()->get();
+        $updates = $query->latest()->paginate(15)->withQueryString();
         return view('admin.weekly-updates.index', compact('updates'));
     }
 

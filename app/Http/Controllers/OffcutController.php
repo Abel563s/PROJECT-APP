@@ -22,7 +22,7 @@ class OffcutController extends Controller
             $query->where('bar_diameter', request('diameter'));
         }
 
-        $offcuts = $query->latest()->paginate(10)->withQueryString();
+        $offcuts = $query->latest()->paginate(15)->withQueryString();
 
         // Stats for cards
         $availableCount = (clone $query)->where('status', 'Available')->count();

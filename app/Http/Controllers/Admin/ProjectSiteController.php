@@ -21,7 +21,7 @@ class ProjectSiteController extends Controller
             });
         }
 
-        $sites = $query->latest()->paginate(10);
+        $sites = $query->latest()->paginate(15);
 
         return view('admin.materials.project-sites.index', compact('sites'));
     }

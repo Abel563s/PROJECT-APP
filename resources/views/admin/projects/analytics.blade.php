@@ -301,6 +301,8 @@
                     </div>
                 </div>
 
+                <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em]">Showing the top 12 projects; the rest are summarized for readability.</p>
+
                 <!-- Summary KPI Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div class="group relative bg-gradient-to-br from-blue-50 to-blue-50/50 rounded-xl border border-blue-100 p-3 overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all duration-300">
@@ -514,6 +516,8 @@
                 $behindCount = $scheduleData->filter(fn($item) => $item['actual'] < $item['planned'])->count();
             @endphp
 
+            <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em]">Showing the top 12 projects; the rest are summarized for readability.</p>
+
             <!-- KPI Summary Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5">
                 <!-- Average Planned Progress -->
@@ -575,6 +579,8 @@
                 </div>
             </div>
 
+            <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em]">Showing the top 12 projects; the rest are summarized for readability.</p>
+
             <!-- Chart -->
             <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-3">
                 <div class="relative h-[360px] w-full">
@@ -630,14 +636,51 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
+            const maxVisibleChartItems = 12;
+
+            function summarizeChartSeries(items, formatter) {
+                const visibleItems = items.slice(0, maxVisibleChartItems);
+                const remainingItems = items.slice(maxVisibleChartItems);
+                const summarized = visibleItems.map((item, index) => ({
+                    ...item,
+                    label: formatter(item, index)
+                }));
+
+                if (remainingItems.length > 0) {
+                    summarized.push({
+                        label: `Others (${remainingItems.length})`,
+                        isSummary: true,
+                        values: remainingItems,
+                    });
+                }
+
+                return summarized;
+            }
+
+            function shortCodeLabel(code, fallback, index) {
+                const value = String(code || fallback || `P${index + 1}`).trim();
+                return value.length > 14 ? `${value.slice(0, 12)}…` : value;
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
                 @if($evmData->count() > 0)
                 const evmCtx = document.getElementById('evmChart');
                 if (evmCtx) {
-                    const labels = {!! json_encode($evmData->pluck('project_code')) !!};
-                    const pvData = {!! json_encode($evmData->pluck('total_pv')->map(fn($v) => (float) $v)) !!};
-                    const evData = {!! json_encode($evmData->pluck('total_ev')->map(fn($v) => (float) $v)) !!};
-                    const acData = {!! json_encode($evmData->pluck('total_ac')->map(fn($v) => (float) $v)) !!};
+                    const evmRows = {!! json_encode($evmData->map(function ($item) {
+                        return [
+                            'project_code' => $item->project_code,
+                            'project_name' => $item->project_name,
+                            'pv' => (float) $item->total_pv,
+                            'ev' => (float) $item->total_ev,
+                            'ac' => (float) $item->total_ac,
+                        ];
+                    })) !!};
+                    const evmSeries = summarizeChartSeries(evmRows, (item, index) => shortCodeLabel(item.project_code, item.project_name, index));
+                    const labels = evmSeries.map(item => item.label);
+                    const pvData = evmSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (Number(entry.pv) || 0), 0) : (Number(item.pv) || 0));
+                    const evData = evmSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (Number(entry.ev) || 0), 0) : (Number(item.ev) || 0));
+                    const acData = evmSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (Number(entry.ac) || 0), 0) : (Number(item.ac) || 0));
+                    const evmTooltipNames = evmSeries.map(item => item.isSummary ? 'Multiple projects' : (item.project_name || item.project_code || 'Unnamed project'));
 
                     const formatCurrency = (value) => {
                         if (value >= 1_000_000_000) return 'ETB ' + (value / 1_000_000_000).toFixed(1) + 'B';
@@ -840,8 +883,7 @@
                                     callbacks: {
                                         title: function(context) {
                                             const idx = context[0].dataIndex;
-                                            const projectName = {!! json_encode($evmData->pluck('project_name')) !!}[idx];
-                                            return projectName + ' (' + context[0].label + ')';
+                                            return evmTooltipNames[idx] + ' (' + context[0].label + ')';
                                         },
                                         label: function(context) {
                                             const value = context.raw;
@@ -873,8 +915,9 @@
                                     ticks: {
                                         font: { weight: 'bold', size: 10 },
                                         color: '#64748b',
-                                        maxRotation: 45,
-                                        minRotation: 0
+                                        maxRotation: 35,
+                                        minRotation: 0,
+                                        maxTicksLimit: 12
                                     }
                                 },
                                 y: {
@@ -1126,10 +1169,11 @@
                     const scheduleCtx = document.getElementById('schedulePerformanceChart');
                     if (scheduleCtx) {
                         const scheduleData = {!! json_encode($schedulePerformanceData ?? collect()) !!};
-                        const projectLabels = scheduleData.map(item => item.project_code + ' - ' + item.project_name);
-                        const plannedValues = scheduleData.map(item => parseFloat(item.planned));
-                        const actualValues = scheduleData.map(item => parseFloat(item.actual));
-                        const variances = scheduleData.map(item => parseFloat(item.variance));
+                        const scheduleSeries = summarizeChartSeries(scheduleData, (item, index) => shortCodeLabel(item.project_code, item.project_name, index));
+                        const projectLabels = scheduleSeries.map(item => item.label);
+                        const plannedValues = scheduleSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (parseFloat(entry.planned) || 0), 0) : (parseFloat(item.planned) || 0));
+                        const actualValues = scheduleSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (parseFloat(entry.actual) || 0), 0) : (parseFloat(item.actual) || 0));
+                        const variances = scheduleSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (parseFloat(entry.variance) || 0), 0) / Math.max(1, item.values.length) : (parseFloat(item.variance) || 0));
 
                         new Chart(scheduleCtx, {
                             type: 'bar',
@@ -1248,6 +1292,7 @@
                                         ticks: {
                                             font: { weight: 'bold', size: 9 },
                                             color: '#94a3b8',
+                                            maxTicksLimit: 12,
                                             callback: function(value) { return value + '%'; }
                                         }
                                     },
@@ -1256,7 +1301,8 @@
                                         grid: { display: false, drawBorder: false },
                                         ticks: {
                                             font: { weight: 'bold', size: 9 },
-                                            color: '#64748b'
+                                            color: '#64748b',
+                                            maxTicksLimit: 12
                                         }
                                     }
                                 },

@@ -19,7 +19,7 @@
                 <div class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-100 rounded-xl shadow-sm">
                     <div class="w-1.5 h-1.5 rounded-full bg-[#00ADC5] animate-pulse"></div>
                     <div class="flex flex-col">
-                        <span class="text-[9px] font-black text-slate-900 tracking-widest uppercase leading-tight">{{ $projects->count() }} Projects</span>
+                        <span class="text-[9px] font-black text-slate-900 tracking-widest uppercase leading-tight">{{ $projects->total() }} Projects</span>
                         <span class="text-[7px] font-bold text-slate-400 uppercase tracking-[0.2em] leading-tight">Registered</span>
                     </div>
                 </div>
@@ -37,15 +37,15 @@
 
         <!-- Search & Filter -->
         <form action="{{ route('admin.projects.index') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center gap-4">
-                <div class="flex-1 relative min-w-[280px] group">
+            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-nowrap items-center gap-3 overflow-x-auto pb-1">
+                <div class="flex-1 min-w-[220px] max-w-[320px] relative group shrink-0">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Search by name, code or protocol..."
                         class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                 </div>
 
-                <div class="flex flex-wrap items-center gap-3">
+                <div class="flex flex-nowrap items-center gap-3 shrink-0 overflow-x-auto pb-1">
                     <div class="flex flex-col gap-1">
                         <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Type</span>
                         <div class="relative group/select">
@@ -278,22 +278,19 @@
             </div>
 
             <!-- Footer -->
-            <div class="p-6 border-t border-slate-50 flex items-center justify-between bg-slate-50/30">
+            <div class="p-6 border-t border-slate-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50/30">
                 <div class="flex items-center gap-2">
                     <div class="flex items-center gap-1.5 px-3 h-10 bg-white border border-slate-100 rounded-xl">
-                        <span class="text-[9px] font-black text-slate-900 tracking-widest">{{ sprintf('%02d', $projects->count() > 0 ? 1 : 0) }}</span>
+                        <span class="text-[9px] font-black text-slate-900 tracking-widest">{{ $projects->firstItem() ?: 0 }}</span>
+                        <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">to</span>
+                        <span class="text-[9px] font-black text-slate-400 tracking-widest">{{ $projects->lastItem() ?: 0 }}</span>
                         <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">of</span>
-                        <span class="text-[9px] font-black text-slate-400 tracking-widest">{{ sprintf('%02d', $projects->count()) }}</span>
+                        <span class="text-[9px] font-black text-slate-400 tracking-widest">{{ $projects->total() }}</span>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button class="group/nav w-10 h-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:border-[#00ADC5] hover:text-[#00ADC5] hover:shadow-md hover:shadow-cyan-100 transition-all duration-200">
-                        <i data-lucide="chevron-left" class="w-4 h-4 group-hover/nav:-translate-x-0.5 transition-transform"></i>
-                    </button>
-                    <button class="group/nav w-10 h-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:border-[#00ADC5] hover:text-[#00ADC5] hover:shadow-md hover:shadow-cyan-100 transition-all duration-200">
-                        <i data-lucide="chevron-right" class="w-4 h-4 group-hover/nav:translate-x-0.5 transition-transform"></i>
-                    </button>
+                    {{ $projects->links() }}
                 </div>
             </div>
         </div>

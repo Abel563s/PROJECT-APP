@@ -17,7 +17,7 @@ class UserController extends Controller
             'manager' => User::where('role', 'manager')->count(),
             'user' => User::where('role', 'user')->count(),
         ];
-        $users = User::latest()->take(10)->get();
+        $users = User::latest()->paginate(15);
         return view('admin.roles.index', compact('roles', 'users'));
     }
 
@@ -41,7 +41,7 @@ class UserController extends Controller
             $query->where('is_active', $request->status);
         }
 
-        $users = $query->latest()->paginate(10)->withQueryString();
+        $users = $query->latest()->paginate(15)->withQueryString();
 
         return view('admin.users.index', compact('users'));
     }

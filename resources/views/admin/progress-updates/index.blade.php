@@ -17,7 +17,7 @@
             <div class="flex items-center gap-2">
                 <div class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-100 rounded-xl shadow-sm">
                     <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>
-                    <span class="text-[9px] font-black text-slate-900 tracking-widest uppercase leading-tight">{{ $updates->count() }} Metrics Filed</span>
+                    <span class="text-[9px] font-black text-slate-900 tracking-widest uppercase leading-tight">{{ $updates->total() }} Metrics Filed</span>
                 </div>
 
                 <button onclick="openCreateModal()"
@@ -33,15 +33,15 @@
 
         <!-- Search & Filter -->
         <form action="{{ route('admin.progress-updates.index') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center gap-4">
-                <div class="flex-1 relative min-w-[280px] group">
+            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-nowrap items-center gap-3 overflow-x-auto pb-1">
+                <div class="flex-1 min-w-[220px] max-w-[320px] relative group shrink-0">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Search by project name, code or ID..."
                         class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 shrink-0">
                     <div class="relative group/select">
                         <select name="project_id" onchange="this.form.submit()"
                             class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
@@ -205,6 +205,11 @@
                 </table>
             </div>
         </div>
+        @if($updates->hasPages())
+            <div class="px-6 py-4 border-t border-slate-50 bg-slate-50/30">
+                {{ $updates->links() }}
+            </div>
+        @endif
     </div>
     <!-- Create Modal -->
     <div id="createModal" class="hidden fixed inset-0 z-50 overflow-y-auto">

@@ -37,8 +37,8 @@
 
         <!-- Search & Filter -->
         <form action="{{ route('admin.material-progress.index') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center gap-4">
-                <div class="flex-1 relative min-w-[280px] group">
+            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-nowrap items-center gap-3 overflow-x-auto pb-1">
+                <div class="flex-1 min-w-[220px] max-w-[320px] relative group shrink-0">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Search progress by material name or supplier..."

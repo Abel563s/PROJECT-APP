@@ -26,7 +26,7 @@ class ProjectProgressUpdateController extends Controller
             $query->where('project_id', $request->project_id);
         }
 
-        $updates = $query->latest()->get();
+        $updates = $query->latest()->paginate(15)->withQueryString();
         $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
         return view('admin.progress-updates.index', compact('updates', 'projects'));
     }
