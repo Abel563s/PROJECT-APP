@@ -32,7 +32,7 @@
                 if (Auth::user()->isAdmin()) {
                     // 1. Dashboard
                     $menu[] = [
-                        'label' => 'Projects Dashboard',
+                        'label' => 'Dashboard',
                         'icon' => 'layout-dashboard',
                         'route' => 'admin.dashboard',
                         'active' => request()->routeIs('admin.dashboard')
@@ -50,7 +50,7 @@
                     $menu[] = [
                         'label' => 'Monitor & Control',
                         'icon' => 'briefcase',
-                        'active' => request()->routeIs('admin.progress-updates.*') || request()->routeIs('admin.projects.analytics') || request()->routeIs('admin.projects.payments.*') || request()->routeIs('admin.projects.issues.*') || request()->routeIs('admin.projects.ror.*') || request()->routeIs('admin.projects.sep.*') || request()->routeIs('admin.projects.mpt.*'),
+                        'active' => request()->routeIs('admin.progress-updates.*') || request()->routeIs('admin.projects.analytics') || request()->routeIs('admin.projects.payments.*') || request()->routeIs('admin.projects.ror.*') || request()->routeIs('admin.projects.sep.*'),
                         'submenu' => [
                             [
                                 'label' => 'Progress Update',
@@ -71,54 +71,21 @@
                                 'active' => request()->routeIs('admin.projects.payments.*')
                             ],
                             [
-                                'label' => 'Issue Log',
-                                'icon' => 'alert-circle',
-                                'route' => 'admin.projects.issues.index',
-                                'active' => request()->routeIs('admin.projects.issues.*')
-                            ],
-                            [
-                                'label' => 'RoR',
+                                'label' => 'Risk Management',
                                 'icon' => 'file-text',
                                 'route' => 'admin.projects.ror.index',
                                 'active' => request()->routeIs('admin.projects.ror.*')
                             ],
                             [
-                                'label' => 'SEP',
+                                'label' => 'Stakeholder',
                                 'icon' => 'file-check',
                                 'route' => 'admin.projects.sep.index',
                                 'active' => request()->routeIs('admin.projects.sep.*')
                             ],
-                            [
-                                'label' => 'MPT',
-                                'icon' => 'ruler',
-                                'route' => 'admin.projects.mpt.index',
-                                'active' => request()->routeIs('admin.projects.mpt.*')
-                            ],
                         ]
                     ];
 
-                    // 4. Project Closeout
-                    $menu[] = [
-                        'label' => 'Project Closeout',
-                        'icon' => 'clipboard-check',
-                        'active' => request()->routeIs('admin.projects.closeout.*') || request()->routeIs('admin.weekly-updates.*'),
-                        'submenu' => [
-                            [
-                                'label' => 'Closeout Status',
-                                'icon' => 'clipboard-check',
-                                'route' => 'admin.projects.closeout.index',
-                                'active' => request()->routeIs('admin.projects.closeout.*')
-                            ],
-                            [
-                                'label' => 'Weekly Closeout',
-                                'icon' => 'calendar-days',
-                                'route' => 'admin.weekly-updates.index',
-                                'active' => request()->routeIs('admin.weekly-updates.*')
-                            ],
-                        ]
-                    ];
-
-                    // 5. Material Tracker
+                    // 4. Material Tracker
                     $menu[] = [
                         'label' => 'Material Tracker',
                         'icon' => 'package',
@@ -145,7 +112,49 @@
                         ]
                     ];
 
-                    // 6. Roles (User Management)
+                    // 5. Issue Log
+                    $menu[] = [
+                        'label' => 'Issue Log',
+                        'icon' => 'alert-circle',
+                        'active' => request()->routeIs('admin.projects.issues.*') || request()->routeIs('admin.projects.issues.report'),
+                        'submenu' => [
+                            [
+                                'label' => 'Issue Registry',
+                                'icon' => 'list',
+                                'route' => 'admin.projects.issues.index',
+                                'active' => request()->routeIs('admin.projects.issues.*')
+                            ],
+                            [
+                                'label' => 'Issue Report',
+                                'icon' => 'file-bar-chart',
+                                'route' => 'admin.projects.issues.report',
+                                'active' => request()->routeIs('admin.projects.issues.report')
+                            ],
+                        ]
+                    ];
+
+                    // 6. Project Closeout
+                    $menu[] = [
+                        'label' => 'Project Closeout',
+                        'icon' => 'clipboard-check',
+                        'active' => request()->routeIs('admin.projects.closeout.*') || request()->routeIs('admin.weekly-updates.*'),
+                        'submenu' => [
+                            [
+                                'label' => 'Closeout Status',
+                                'icon' => 'clipboard-check',
+                                'route' => 'admin.projects.closeout.index',
+                                'active' => request()->routeIs('admin.projects.closeout.*')
+                            ],
+                            [
+                                'label' => 'Weekly Closeout',
+                                'icon' => 'calendar-days',
+                                'route' => 'admin.weekly-updates.index',
+                                'active' => request()->routeIs('admin.weekly-updates.*')
+                            ],
+                        ]
+                    ];
+
+                    // 7. Roles (User Management)
                     $menu[] = [
                         'label' => 'Access Control',
                         'icon' => 'users-2',

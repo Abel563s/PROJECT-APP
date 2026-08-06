@@ -27,6 +27,7 @@ class MaterialProgressController extends Controller
         if ($request->filled('discipline')) $query->where('discipline', $request->discipline);
         if ($request->filled('procurement_type')) $query->where('procurement_type', $request->procurement_type);
         if ($request->filled('supply_route')) $query->where('supply_route', $request->supply_route);
+        if ($request->filled('project_id')) $query->where('project_id', $request->project_id);
 
         $materials = $query->latest()->paginate(15)->withQueryString();
 
@@ -70,6 +71,8 @@ class MaterialProgressController extends Controller
         }
         $avgCompletion = $cnt ? (int) round($sum / $cnt) : 0;
 
+        $projects = \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+
         return view('admin.materials.progress', [
             'materials' => $materials,
             'total' => $total,
@@ -77,6 +80,7 @@ class MaterialProgressController extends Controller
             'delayed' => $delayed,
             'active' => max(0, $total - $completed),
             'avgCompletion' => $avgCompletion,
+            'projects' => $projects,
         ]);
     }
 

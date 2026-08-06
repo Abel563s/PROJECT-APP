@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/data', [AdminDashboardController::class, 'data'])->name('dashboard.data');
 
         // Project Management
         Route::get('/projects/closeout', [\App\Http\Controllers\ProjectController::class, 'closeoutIndex'])->name('projects.closeout.index');
@@ -44,7 +45,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/projects/issues', [\App\Http\Controllers\ProjectController::class, 'issuesIndex'])->name('projects.issues.index');
         Route::get('/projects/ror', [\App\Http\Controllers\ProjectController::class, 'rorIndex'])->name('projects.ror.index');
         Route::get('/projects/sep', [\App\Http\Controllers\ProjectController::class, 'sepIndex'])->name('projects.sep.index');
-        Route::get('/projects/mpt', [\App\Http\Controllers\ProjectController::class, 'mptIndex'])->name('projects.mpt.index');
 
         // Project Payments
         Route::get('/projects/payments', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'index'])->name('projects.payments.index');
@@ -53,6 +53,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/payments/{payment}', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'show'])->name('projects.payments.show');
 
         Route::resource('projects', \App\Http\Controllers\ProjectController::class);
+        Route::patch('/projects/{project}/toggle-status', [\App\Http\Controllers\ProjectController::class, 'toggleStatus'])->name('projects.toggle-status');
+        Route::get('/projects/next-code', [\App\Http\Controllers\ProjectController::class, 'nextCode'])->name('projects.next-code');
+        Route::get('/projects/issues', [\App\Http\Controllers\ProjectController::class, 'issuesIndex'])->name('projects.issues.index');
+        Route::get('/projects/issues/report', [\App\Http\Controllers\ProjectController::class, 'issuesReport'])->name('projects.issues.report');
+        Route::get('/projects/issues/create-modal', [\App\Http\Controllers\ProjectController::class, 'issuesIndex'])->name('projects.issues.create-modal');
+        Route::post('/projects/issues', [\App\Http\Controllers\ProjectController::class, 'issuesStore'])->name('projects.issues.store');
+        Route::get('/projects/issues/{issue}', [\App\Http\Controllers\ProjectController::class, 'issuesShow'])->name('projects.issues.show');
+        Route::get('/projects/issues/{issue}/edit', [\App\Http\Controllers\ProjectController::class, 'issuesEdit'])->name('projects.issues.edit');
+        Route::put('/projects/issues/{issue}', [\App\Http\Controllers\ProjectController::class, 'issuesUpdate'])->name('projects.issues.update');
+        Route::delete('/projects/issues/{issue}', [\App\Http\Controllers\ProjectController::class, 'issuesDestroy'])->name('projects.issues.destroy');
+        Route::get('/projects/search', [\App\Http\Controllers\ProjectController::class, 'search'])->name('projects.search');
         Route::resource('progress-updates', \App\Http\Controllers\Admin\ProjectProgressUpdateController::class);
         Route::resource('weekly-updates', \App\Http\Controllers\Admin\ProjectWeeklyUpdateController::class);
 

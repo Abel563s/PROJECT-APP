@@ -47,6 +47,19 @@
 
                 <div class="flex items-center gap-3">
                     <div class="relative group/select">
+                        <select name="project_id" onchange="this.form.submit()"
+                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
+                            <option value="">All Projects</option>
+                            @foreach($projects as $project)
+                                <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
+                                    {{ $project->project_code }} - {{ $project->project_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                    </div>
+
+                    <div class="relative group/select">
                         <select name="discipline" onchange="this.form.submit()"
                             class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
                             <option value="">All Disciplines</option>
@@ -77,7 +90,7 @@
                         <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
                     </div>
 
-                    @if(request()->anyFilled(['search', 'discipline', 'procurement_type', 'supply_route']))
+                    @if(request()->anyFilled(['search', 'project_id', 'discipline', 'procurement_type', 'supply_route']))
                         <a href="{{ route('admin.material-progress.index') }}"
                             class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
                             title="Clear Filters">
@@ -99,7 +112,7 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project Site</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Planned Status</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Actual Status</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Balanced Delay</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Balanced Days</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Float</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Completion</th>
                             <th class="px-6 py-3 text-right border-b border-[#00515f]/30"></th>
@@ -204,15 +217,15 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     @php
-                                        $floatValue = $m['delivery_float'] ?? null;
+                                        $floatValue = $m['float_days'] ?? null;
                                         if ($floatValue === null) {
                                             $floatClass = 'text-slate-400';
                                             $floatText = '—';
                                         } elseif ($floatValue > 0) {
-                                            $floatClass = 'text-rose-600';
+                                            $floatClass = 'text-slate-900';
                                             $floatText = '+' . $floatValue . 'd';
                                         } elseif ($floatValue < 0) {
-                                            $floatClass = 'text-emerald-600';
+                                            $floatClass = 'text-rose-600';
                                             $floatText = $floatValue . 'd';
                                         } else {
                                             $floatClass = 'text-amber-600';
@@ -426,7 +439,7 @@
             const plannedStage = payload.planned_stage || '—';
             const actualStage = payload.actual_stage || '—';
             const balancedDelay = c.balanced_delay ?? null;
-            const deliveryFloat = c.delivery_float ?? null;
+            const deliveryFloat = c.float_days ?? null;
 
             // Health indicator
             let health = { text: 'No Data', color: 'bg-slate-100 text-slate-500 border-slate-200', emoji: '' };
@@ -629,8 +642,12 @@
         function renderRow(label, planned, forecast, actual, variance, isLast) {
             const hasPlanned = planned || forecast;
             const hasActual = actual;
-            const isDelayed = variance > 0;
-            const isOnTime = variance === 0 && hasActual;
+
+            const plannedDate = planned ? new Date(planned) : null;
+            const actualDate = actual ? new Date(actual) : null;
+            const isEarly = plannedDate && actualDate && !isNaN(plannedDate) && !isNaN(actualDate) && actualDate < plannedDate;
+            const isDelayed = plannedDate && actualDate && !isNaN(plannedDate) && !isNaN(actualDate) && actualDate > plannedDate;
+            const isOnTime = plannedDate && actualDate && !isNaN(plannedDate) && !isNaN(actualDate) && actualDate.getTime() === plannedDate.getTime();
             const isPending = !hasActual;
 
             let statusBadge = '';
@@ -638,7 +655,9 @@
                 statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-slate-100 text-slate-500 border border-slate-200">Pending</span>`;
             } else if (isDelayed) {
                 statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200">+${variance}d Delayed</span>`;
-            } else {
+            } else if (isEarly) {
+                statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200">▲ ${variance}d Early</span>`;
+            } else if (isOnTime) {
                 statusBadge = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200">On Time</span>`;
             }
 
@@ -651,8 +670,8 @@
                 delayPill = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-200">⚠ ${variance} Days Late</span>`;
             } else if (isOnTime) {
                 delayPill = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200">✔ On Time</span>`;
-            } else if (hasActual && variance !== null && variance < 0) {
-                delayPill = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200">▲ ${Math.abs(variance)} Days Early</span>`;
+            } else if (isEarly) {
+                delayPill = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200">▲ ${variance} Days Early</span>`;
             }
 
             return `

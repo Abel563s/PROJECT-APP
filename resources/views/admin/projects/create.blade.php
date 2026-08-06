@@ -84,8 +84,7 @@
                             <option value="Building">Building</option>
                             <option value="Fit-Out">Fit-Out</option>
                             <option value="Infrastructure">Infrastructure</option>
-                            <option value="Mixed (Bui/Road)">Mixed (Bui/Road)</option>
-                            <option value="Mixed (Bui/Fit-Out)">Mixed (Bui/Fit-Out)</option>
+                            <option value="Water & Energy">Water & Energy</option>
                         </select>
                     </div>
                     <div class="space-y-2">
@@ -116,7 +115,7 @@
                         <i data-lucide="users" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-black text-slate-900 tracking-tight">2. Stakeholders & Scope</h3>
+                        <h3 class="text-xl font-black text-slate-900 tracking-tight">2. Stakeholders</h3>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Partners and
                             operational boundaries</p>
                     </div>
@@ -172,37 +171,46 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 relative z-10">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Contract
-                            Budget</label>
-                        <input type="number" step="0.01" name="contract_budget"
-                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
+                <div class="space-y-4 relative z-10">
+                    <div class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
+                        <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-3">Budget Management</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Contract Amount</label>
+                                <input type="number" step="0.01" name="contract_budget"
+                                    class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Variation</label>
+                                <input type="number" step="0.01" name="variation"
+                                    class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Supp.</label>
+                                <input type="number" step="0.01" name="supplementary"
+                                    class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Budget at Completion</label>
+                                <input type="number" step="0.01" name="budget_at_completion"
+                                    class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
+                            </div>
+                        </div>
                     </div>
-                    <div class="space-y-2">
-                        <label
-                            class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Variation</label>
-                        <input type="number" step="0.01" name="variation"
-                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
-                    </div>
-                    <div class="space-y-2">
-                        <label
-                            class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Supplementary</label>
-                        <input type="number" step="0.01" name="supplementary"
-                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
-                    </div>
-                    <div class="space-y-2">
-                        <label
-                            class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 text-[#00ADC5]">Total
-                            Allowable Cost</label>
-                        <input type="number" step="0.01" name="total_allowable_cost"
-                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Cost At
-                            Completion</label>
-                        <input type="number" step="0.01" name="cost_at_completion"
-                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
+                    <div class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
+                        <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-3">Cost Management</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 text-[#00ADC5]">Allowable</label>
+                                <input type="number" step="0.01" name="total_allowable_cost"
+                                    class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Cost at Completion</label>
+                                <input type="number" step="0.01" name="cost_at_completion"
+                                    class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -320,4 +328,38 @@
             </div>
         </form>
     </div>
+
+    <script>
+        function generateProjectCode() {
+            const typeSelect = document.querySelector('select[name="project_type"]');
+            const baselineInput = document.querySelector('input[name="baseline_start_date"]');
+            const codeInput = document.querySelector('input[name="project_code"]');
+
+            if (!typeSelect || !baselineInput || !codeInput) return;
+
+            function updateCode() {
+                const type = typeSelect.value;
+
+                if (!type) {
+                    codeInput.value = '';
+                    return;
+                }
+
+                const prefix = type.substring(0, 3).toUpperCase();
+
+                fetch(`/admin/projects/next-code?prefix=${prefix}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.code) codeInput.value = data.code;
+                    })
+                    .catch(() => {
+                        codeInput.value = `${prefix}-001`;
+                    });
+            }
+
+            typeSelect.addEventListener('change', updateCode);
+        }
+
+        document.addEventListener('DOMContentLoaded', generateProjectCode);
+    </script>
 </x-app-layout>

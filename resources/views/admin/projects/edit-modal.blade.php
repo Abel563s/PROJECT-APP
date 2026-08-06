@@ -30,14 +30,13 @@
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Type</label>
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Construction Sector</label>
                 <select name="project_type" required
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
                     <option value="Building" {{ $project->project_type == 'Building' ? 'selected' : '' }}>Building</option>
                     <option value="Fit-Out" {{ $project->project_type == 'Fit-Out' ? 'selected' : '' }}>Fit-Out</option>
                     <option value="Infrastructure" {{ $project->project_type == 'Infrastructure' ? 'selected' : '' }}>Infrastructure</option>
-                    <option value="Mixed (Bui/Road)" {{ $project->project_type == 'Mixed (Bui/Road)' ? 'selected' : '' }}>Mixed (Bui/Road)</option>
-                    <option value="Mixed (Bui/Fit-Out)" {{ $project->project_type == 'Mixed (Bui/Fit-Out)' ? 'selected' : '' }}>Mixed (Bui/Fit-Out)</option>
+                    <option value="Water & Energy" {{ $project->project_type == 'Water & Energy' ? 'selected' : '' }}>Water & Energy</option>
                 </select>
             </div>
             <div class="space-y-1">
@@ -50,14 +49,6 @@
                     <option value="DB-ADM" {{ $project->delivery_method == 'DB-ADM' ? 'selected' : '' }}>DB-ADM</option>
                     <option value="DBB-ADM" {{ $project->delivery_method == 'DBB-ADM' ? 'selected' : '' }}>DBB-ADM</option>
                     <option value="DB-CP" {{ $project->delivery_method == 'DB-CP' ? 'selected' : '' }}>DB-CP</option>
-                </select>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Project Status</label>
-                <select name="status"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                    <option value="active" {{ $project->status == 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ $project->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
             </div>
             <div class="col-span-2 space-y-1">
@@ -75,7 +66,7 @@
                 <i data-lucide="users" class="w-4 h-4"></i>
             </div>
             <div>
-                <h4 class="text-sm font-black text-slate-900">Stakeholders & Scope</h4>
+                <h4 class="text-sm font-black text-slate-900">Stakeholders</h4>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Partners</p>
             </div>
         </div>
@@ -91,7 +82,7 @@
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Sector</label>
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Consultancy Sector</label>
                 <select name="consultancy_sector"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
                     <option value="Government" {{ $project->consultancy_sector == 'Government' ? 'selected' : '' }}>Government</option>
@@ -103,41 +94,56 @@
     </div>
 
     <!-- Section 3: Financial -->
-    <div class="bg-slate-800 rounded-xl p-4 space-y-3">
+    <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
         <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-[#00ADC5]">
+            <div class="w-8 h-8 rounded-lg bg-[#00ADC5]/10 flex items-center justify-center text-[#00ADC5]">
                 <i data-lucide="banknote" class="w-4 h-4"></i>
             </div>
             <div>
-                <h4 class="text-sm font-black text-white">Budget & Cost Management</h4>
-                <p class="text-[8px] font-black text-white/40 uppercase tracking-widest">Capital (ETB)</p>
+                <h4 class="text-sm font-black text-slate-900">Budget & Cost Management</h4>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Capital (ETB)</p>
             </div>
         </div>
-        <div class="grid grid-cols-5 gap-2">
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-white/40 uppercase tracking-widest">Budget</label>
-                <input type="number" step="0.01" name="contract_budget" value="{{ $project->contract_budget }}"
-                    class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-md text-[10px] font-black text-[#00ADC5] focus:ring-2 focus:ring-cyan-500/20 focus:bg-white/10 focus:border-white/20 transition-all">
+        <div class="space-y-3">
+            <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">Budget Management</p>
+                <div class="grid grid-cols-2 xl:grid-cols-4 gap-2">
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Contract Amount</label>
+                        <input type="number" step="0.01" name="contract_budget" value="{{ $project->contract_budget }}"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Variation</label>
+                        <input type="number" step="0.01" name="variation" value="{{ $project->variation }}"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Supp.</label>
+                        <input type="number" step="0.01" name="supplementary" value="{{ $project->supplementary }}"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Budget at Completion</label>
+                        <input type="number" step="0.01" name="budget_at_completion" value="{{ $project->budget_at_completion }}"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                </div>
             </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-white/40 uppercase tracking-widest">Variation</label>
-                <input type="number" step="0.01" name="variation" value="{{ $project->variation }}"
-                    class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-md text-[10px] font-black text-[#00ADC5] focus:ring-2 focus:ring-cyan-500/20 focus:bg-white/10 focus:border-white/20 transition-all">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-white/40 uppercase tracking-widest">Supp.</label>
-                <input type="number" step="0.01" name="supplementary" value="{{ $project->supplementary }}"
-                    class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-md text-[10px] font-black text-[#00ADC5] focus:ring-2 focus:ring-cyan-500/20 focus:bg-white/10 focus:border-white/20 transition-all">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-white/40 uppercase tracking-widest">Allowable</label>
-                <input type="number" step="0.01" name="total_allowable_cost" value="{{ $project->total_allowable_cost }}"
-                    class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-md text-[10px] font-black text-white focus:ring-2 focus:ring-cyan-500/20 focus:bg-white/10 focus:border-white/20 transition-all">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-white/40 uppercase tracking-widest">CAC</label>
-                <input type="number" step="0.01" name="cost_at_completion" value="{{ $project->cost_at_completion }}"
-                    class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-md text-[10px] font-black text-white focus:ring-2 focus:ring-cyan-500/20 focus:bg-white/10 focus:border-white/20 transition-all">
+            <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">Cost Management</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Allowable</label>
+                        <input type="number" step="0.01" name="total_allowable_cost" value="{{ $project->total_allowable_cost }}"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Cost at Completion</label>
+                        <input type="number" step="0.01" name="cost_at_completion" value="{{ $project->cost_at_completion }}"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                </div>
             </div>
         </div>
     </div>

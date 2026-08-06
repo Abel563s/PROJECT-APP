@@ -41,13 +41,28 @@
                         class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                 </div>
 
-                @if(request()->anyFilled('search'))
-                    <a href="{{ route('admin.progress-updates.index') }}"
-                        class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
-                        title="Clear Filters">
-                        <i data-lucide="x" class="w-4 h-4"></i>
-                    </a>
-                @endif
+                <div class="flex items-center gap-3">
+                    <div class="relative group/select">
+                        <select name="project_id" onchange="this.form.submit()"
+                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
+                            <option value="">All Projects</option>
+                            @foreach($projects as $project)
+                                <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
+                                    {{ $project->project_code }} - {{ $project->project_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                    </div>
+
+                    @if(request()->anyFilled(['search', 'project_id']))
+                        <a href="{{ route('admin.progress-updates.index') }}"
+                            class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
+                            title="Clear Filters">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </a>
+                    @endif
+                </div>
             </div>
         </form>
 
@@ -58,9 +73,13 @@
                     <thead>
                         <tr class="bg-[#00515f]">
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Planned vs Actual</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">SPI Index</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revenue Status</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Planned</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Actual</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">SPI</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">CPI</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revenue Planned</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revenue Actual</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Top Constraints</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Last Edit</th>
                             <th class="px-6 py-3 text-right border-b border-[#00515f]/30"></th>
                         </tr>
@@ -82,30 +101,63 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="space-y-1">
-                                        <div class="flex justify-between text-[9px] font-black uppercase tracking-widest mb-1">
-                                            <span class="text-slate-400">Progress</span>
-                                            <span class="text-[#00ADC5]">{{ $update->progress_actual }}% / {{ $update->progress_planned }}%</span>
-                                        </div>
-                                        <div class="w-40 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                            <div class="h-full bg-[#00ADC5] rounded-full" style="width: {{ min(100, $update->progress_actual) }}%"></div>
-                                        </div>
-                                    </div>
+                                    @php
+                                        $plannedVal = (float) $update->progress_planned;
+                                        $plannedColor = $plannedVal >= 80 ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : ($plannedVal >= 70 ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-rose-50 text-rose-600 border-rose-200');
+                                    @endphp
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $plannedColor }} border shadow-sm">{{ $plannedVal }}%</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @php
+                                        $actualVal = (float) $update->progress_actual;
+                                        $actualColor = $actualVal >= 80 ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : ($actualVal >= 70 ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-rose-50 text-rose-600 border-rose-200');
+                                    @endphp
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $actualColor }} border shadow-sm">{{ $actualVal }}%</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     @php
                                         $spi = $update->progress_planned > 0 ? ($update->progress_actual / $update->progress_planned) : 0;
-                                        $spiColor = $spi >= 1 ? 'text-emerald-500' : ($spi >= 0.8 ? 'text-amber-500' : 'text-rose-500');
+                                        $spiPercent = $spi * 100;
+                                        $spiColor = $spiPercent >= 80 ? 'text-emerald-500' : ($spiPercent >= 70 ? 'text-amber-500' : 'text-rose-500');
+                                        $spiBg = $spiPercent >= 80 ? 'bg-emerald-50 border-emerald-200' : ($spiPercent >= 70 ? 'bg-amber-50 border-amber-200' : 'bg-rose-50 border-rose-200');
+                                        $spiArrow = $spiPercent >= 80 ? 'trending-up' : ($spiPercent >= 70 ? 'minus' : 'trending-down');
                                     @endphp
                                     <div class="flex items-center gap-1.5">
-                                        <span class="text-sm font-black {{ $spiColor }}">{{ number_format($spi * 100, 1) }}%</span>
-                                        <i data-lucide="{{ $spi >= 1 ? 'trending-up' : 'trending-down' }}" class="w-3.5 h-3.5 {{ $spiColor }}"></i>
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $spiBg }} border shadow-sm {{ $spiColor }}">
+                                            <i data-lucide="{{ $spiArrow }}" class="w-3.5 h-3.5"></i>
+                                            {{ number_format($spiPercent, 1) }}%
+                                        </span>
                                     </div>
-                                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">SPI</p>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <p class="text-xs font-mono font-black text-slate-900">ETB {{ number_format($update->revenue_actual) }}</p>
-                                    <p class="text-[9px] font-black text-slate-400 mt-0.5 uppercase tracking-widest">Planned: ETB {{ number_format($update->revenue_planned) }}</p>
+                                    @php
+                                        $cpi = $update->cost_actual > 0 ? ($update->cost_planned / $update->cost_actual) : 0;
+                                        $cpiPercent = $cpi * 100;
+                                        $cpiColor = $cpi > 1.0 ? 'text-emerald-500' : ($cpi >= 1.0 ? 'text-amber-500' : 'text-rose-500');
+                                        $cpiBg = $cpi > 1.0 ? 'bg-emerald-50 border-emerald-200' : ($cpi >= 1.0 ? 'bg-amber-50 border-amber-200' : 'bg-rose-50 border-rose-200');
+                                        $cpiArrow = $cpi > 1.0 ? 'trending-up' : ($cpi >= 1.0 ? 'minus' : 'trending-down');
+                                    @endphp
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $cpiBg }} border shadow-sm {{ $cpiColor }}">
+                                            <i data-lucide="{{ $cpiArrow }}" class="w-3.5 h-3.5"></i>
+                                            {{ number_format($cpi, 2) }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-900 text-[11px] font-black tabular-nums tracking-tight shadow-sm">
+                                        <span class="text-slate-500 font-bold mr-1">ETB</span>
+                                        {{ number_format($update->revenue_planned) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-900 text-[11px] font-black tabular-nums tracking-tight shadow-sm">
+                                        <span class="text-slate-500 font-bold mr-1">ETB</span>
+                                        {{ number_format($update->revenue_actual) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-xs font-black text-slate-700">{{ $update->top_constraints ?: '-' }}</p>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->updated_at->format('M d, Y') }}</span>
@@ -139,7 +191,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-16 text-center">
+                                <td colspan="10" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="trending-up" class="w-8 h-8"></i>
@@ -160,9 +212,9 @@
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeCreateModal()"></div>
             <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
-                    <h3 class="text-base font-black text-slate-900">New Progress Update</h3>
-                    <button onclick="closeCreateModal()" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors">
+                <div class="sticky top-0 bg-[#00515f] border-b border-[#00515f]/30 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
+                    <h3 class="text-base font-black text-white">New Progress Update</h3>
+                    <button onclick="closeCreateModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -222,7 +274,7 @@
                 .then(html => {
                     document.getElementById('createModalContent').innerHTML = html;
                     document.getElementById('createModal').classList.remove('hidden');
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
 
                     const plannedInput = document.querySelector('input[name="progress_planned"]');
                     const actualInput = document.querySelector('input[name="progress_actual"]');
@@ -238,6 +290,33 @@
                         plannedInput.addEventListener('input', updateSPI);
                         actualInput.addEventListener('input', updateSPI);
                     }
+
+                    const costPlannedInput = document.getElementById('createCostPlanned');
+                    const costActualInput = document.getElementById('createCostActual');
+                    const cpiDisplay = document.getElementById('createCpiDisplay');
+
+                    if (costPlannedInput && costActualInput && cpiDisplay) {
+                        function updateCPI() {
+                            const planned = parseFloat(costPlannedInput.value) || 0;
+                            const actual = parseFloat(costActualInput.value) || 0;
+                            if (actual > 0) {
+                                const cpi = planned / actual;
+                                cpiDisplay.textContent = cpi.toFixed(2);
+                                if (cpi > 1.0) {
+                                    cpiDisplay.className = 'text-lg font-black text-emerald-600 mt-0.5';
+                                } else if (cpi === 1.0) {
+                                    cpiDisplay.className = 'text-lg font-black text-amber-600 mt-0.5';
+                                } else {
+                                    cpiDisplay.className = 'text-lg font-black text-rose-600 mt-0.5';
+                                }
+                            } else {
+                                cpiDisplay.textContent = '0.00';
+                                cpiDisplay.className = 'text-lg font-black text-slate-900 mt-0.5';
+                            }
+                        }
+                        costPlannedInput.addEventListener('input', updateCPI);
+                        costActualInput.addEventListener('input', updateCPI);
+                    }
                 });
         }
 
@@ -251,7 +330,7 @@
                 .then(html => {
                     document.getElementById('viewModalContent').innerHTML = html;
                     document.getElementById('viewModal').classList.remove('hidden');
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
                 });
         }
 
@@ -265,7 +344,7 @@
                 .then(html => {
                     document.getElementById('editModalContent').innerHTML = html;
                     document.getElementById('editModal').classList.remove('hidden');
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
 
                     const plannedInput = document.getElementById('editPlanned');
                     const actualInput = document.getElementById('editActual');
@@ -280,6 +359,26 @@
                         }
                         plannedInput.addEventListener('input', updateEditSPI);
                         actualInput.addEventListener('input', updateEditSPI);
+                    }
+
+                    const editCostPlannedInput = document.getElementById('editCostPlanned');
+                    const editCostActualInput = document.getElementById('editCostActual');
+                    const editCpiDisplay = document.getElementById('editCpiDisplay');
+
+                    if (editCostPlannedInput && editCostActualInput && editCpiDisplay) {
+                        function updateEditCPI() {
+                            const planned = parseFloat(editCostPlannedInput.value) || 0;
+                            const actual = parseFloat(editCostActualInput.value) || 0;
+                            if (actual > 0) {
+                                const cpi = planned / actual;
+                                const cpiColor = cpi > 1.0 ? 'text-emerald-600' : (cpi === 1.0 ? 'text-amber-600' : 'text-rose-600');
+                                editCpiDisplay.innerHTML = `<span class="${cpiColor}">${cpi.toFixed(2)}</span>`;
+                            } else {
+                                editCpiDisplay.innerHTML = `<span class="text-slate-900">0.00</span>`;
+                            }
+                        }
+                        editCostPlannedInput.addEventListener('input', updateEditCPI);
+                        editCostActualInput.addEventListener('input', updateEditCPI);
                     }
                 });
         }

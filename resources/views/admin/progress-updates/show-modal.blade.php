@@ -35,7 +35,7 @@
             <div class="col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">SPI Index</p>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">SPI</p>
                         <h4 class="text-lg font-black text-slate-900 mt-0.5">
                             @php
                                 $spi = $update->progress_planned > 0 ? ($update->progress_actual / $update->progress_planned) * 100 : 0;
@@ -58,21 +58,48 @@
                 <i data-lucide="banknote" class="w-4 h-4"></i>
             </div>
             <div>
-                <h4 class="text-sm font-black text-slate-900">Commercial & Temporal</h4>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue and completion</p>
+                <h4 class="text-sm font-black text-slate-900">Commercial</h4>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue and cost management</p>
             </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revenue Planned</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revenue Planned (PV)</p>
                 <p class="text-xs font-black text-slate-900">ETB {{ number_format($update->revenue_planned) }}</p>
             </div>
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revenue Actual</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revenue Actual (EV)</p>
                 <p class="text-xs font-black text-slate-900">ETB {{ number_format($update->revenue_actual) }}</p>
             </div>
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Target Completion</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Planned</p>
+                <p class="text-xs font-black text-slate-900">ETB {{ number_format($update->cost_planned) }}</p>
+            </div>
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Actual</p>
+                <p class="text-xs font-black text-slate-900">ETB {{ number_format($update->cost_actual) }}</p>
+            </div>
+            <div class="col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">CPI</p>
+                        <h4 class="text-lg font-black text-slate-900 mt-0.5">
+                            @php
+                                $costPlanned = $update->cost_planned ?? 0;
+                                $costActual = $update->cost_actual ?? 0;
+                                $cpi = $costActual > 0 ? $costPlanned / $costActual : 0;
+                                $cpiColor = $cpi > 1.0 ? 'text-emerald-600' : ($cpi === 1.0 ? 'text-amber-600' : 'text-rose-600');
+                            @endphp
+                            <span class="{{ $cpiColor }}">{{ number_format($cpi, 2) }}</span>
+                        </h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-rose-600 shadow-sm">
+                        <i data-lucide="trending-down" class="w-5 h-5"></i>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Latest Completion Date</p>
                 <p class="text-xs font-black text-slate-900">{{ $update->completion_date ? \Carbon\Carbon::parse($update->completion_date)->format('M d, Y') : '---' }}</p>
             </div>
         </div>

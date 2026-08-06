@@ -114,7 +114,80 @@
             <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-sm hover:shadow-md transition-all">
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Critical Delays</p>
                 <h3 class="text-2xl font-black text-rose-600">{{ number_format($critical_delays) }}</h3>
-                <p class="text-[9px] font-bold text-slate-400 mt-1">Balanced delay &lt; -15d</p>
+                <p class="text-[9px] font-bold text-slate-400 mt-1">Balanced days0.
+                    
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                &lt; -15d</p>
             </div>
         </div>
 

@@ -1,5 +1,6 @@
 <form action="{{ route('admin.projects.store') }}" method="POST" id="createModalForm" class="space-y-4">
     @csrf
+    <input type="hidden" name="status" value="in progress">
 
     <!-- Section 1: Project Identity -->
     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
@@ -24,14 +25,13 @@
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Sector</label>
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Construction Sector</label>
                 <select name="project_type" required
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
                     <option value="Building">Building</option>
                     <option value="Fit-Out">Fit-Out</option>
                     <option value="Infrastructure">Infrastructure</option>
-                    <option value="Mixed (Bui/Road)">Mixed (Bui/Road)</option>
-                    <option value="Mixed (Bui/Fit-Out)">Mixed (Bui/Fit-Out)</option>
+                    <option value="Water & Energy">Water & Energy</option>
                 </select>
             </div>
             <div class="space-y-1">
@@ -44,14 +44,6 @@
                     <option value="DB-ADM">DB-ADM</option>
                     <option value="DBB-ADM">DBB-ADM</option>
                     <option value="DB-CP">DB-CP</option>
-                </select>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Project Status</label>
-                <select name="status"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
                 </select>
             </div>
             <div class="col-span-2 space-y-1">
@@ -97,41 +89,56 @@
     </div>
 
     <!-- Section 3: Financial -->
-    <div class="bg-slate-800 rounded-xl p-4 space-y-3">
+    <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
         <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-[#00ADC5]">
+            <div class="w-8 h-8 rounded-lg bg-[#00ADC5]/10 flex items-center justify-center text-[#00ADC5]">
                 <i data-lucide="banknote" class="w-4 h-4"></i>
             </div>
             <div>
-                <h4 class="text-sm font-black text-white">Budget & Cost Management</h4>
-                <p class="text-[8px] font-black text-white/40 uppercase tracking-widest">Capital (ETB)</p>
+                <h4 class="text-sm font-black text-slate-900">Budget & Cost Management</h4>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Capital (ETB)</p>
             </div>
         </div>
-        <div class="grid grid-cols-5 gap-2">
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-white/40 uppercase tracking-widest">Budget</label>
-                <input type="number" step="0.01" name="contract_budget"
-                    class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-md text-[10px] font-black text-[#00ADC5] focus:ring-2 focus:ring-cyan-500/20 focus:bg-white/10 focus:border-white/20 transition-all">
+        <div class="space-y-3">
+            <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">Budget Management</p>
+                <div class="grid grid-cols-2 xl:grid-cols-4 gap-2">
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Contract Amount</label>
+                        <input type="number" step="0.01" name="contract_budget"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Variation</label>
+                        <input type="number" step="0.01" name="variation"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Supp.</label>
+                        <input type="number" step="0.01" name="supplementary"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Budget at Completion</label>
+                        <input type="number" step="0.01" name="budget_at_completion"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                </div>
             </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-white/40 uppercase tracking-widest">Variation</label>
-                <input type="number" step="0.01" name="variation"
-                    class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-md text-[10px] font-black text-[#00ADC5] focus:ring-2 focus:ring-cyan-500/20 focus:bg-white/10 focus:border-white/20 transition-all">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-white/40 uppercase tracking-widest">Supp.</label>
-                <input type="number" step="0.01" name="supplementary"
-                    class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-md text-[10px] font-black text-[#00ADC5] focus:ring-2 focus:ring-cyan-500/20 focus:bg-white/10 focus:border-white/20 transition-all">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-white/40 uppercase tracking-widest">Allowable</label>
-                <input type="number" step="0.01" name="total_allowable_cost"
-                    class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-md text-[10px] font-black text-white focus:ring-2 focus:ring-cyan-500/20 focus:bg-white/10 focus:border-white/20 transition-all">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-white/40 uppercase tracking-widest">CAC</label>
-                <input type="number" step="0.01" name="cost_at_completion"
-                    class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-md text-[10px] font-black text-white focus:ring-2 focus:ring-cyan-500/20 focus:bg-white/10 focus:border-white/20 transition-all">
+            <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">Cost Management</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Allowable</label>
+                        <input type="number" step="0.01" name="total_allowable_cost"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Cost at Completion</label>
+                        <input type="number" step="0.01" name="cost_at_completion"
+                            class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -230,3 +237,37 @@
         </button>
     </div>
 </form>
+
+<script>
+    function generateProjectCode() {
+        const typeSelect = document.querySelector('select[name="project_type"]');
+        const baselineInput = document.querySelector('input[name="baseline_start_date"]');
+        const codeInput = document.querySelector('input[name="project_code"]');
+
+        if (!typeSelect || !baselineInput || !codeInput) return;
+
+        function updateCode() {
+            const type = typeSelect.value;
+
+            if (!type) {
+                codeInput.value = '';
+                return;
+            }
+
+            const prefix = type.substring(0, 3).toUpperCase();
+
+            fetch(`/admin/projects/next-code?prefix=${prefix}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.code) codeInput.value = data.code;
+                })
+                .catch(() => {
+                    codeInput.value = `${prefix}-001`;
+                });
+        }
+
+        typeSelect.addEventListener('change', updateCode);
+    }
+
+    document.addEventListener('DOMContentLoaded', generateProjectCode);
+</script>

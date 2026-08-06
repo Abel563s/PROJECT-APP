@@ -36,7 +36,7 @@
             <div class="col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Calculated SPI Index</p>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Calculated SPI</p>
                         <h4 class="text-lg font-black text-slate-900 mt-0.5" id="editSpiDisplay">
                             @php
                                 $spi = $update->progress_planned > 0 ? ($update->progress_actual / $update->progress_planned) * 100 : 0;
@@ -59,23 +59,52 @@
                 <i data-lucide="banknote" class="w-4 h-4"></i>
             </div>
             <div>
-                <h4 class="text-sm font-black text-slate-900">Commercial & Temporal</h4>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue and completion</p>
+                <h4 class="text-sm font-black text-slate-900">Commercial</h4>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue and cost management</p>
             </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue Planned (ETB)</label>
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue Planned (PV)</label>
                 <input type="number" step="0.01" name="revenue_planned" value="{{ $update->revenue_planned }}"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-emerald-600 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue Actual (ETB)</label>
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue Actual (EV)</label>
                 <input type="number" step="0.01" name="revenue_actual" value="{{ $update->revenue_actual }}"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-emerald-600 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Target Completion</label>
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Cost Planned</label>
+                <input type="number" step="0.01" name="cost_planned" id="editCostPlanned" value="{{ $update->cost_planned }}"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-rose-600 focus:ring-2 focus:ring-rose-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Cost Actual</label>
+                <input type="number" step="0.01" name="cost_actual" id="editCostActual" value="{{ $update->cost_actual }}"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-rose-600 focus:ring-2 focus:ring-rose-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+            </div>
+            <div class="col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Calculated CPI</p>
+                        <h4 class="text-lg font-black text-slate-900 mt-0.5" id="editCpiDisplay">
+                            @php
+                                $costPlanned = $update->cost_planned ?? 0;
+                                $costActual = $update->cost_actual ?? 0;
+                                $cpi = $costActual > 0 ? $costPlanned / $costActual : 0;
+                                $cpiColor = $cpi > 1.0 ? 'text-emerald-600' : ($cpi === 1.0 ? 'text-amber-600' : 'text-rose-600');
+                            @endphp
+                            <span class="{{ $cpiColor }}">{{ number_format($cpi, 2) }}</span>
+                        </h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-rose-600 shadow-sm">
+                        <i data-lucide="trending-down" class="w-5 h-5"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Latest Completion Date</label>
                 <input type="date" name="completion_date" value="{{ $update->completion_date ? $update->completion_date : '' }}"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>

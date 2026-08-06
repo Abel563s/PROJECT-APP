@@ -19,5 +19,8 @@
         "postcss": "^8.4.49",
         "tailwindcss": "^4.1.18",
         "vite": "^5.4.21"
+    },
+    "dependencies": {
+        "lucide": "^1.27.0"
     }
 }

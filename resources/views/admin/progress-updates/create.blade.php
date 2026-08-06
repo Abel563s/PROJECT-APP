@@ -93,7 +93,7 @@
                         <i data-lucide="banknote" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-black text-slate-900 tracking-tight">2. Commercial & Temporal State</h3>
+                        <h3 class="text-xl font-black text-slate-900 tracking-tight">2. Commercial</h3>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Revenue cycles
                             and completion milestones</p>
                     </div>

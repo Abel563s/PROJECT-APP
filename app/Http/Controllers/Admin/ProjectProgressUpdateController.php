@@ -22,8 +22,13 @@ class ProjectProgressUpdateController extends Controller
             });
         }
 
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->project_id);
+        }
+
         $updates = $query->latest()->get();
-        return view('admin.progress-updates.index', compact('updates'));
+        $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+        return view('admin.progress-updates.index', compact('updates', 'projects'));
     }
 
     public function create()
@@ -43,6 +48,8 @@ class ProjectProgressUpdateController extends Controller
             'progress_actual' => 'required|numeric|min:0',
             'revenue_planned' => 'nullable|numeric|min:0',
             'revenue_actual' => 'nullable|numeric|min:0',
+            'cost_planned' => 'nullable|numeric|min:0',
+            'cost_actual' => 'nullable|numeric|min:0',
             'completion_date' => 'nullable|date',
             'top_constraints' => 'nullable|string',
             'client_issue' => 'nullable|string',
@@ -92,6 +99,8 @@ class ProjectProgressUpdateController extends Controller
             'progress_actual' => 'required|numeric|min:0',
             'revenue_planned' => 'nullable|numeric|min:0',
             'revenue_actual' => 'nullable|numeric|min:0',
+            'cost_planned' => 'nullable|numeric|min:0',
+            'cost_actual' => 'nullable|numeric|min:0',
             'completion_date' => 'nullable|date',
             'top_constraints' => 'nullable|string',
             'client_issue' => 'nullable|string',

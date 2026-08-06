@@ -72,7 +72,7 @@
 
                     <div class="lg:col-span-3 bg-slate-50 p-6 rounded-2xl flex items-center justify-between border border-slate-100">
                         <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Calculated SPI Index</p>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Calculated SPI</p>
                             <h4 class="text-2xl font-black text-slate-900 mt-1" x-text="planned > 0 ? ((actual / planned) * 100).toFixed(2) + '%' : '0.00%'"></h4>
                         </div>
                         <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-[#00ADC5] shadow-sm">
@@ -90,24 +90,24 @@
                         <i data-lucide="banknote" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-black text-white tracking-tight">2. Commercial & Temporal State</h3>
+                        <h3 class="text-xl font-black text-white tracking-tight">2. Commercial</h3>
                         <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mt-1">Revenue cycles and completion milestones</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Revenue Planned (ETB)</label>
+                        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Revenue Planned (PV)</label>
                         <input type="number" step="0.01" name="revenue_planned" value="{{ $update->revenue_planned }}"
                             class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-emerald-400 focus:ring-4 focus:ring-emerald-500/20 focus:bg-white/10 transition-all">
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Revenue Actual (ETB)</label>
+                        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Revenue Actual (EV)</label>
                         <input type="number" step="0.01" name="revenue_actual" value="{{ $update->revenue_actual }}"
                             class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-emerald-400 focus:ring-4 focus:ring-emerald-500/20 focus:bg-white/10 transition-all">
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Target Completion Date</label>
+                        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Latest Completion Date</label>
                         <input type="date" name="completion_date" value="{{ $update->completion_date ? $update->completion_date : '' }}"
                             class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-white focus:ring-4 focus:ring-emerald-500/20 focus:bg-white/10 transition-all">
                     </div>

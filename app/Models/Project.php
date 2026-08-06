@@ -23,8 +23,10 @@ class Project extends Model
         'contract_budget',
         'variation',
         'supplementary',
+        'budget_at_completion',
         'total_allowable_cost',
         'cost_at_completion',
+        'revised_budget_amount',
         'baseline_start_date',
         'baseline_finish_date',
         'actual_start_date',
@@ -68,8 +70,10 @@ class Project extends Model
         'contract_budget' => 'decimal:2',
         'variation' => 'decimal:2',
         'supplementary' => 'decimal:2',
+        'budget_at_completion' => 'decimal:2',
         'total_allowable_cost' => 'decimal:2',
         'cost_at_completion' => 'decimal:2',
+        'revised_budget_amount' => 'decimal:2',
         'total_certified' => 'decimal:2',
         'total_paid' => 'decimal:2',
         'retention' => 'decimal:2',
@@ -83,7 +87,8 @@ class Project extends Model
     }
     public function getTotalProjectValueAttribute()
     {
-        return (float) $this->contract_budget + (float) $this->variation + (float) $this->supplementary;
+        $base = $this->revised_budget_amount > 0 ? $this->revised_budget_amount : $this->contract_budget;
+        return (float) $base + (float) $this->variation + (float) $this->supplementary;
     }
 
     public function getRevisedBudgetAttribute()
@@ -166,8 +171,10 @@ class Project extends Model
                 'contract_budget',
                 'variation',
                 'supplementary',
+                'budget_at_completion',
                 'total_allowable_cost',
                 'cost_at_completion',
+                'revised_budget_amount',
                 'total_certified',
                 'total_paid',
                 'retention',

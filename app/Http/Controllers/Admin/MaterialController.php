@@ -29,6 +29,10 @@ class MaterialController extends Controller
             });
         }
 
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->project_id);
+        }
+
         if ($request->filled('project_client')) {
             $query->where('supplier_name', $request->project_client);
         }
@@ -47,8 +51,9 @@ class MaterialController extends Controller
 
         $records = $query->latest()->paginate(10);
         $departments = $this->departmentsForUser();
+        $projects = \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
 
-        return view('admin.materials.index', compact('records', 'departments'));
+        return view('admin.materials.index', compact('records', 'departments', 'projects'));
     }
 
     public function create(): View

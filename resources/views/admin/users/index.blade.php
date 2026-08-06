@@ -222,7 +222,7 @@
                 .then(html => {
                     document.getElementById('createModalContent').innerHTML = html;
                     document.getElementById('createModal').classList.remove('hidden');
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
                 });
         }
 
@@ -236,7 +236,7 @@
                 .then(html => {
                     document.getElementById('pwModalContent').innerHTML = html;
                     document.getElementById('pwModal').classList.remove('hidden');
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
                 });
         }
 

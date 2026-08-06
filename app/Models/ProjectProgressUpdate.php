@@ -12,6 +12,8 @@ class ProjectProgressUpdate extends Model
         'progress_actual',
         'revenue_planned',
         'revenue_actual',
+        'cost_planned',
+        'cost_actual',
         'completion_date',
         'top_constraints',
         'client_issue',

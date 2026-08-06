@@ -45,32 +45,66 @@
                         class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <div class="relative group/select">
-                        <select name="type" onchange="this.form.submit()"
-                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
-                            <option value="">All Modules</option>
-                            @foreach(['Building', 'Fit-Out', 'Infrastructure', 'Mixed (Bui/Road)', 'Mixed (Bui/Fit-Out)'] as $type)
-                                <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>{{ $type }}</option>
-                            @endforeach
-                        </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Type</span>
+                        <div class="relative group/select">
+                            <select name="type" onchange="this.form.submit()"
+                                class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                                <option value="">All Modules</option>
+                                @foreach(['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'] as $type)
+                                    <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>{{ $type }}</option>
+                                @endforeach
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        </div>
                     </div>
 
-                    <div class="relative group/select">
-                        <select name="delivery_method" onchange="this.form.submit()"
-                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
-                            <option value="">All Methods</option>
-                            @foreach(['DBB', 'DB', 'CM', 'Negotiated'] as $method)
-                                <option value="{{ $method }}" {{ request('delivery_method') == $method ? 'selected' : '' }}>{{ $method }}</option>
-                            @endforeach
-                        </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Method</span>
+                        <div class="relative group/select">
+                            <select name="delivery_method" onchange="this.form.submit()"
+                                class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                                <option value="">All Methods</option>
+                                @foreach(['DBB', 'DB', 'CM', 'Negotiated'] as $method)
+                                    <option value="{{ $method }}" {{ request('delivery_method') == $method ? 'selected' : '' }}>{{ $method }}</option>
+                                @endforeach
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        </div>
                     </div>
 
-                    @if(request()->anyFilled(['search', 'type', 'delivery_method']))
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Construction Sector</span>
+                        <div class="relative group/select">
+                            <select name="consultancy_sector" onchange="this.form.submit()"
+                                class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                                <option value="">All Sectors</option>
+                                @foreach(['Government', 'Private', 'Client / Engineering Team'] as $sector)
+                                    <option value="{{ $sector }}" {{ request('consultancy_sector') == $sector ? 'selected' : '' }}>{{ $sector }}</option>
+                                @endforeach
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Consultant Type</span>
+                        <div class="relative group/select">
+                            <select name="consultant" onchange="this.form.submit()"
+                                class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                                <option value="">All Consultants</option>
+                                @foreach($consultantTypes as $consultant)
+                                    <option value="{{ $consultant }}" {{ request('consultant') == $consultant ? 'selected' : '' }}>{{ $consultant }}</option>
+                                @endforeach
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        </div>
+                    </div>
+
+                    @if(request()->anyFilled(['search', 'type', 'delivery_method', 'consultancy_sector', 'consultant']))
                         <a href="{{ route('admin.projects.index') }}"
-                            class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
+                            class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm self-end"
                             title="Clear Filters">
                             <i data-lucide="x" class="w-4 h-4"></i>
                         </a>
@@ -85,95 +119,116 @@
                 <table class="w-full text-left">
                     <thead>
                         <tr class="bg-[#00515f]">
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project Code</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Classification</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Stakeholder Hub</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">#</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project Type</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Contract Budget</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Lifecycle Status</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Project Status</th>
-                            <th class="px-6 py-3 text-right border-b border-[#00515f]/30"></th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Baseline Start</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Baseline Finish</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project Duration</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Overall Performance</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center cursor-pointer" title="Click to toggle status">Project Status</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50/50">
                         @forelse($projects as $project)
                             <tr class="group hover:bg-slate-50/80 transition-all duration-300 odd:bg-white even:bg-slate-50/20">
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
+                                </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="relative">
-                                            <div class="w-11 h-11 rounded-xl bg-white shadow border border-slate-100 flex items-center justify-center transition-all duration-300 group-hover:rotate-[10deg] group-hover:scale-110 group-hover:border-[#00ADC5]">
-                                                <span class="font-black text-[9px] text-slate-300 group-hover:text-[#00ADC5] tracking-tighter">{{ $project->project_code }}</span>
-                                            </div>
-                                            <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-md bg-emerald-500 border-2 border-white flex items-center justify-center shadow-sm">
-                                                <i data-lucide="check" class="w-2.5 h-2.5 text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div class="space-y-1">
-                                            <p class="text-sm font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors cursor-pointer" onclick="openViewModal({{ $project->id }})">
-                                                {{ $project->project_code }}
-                                            </p>
-                                            <div class="flex items-center gap-2">
-                                                <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest bg-slate-100 px-1.5 py-0.5 rounded">{{ $project->custom_id }}</span>
-                                                <span class="w-0.5 h-0.5 rounded-full bg-slate-300"></span>
-                                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">{{ $project->revision_number ?? 'v1.0' }}</span>
-                                            </div>
-                                        </div>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors break-words">{{ $project->project_name }}</p>
+                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{{ $project->project_code }}</p>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="space-y-1">
-                                        <p class="text-[9px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                                            <span class="w-1 h-1 rounded-full bg-[#00ADC5]"></span>
-                                            {{ $project->project_type }}
-                                        </p>
-                                        <div class="inline-flex px-2 py-0.5 bg-slate-100 rounded-md">
-                                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                                                {{ $project->delivery_method }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="space-y-1">
-                                        <p class="text-xs font-black text-slate-900">{{ $project->project_client }}</p>
-                                        <div class="flex items-center gap-1.5 text-slate-400 group-hover:text-amber-600 transition-colors">
-                                            <i data-lucide="briefcase" class="w-2.5 h-2.5"></i>
-                                            <p class="text-[8px] font-black uppercase tracking-widest">
-                                                {{ $project->consultant }}
-                                            </p>
-                                        </div>
-                                    </div>
+                                    @php
+                                        $typeColors = [
+                                            'Building' => 'bg-cyan-100/60 text-cyan-700 border-cyan-200',
+                                            'Fit-Out' => 'bg-violet-100/60 text-violet-700 border-violet-200',
+                                            'Infrastructure' => 'bg-amber-100/60 text-amber-700 border-amber-200',
+                                            'Water & Energy' => 'bg-emerald-100/60 text-emerald-700 border-emerald-200',
+                                        ];
+                                        $typeColor = $typeColors[$project->project_type] ?? 'bg-slate-100 text-slate-600 border-slate-200';
+                                    @endphp
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $typeColor }} border shadow-sm group-hover:shadow-md transition-all">
+                                        {{ $project->project_type }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <div class="space-y-1">
-                                        <p class="text-xs font-mono font-black text-slate-900 group-hover:scale-105 transition-transform origin-right">
-                                            ETB {{ number_format($project->contract_budget) }}</p>
-                                        <div class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-md border border-emerald-100/50">
-                                            <span class="w-0.5 h-0.5 rounded-full bg-emerald-500"></span>
-                                            <p class="text-[8px] font-black text-emerald-600 uppercase tracking-widest">
-                                                Allowable: {{ number_format($project->total_allowable_cost) }}</p>
-                                        </div>
-                                    </div>
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-900 text-[11px] font-black tabular-nums tracking-tight shadow-sm">
+                                        <span class="text-slate-500 font-bold mr-1">ETB</span>
+                                        {{ number_format($project->contract_budget) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                                        {{ $project->baseline_start_date ? $project->baseline_start_date->format('M d, Y') : '---' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                                        {{ $project->baseline_finish_date ? $project->baseline_finish_date->format('M d, Y') : '---' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @php
+                                        $duration = '';
+                                        if ($project->baseline_start_date && $project->baseline_finish_date) {
+                                            $duration = abs($project->baseline_finish_date->diffInDays($project->baseline_start_date));
+                                        }
+                                    @endphp
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm">
+                                        {{ $duration }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     @php
-                                        $colors = [
-                                            'Not Completed' => 'bg-amber-100/50 text-amber-600 border-amber-200/50',
-                                            'PPA Received' => 'bg-cyan-100/50 text-[#00ADC5] border-cyan-200/50',
-                                            'PA Received' => 'bg-indigo-100/50 text-indigo-600 border-indigo-200/50',
-                                            'FA Received' => 'bg-emerald-100/50 text-emerald-600 border-emerald-200/50',
-                                            'Snag / Di-Snag' => 'bg-rose-100/50 text-rose-600 border-rose-200/50',
-                                            'Waiting for PA' => 'bg-slate-100/50 text-slate-600 border-slate-200/50',
-                                        ];
-                                        $color = $colors[$project->closing_status] ?? 'bg-slate-100 text-slate-400 border-slate-200';
+                                        $revisedBudget = $project->revised_budget_amount ?? 0;
+                                        $contractBudget = $project->contract_budget ?? 0;
+                                        $signedBudgetVariance = $revisedBudget - $contractBudget;
+                                        $budgetPerformance = $signedBudgetVariance > 0 ? 'Above Budget' : ($signedBudgetVariance < 0 ? 'Under Budget' : 'On Budget');
+
+                                        if (!$project->actual_start_date) {
+                                            $scheduleStatus = 'Not Started';
+                                        } elseif ($project->baseline_finish_date) {
+                                            if ($project->actual_finish_date) {
+                                                $svForStatus = $project->baseline_finish_date->diffInDays($project->actual_start_date);
+                                            } else {
+                                                $svForStatus = $project->baseline_finish_date->diffInDays(\Carbon\Carbon::today());
+                                            }
+                                            if ($svForStatus < 0) {
+                                                $scheduleStatus = 'Behind Schedule';
+                                            } elseif ($svForStatus > 0) {
+                                                $scheduleStatus = 'Ahead of Schedule';
+                                            } else {
+                                                $scheduleStatus = 'On Schedule';
+                                            }
+                                        } else {
+                                            $scheduleStatus = 'On Schedule';
+                                        }
+
+                                        if ($scheduleStatus !== 'Behind Schedule' && $budgetPerformance !== 'Above Budget' && $scheduleStatus !== 'Not Started') {
+                                            $overallPerformance = 'Good';
+                                            $overallPerformanceColor = 'text-emerald-600';
+                                        } elseif ($scheduleStatus === 'Behind Schedule' || $budgetPerformance === 'Above Budget' || $scheduleStatus === 'Not Started') {
+                                            $overallPerformance = 'Attention!';
+                                            $overallPerformanceColor = 'text-rose-600';
+                                        } else {
+                                            $overallPerformance = 'Check Data';
+                                            $overallPerformanceColor = 'text-amber-600';
+                                        }
                                     @endphp
-                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $color }} border shadow-sm group-hover:shadow-md transition-all">
-                                        {{ $project->closing_status }}
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $overallPerformanceColor === 'text-emerald-600' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : ($overallPerformanceColor === 'text-rose-600' ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-amber-50 text-amber-600 border-amber-200') }} border shadow-sm group-hover:shadow-md transition-all">
+                                        {{ $overallPerformance }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $project->status === 'active' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200' }} border">
+                                    <button type="button" onclick="toggleStatus({{ $project->id }}, this)" class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border hover:shadow-md transition-all {{ $project->status === 'in progress' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' : ($project->status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200') }}">
                                         {{ ucfirst($project->status) }}
-                                    </span>
+                                    </button>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
@@ -204,7 +259,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-16 text-center">
+                                <td colspan="10" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center gap-4">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="database" class="w-8 h-8"></i>
@@ -229,9 +284,9 @@
             <div class="p-6 border-t border-slate-50 flex items-center justify-between bg-slate-50/30">
                 <div class="flex items-center gap-2">
                     <div class="flex items-center gap-1.5 px-3 h-10 bg-white border border-slate-100 rounded-xl">
-                        <span class="text-[9px] font-black text-slate-900 tracking-widest">01</span>
+                        <span class="text-[9px] font-black text-slate-900 tracking-widest">{{ sprintf('%02d', $projects->count() > 0 ? 1 : 0) }}</span>
                         <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">of</span>
-                        <span class="text-[9px] font-black text-slate-400 tracking-widest">12</span>
+                        <span class="text-[9px] font-black text-slate-400 tracking-widest">{{ sprintf('%02d', $projects->count()) }}</span>
                     </div>
                 </div>
 
@@ -251,14 +306,14 @@
     <div id="viewModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
-                    <h3 class="text-base font-black text-slate-900">Project Details</h3>
-                    <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors">
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
+                <div class="sticky top-0 bg-[#00515f] border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
+                    <h3 class="text-base font-black text-white">Project Details</h3>
+                    <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
-                <div id="viewModalContent" class="p-6">
+                <div id="viewModalContent" class="p-6 overflow-y-auto flex-1">
                     <div class="flex items-center justify-center py-12">
                         <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
                     </div>
@@ -271,14 +326,14 @@
     <div id="editModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeEditModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
-                    <h3 class="text-base font-black text-slate-900">Edit Project</h3>
-                    <button onclick="closeEditModal()" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors">
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+                <div class="sticky top-0 bg-[#00515f] border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
+                    <h3 class="text-base font-black text-white">Edit Project</h3>
+                    <button onclick="closeEditModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
-                <div id="editModalContent" class="p-6">
+                <div id="editModalContent" class="p-6 overflow-y-auto flex-1">
                     <div class="flex items-center justify-center py-12">
                         <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
                     </div>
@@ -291,14 +346,14 @@
     <div id="createModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeCreateModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
-                    <h3 class="text-base font-black text-slate-900">New Project</h3>
-                    <button onclick="closeCreateModal()" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors">
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+                <div class="sticky top-0 bg-[#00515f] border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
+                    <h3 class="text-base font-black text-white">New Project</h3>
+                    <button onclick="closeCreateModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
-                <div id="createModalContent" class="p-6">
+                <div id="createModalContent" class="p-6 overflow-y-auto flex-1">
                     <div class="flex items-center justify-center py-12">
                         <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
                     </div>
@@ -314,7 +369,7 @@
                 .then(html => {
                     document.getElementById('viewModalContent').innerHTML = html;
                     document.getElementById('viewModal').classList.remove('hidden');
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
                 });
         }
 
@@ -328,7 +383,7 @@
                 .then(html => {
                     document.getElementById('editModalContent').innerHTML = html;
                     document.getElementById('editModal').classList.remove('hidden');
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
                 });
         }
 
@@ -342,12 +397,62 @@
                 .then(html => {
                     document.getElementById('createModalContent').innerHTML = html;
                     document.getElementById('createModal').classList.remove('hidden');
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
                 });
         }
 
         function closeCreateModal() {
             document.getElementById('createModal').classList.add('hidden');
+        }
+
+        function toggleStatus(id, btn) {
+            const originalText = btn.textContent;
+            const originalClass = btn.className;
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+            
+            console.log('Toggling status for project ID:', id);
+            
+            fetch(`/admin/projects/${id}/toggle-status?_t=${Date.now()}`, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                cache: 'no-store',
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success && data.status) {
+                    const newStatus = data.status;
+                    btn.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                    btn.className = 'inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border hover:shadow-md transition-all ' + (
+                        newStatus === 'in progress' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' :
+                        newStatus === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' :
+                        'bg-rose-50 text-rose-600 border-rose-200'
+                    );
+                } else {
+                    throw new Error('Unexpected response format');
+                }
+            })
+            .catch(error => {
+                console.error('Toggle status failed:', error);
+                btn.textContent = originalText;
+                btn.className = originalClass;
+                alert('Failed to update status: ' + error.message);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            });
         }
 
         document.addEventListener('keydown', function(e) {

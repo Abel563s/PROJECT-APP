@@ -70,8 +70,7 @@
                             <option value="Fit-Out" {{ $project->project_type == 'Fit-Out' ? 'selected' : '' }}>Fit-Out
                             </option>
                             <option value="Infrastructure" {{ $project->project_type == 'Infrastructure' ? 'selected' : '' }}>Infrastructure</option>
-                            <option value="Mixed (Bui/Road)" {{ $project->project_type == 'Mixed (Bui/Road)' ? 'selected' : '' }}>Mixed (Bui/Road)</option>
-                            <option value="Mixed (Bui/Fit-Out)" {{ $project->project_type == 'Mixed (Bui/Fit-Out)' ? 'selected' : '' }}>Mixed (Bui/Fit-Out)</option>
+                            <option value="Water & Energy" {{ $project->project_type == 'Water & Energy' ? 'selected' : '' }}>Water & Energy</option>
                         </select>
                     </div>
                     <div class="space-y-2">
@@ -101,7 +100,7 @@
                         <i data-lucide="users" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-black text-slate-900 tracking-tight">2. Stakeholders & Scope</h3>
+                        <h3 class="text-xl font-black text-slate-900 tracking-tight">2. Stakeholders</h3>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Partners and
                             operational boundaries</p>
                     </div>
@@ -155,38 +154,48 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 relative z-10">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Contract
-                            Budget</label>
-                        <input type="number" step="0.01" name="contract_budget" value="{{ $project->contract_budget }}"
-                            class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-[#00ADC5] focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
+                <div class="space-y-4 relative z-10">
+                    <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <p class="text-[9px] font-black uppercase tracking-widest text-white/50 mb-3">Budget Management</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Contract Amount</label>
+                                <input type="number" step="0.01" name="contract_budget" value="{{ $project->contract_budget }}"
+                                    class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-[#00ADC5] focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Variation</label>
+                                <input type="number" step="0.01" name="variation" value="{{ $project->variation }}"
+                                    class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-[#00ADC5] focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Supp.</label>
+                                <input type="number" step="0.01" name="supplementary" value="{{ $project->supplementary }}"
+                                    class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-[#00ADC5] focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Budget at Completion</label>
+                                <input type="number" step="0.01" name="budget_at_completion" value="{{ $project->budget_at_completion }}"
+                                    class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-[#00ADC5] focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
+                            </div>
+                        </div>
                     </div>
-                    <div class="space-y-2">
-                        <label
-                            class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Variation</label>
-                        <input type="number" step="0.01" name="variation" value="{{ $project->variation }}"
-                            class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-[#00ADC5] focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
-                    </div>
-                    <div class="space-y-2">
-                        <label
-                            class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Supplementary</label>
-                        <input type="number" step="0.01" name="supplementary" value="{{ $project->supplementary }}"
-                            class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-[#00ADC5] focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
-                    </div>
-                    <div class="space-y-2 text-[#00ADC5]">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Total
-                            Allowable Cost</label>
-                        <input type="number" step="0.01" name="total_allowable_cost"
-                            value="{{ $project->total_allowable_cost }}"
-                            class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-white focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Cost At
-                            Completion</label>
-                        <input type="number" step="0.01" name="cost_at_completion"
-                            value="{{ $project->cost_at_completion }}"
-                            class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-white focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
+                    <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <p class="text-[9px] font-black uppercase tracking-widest text-white/50 mb-3">Cost Management</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2 text-[#00ADC5]">
+                                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Allowable</label>
+                                <input type="number" step="0.01" name="total_allowable_cost"
+                                    value="{{ $project->total_allowable_cost }}"
+                                    class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-white focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Cost at Completion</label>
+                                <input type="number" step="0.01" name="cost_at_completion"
+                                    value="{{ $project->cost_at_completion }}"
+                                    class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-white focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

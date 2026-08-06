@@ -47,6 +47,19 @@
 
                 <div class="flex items-center gap-3">
                     <div class="relative group/select">
+                        <select name="project_id" onchange="this.form.submit()"
+                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
+                            <option value="">All Projects</option>
+                            @foreach($projects as $project)
+                                <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
+                                    {{ $project->project_code }} - {{ $project->project_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                    </div>
+
+                    <div class="relative group/select">
                         <select name="project_client" onchange="this.form.submit()"
                             class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
                             <option value="">All Suppliers</option>
@@ -79,7 +92,7 @@
                         <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
                     </div>
 
-                    @if(request()->anyFilled(['search', 'project_client', 'project_type', 'consultancy_sector']))
+                    @if(request()->anyFilled(['search', 'project_id', 'project_client', 'project_type', 'consultancy_sector']))
                         <a href="{{ route('admin.material.index') }}"
                             class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
                             title="Clear Filters">
@@ -285,7 +298,7 @@
                 .then(html => {
                     document.getElementById('viewModalContent').innerHTML = html;
                     document.getElementById('viewModal').classList.remove('hidden');
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
                 });
         }
 
@@ -299,7 +312,7 @@
                 .then(html => {
                     document.getElementById('editModalContent').innerHTML = html;
                     document.getElementById('editModal').classList.remove('hidden');
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
                 });
         }
 
@@ -313,7 +326,7 @@
                 .then(html => {
                     document.getElementById('createModalContent').innerHTML = html;
                     document.getElementById('createModal').classList.remove('hidden');
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
                 });
         }
 
