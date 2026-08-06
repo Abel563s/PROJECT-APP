@@ -359,11 +359,19 @@
 
         function loadFilters() {
             fetch('{{ route('admin.dashboard.data') }}')
-                .then(response => {
-                    if (!response.ok) throw new Error('Filter load failed: ' + response.status);
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
+                    if (data.error) {
+                        console.error('Dashboard filters server error:', data.message);
+                        const existing = document.getElementById('dashboardError');
+                        if (existing) existing.remove();
+                        const el = document.createElement('div');
+                        el.id = 'dashboardError';
+                        el.className = 'p-3 bg-rose-50 border border-rose-200 rounded-xl text-[9px] font-black text-rose-700';
+                        el.textContent = data.message || 'Failed to load dashboard filters. Please refresh.';
+                        document.querySelector('.space-y-4')?.prepend(el);
+                        return;
+                    }
                     populateFilter('filterProjectType', data.filters.project_types, 'All Project Types');
                     populateFilter('filterProjectStatus', data.filters.project_statuses, 'All Statuses');
                     populateFilter('filterClient', data.filters.clients, 'All Clients');
@@ -371,11 +379,12 @@
                 })
                 .catch(err => {
                     console.error('Dashboard filters load error:', err);
-                    document.getElementById('dashboardError')?.remove();
+                    const existing = document.getElementById('dashboardError');
+                    if (existing) existing.remove();
                     const el = document.createElement('div');
                     el.id = 'dashboardError';
                     el.className = 'p-3 bg-rose-50 border border-rose-200 rounded-xl text-[9px] font-black text-rose-700';
-                    el.textContent = 'Failed to load dashboard filters. Please refresh or contact support.';
+                    el.textContent = 'Network error loading filters. Please refresh.';
                     document.querySelector('.space-y-4')?.prepend(el);
                 });
         }
@@ -413,11 +422,19 @@
             }
 
             fetch(`{{ route('admin.dashboard.data') }}?${params.toString()}`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Dashboard data load failed: ' + response.status);
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
+                    if (data.error) {
+                        console.error('Dashboard server error:', data.message);
+                        const existing = document.getElementById('dashboardError');
+                        if (existing) existing.remove();
+                        const el = document.createElement('div');
+                        el.id = 'dashboardError';
+                        el.className = 'p-3 bg-rose-50 border border-rose-200 rounded-xl text-[9px] font-black text-rose-700';
+                        el.textContent = data.message || 'Failed to load dashboard data. Please refresh or contact support.';
+                        document.querySelector('.space-y-4')?.prepend(el);
+                        return;
+                    }
                     allProjects = data.projects;
                     filteredProjects = data.projects;
                     window.latestAnalytics = data.analytics || {};
@@ -439,7 +456,7 @@
                     const el = document.createElement('div');
                     el.id = 'dashboardError';
                     el.className = 'p-3 bg-rose-50 border border-rose-200 rounded-xl text-[9px] font-black text-rose-700';
-                    el.textContent = 'Failed to load dashboard data: ' + (err.message || 'Unknown error') + '. Please refresh or contact support.';
+                    el.textContent = 'Network error loading dashboard. Please refresh.';
                     document.querySelector('.space-y-4')?.prepend(el);
                 });
         }

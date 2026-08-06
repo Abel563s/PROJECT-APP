@@ -15,6 +15,32 @@ class DashboardController extends Controller
 
     public function data(Request $request)
     {
+        try {
+            return $this->buildDashboardData($request);
+        } catch (\Throwable $e) {
+            \Log::error('Dashboard data error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+            ]);
+
+            return response()->json([
+                'error' => true,
+                'message' => 'Failed to load dashboard data: ' . $e->getMessage(),
+                'projects' => [],
+                'kpis' => [],
+                'executive_kpis' => [],
+                'filters' => [],
+                'total' => 0,
+                'analytics' => [],
+                'comparative_analytics' => [],
+            ], 200);
+        }
+    }
+
+    private function buildDashboardData(Request $request)
+    {
         $query = Project::query();
 
         if ($request->filled('search')) {
