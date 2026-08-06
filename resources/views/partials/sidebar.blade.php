@@ -1,5 +1,5 @@
 <aside id="sidebar"
-    class="w-64 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] bg-[#00515f] flex flex-col z-40 relative shadow-[0_10px_40px_rgba(0,0,0,0.12)] group/sidebar overflow-visible">
+    class="w-64 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] bg-gradient-to-b from-[#00515f] to-black flex flex-col z-40 relative shadow-[0_10px_40px_rgba(0,0,0,0.12)] group/sidebar overflow-visible">
 
     <div
         class="h-16 flex items-center justify-between px-6 border-b border-white/10 shrink-0 overflow-hidden relative z-10 transition-all duration-500">
@@ -245,16 +245,8 @@
                     {{ substr(Auth::user()->name, 0, 1) }}
                 </div>
                 <div class="sidebar-text overflow-hidden transition-all duration-500">
-                    <p class="text-[13px] font-black text-white truncate tracking-tight">{{ Auth::user()->name }}
+                    <p class="text-[13px] font-black text-white break-words tracking-tight">{{ Auth::user()->name }}
                     </p>
-                    <div class="flex items-center gap-1.5 mt-1">
-                        <div
-                            class="w-1.5 h-1.5 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse">
-                        </div>
-                        <p class="text-[9px] font-black uppercase tracking-widest text-white/60">
-                            {{ Auth::user()->role }} Mode
-                        </p>
-                    </div>
                 </div>
             </div>
 

@@ -75,8 +75,8 @@
                         <table class="w-full text-left">
                             <thead class="bg-slate-50 border-b border-slate-200">
                                 <tr>
-                                    <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-widest">
-                                        Date</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-widest text-center">#</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-widest">Date</th>
                                     <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-widest">
                                         Original</th>
                                     <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-widest">Cut
@@ -92,6 +92,9 @@
                             <tbody class="divide-y divide-slate-100">
                                 @forelse($requirement->cuttingLogs as $log)
                                     <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <td class="px-6 py-3 text-center">
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
+                                        </td>
                                         <td class="px-6 py-3 text-sm font-medium text-slate-700">{{ $log->date }}</td>
                                         <td class="px-6 py-3 text-sm text-slate-600">{{ $log->original_length }}mm</td>
                                         <td class="px-6 py-3 text-sm font-bold text-rose-600">-{{ $log->cut_length }}mm</td>
@@ -110,7 +113,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="px-6 py-8 text-center text-slate-400 text-sm">No cutting logs
+                                        <td colspan="7" class="px-6 py-8 text-center text-slate-400 text-sm">No cutting logs
                                             recorded yet.</td>
                                     </tr>
                                 @endforelse

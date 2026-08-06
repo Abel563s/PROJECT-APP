@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-4 px-4 space-y-4 max-w-[1700px] mx-auto font-inter">
+    <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
 
         <!-- Compact Header -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
@@ -99,8 +99,9 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead>
-                                <tr class="bg-[#00515f] text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">
-                                    <th class="px-4 py-3">Cert Details</th>
+                                <tr class="bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">
+                                    <th class="px-4 py-3 text-center">#</th>
+                            <th class="px-4 py-3">Cert Details</th>
                                     <th class="px-4 py-3 text-center">Submitted</th>
                                     <th class="px-4 py-3 text-center">Certified</th>
                                     <th class="px-4 py-3 text-center">Paid</th>
@@ -111,6 +112,9 @@
                             <tbody class="divide-y divide-slate-50">
                                 @forelse($project->payments->sortByDesc('certificate_date') as $payment)
                                     <tr class="hover:bg-slate-50/80 transition-all group">
+                                        <td class="px-4 py-3 text-center">
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
+                                        </td>
                                         <td class="px-4 py-3">
                                             <div class="flex flex-col">
                                                 <span class="font-black text-slate-900 text-xs">#{{ $payment->certificate_number }}</span>
@@ -173,7 +177,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="px-4 py-8 text-center">
+                                        <td colspan="7" class="px-4 py-8 text-center">
                                             <div class="flex flex-col items-center gap-2">
                                                 <div class="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-slate-200">
                                                     <i data-lucide="file-minus" class="w-5 h-5"></i>

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-4 px-4 space-y-4 max-w-[1700px] mx-auto font-inter">
+    <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-900/20">

@@ -1,10 +1,12 @@
 <div class="relative" x-data="{ open: false }">
     <button @click="open = !open"
-        class="relative w-10 h-10 rounded-[10px] bg-[#00ADC5]/10 border border-[#00ADC5]/20 text-[#00ADC5] flex items-center justify-center hover:bg-[#00ADC5]/20 hover:border-[#00ADC5]/30 hover:shadow-sm transition-all duration-250 active:scale-95 group">
-        <i data-lucide="bell" class="w-5 h-5 transition-transform group-hover:rotate-12"></i>
+        class="relative w-10 h-10 rounded-xl bg-gradient-to-br from-[#00515f]/10 to-[#00ADC5]/10 border border-[#00515f]/15 text-[#00515f] flex items-center justify-center hover:from-[#00515f]/15 hover:to-[#00ADC5]/15 hover:border-[#00515f]/25 hover:shadow-lg hover:shadow-[#00ADC5]/10 transition-all duration-300 active:scale-95 group">
+        <i data-lucide="bell" class="w-[18px] h-[18px] transition-transform group-hover:rotate-12"></i>
         @if(Auth::user()->unreadNotifications->count() > 0)
             <span
-                class="absolute top-2.5 right-2.5 w-2 h-2 bg-[#00adc5] border-2 border-white rounded-full shadow-[0_0_8px_rgba(0,173,197,0.4)]"></span>
+                class="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-gradient-to-br from-[#00515f] to-[#00ADC5] text-white text-[8px] font-black rounded-full flex items-center justify-center shadow-lg shadow-[#00ADC5]/30 border-2 border-white px-1">
+                {{ Auth::user()->unreadNotifications->count() }}
+            </span>
         @endif
     </button>
 

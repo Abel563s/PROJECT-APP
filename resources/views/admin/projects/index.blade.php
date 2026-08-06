@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-4 px-4 space-y-4 max-w-[1700px] mx-auto font-inter">
+    <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
 
         <!-- Compact Header -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
@@ -118,7 +118,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
-                        <tr class="bg-[#00515f]">
+                        <tr class="bg-gradient-to-b from-[#00515f] to-black">
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">#</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project Type</th>
@@ -138,10 +138,7 @@
                                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="min-w-0">
-                                        <p class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors break-words">{{ $project->project_name }}</p>
-                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{{ $project->project_code }}</p>
-                                    </div>
+                                    <span class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">{{ $project->project_code }}</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     @php
@@ -307,7 +304,7 @@
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
             <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
-                <div class="sticky top-0 bg-[#00515f] border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
+                <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
                     <h3 class="text-base font-black text-white">Project Details</h3>
                     <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
@@ -327,7 +324,7 @@
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeEditModal()"></div>
             <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
-                <div class="sticky top-0 bg-[#00515f] border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
+                <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
                     <h3 class="text-base font-black text-white">Edit Project</h3>
                     <button onclick="closeEditModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
@@ -347,7 +344,7 @@
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeCreateModal()"></div>
             <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
-                <div class="sticky top-0 bg-[#00515f] border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
+                <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
                     <h3 class="text-base font-black text-white">New Project</h3>
                     <button onclick="closeCreateModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>

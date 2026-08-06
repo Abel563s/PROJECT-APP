@@ -80,7 +80,8 @@
             <div class="overflow-x-auto overflow-y-visible">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-[#00515f] border-b border-[#00515f]/30">
+                        <tr class="bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f]/30">
+                            <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em] text-center">#</th>
                             <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">
                                 Requirement Reference</th>
                             <th class="px-8 py-5 text-[10px] font-black text-white uppercase tracking-[0.2em]">
@@ -99,6 +100,9 @@
                     <tbody class="divide-y divide-slate-50">
                         @forelse($requirements as $req)
                             <tr class="hover:bg-cyan-50/30 transition-all group">
+                                <td class="px-8 py-5 text-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
+                                </td>
                                 <td class="px-8 py-5">
                                     <div class="flex items-center gap-3">
                                         <div
@@ -175,7 +179,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-8 py-20 text-center">
+                                <td colspan="7" class="px-8 py-20 text-center">
                                     <div class="flex flex-col items-center gap-4">
                                         <div
                                             class="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center text-slate-200">

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-10 px-6 space-y-8 max-w-[1700px] mx-auto font-inter animate-fade-in">
+    <div class="py-10 px-6 space-y-8 w-full max-w-none font-inter animate-fade-in">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-4 border-b border-slate-100">
             <div class="space-y-3">
                 <div class="flex items-center gap-4">
@@ -31,6 +31,7 @@
                 <table class="w-full text-left">
                     <thead>
                         <tr class="bg-slate-50/80 backdrop-blur-md">
+                            <th class="px-12 py-10 text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] border-b border-slate-100 text-center">#</th>
                             <th class="px-12 py-10 text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] border-b border-slate-100">Site Name</th>
                             <th class="px-8 py-10 text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] border-b border-slate-100">Code</th>
                             <th class="px-8 py-10 text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] border-b border-slate-100">Address</th>
@@ -40,6 +41,9 @@
                     <tbody class="divide-y divide-slate-50/50">
                         @forelse($sites as $site)
                             <tr class="group hover:bg-slate-50/80 transition-all duration-500 odd:bg-white even:bg-slate-50/20">
+                                <td class="px-12 py-9 text-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
+                                </td>
                                 <td class="px-12 py-9">
                                     <p class="text-base font-black text-slate-900 group-hover:text-[#00ADC5] transition-colors">{{ $site->name }}</p>
                                 </td>
@@ -63,7 +67,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-12 py-32 text-center">
+                                <td colspan="5" class="px-12 py-32 text-center">
                                     <div class="flex flex-col items-center gap-6">
                                         <div class="relative">
                                             <div class="w-24 h-24 rounded-[3rem] bg-slate-50 flex items-center justify-center text-slate-200 animate-pulse">

@@ -284,7 +284,8 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
-                        <tr class="bg-[#00515f]">
+                        <tr class="bg-gradient-to-b from-[#00515f] to-black">
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">#</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Schedule</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Budget</th>
@@ -294,7 +295,7 @@
                     </thead>
                     <tbody id="performanceTableBody" class="divide-y divide-slate-50">
                         <tr>
-                            <td colspan="5" class="px-6 py-16 text-center">
+                        <td colspan="6" class="px-6 py-16 text-center">
                                 <div class="flex flex-col items-center gap-4">
                                     <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                         <i data-lucide="loader" class="w-8 h-8 animate-spin"></i>
@@ -316,7 +317,7 @@
     <div id="drillDownDrawer" class="hidden fixed inset-0 z-50 overflow-hidden">
         <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeDrillDown()"></div>
         <div class="absolute right-0 top-0 h-full w-full max-w-lg bg-white shadow-2xl transform transition-transform duration-300 translate-x-full" id="drawerPanel">
-            <div class="sticky top-0 bg-[#00515f] border-b border-[#00515f] px-6 py-4 flex items-center justify-between z-10">
+            <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-4 flex items-center justify-between z-10">
                 <div>
                     <h3 class="text-base font-black text-white" id="drawerProjectName">Project Details</h3>
                     <p class="text-[9px] font-black text-white/60 uppercase tracking-widest mt-0.5" id="drawerProjectCode"></p>
@@ -358,12 +359,24 @@
 
         function loadFilters() {
             fetch('{{ route('admin.dashboard.data') }}')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Filter load failed: ' + response.status);
+                    return response.json();
+                })
                 .then(data => {
                     populateFilter('filterProjectType', data.filters.project_types, 'All Project Types');
                     populateFilter('filterProjectStatus', data.filters.project_statuses, 'All Statuses');
                     populateFilter('filterClient', data.filters.clients, 'All Clients');
                     populateFilter('filterSector', data.filters.sectors, 'All Sectors');
+                })
+                .catch(err => {
+                    console.error('Dashboard filters load error:', err);
+                    document.getElementById('dashboardError')?.remove();
+                    const el = document.createElement('div');
+                    el.id = 'dashboardError';
+                    el.className = 'p-3 bg-rose-50 border border-rose-200 rounded-xl text-[9px] font-black text-rose-700';
+                    el.textContent = 'Failed to load dashboard filters. Please refresh or contact support.';
+                    document.querySelector('.space-y-4')?.prepend(el);
                 });
         }
 
@@ -400,7 +413,10 @@
             }
 
             fetch(`{{ route('admin.dashboard.data') }}?${params.toString()}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Dashboard data load failed: ' + response.status);
+                    return response.json();
+                })
                 .then(data => {
                     allProjects = data.projects;
                     filteredProjects = data.projects;
@@ -416,7 +432,16 @@
                     renderTable();
                     updateSubtitle();
                 })
-                .catch(() => {});
+                .catch(err => {
+                    console.error('Dashboard data load error:', err);
+                    const existing = document.getElementById('dashboardError');
+                    if (existing) existing.remove();
+                    const el = document.createElement('div');
+                    el.id = 'dashboardError';
+                    el.className = 'p-3 bg-rose-50 border border-rose-200 rounded-xl text-[9px] font-black text-rose-700';
+                    el.textContent = 'Failed to load dashboard data: ' + (err.message || 'Unknown error') + '. Please refresh or contact support.';
+                    document.querySelector('.space-y-4')?.prepend(el);
+                });
         }
 
         function applyFilters() {
@@ -910,7 +935,7 @@
             if (filteredProjects.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="px-6 py-16 text-center">
+                        <td colspan="6" class="px-6 py-16 text-center">
                             <div class="flex flex-col items-center gap-4">
                                 <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                     <i data-lucide="search-x" class="w-8 h-8"></i>
@@ -927,7 +952,7 @@
                 return;
             }
 
-            tbody.innerHTML = filteredProjects.map(project => {
+            tbody.innerHTML = filteredProjects.map((project, index) => {
                 const scheduleBadge = getScheduleBadge(project.schedule_status);
                 const budgetBadge = getBudgetBadge(project.budget_performance);
                 const costBadge = getCostBadge(project.cost_performance);
@@ -935,6 +960,9 @@
 
                 return `
                     <tr class="group hover:bg-slate-50/80 transition-all duration-300 cursor-pointer" onclick="openDrillDown(allProjects.find(p => p.id === ${project.id}))">
+                        <td class="px-6 py-4 text-center">
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">${index + 1}</span>
+                        </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#00515f] to-[#00ADC5] flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#00ADC5]/30">
@@ -1354,12 +1382,12 @@
                             }
                         },
                         mouseMove: (event, chartContext, { dataPointIndex }) => {
-                            chartContext.el.style.cursor = dataPointIndex !== undefined ? 'pointer' : 'default';
+                            chartContext.el.style.cursor = dataPointIndex !== undefined && dataPointIndex >= 0 ? 'pointer' : 'default';
 
                             if (dataPointIndex === lastHoveredIndex) return;
                             lastHoveredIndex = dataPointIndex;
 
-                            if (dataPointIndex !== undefined && dataPointIndex < config.categories.length) {
+                            if (dataPointIndex >= 0 && dataPointIndex < config.categories.length) {
                                 const cat = config.categories[dataPointIndex];
                                 const count = data[cat.key] || 0;
                                 const percent = total > 0 ? Math.round((count / total) * 100) : 0;

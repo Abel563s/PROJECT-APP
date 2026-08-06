@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-4 px-4 space-y-4 max-w-[1700px] mx-auto font-inter">
+    <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
 
         <!-- Compact Header -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
@@ -48,7 +48,7 @@
                             <option value="">All Projects</option>
                             @foreach($projects as $project)
                                 <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
-                                    {{ $project->project_code }} - {{ $project->project_name }}
+                                    {{ $project->project_code }}
                                 </option>
                             @endforeach
                         </select>
@@ -71,7 +71,8 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
-                        <tr class="bg-[#00515f]">
+                        <tr class="bg-gradient-to-b from-[#00515f] to-black">
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">#</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Planned</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Actual</th>
@@ -87,17 +88,15 @@
                     <tbody class="divide-y divide-slate-50/50">
                         @forelse($updates as $update)
                             <tr class="group hover:bg-slate-50/80 transition-all duration-300 odd:bg-white even:bg-slate-50/20">
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
+                                </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-11 h-11 rounded-xl bg-white shadow border border-slate-100 flex items-center justify-center transition-all duration-300 group-hover:rotate-[10deg] group-hover:scale-110 group-hover:border-[#00ADC5]">
-                                            <span class="font-black text-[9px] text-slate-300 group-hover:text-[#00ADC5] tracking-tighter">{{ substr($update->project->project_name, 0, 2) }}</span>
-                                        </div>
-                                        <div class="space-y-1">
-                                            <p class="text-sm font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">
-                                                {{ $update->project->project_code }}
-                                            </p>
-                                            <span class="text-[8px] font-black text-[#00ADC5] uppercase tracking-widest">{{ $update->project->custom_id }}</span>
-                                        </div>
+                                    <div class="space-y-1">
+                                        <p class="text-sm font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">
+                                            {{ $update->project->project_code }}
+                                        </p>
+                                        <span class="text-[8px] font-black text-[#00ADC5] uppercase tracking-widest">{{ $update->project->custom_id }}</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
@@ -191,7 +190,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="px-6 py-16 text-center">
+                                <td colspan="11" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="trending-up" class="w-8 h-8"></i>
@@ -212,7 +211,7 @@
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeCreateModal()"></div>
             <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-[#00515f] border-b border-[#00515f]/30 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
+                <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f]/30 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
                     <h3 class="text-base font-black text-white">New Progress Update</h3>
                     <button onclick="closeCreateModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-4 px-4 space-y-4 max-w-[1700px] mx-auto font-inter">
+    <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
 
         <!-- Compact Header -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
@@ -52,7 +52,7 @@
                             <option value="">All Projects</option>
                             @foreach($projects as $project)
                                 <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
-                                    {{ $project->project_code }} - {{ $project->project_name }}
+                                    {{ $project->project_code }}
                                 </option>
                             @endforeach
                         </select>
@@ -106,7 +106,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
-                        <tr class="bg-[#00515f]">
+                        <tr class="bg-gradient-to-b from-[#00515f] to-black">
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">#</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Material Identity</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project Site</th>
@@ -127,28 +127,12 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="relative">
-                                            <div class="w-11 h-11 rounded-xl bg-white shadow border border-slate-100 flex items-center justify-center transition-all duration-300 group-hover:rotate-[10deg] group-hover:scale-110 group-hover:border-[#00ADC5]">
-                                                <span class="font-black text-[9px] text-slate-300 group-hover:text-[#00ADC5] tracking-tighter">{{ strtoupper(substr($m['material_name'] ?? 'MT', 0, 2)) }}</span>
-                                            </div>
-                                            <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-md {{ $m['status'] === 'Completed' ? 'bg-emerald-500' : ($m['status'] === 'Delayed' ? 'bg-rose-500' : 'bg-sky-500') }} border-2 border-white flex items-center justify-center shadow-sm">
-                                                @if($m['status'] === 'Completed')
-                                                    <i data-lucide="check" class="w-2.5 h-2.5 text-white"></i>
-                                                @elseif($m['status'] === 'Delayed')
-                                                    <i data-lucide="alert-triangle" class="w-2.5 h-2.5 text-white"></i>
-                                                @else
-                                                    <i data-lucide="clock" class="w-2.5 h-2.5 text-white"></i>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="space-y-1">
-                                            <p class="text-sm font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">
-                                                {{ $m['material_name'] }}
-                                            </p>
-                                            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
-                                                {{ $m['supplier_name'] }}</p>
-                                        </div>
+                                    <div class="space-y-1">
+                                        <p class="text-sm font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">
+                                            {{ $m['material_name'] }}
+                                        </p>
+                                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                                            {{ $m['supplier_name'] }}</p>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
@@ -245,7 +229,7 @@
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
                                         <button type="button"
-                                            class="view-progress w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-[#00515f] hover:text-white hover:border-[#00515f] transition-all duration-200"
+                                            class="view-progress w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-gradient-to-b hover:from-[#00515f] hover:to-black hover:text-white hover:border-[#00515f] transition-all duration-200"
                                             title="View Progress" data-id="{{ $m['id'] }}">
                                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                         </button>

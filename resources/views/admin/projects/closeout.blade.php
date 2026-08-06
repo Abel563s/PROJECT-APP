@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-4 px-4 space-y-4 max-w-[1700px] mx-auto font-inter">
+    <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
 
         <!-- Compact Header -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
@@ -263,7 +263,8 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
-                            <tr class="bg-[#00515f] text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">
+                            <tr class="bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">
+                                <th class="pb-2 text-center">#</th>
                                 <th class="pb-2">Document</th>
                                 <th class="pb-2">Status</th>
                                 <th class="pb-2 text-right">Action</th>
@@ -277,6 +278,9 @@
                                 'Handover Report' => 'doc_handover_report_status'
                             ] as $label => $field)
                             <tr class="group">
+                                <td class="py-3 text-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
+                                </td>
                                 <td class="py-3 font-bold text-xs text-slate-700">{{ $label }}</td>
                                 <td class="py-3">
                                     @php

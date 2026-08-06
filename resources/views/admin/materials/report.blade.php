@@ -2,7 +2,7 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @endpush
-    <div class="py-4 px-4 space-y-4 max-w-[1700px] mx-auto font-inter">
+    <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
         @php
             $orderedKeys = ['design','spec','ro','supplier','submittal','approval','payment','lc','production','shipment','logistics','clearance','delivery'];
             $orderedLabels = ['Design','Specification','RO','Supplier','Submittal','Approval','Finance','LC','Production','Shipment','Logistics','Clearance','Delivery to Site'];
@@ -270,6 +270,7 @@
                 <table class="w-full text-left">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-100">
+                            <th class="px-5 py-3 text-[9px] font-black text-slate-500 uppercase tracking-widest text-center">#</th>
                             <th class="px-5 py-3 text-[9px] font-black text-slate-500 uppercase tracking-widest">Stage</th>
                             <th class="px-5 py-3 text-[9px] font-black text-slate-500 uppercase tracking-widest">Progress</th>
                             <th class="px-5 py-3 text-[9px] font-black text-slate-500 uppercase tracking-widest text-center">Completion</th>
@@ -285,6 +286,9 @@
                     @foreach($dedupedStageStats as $key => $stage)
                             @if($stage['planned'] > 0 || $key === 'delivery')
                                 <tr class="group hover:bg-slate-50/80 transition-all duration-200">
+                                    <td class="px-5 py-4 text-center">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
+                                    </td>
                                     <td class="px-5 py-4">
                                         <span class="text-sm font-black text-slate-900 uppercase tracking-tight">{{ $stage['label'] }}</span>
                                     </td>
@@ -332,7 +336,7 @@
                                     </td>
                                 </tr>
                                 <tr id="expand-{{ $key }}" class="hidden">
-                                    <td colspan="9" class="px-5 py-0">
+                                    <td colspan="10" class="px-5 py-0">
                                         <div class="bg-slate-50/50 border border-slate-100 rounded-xl p-4 mb-4">
                                             <div class="flex items-center justify-between mb-3">
                                                 <h4 class="text-xs font-black text-slate-900 uppercase tracking-widest">{{ $stage['label'] }} Materials</h4>
