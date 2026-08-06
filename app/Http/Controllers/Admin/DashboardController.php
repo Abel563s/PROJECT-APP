@@ -141,10 +141,10 @@ class DashboardController extends Controller
                 }
             }
 
-            $revisedBudget = $project->revised_budget_amount > 0 ? $project->revised_budget_amount : $project->contract_budget;
-            $contractBudget = $project->contract_budget ?? 0;
+            $revisedBudget = (float) ($project->revised_budget_amount > 0 ? $project->revised_budget_amount : $project->contract_budget);
+            $contractBudget = (float) ($project->contract_budget ?? 0);
             $signedBudgetVariance = $revisedBudget - $contractBudget;
-            $budgetIndexPercent = ($revisedBudget && $contractBudget) ? round((($revisedBudget - $contractBudget) / $contractBudget) * 100, 1) : 0;
+            $budgetIndexPercent = $contractBudget > 0 ? round(($signedBudgetVariance / $contractBudget) * 100, 1) : 0;
 
             if ($signedBudgetVariance > 0) {
                 $budgetPerformance = 'Above Budget';
@@ -154,10 +154,10 @@ class DashboardController extends Controller
                 $budgetPerformance = 'On Budget';
             }
 
-            $allowableCost = $project->total_allowable_cost ?? 0;
-            $costAtCompletion = $project->cost_at_completion ?? 0;
+            $allowableCost = (float) ($project->total_allowable_cost ?? 0);
+            $costAtCompletion = (float) ($project->cost_at_completion ?? 0);
             $costVariance = $allowableCost - $costAtCompletion;
-            $costEacIndexPercent = $allowableCost > 0 ? round((($allowableCost - $costAtCompletion) / $allowableCost) * 100, 1) : 0;
+            $costEacIndexPercent = $allowableCost > 0 ? round(($costVariance / $allowableCost) * 100, 1) : 0;
 
             if ($costVariance < 0) {
                 $costPerformance = 'Above Allowable Cost';
