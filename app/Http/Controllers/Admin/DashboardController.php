@@ -465,7 +465,7 @@ class DashboardController extends Controller
                     'total' => $total,
                     'highest' => $values ? max($values) : 0,
                     'lowest' => $values ? min($values) : 0,
-                    'average' => $total > 0 ? round(array_sum($values) / count($values)) : 0,
+                    'average' => $total > 0 && count($values) > 0 ? round(array_sum($values) / count($values)) : 0,
                     'empty' => $total === 0,
                 ];
             }
