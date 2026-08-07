@@ -37,8 +37,8 @@
 
         <!-- Search & Filter -->
         <form action="{{ route('admin.projects.index') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-nowrap items-center gap-3 overflow-x-auto pb-1">
-                <div class="flex-1 min-w-[220px] max-w-[320px] relative group shrink-0">
+            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
+                <div class="min-w-[220px] max-w-[320px] relative group shrink-0">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Search by name, code or protocol..."
@@ -75,7 +75,7 @@
                     </div>
 
                     <div class="flex flex-col gap-1">
-                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Construction Sector</span>
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Sector</span>
                         <div class="relative group/select">
                             <select name="consultancy_sector" onchange="this.form.submit()"
                                 class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
@@ -126,7 +126,9 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Baseline Start</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Baseline Finish</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project Duration</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Overall Performance</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Budget Performance</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Cost Performance</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Schedule Performance</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center cursor-pointer" title="Click to toggle status">Project Status</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Actions</th>
                         </tr>
@@ -181,12 +183,16 @@
                                         {{ $duration }}
                                     </span>
                                 </td>
+                                </td>
                                 <td class="px-6 py-4 text-center">
                                     @php
                                         $revisedBudget = $project->revised_budget_amount ?? 0;
                                         $contractBudget = $project->contract_budget ?? 0;
                                         $signedBudgetVariance = $revisedBudget - $contractBudget;
                                         $budgetPerformance = $signedBudgetVariance > 0 ? 'Above Budget' : ($signedBudgetVariance < 0 ? 'Under Budget' : 'On Budget');
+
+                                        $costVariance = ($project->total_allowable_cost ?? 0) - ($project->cost_at_completion ?? 0);
+                                        $costPerformance = $costVariance < 0 ? 'Above Allowable Cost' : ($costVariance > 0 ? 'Below Allowable Cost' : 'With Allowable Cost');
 
                                         if (!$project->actual_start_date) {
                                             $scheduleStatus = 'Not Started';
@@ -206,20 +212,19 @@
                                         } else {
                                             $scheduleStatus = 'On Schedule';
                                         }
-
-                                        if ($scheduleStatus !== 'Behind Schedule' && $budgetPerformance !== 'Above Budget' && $scheduleStatus !== 'Not Started') {
-                                            $overallPerformance = 'Good';
-                                            $overallPerformanceColor = 'text-emerald-600';
-                                        } elseif ($scheduleStatus === 'Behind Schedule' || $budgetPerformance === 'Above Budget' || $scheduleStatus === 'Not Started') {
-                                            $overallPerformance = 'Attention!';
-                                            $overallPerformanceColor = 'text-rose-600';
-                                        } else {
-                                            $overallPerformance = 'Check Data';
-                                            $overallPerformanceColor = 'text-amber-600';
-                                        }
                                     @endphp
-                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $overallPerformanceColor === 'text-emerald-600' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : ($overallPerformanceColor === 'text-rose-600' ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-amber-50 text-amber-600 border-amber-200') }} border shadow-sm group-hover:shadow-md transition-all">
-                                        {{ $overallPerformance }}
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $signedBudgetVariance > 0 ? 'bg-rose-50 text-rose-600 border-rose-200' : ($signedBudgetVariance < 0 ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-900 border-slate-200') }} border shadow-sm group-hover:shadow-md transition-all">
+                                        {{ $budgetPerformance }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $costVariance < 0 ? 'bg-rose-50 text-rose-600 border-rose-200' : ($costVariance > 0 ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-900 border-slate-200') }} border shadow-sm group-hover:shadow-md transition-all">
+                                        {{ $costPerformance }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $scheduleStatus === 'Behind Schedule' ? 'bg-rose-50 text-rose-600 border-rose-200' : ($scheduleStatus === 'Ahead of Schedule' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : ($scheduleStatus === 'Not Started' ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-[#00ADC5]/10 text-[#00ADC5] border-[#00ADC5]/20')) }} border shadow-sm group-hover:shadow-md transition-all">
+                                        {{ $scheduleStatus }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
@@ -229,7 +234,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <button onclick="openViewModal({{ $project->id }})"
+                                        <button onclick="openViewModal({{ $project->id }}, '{{ $project->status }}')"
                                             class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-[#00ADC5] hover:text-white hover:border-[#00ADC5] transition-all duration-200"
                                             title="View">
                                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
@@ -256,7 +261,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="px-6 py-16 text-center">
+                                <td colspan="12" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center gap-4">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="database" class="w-8 h-8"></i>
@@ -300,7 +305,7 @@
     <div id="viewModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
+            <div id="viewModalCard" class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col border border-slate-200">
                 <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
                     <h3 class="text-base font-black text-white">Project Details</h3>
                     <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
@@ -357,7 +362,21 @@
     </div>
 
     <script>
-        function openViewModal(id) {
+        function openViewModal(id, status) {
+            const modalCard = document.getElementById('viewModalCard');
+            if (modalCard) {
+                modalCard.classList.remove('bg-white', 'bg-gradient-to-br', 'from-yellow-50', 'to-amber-50', 'from-emerald-50', 'to-green-50', 'from-rose-50', 'to-red-50', 'border-yellow-200', 'border-emerald-200', 'border-rose-200', 'border-slate-200');
+                if (status === 'in progress') {
+                    modalCard.classList.add('bg-gradient-to-br', 'from-yellow-50', 'to-amber-50', 'border-yellow-200');
+                } else if (status === 'completed') {
+                    modalCard.classList.add('bg-gradient-to-br', 'from-emerald-50', 'to-green-50', 'border-emerald-200');
+                } else if (status === 'suspended') {
+                    modalCard.classList.add('bg-gradient-to-br', 'from-rose-50', 'to-red-50', 'border-rose-200');
+                } else {
+                    modalCard.classList.add('bg-white', 'border-slate-200');
+                }
+            }
+
             fetch(`/admin/projects/${id}?partial=1`)
                 .then(response => response.text())
                 .then(html => {
@@ -368,6 +387,11 @@
         }
 
         function closeModal() {
+            const modalCard = document.getElementById('viewModalCard');
+            if (modalCard) {
+                modalCard.classList.remove('bg-gradient-to-br', 'from-yellow-50', 'to-amber-50', 'from-emerald-50', 'to-green-50', 'from-rose-50', 'to-red-50', 'border-yellow-200', 'border-emerald-200', 'border-rose-200');
+                modalCard.classList.add('bg-white', 'border-slate-200');
+            }
             document.getElementById('viewModal').classList.add('hidden');
         }
 

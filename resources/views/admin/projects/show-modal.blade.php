@@ -10,16 +10,6 @@
                 <p class="text-[9px] font-black text-[#00ADC5] uppercase tracking-widest">{{ $project->custom_id }}</p>
             </div>
         </div>
-        @if(auth()->user() && auth()->user()->isAdmin())
-            <form action="{{ route('admin.projects.destroy', $project->id) }}" method="POST"
-                onsubmit="return confirm('Are you sure you want to delete this project?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="px-3 py-1.5 bg-rose-50 text-rose-600 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all">
-                    Delete
-                </button>
-            </form>
-        @endif
     </div>
 
     <!-- Section 1: Project Identity -->
@@ -47,11 +37,11 @@
                 <p class="text-xs font-black text-slate-900">{{ $project->project_name }}</p>
             </div>
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Construction Sector</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Project Sector</p>
                 <p class="text-xs font-black text-slate-900">{{ $project->project_type }}</p>
             </div>
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Method</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Delivery Method</p>
                 <p class="text-xs font-black text-slate-900">{{ $project->delivery_method }}</p>
             </div>
         </div>
@@ -107,7 +97,7 @@
             $budgetAtCompletion = $project->budget_at_completion ?? 0;
             $signedBudgetVariance = $revisedBudget - $budgetAtCompletion;
             $budgetVariance = $revisedBudget - $budgetAtCompletion;
-            $budgetPerformance = $signedBudgetVariance > 0 ? 'Above Budget' : ($signedBudgetVariance < 0 ? 'Under Budget' : 'On Budget');
+            $budgetPerformance = $budgetVariance > 0 ? 'Above Budget' : ($budgetVariance < 0 ? 'Under Budget' : 'On Budget');
             $budgetIndex = $revisedBudget > 0 ? ($budgetVariance / $revisedBudget) : 0;
             $allowable = $project->total_allowable_cost ?? 0;
             $cac = $project->cost_at_completion ?? 0;
@@ -144,10 +134,10 @@
 
         <div class="space-y-3">
             <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                <p class="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">Budget Management</p>
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">Contract Budget Management</p>
                 <div class="grid grid-cols-2 xl:grid-cols-5 gap-3">
                     <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Contract Amount</p>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Contract Budget</p>
                         <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->contract_budget) }}</p>
                     </div>
                     <div>
@@ -159,7 +149,7 @@
                         <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->supplementary) }}</p>
                     </div>
                     <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revised BA</p>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revised Budget</p>
                         <p class="text-xs font-black text-slate-900">ETB {{ number_format($revisedBudgetAmount) }}</p>
                     </div>
                     <div>
@@ -186,7 +176,7 @@
                 <p class="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">Cost Management</p>
                 <div class="grid grid-cols-2 xl:grid-cols-3 gap-3">
                     <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Allowable</p>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Planned Cost</p>
                         <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->total_allowable_cost) }}</p>
                     </div>
                     <div>
@@ -208,14 +198,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="flex justify-center mt-4">
-            <div class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2">
-                <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Overall Performance</span>
-                <span class="text-sm font-black {{ $overallPerformanceColor }}">{{ $overallPerformance }}</span>
-            </div>
-        </div>
-    </div>
 
     <!-- Section 4: Timeline -->
     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
@@ -265,32 +247,9 @@
                     @endif
                 </p>
             </div>
+
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule Variance</p>
-                <p class="text-xs font-black text-slate-900">
-                    @php
-                        $sv = null;
-                        if ($project->baseline_finish_date && $project->actual_start_date) {
-                            if ($project->actual_finish_date) {
-                                $sv = $project->baseline_finish_date->diffInDays($project->actual_start_date);
-                            } else {
-                                $sv = $project->baseline_finish_date->diffInDays(\Carbon\Carbon::today());
-                            }
-                        }
-                    @endphp
-                    @if($sv !== null)
-                        @if($project->actual_finish_date)
-                            <span class="text-slate-900">{{ $sv }} days</span>
-                        @else
-                            <span class="text-emerald-600">{{ $sv }} days remaining</span>
-                        @endif
-                    @else
-                        ---
-                    @endif
-                </p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Time / Schedule Variance</p>
                 <p class="text-xs font-black text-slate-900">
                     @php
                         $sv2 = null;
@@ -316,6 +275,7 @@
                     @endif
                 </p>
             </div>
+
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule Performance Index %</p>
                 <p class="text-xs font-black text-slate-900">

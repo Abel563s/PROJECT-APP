@@ -118,6 +118,11 @@
                         <input type="date" name="completion_date"
                             class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-black text-slate-700 focus:ring-4 focus:ring-emerald-100/50 focus:bg-white transition-all">
                     </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-rose-500 uppercase tracking-widest ml-1">Data Date *</label>
+                        <input type="date" name="data_date" required
+                            class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-black text-slate-700 focus:ring-4 focus:ring-rose-100/50 focus:bg-white transition-all">
+                    </div>
                 </div>
             </div>
 

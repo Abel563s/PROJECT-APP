@@ -102,6 +102,10 @@
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Latest Completion Date</p>
                 <p class="text-xs font-black text-slate-900">{{ $update->completion_date ? \Carbon\Carbon::parse($update->completion_date)->format('M d, Y') : '---' }}</p>
             </div>
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Data Date</p>
+                <p class="text-xs font-black text-slate-900">{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('M d, Y') : '---' }}</p>
+            </div>
         </div>
     </div>
 

@@ -78,6 +78,10 @@ class DashboardController extends Controller
             $query->where('delivery_method', $request->delivery_method);
         }
 
+        if ($request->filled('consultant_type') && $request->consultant_type !== 'all') {
+            $query->where('consultant', $request->consultant_type);
+        }
+
         if ($request->filled('variation_type') && $request->variation_type !== 'all') {
             if ($request->variation_type === 'addition') {
                 $query->where('variation', '>', 0);
@@ -268,6 +272,9 @@ class DashboardController extends Controller
             'project_statuses' => ['Not Completed', 'PPA Received', 'PA Received', 'FA Received', 'Snag / Di-Snag', 'Waiting for PA'],
             'clients' => Project::whereNotNull('project_client')->groupBy('project_client')->pluck('project_client')->sort()->values()->all(),
             'sectors' => Project::whereNotNull('consultancy_sector')->groupBy('consultancy_sector')->pluck('consultancy_sector')->sort()->values()->all(),
+            'consultant_types' => Project::whereNotNull('consultant')->groupBy('consultant')->pluck('consultant')->sort()->values()->all(),
+            'delivery_methods' => Project::groupBy('delivery_method')->pluck('delivery_method')->filter()->sort()->values()->all(),
+            'lifecycle_statuses' => ['in progress', 'completed', 'suspended'],
         ];
 
         $analytics = [
@@ -507,12 +514,23 @@ class DashboardController extends Controller
             ],
         ];
 
+        $perPage = (int) ($request->filled('per_page') ? $request->per_page : 15);
+        $page = (int) ($request->filled('page') ? $request->page : 1);
+        $totalProjects = $filteredProjects->count();
+        $totalPages = max(1, (int) ceil($totalProjects / $perPage));
+        $page = min($page, $totalPages);
+        $offset = ($page - 1) * $perPage;
+        $paginatedProjects = $filteredProjects->slice($offset, $perPage)->values();
+
         return response()->json([
-            'projects' => $filteredProjects->values()->all(),
+            'projects' => $paginatedProjects->values()->all(),
             'kpis' => $kpis,
             'executive_kpis' => $executiveKpis,
             'filters' => $filters,
             'total' => $totalProjects,
+            'page' => $page,
+            'per_page' => $perPage,
+            'total_pages' => $totalPages,
             'analytics' => $analytics,
             'comparative_analytics' => $comparativeAnalytics,
         ]);

@@ -33,8 +33,8 @@
 
         <!-- Search & Filter -->
         <form action="{{ route('admin.progress-updates.index') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-nowrap items-center gap-3 overflow-x-auto pb-1">
-                <div class="flex-1 min-w-[220px] max-w-[320px] relative group shrink-0">
+            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
+                <div class="min-w-[220px] max-w-[320px] relative group shrink-0">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Search by project name, code or ID..."
@@ -80,14 +80,14 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">CPI</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revenue Planned</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revenue Actual</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Top Constraints</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Data Date</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Last Edit</th>
                             <th class="px-6 py-3 text-right border-b border-[#00515f]/30"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50/50">
                         @forelse($updates as $update)
-                            <tr class="group hover:bg-slate-50/80 transition-all duration-300 odd:bg-white even:bg-slate-50/20">
+                            <tr class="group hover:bg-slate-50/80 transition-all duration-300 odd:bg-white even:bg-slate-50/20 cursor-pointer" onclick="toggleConstraints(this)">
                                 <td class="px-6 py-4 text-center">
                                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
                                 </td>
@@ -156,25 +156,25 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <p class="text-xs font-black text-slate-700">{{ $update->top_constraints ?: '-' }}</p>
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('M d, Y') : '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->updated_at->format('M d, Y') }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <button onclick="openViewModal({{ $update->id }})"
+                                        <button onclick="event.stopPropagation(); openViewModal({{ $update->id }})"
                                             class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-[#00ADC5] hover:text-white hover:border-[#00ADC5] transition-all duration-200"
                                             title="View">
                                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                         </button>
-                                        <button onclick="openEditModal({{ $update->id }})"
+                                        <button onclick="event.stopPropagation(); openEditModal({{ $update->id }})"
                                             class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-200"
                                             title="Edit">
                                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                         </button>
                                         @if(auth()->user() && auth()->user()->isAdmin())
-                                            <form action="{{ route('admin.progress-updates.destroy', $update->id) }}" method="POST" class="inline"
+                                            <form action="{{ route('admin.progress-updates.destroy', $update->id) }}" method="POST" class="inline" onclick="event.stopPropagation();"
                                                 onsubmit="return confirm('Are you sure you want to delete this progress update?');">
                                                 @csrf
                                                 @method('DELETE')
@@ -188,9 +188,17 @@
                                     </div>
                                 </td>
                             </tr>
+                            <tr class="constraints-row bg-slate-50/60 hidden">
+                                <td colspan="11" class="px-6 py-3">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-[8px] font-black text-[#00515f] uppercase tracking-widest mt-0.5 shrink-0">Top Constraints</span>
+                                        <p class="text-xs font-black text-[#00515f] leading-relaxed">{{ $update->top_constraints ?: '-' }}</p>
+                                    </div>
+                                </td>
+                            </tr>
                         @empty
                             <tr>
-                                <td colspan="11" class="px-6 py-16 text-center">
+                                        <td colspan="11" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="trending-up" class="w-8 h-8"></i>
@@ -389,6 +397,13 @@
 
         function closeEditModal() {
             document.getElementById('editModal').classList.add('hidden');
+        }
+
+        function toggleConstraints(row) {
+            const nextRow = row.nextElementSibling;
+            if (nextRow && nextRow.classList.contains('constraints-row')) {
+                nextRow.classList.toggle('hidden');
+            }
         }
 
         document.addEventListener('keydown', function(e) {

@@ -28,39 +28,41 @@
         </div>
 
         <!-- Filters -->
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-            <div class="flex flex-nowrap items-center gap-3 overflow-x-auto pb-1">
-                <div class="flex-1 min-w-[220px] max-w-[320px] relative shrink-0">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 w-fit mx-auto">
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                <div class="relative min-w-[220px] max-w-[320px]">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300"></i>
                     <input type="text" id="searchInput" placeholder="Search project..."
                         oninput="handleSearch(this.value)"
                         class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                 </div>
 
-                <div class="relative min-w-[160px] shrink-0">
-                    <select id="filterProjectType" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
-                        <option value="all">All Project Types</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
-                </div>
-
-                <div class="relative min-w-[160px] shrink-0">
-                    <select id="filterProjectStatus" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
-                        <option value="all">All Statuses</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
-                </div>
-
-                <div class="relative min-w-[160px] shrink-0">
-                    <select id="filterClient" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
-                        <option value="all">All Clients</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
-                </div>
-
-                <div class="relative min-w-[160px] shrink-0">
+                <div class="relative min-w-[160px]">
                     <select id="filterSector" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
                         <option value="all">All Sectors</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                </div>
+
+                <div class="relative min-w-[160px]">
+                    <select id="filterDeliveryMethod" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
+                        <option value="all">All Delivery Methods</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                </div>
+
+                <div class="relative min-w-[160px]">
+                    <select id="filterConsultantType" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
+                        <option value="all">All Consultant Types</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                </div>
+
+                <div class="relative min-w-[160px]">
+                    <select id="filterLifecycleStatus" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
+                        <option value="all">All Project Statuses</option>
+                        <option value="completed">Completed</option>
+                        <option value="in progress">In Progress</option>
                     </select>
                     <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
                 </div>
@@ -262,7 +264,7 @@
             </div>
 
             <!-- Chart -->
-            <div id="chartContainer" class="px-5 py-4 h-[420px] w-full bg-gradient-to-b from-white to-slate-50/50">
+            <div id="chartContainer" class="px-5 py-4 w-full bg-gradient-to-b from-white to-slate-50/50" style="max-height: 600px; overflow-y: auto;">
                 <div id="chart" class="h-full w-full"></div>
             </div>
         </div>
@@ -310,6 +312,19 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
+                <div class="flex items-center gap-2">
+                    <span class="text-[9px] font-black text-slate-900 tracking-widest" id="paginationStart">0</span>
+                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">to</span>
+                    <span class="text-[9px] font-black text-slate-400 tracking-widest" id="paginationEnd">0</span>
+                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">of</span>
+                    <span class="text-[9px] font-black text-slate-400 tracking-widest" id="paginationTotal">0</span>
+                </div>
+                <div class="flex items-center gap-1.5" id="paginationControls">
+                    <!-- Pagination buttons injected by JS -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -339,6 +354,9 @@
         let currentTab = 'schedule';
         let allProjects = [];
         let filteredProjects = [];
+        let currentPage = 1;
+        let perPage = 15;
+        let totalPages = 1;
         let chartInstance = null;
         let searchTimeout = null;
         let currentChartMeta = { categories: [], values: [], colors: [], average: 0 };
@@ -372,10 +390,10 @@
                         document.querySelector('.space-y-4')?.prepend(el);
                         return;
                     }
-                    populateFilter('filterProjectType', data.filters.project_types, 'All Project Types');
-                    populateFilter('filterProjectStatus', data.filters.project_statuses, 'All Statuses');
-                    populateFilter('filterClient', data.filters.clients, 'All Clients');
                     populateFilter('filterSector', data.filters.sectors, 'All Sectors');
+                    populateFilter('filterDeliveryMethod', data.filters.delivery_methods, 'All Delivery Methods');
+                    populateFilter('filterConsultantType', data.filters.consultant_types, 'All Consultant Types');
+                    populateFilter('filterLifecycleStatus', data.filters.lifecycle_statuses, 'All Project Statuses');
                 })
                 .catch(err => {
                     console.error('Dashboard filters load error:', err);
@@ -405,14 +423,28 @@
 
         function loadDashboardData() {
             const params = new URLSearchParams();
-            if (document.getElementById('filterProjectType').value !== 'all') params.append('project_type', document.getElementById('filterProjectType').value);
-            if (document.getElementById('filterProjectStatus').value !== 'all') params.append('project_status', document.getElementById('filterProjectStatus').value);
-            if (document.getElementById('filterClient').value !== 'all') params.append('client', document.getElementById('filterClient').value);
+            params.append('page', currentPage);
+            params.append('per_page', perPage);
 
             const sectorDropdown = document.getElementById('filterSector');
             const sectorFilteredByChart = activeChartFilter && activeChartFilter.chart === 'consultancy_sector';
             if (!sectorFilteredByChart && sectorDropdown && sectorDropdown.value !== 'all') {
                 params.append('sector', sectorDropdown.value);
+            }
+
+            const deliveryDropdown = document.getElementById('filterDeliveryMethod');
+            if (deliveryDropdown && deliveryDropdown.value !== 'all') {
+                params.append('delivery_method', deliveryDropdown.value);
+            }
+
+            const consultantDropdown = document.getElementById('filterConsultantType');
+            if (consultantDropdown && consultantDropdown.value !== 'all') {
+                params.append('consultant_type', consultantDropdown.value);
+            }
+
+            const lifecycleDropdown = document.getElementById('filterLifecycleStatus');
+            if (lifecycleDropdown && lifecycleDropdown.value !== 'all') {
+                params.append('lifecycle_status', lifecycleDropdown.value);
             }
 
             if (document.getElementById('searchInput').value) params.append('search', document.getElementById('searchInput').value);
@@ -435,8 +467,11 @@
                         document.querySelector('.space-y-4')?.prepend(el);
                         return;
                     }
-                    allProjects = data.projects;
-                    filteredProjects = data.projects;
+                    allProjects = data.projects || [];
+                    filteredProjects = allProjects;
+                    currentPage = data.page || 1;
+                    perPage = data.per_page || 15;
+                    totalPages = data.total_pages || 1;
                     window.latestAnalytics = data.analytics || {};
                     window.latestExecutiveKpis = data.executive_kpis || {};
                     window.latestComparativeAnalytics = data.comparative_analytics || {};
@@ -447,6 +482,7 @@
                     renderAnalyticsGrid();
                     renderComparativeAnalytics();
                     renderTable();
+                    renderPagination();
                     updateSubtitle();
                 })
                 .catch(err => {
@@ -459,6 +495,52 @@
                     el.textContent = 'Network error loading dashboard. Please refresh.';
                     document.querySelector('.space-y-4')?.prepend(el);
                 });
+        }
+
+        function renderPagination() {
+            const container = document.getElementById('paginationControls');
+            if (!container) return;
+
+            const total = parseInt(document.getElementById('paginationTotal')?.textContent || '0', 10);
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg text-[9px] font-black border ${currentPage === 1 ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'} transition-all">Prev</button>`;
+
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+            if (endPage - startPage < maxButtons - 1) {
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+
+            if (startPage > 1) {
+                html += `<button onclick="goToPage(1)" class="px-2.5 py-1 rounded-lg text-[9px] font-black bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all">1</button>`;
+                if (startPage > 2) html += `<span class="text-[9px] font-black text-slate-400 px-1">...</span>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button onclick="goToPage(${i})" class="px-2.5 py-1 rounded-lg text-[9px] font-black transition-all ${i === currentPage ? 'bg-[#00515f] text-white border-[#00515f]' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<span class="text-[9px] font-black text-slate-400 px-1">...</span>`;
+                html += `<button onclick="goToPage(${totalPages})" class="px-2.5 py-1 rounded-lg text-[9px] font-black bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all">${totalPages}</button>`;
+            }
+
+            html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg text-[9px] font-black border ${currentPage === totalPages ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'} transition-all">Next</button>`;
+
+            container.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            if (page < 1 || page > totalPages || page === currentPage) return;
+            currentPage = page;
+            window.scrollTo({ top: document.getElementById('performanceTableBody')?.getBoundingClientRect().top + window.scrollY - 100, behavior: 'smooth' });
+            loadDashboardData();
         }
 
         function applyFilters() {
@@ -474,20 +556,22 @@
         }
 
         function clearFilters() {
-            document.getElementById('filterProjectType').value = 'all';
-            document.getElementById('filterProjectStatus').value = 'all';
-            document.getElementById('filterClient').value = 'all';
             document.getElementById('filterSector').value = 'all';
+            document.getElementById('filterDeliveryMethod').value = 'all';
+            document.getElementById('filterConsultantType').value = 'all';
+            document.getElementById('filterLifecycleStatus').value = 'all';
             document.getElementById('searchInput').value = '';
+            currentPage = 1;
             activeChartFilter = null;
             updateClearFilterButton();
             applyFilters();
         }
 
         function filterByStatus(status) {
-            const statusSelect = document.getElementById('filterProjectStatus');
+            const statusSelect = document.getElementById('filterLifecycleStatus');
             if (!statusSelect) return;
             statusSelect.value = status;
+            currentPage = 1;
             applyFilters();
             setTimeout(() => {
                 const table = document.getElementById('performanceTableBody');
@@ -693,8 +777,7 @@
                 return valB - valA;
             });
 
-            const visibleProjects = sorted.slice(0, 15);
-            const remainingProjects = sorted.slice(15);
+            const visibleProjects = sorted;
             const categories = [];
             const values = [];
             const colors = [];
@@ -720,21 +803,6 @@
                 sortedProjects.push(p);
             });
 
-            if (remainingProjects.length > 0) {
-                const remainingValues = remainingProjects.map(p => currentTab === 'schedule' ? p.schedule_performance_percent : currentTab === 'budget' ? p.budget_index_percent : p.cost_performance_percent);
-                const summaryValue = remainingValues.reduce((sum, value) => sum + value, 0) / remainingValues.length;
-                categories.push(`Others (${remainingProjects.length})`);
-                values.push(summaryValue);
-                colors.push('#64748b');
-                sortedProjects.push({
-                    project_name: `Other ${remainingProjects.length} projects`,
-                    project_code: '',
-                    isSummary: true,
-                    remainingCount: remainingProjects.length,
-                    summaryValue
-                });
-            }
-
             return { categories, values, colors, sortedProjects };
         }
 
@@ -751,6 +819,12 @@
                 chartEl.innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 text-sm font-black">No data available for the selected filters</div>';
                 currentChartMeta = { categories: [], values: [], colors: [], average: 0 };
                 return;
+            }
+
+            const chartHeight = Math.max(420, categories.length * 32);
+            const chartContainer = document.getElementById('chartContainer');
+            if (chartContainer) {
+                chartContainer.style.height = `${chartHeight}px`;
             }
 
             const allZero = values.every(v => v === 0);
@@ -783,11 +857,12 @@
 
             const tickStep = range > 40 ? 5 : range > 20 ? 2 : 1;
             const tickAmount = Math.ceil((maxVal + padding) / tickStep) + Math.ceil((Math.abs(minVal) + padding) / tickStep) + 1;
+            const dataLabelFontSize = categories.length > 25 ? '7px' : categories.length > 15 ? '8px' : '9px';
 
             chartInstance = new ApexCharts(chartEl, {
                 chart: {
                     type: 'bar',
-                    height: '100%',
+                    height: chartHeight,
                     animations: {
                         enabled: true,
                         easing: 'easeinout',
@@ -863,7 +938,7 @@
                 dataLabels: {
                     enabled: true,
                     style: {
-                        fontSize: '9px',
+                        fontSize: dataLabelFontSize,
                         fontWeight: 800,
                         colors: ['#fff']
                     },
@@ -972,7 +1047,13 @@
 
         function renderTable() {
             const tbody = document.getElementById('performanceTableBody');
+            const start = (currentPage - 1) * perPage + 1;
+            const end = Math.min(start + perPage - 1, filteredProjects.length);
             document.getElementById('projectCount').textContent = `${filteredProjects.length} Projects`;
+
+            document.getElementById('paginationStart').textContent = filteredProjects.length > 0 ? start : 0;
+            document.getElementById('paginationEnd').textContent = end;
+            document.getElementById('paginationTotal').textContent = filteredProjects.length;
 
             if (filteredProjects.length === 0) {
                 tbody.innerHTML = `
@@ -994,7 +1075,9 @@
                 return;
             }
 
-            tbody.innerHTML = filteredProjects.map((project, index) => {
+            const pageProjects = filteredProjects.slice(start - 1, end);
+
+            tbody.innerHTML = pageProjects.map((project, index) => {
                 const scheduleBadge = getScheduleBadge(project.schedule_status);
                 const budgetBadge = getBudgetBadge(project.budget_performance);
                 const costBadge = getCostBadge(project.cost_performance);
@@ -1003,7 +1086,7 @@
                 return `
                     <tr class="group hover:bg-slate-50/80 transition-all duration-300 cursor-pointer" onclick="openDrillDown(allProjects.find(p => p.id === ${project.id}))">
                         <td class="px-6 py-4 text-center">
-                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">${index + 1}</span>
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">${start + index}</span>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
@@ -1321,7 +1404,7 @@
                             </div>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-100 text-[8px] font-black text-slate-500 uppercase tracking-wider shadow-sm">${total} Projects</span>
                         </div>
-                        <div class="flex items-center justify-center py-2 relative" style="height: 140px; overflow: visible;">
+                        <div class="flex items-center justify-center py-2 relative" style="height: 240px; overflow: visible;">
                             <div id="chart-${chartId}" class="w-full h-full relative" style="z-index: 1; overflow: visible !important;"></div>
                         </div>
                         <div id="legend-${chartId}" class="mt-auto analytics-legend-wrapper"></div>
@@ -1594,15 +1677,11 @@
                 const isActive = activeChartFilter && activeChartFilter.chart === chartId && activeChartFilter.value === cat.key;
                 const mutedClass = count === 0 ? 'text-slate-300' : '';
                 return `
-                    <div class="analytics-legend-item flex items-center justify-between ${isActive ? 'bg-white/80 p-1 rounded-md border border-slate-200 shadow-sm' : ''} cursor-pointer hover:bg-slate-50 rounded-md transition-all px-2 py-1 border border-transparent hover:border-slate-100" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-sm flex-shrink-0 ${mutedClass}" style="background-color: ${cat.color};"></span>
-                            <span class="text-[8px] font-black ${mutedClass} uppercase tracking-wider truncate max-w-[100px]">${cat.label}</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[8px] font-black ${mutedClass}">${count}</span>
-                            <span class="text-[8px] font-black ${mutedClass} w-7 text-right">${percent}%</span>
-                        </div>
+                    <div class="analytics-legend-item flex items-center gap-1.5 ${isActive ? 'bg-white/80 p-0.5 rounded border border-slate-200 shadow-sm' : ''} cursor-pointer hover:bg-slate-50 rounded transition-all px-1.5 py-0.5 border border-transparent hover:border-slate-100" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
+                        <span class="w-1.5 h-1.5 rounded-sm flex-shrink-0 ${mutedClass}" style="background-color: ${cat.color};"></span>
+                        <span class="text-[7px] font-black ${mutedClass} uppercase tracking-wider truncate max-w-[80px]">${cat.label}</span>
+                        <span class="text-[7px] font-black ${mutedClass} ml-auto">${count}</span>
+                        <span class="text-[7px] font-black ${mutedClass} w-6 text-right">${percent}%</span>
                     </div>
                 `;
             }).join('');
@@ -2061,7 +2140,7 @@
 
         .analytics-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 320px;
+            height: 440px;
             position: relative;
             overflow: visible;
         }
@@ -2115,8 +2194,12 @@
             transform: translateX(2px);
         }
         .analytics-legend-wrapper {
-            max-height: 50px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            max-height: 60px;
             overflow-y: auto;
+            align-items: center;
             scrollbar-width: thin;
             scrollbar-color: #cbd5e1 transparent;
         }

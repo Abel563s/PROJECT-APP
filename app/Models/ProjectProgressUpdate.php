@@ -15,6 +15,7 @@ class ProjectProgressUpdate extends Model
         'cost_planned',
         'cost_actual',
         'completion_date',
+        'data_date',
         'top_constraints',
         'client_issue',
         'design_completion_approval',
@@ -29,6 +30,7 @@ class ProjectProgressUpdate extends Model
 
     protected $casts = [
         'completion_date' => 'date',
+        'data_date' => 'date',
     ];
 
     public function project()

@@ -51,6 +51,7 @@ class ProjectProgressUpdateController extends Controller
             'cost_planned' => 'nullable|numeric|min:0',
             'cost_actual' => 'nullable|numeric|min:0',
             'completion_date' => 'nullable|date',
+            'data_date' => 'required|date',
             'top_constraints' => 'nullable|string',
             'client_issue' => 'nullable|string',
             'design_completion_approval' => 'nullable|string',

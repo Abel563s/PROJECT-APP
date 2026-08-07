@@ -173,10 +173,10 @@
 
                 <div class="space-y-4 relative z-10">
                     <div class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
-                        <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-3">Budget Management</p>
+                        <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-3">Contract Budget Management</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Contract Amount</label>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Contract Budget</label>
                                 <input type="number" step="0.01" name="contract_budget"
                                     class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
                             </div>
@@ -201,7 +201,7 @@
                         <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-3">Cost Management</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 text-[#00ADC5]">Allowable</label>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 text-[#00ADC5]">Planned Cost</label>
                                 <input type="number" step="0.01" name="total_allowable_cost"
                                     class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-900 focus:ring-4 focus:ring-cyan-100/50 focus:bg-white transition-all">
                             </div>

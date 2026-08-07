@@ -35,18 +35,13 @@
             <form action="{{ route('admin.projects.analytics') }}" method="GET" class="flex items-center gap-2">
                 <div class="flex items-center gap-2 bg-white border border-slate-100 rounded-xl px-3 py-2 shadow-sm">
                     <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
-                    <input type="date" name="date_from" value="{{ request('date_from') }}"
-                        placeholder="From"
-                        class="bg-transparent border-none text-[9px] font-black text-slate-600 uppercase tracking-widest focus:outline-none focus:ring-0 w-[130px]">
-                    <span class="text-[8px] font-black text-slate-300">TO</span>
-                    <input type="date" name="date_to" value="{{ request('date_to') }}"
-                        placeholder="To"
-                        class="bg-transparent border-none text-[9px] font-black text-slate-600 uppercase tracking-widest focus:outline-none focus:ring-0 w-[130px]">
+                    <input type="date" name="data_date" value="{{ request('data_date') }}"
+                        class="bg-transparent border-none text-[9px] font-black text-slate-600 uppercase tracking-widest focus:outline-none focus:ring-0 w-[160px]">
                     <button type="submit"
                         class="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm">
                         Apply
                     </button>
-                    @if(request()->anyFilled(['date_from', 'date_to']))
+                    @if(request()->filled('data_date'))
                         <a href="{{ route('admin.projects.analytics') }}"
                             class="flex items-center justify-center w-7 h-7 bg-rose-50 text-rose-500 rounded-md hover:bg-rose-500 hover:text-white transition-all active:scale-90"
                             title="Clear Date Filter">
@@ -396,7 +391,7 @@
                 $spiTrend = 'stable';
                 $cpiTrend = 'stable';
                 if ($sCurveData->count() > 0) {
-                    $allUpdates = $sCurveData->flatten(1)->sortBy('date');
+                    $allUpdates = $sCurveData->sortBy('date');
                     $latest = $allUpdates->last();
                     $previous = $allUpdates->count() > 1 ? $allUpdates->slice(-2, 1)->first() : null;
                     
@@ -508,78 +503,11 @@
                 </div>
             </div>
 
+            <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em]">Showing the top 12 projects; the rest are summarized for readability.</p>
+
             @php
-                $scheduleData = $schedulePerformanceData ?? collect();
-                $avgPlanned = $scheduleData->avg('planned') ?? 0;
-                $avgActual = $scheduleData->avg('actual') ?? 0;
-                $aheadCount = $scheduleData->filter(fn($item) => $item['actual'] >= $item['planned'])->count();
-                $behindCount = $scheduleData->filter(fn($item) => $item['actual'] < $item['planned'])->count();
+                $scheduleData = collect($schedulePerformanceData ?? []);
             @endphp
-
-            <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em]">Showing the top 12 projects; the rest are summarized for readability.</p>
-
-            <!-- KPI Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5">
-                <!-- Average Planned Progress -->
-                <div class="group relative bg-gradient-to-br from-blue-50 to-blue-50/30 rounded-xl border border-blue-100 p-3 overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all duration-300">
-                    <div class="absolute top-0 right-0 w-14 h-14 bg-blue-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div class="relative z-10 flex items-start gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
-                            <i data-lucide="target" class="w-3.5 h-3.5"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-[7px] font-black text-slate-500 uppercase tracking-widest">Avg Planned Progress</p>
-                            <p class="text-xl font-black text-slate-900 tracking-tighter leading-none mt-1">{{ number_format($avgPlanned, 1) }}%</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Average Actual Progress -->
-                <div class="group relative bg-gradient-to-br from-emerald-50 to-emerald-50/30 rounded-xl border border-emerald-100 p-3 overflow-hidden hover:shadow-lg hover:border-emerald-200 transition-all duration-300">
-                    <div class="absolute top-0 right-0 w-14 h-14 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div class="relative z-10 flex items-start gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-600 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 shrink-0">
-                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-[7px] font-black text-slate-500 uppercase tracking-widest">Avg Actual Progress</p>
-                            <p class="text-xl font-black text-slate-900 tracking-tighter leading-none mt-1">{{ number_format($avgActual, 1) }}%</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Projects Ahead of Schedule -->
-                <div class="group relative bg-gradient-to-br from-emerald-50 to-emerald-50/30 rounded-xl border border-emerald-100 p-3 overflow-hidden hover:shadow-lg hover:border-emerald-200 transition-all duration-300">
-                    <div class="absolute top-0 right-0 w-14 h-14 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div class="relative z-10 flex items-start gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-600 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 shrink-0">
-                            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-[7px] font-black text-slate-500 uppercase tracking-widest">Ahead of Schedule</p>
-                            <p class="text-xl font-black text-slate-900 tracking-tighter leading-none mt-1">{{ $aheadCount }}</p>
-                            <p class="text-[8px] font-black text-slate-500 mt-1">Projects</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Projects Behind Schedule -->
-                <div class="group relative bg-gradient-to-br from-rose-50 to-rose-50/30 rounded-xl border border-rose-100 p-3 overflow-hidden hover:shadow-lg hover:border-rose-200 transition-all duration-300">
-                    <div class="absolute top-0 right-0 w-14 h-14 bg-rose-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div class="relative z-10 flex items-start gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-rose-500/20 shrink-0">
-                            <i data-lucide="trending-down" class="w-3.5 h-3.5"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-[7px] font-black text-slate-500 uppercase tracking-widest">Behind Schedule</p>
-                            <p class="text-xl font-black text-slate-900 tracking-tighter leading-none mt-1">{{ $behindCount }}</p>
-                            <p class="text-[8px] font-black text-slate-500 mt-1">Projects</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em]">Showing the top 12 projects; the rest are summarized for readability.</p>
 
             <!-- Chart -->
             <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-3">
@@ -601,8 +529,8 @@
             <!-- Sector Distribution -->
             <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 space-y-4">
                 <div class="px-1">
-                    <h3 class="text-sm font-black text-slate-900 tracking-tight">Construction Sector Distribution</h3>
-                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Projects by construction sector</p>
+                    <h3 class="text-sm font-black text-slate-900 tracking-tight">Project Sector Distribution</h3>
+                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Projects by Project sector</p>
                 </div>
                 <div class="relative h-[280px] w-full flex items-center justify-center">
                     <canvas id="sectorDistributionChart"></canvas>
@@ -953,16 +881,12 @@
                 const allDates = [];
                 const spiValues = [];
                 const cpiValues = [];
-                const projectCodes = [];
 
-                if (sCurveData && Object.keys(sCurveData).length > 0) {
-                    Object.values(sCurveData).forEach(updates => {
-                        updates.forEach(update => {
-                            allDates.push(update.date);
-                            spiValues.push(update.spi);
-                            cpiValues.push(update.cpi);
-                            projectCodes.push(update.project_code);
-                        });
+                if (sCurveData && Array.isArray(sCurveData) && sCurveData.length > 0) {
+                    sCurveData.forEach(update => {
+                        allDates.push(update.date);
+                        spiValues.push(update.spi);
+                        cpiValues.push(update.cpi);
                     });
                 }
 
@@ -1046,7 +970,7 @@
                                     callbacks: {
                                         title: function(context) {
                                             const idx = context[0].dataIndex;
-                                            return 'Project: ' + (projectCodes[idx] || 'N/A');
+                                            return 'Date: ' + (allDates[idx] || 'N/A');
                                         },
                                         label: function(context) {
                                             const value = context.raw;
@@ -1165,7 +1089,7 @@
                         }
                     });
 
-                    // Planned vs Actual Schedule Performance - Modern Stacked Bar Chart
+                    // Planned vs Actual Schedule Performance - Modern Grouped Bar Chart
                     const scheduleCtx = document.getElementById('schedulePerformanceChart');
                     if (scheduleCtx) {
                         const scheduleData = {!! json_encode($schedulePerformanceData ?? collect()) !!};
@@ -1173,7 +1097,6 @@
                         const projectLabels = scheduleSeries.map(item => item.label);
                         const plannedValues = scheduleSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (parseFloat(entry.planned) || 0), 0) : (parseFloat(item.planned) || 0));
                         const actualValues = scheduleSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (parseFloat(entry.actual) || 0), 0) : (parseFloat(item.actual) || 0));
-                        const variances = scheduleSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (parseFloat(entry.variance) || 0), 0) / Math.max(1, item.values.length) : (parseFloat(item.variance) || 0));
 
                         new Chart(scheduleCtx, {
                             type: 'bar',
@@ -1181,43 +1104,35 @@
                                 labels: projectLabels,
                                 datasets: [
                                     {
-                                        label: 'Actual Progress',
-                                        data: actualValues,
-                                        stack: 'schedule',
-                                        barPercentage: 0.85,
-                                        categoryPercentage: 0.8,
-                                        maxBarThickness: 26,
+                                        label: 'Planned Progress',
+                                        data: plannedValues,
                                         backgroundColor: (context) => {
                                             const chart = context.chart;
                                             const {ctx, chartArea} = chart;
-                                            if (!chartArea) return '#10b981';
+                                            if (!chartArea) return '#3b82f6';
                                             const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-                                            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.82)');
-                                            gradient.addColorStop(1, 'rgba(52, 211, 153, 0.95)');
+                                            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.75)');
+                                            gradient.addColorStop(1, 'rgba(96, 165, 250, 0.95)');
                                             return gradient;
                                         },
-                                        borderColor: '#0f9d6f',
+                                        borderColor: '#2563eb',
                                         borderWidth: 1,
                                         borderRadius: 8,
                                         borderSkipped: false,
                                     },
                                     {
-                                        label: 'Remaining Planned',
-                                        data: plannedValues.map((p, i) => Math.max(0, p - actualValues[i])),
-                                        stack: 'schedule',
-                                        barPercentage: 0.85,
-                                        categoryPercentage: 0.8,
-                                        maxBarThickness: 26,
+                                        label: 'Actual Progress',
+                                        data: actualValues,
                                         backgroundColor: (context) => {
                                             const chart = context.chart;
                                             const {ctx, chartArea} = chart;
-                                            if (!chartArea) return '#ef4444';
+                                            if (!chartArea) return '#10b981';
                                             const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-                                            gradient.addColorStop(0, 'rgba(239, 68, 68, 0.68)');
-                                            gradient.addColorStop(1, 'rgba(248, 113, 113, 0.8)');
+                                            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.75)');
+                                            gradient.addColorStop(1, 'rgba(52, 211, 153, 0.95)');
                                             return gradient;
                                         },
-                                        borderColor: '#dc2626',
+                                        borderColor: '#059669',
                                         borderWidth: 1,
                                         borderRadius: 8,
                                         borderSkipped: false,
@@ -1225,7 +1140,6 @@
                                 ]
                             },
                             options: {
-                                indexAxis: 'y',
                                 responsive: true,
                                 maintainAspectRatio: false,
                                 layout: {
@@ -1241,11 +1155,13 @@
                                         position: 'top',
                                         align: 'end',
                                         labels: {
-                                            boxWidth: 12,
-                                            boxHeight: 12,
+                                            boxWidth: 14,
+                                            boxHeight: 14,
                                             color: '#64748b',
                                             font: { family: 'Inter, sans-serif', size: 10, weight: '700' },
-                                            padding: 14
+                                            padding: 16,
+                                            usePointStyle: true,
+                                            pointStyle: 'rectRounded'
                                         }
                                     },
                                     tooltip: {
@@ -1269,10 +1185,12 @@
                                             },
                                             afterBody: function(context) {
                                                 const idx = context[0].dataIndex;
-                                                const variance = variances[idx];
+                                                const planned = plannedValues[idx];
+                                                const actual = actualValues[idx];
+                                                const variance = actual - planned;
                                                 const varianceLabel = variance >= 0 ? '+' + variance.toFixed(1) + '%' : variance.toFixed(1) + '%';
-                                                const spi = plannedValues[idx] > 0 ? (actualValues[idx] / plannedValues[idx]) : 0;
-                                                const scheduleStatus = spi >= 1.0 ? 'Ahead of Schedule' : (spi >= 0.9 ? 'On Schedule' : 'Behind Schedule');
+                                                const spi = planned > 0 ? (actual / planned) * 100 : 0;
+                                                const scheduleStatus = spi >= 100 ? 'Ahead of Schedule' : (spi >= 90 ? 'On Schedule' : 'Behind Schedule');
                                                 return [
                                                     '',
                                                     'Variance: ' + varianceLabel,
@@ -1285,7 +1203,15 @@
                                 },
                                 scales: {
                                     x: {
-                                        stacked: true,
+                                        grid: { display: false, drawBorder: false },
+                                        ticks: {
+                                            font: { weight: 'bold', size: 9 },
+                                            color: '#64748b',
+                                            maxRotation: 45,
+                                            minRotation: 0
+                                        }
+                                    },
+                                    y: {
                                         beginAtZero: true,
                                         max: 100,
                                         grid: { color: '#f1f5f9', drawBorder: false },
@@ -1294,15 +1220,6 @@
                                             color: '#94a3b8',
                                             maxTicksLimit: 12,
                                             callback: function(value) { return value + '%'; }
-                                        }
-                                    },
-                                    y: {
-                                        stacked: true,
-                                        grid: { display: false, drawBorder: false },
-                                        ticks: {
-                                            font: { weight: 'bold', size: 9 },
-                                            color: '#64748b',
-                                            maxTicksLimit: 12
                                         }
                                     }
                                 },
@@ -1337,7 +1254,7 @@
                     }
                 }
 
-                // Module Performance Chart - Modern Radar Chart
+                // Project Type Distribution - Modern Polar Area Chart
                 const typeCtx = document.getElementById('typePerformanceChart');
                 if (typeCtx) {
                     const typeLabels = {!! json_encode($projectTypes->keys()) !!};
@@ -1345,40 +1262,50 @@
                     const typeColors = ['#00ADC5', '#6366f1', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6'];
 
                     new Chart(typeCtx, {
-                        type: 'radar',
+                        type: 'polarArea',
                         data: {
                             labels: typeLabels,
                             datasets: [{
                                 label: 'Projects',
                                 data: typeData,
-                                backgroundColor: 'rgba(0, 173, 197, 0.15)',
-                                borderColor: '#00ADC5',
-                                borderWidth: 3,
-                                pointBackgroundColor: typeLabels.map((_, i) => typeColors[i % typeColors.length]),
-                                pointBorderColor: '#fff',
-                                pointBorderWidth: 2,
-                                pointRadius: 6,
-                                pointHoverRadius: 8,
-                                fill: true,
-                                tension: 0.4,
+                                backgroundColor: typeLabels.map((_, i) => typeColors[i % typeColors.length] + '26'),
+                                borderColor: typeLabels.map((_, i) => typeColors[i % typeColors.length]),
+                                borderWidth: 2,
+                                hoverBackgroundColor: typeLabels.map((_, i) => typeColors[i % typeColors.length] + '66'),
+                                hoverBorderColor: typeLabels.map((_, i) => typeColors[i % typeColors.length]),
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {
-                                legend: { display: false },
+                                legend: {
+                                    display: true,
+                                    position: 'bottom',
+                                    labels: {
+                                        boxWidth: 12,
+                                        boxHeight: 12,
+                                        color: '#64748b',
+                                        font: { family: 'Inter, sans-serif', size: 9, weight: '700' },
+                                        padding: 16,
+                                        usePointStyle: true,
+                                    }
+                                },
                                 tooltip: {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.97)',
                                     titleColor: '#0f172a',
                                     bodyColor: '#475569',
                                     borderColor: '#e2e8f0',
                                     borderWidth: 1,
                                     cornerRadius: 12,
-                                    padding: 16,
+                                    padding: 14,
+                                    boxPadding: 4,
+                                    usePointStyle: true,
                                     callbacks: {
                                         label: function(context) {
-                                            return 'Projects: ' + context.raw;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((context.raw / total) * 100).toFixed(1) : 0;
+                                            return ' ' + context.label + ': ' + context.raw + ' (' + percentage + '%)';
                                         }
                                     }
                                 }

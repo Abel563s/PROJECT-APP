@@ -97,17 +97,17 @@ class ProjectController extends Controller
 
     public function analytics(Request $request)
     {
-        $dateFrom = $request->filled('date_from') ? $request->date_from : null;
-        $dateTo = $request->filled('date_to') ? $request->date_to : null;
+        $dataDate = $request->filled('data_date') ? $request->data_date : null;
 
-        $progressQuery = \App\Models\ProjectProgressUpdate::query();
-        if ($dateFrom) {
-            $progressQuery->whereDate('created_at', '>=', $dateFrom);
+        $progressQueryDataDate = \App\Models\ProjectProgressUpdate::query();
+        if ($dataDate) {
+            $progressQueryDataDate->whereDate('project_progress_updates.data_date', $dataDate);
         }
-        if ($dateTo) {
-            $progressQuery->whereDate('created_at', '<=', $dateTo);
+        $projectIdsWithUpdates = $progressQueryDataDate->distinct('project_id')->pluck('project_id');
+
+        if ($dataDate && $projectIdsWithUpdates->isEmpty()) {
+            $projectIdsWithUpdates = \App\Models\ProjectProgressUpdate::query()->distinct('project_id')->pluck('project_id');
         }
-        $projectIdsWithUpdates = $progressQuery->distinct('project_id')->pluck('project_id');
 
         $projectsQuery = Project::query();
         if ($projectIdsWithUpdates->isNotEmpty()) {
@@ -140,10 +140,25 @@ class ProjectController extends Controller
             ->selectRaw('project_type, count(*) as project_count')
             ->pluck('project_count', 'project_type');
 
-        $puBase = function () use ($dateFrom, $dateTo) {
+        $puBaseScurve = function () {
+            return \App\Models\ProjectProgressUpdate::query();
+        };
+
+        $useUnfilteredData = false;
+        if ($dataDate) {
+            $filteredCount = \App\Models\ProjectProgressUpdate::query()
+                ->whereDate('project_progress_updates.data_date', $dataDate)
+                ->count();
+            if ($filteredCount === 0) {
+                $useUnfilteredData = true;
+            }
+        }
+
+        $puBase = function () use ($dataDate, $useUnfilteredData) {
             $q = \App\Models\ProjectProgressUpdate::query();
-            if ($dateFrom) $q->whereDate('created_at', '>=', $dateFrom);
-            if ($dateTo) $q->whereDate('created_at', '<=', $dateTo);
+            if ($dataDate && !$useUnfilteredData) {
+                $q->whereDate('project_progress_updates.data_date', $dataDate);
+            }
             return $q;
         };
 
@@ -170,22 +185,43 @@ class ProjectController extends Controller
             ->orderBy('total_pv', 'desc')
             ->get();
 
-        $sCurveData = $puBase()->with('project')
-            ->orderBy('created_at', 'asc')
+        $sCurveData = $puBaseScurve()->with('project')
+            ->orderBy('data_date', 'asc')
             ->get()
-            ->groupBy('project_id')
+            ->groupBy('data_date')
             ->map(function ($updates) {
-                return $updates->map(function ($update) {
-                    $spi = $update->progress_planned > 0 ? ($update->progress_actual / $update->progress_planned) * 100 : 0;
-                    $cpi = $update->cost_actual > 0 ? $update->cost_planned / $update->cost_actual : 0;
-                    return [
-                        'date' => $update->created_at->format('M d, Y'),
-                        'spi' => round($spi, 2),
-                        'cpi' => round($cpi, 2),
-                        'project_code' => $update->project->project_code ?? 'N/A',
-                    ];
-                })->values();
-            });
+                $spiValues = $updates->filter(fn($u) => $u->progress_planned > 0)->map(fn($u) => ($u->progress_actual / $u->progress_planned) * 100);
+                $cpiValues = $updates->filter(fn($u) => $u->cost_actual > 0)->map(fn($u) => $u->cost_planned / $u->cost_actual);
+                return [
+                    'date' => $updates->first()->data_date ? \Carbon\Carbon::parse($updates->first()->data_date)->format('M d, Y') : null,
+                    'spi' => $spiValues->isNotEmpty() ? round($spiValues->avg(), 2) : 0,
+                    'cpi' => $cpiValues->isNotEmpty() ? round($cpiValues->avg(), 2) : 0,
+                    'count' => $updates->count(),
+                ];
+            })
+            ->values();
+
+        $latestSpi = null;
+        $latestCpi = null;
+        $spiTrend = 'stable';
+        $cpiTrend = 'stable';
+        if ($sCurveData->count() > 0) {
+            $allUpdates = $sCurveData->sortBy('date');
+            $latest = $allUpdates->last();
+            $previous = $allUpdates->count() > 1 ? $allUpdates->slice(-2, 1)->first() : null;
+            if ($latest) {
+                $latestSpi = $latest['spi'];
+                $latestCpi = $latest['cpi'];
+
+                if ($previous) {
+                    if ($latestSpi > $previous['spi']) $spiTrend = 'improving';
+                    elseif ($latestSpi < $previous['spi']) $spiTrend = 'declining';
+
+                    if ($latestCpi > $previous['cpi']) $cpiTrend = 'improving';
+                    elseif ($latestCpi < $previous['cpi']) $cpiTrend = 'declining';
+                }
+            }
+        }
 
         $latestProgressUpdates = $puBase()->select(
                 'project_progress_updates.project_id',
@@ -307,8 +343,7 @@ class ProjectController extends Controller
             'avgWeightedCpi',
             'sectorWeightedSpi',
             'sectorWeightedCpi',
-            'dateFrom',
-            'dateTo'
+            'dataDate'
         ));
     }
 
