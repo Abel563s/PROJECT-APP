@@ -292,12 +292,11 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Schedule</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Budget</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Cost</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Overall</th>
                         </tr>
                     </thead>
                     <tbody id="performanceTableBody" class="divide-y divide-slate-50">
                         <tr>
-                        <td colspan="6" class="px-6 py-16 text-center">
+                        <td colspan="5" class="px-6 py-16 text-center">
                                 <div class="flex flex-col items-center gap-4">
                                     <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                         <i data-lucide="loader" class="w-8 h-8 animate-spin"></i>
@@ -467,7 +466,7 @@
                         document.querySelector('.space-y-4')?.prepend(el);
                         return;
                     }
-                    allProjects = data.projects || [];
+                    allProjects = data.all_projects || [];
                     filteredProjects = allProjects;
                     currentPage = data.page || 1;
                     perPage = data.per_page || 15;
@@ -784,7 +783,7 @@
             const sortedProjects = [];
 
             visibleProjects.forEach((p, idx) => {
-                categories.push(`#${idx + 1} ${formatChartLabel(p, idx)}`);
+                categories.push(`${formatChartLabel(p, idx)}`);
                 const val = currentTab === 'schedule' ? p.schedule_performance_percent : currentTab === 'budget' ? p.budget_index_percent : p.cost_performance_percent;
                 values.push(val);
                 if (currentTab === 'schedule') {
@@ -903,7 +902,7 @@
                     max: maxVal + padding,
                     tickAmount: tickAmount,
                     labels: {
-                        style: { fontSize: '10px', fontWeight: 600, colors: '#64748b' },
+                        style: { fontSize: '10px', fontWeight: 800, colors: '#00ADC5' },
                         formatter: (val) => `${Math.round(val)}%`
                     },
                     axisBorder: { show: false },
@@ -1058,7 +1057,7 @@
             if (filteredProjects.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="px-6 py-16 text-center">
+                        <td colspan="5" class="px-6 py-16 text-center">
                             <div class="flex flex-col items-center gap-4">
                                 <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                     <i data-lucide="search-x" class="w-8 h-8"></i>
@@ -1081,12 +1080,11 @@
                 const scheduleBadge = getScheduleBadge(project.schedule_status);
                 const budgetBadge = getBudgetBadge(project.budget_performance);
                 const costBadge = getCostBadge(project.cost_performance);
-                const overallBadge = getOverallBadge(project.overall_performance);
 
                 return `
                     <tr class="group hover:bg-slate-50/80 transition-all duration-300 cursor-pointer" onclick="openDrillDown(allProjects.find(p => p.id === ${project.id}))">
                         <td class="px-6 py-4 text-center">
-                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">${start + index}</span>
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-[#00ADC5] text-[10px] font-black tabular-nums">${start + index}</span>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
@@ -1102,7 +1100,6 @@
                         <td class="px-6 py-4 text-center">${scheduleBadge}</td>
                         <td class="px-6 py-4 text-center">${budgetBadge}</td>
                         <td class="px-6 py-4 text-center">${costBadge}</td>
-                        <td class="px-6 py-4 text-center">${overallBadge}</td>
                     </tr>
                 `;
             }).join('');

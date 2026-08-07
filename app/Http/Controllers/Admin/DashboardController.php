@@ -524,6 +524,7 @@ class DashboardController extends Controller
 
         return response()->json([
             'projects' => $paginatedProjects->values()->all(),
+            'all_projects' => $filteredProjects->values()->all(),
             'kpis' => $kpis,
             'executive_kpis' => $executiveKpis,
             'filters' => $filters,
