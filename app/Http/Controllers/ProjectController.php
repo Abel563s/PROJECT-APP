@@ -192,8 +192,9 @@ class ProjectController extends Controller
             ->map(function ($updates) {
                 $spiValues = $updates->filter(fn($u) => $u->progress_planned > 0)->map(fn($u) => ($u->progress_actual / $u->progress_planned) * 100);
                 $cpiValues = $updates->filter(fn($u) => $u->cost_actual > 0)->map(fn($u) => $u->cost_planned / $u->cost_actual);
+                $dateSource = $updates->first()->data_date ?: $updates->first()->created_at;
                 return [
-                    'date' => $updates->first()->data_date ? \Carbon\Carbon::parse($updates->first()->data_date)->format('M d, Y') : null,
+                    'date' => $dateSource ? \Carbon\Carbon::parse($dateSource)->format('M dd, Y') : null,
                     'spi' => $spiValues->isNotEmpty() ? round($spiValues->avg(), 2) : 0,
                     'cpi' => $cpiValues->isNotEmpty() ? round($cpiValues->avg(), 2) : 0,
                     'count' => $updates->count(),
