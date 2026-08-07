@@ -22,6 +22,7 @@
     },
     "dependencies": {
         "apexcharts": "^6.7.0",
+        "chart.js": "^4.5.1",
         "lucide": "^1.27.0"
     }
 }
