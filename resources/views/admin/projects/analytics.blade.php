@@ -563,7 +563,12 @@
 
     @push('scripts')
         <script>
+            const Chart = window.Chart || globalThis.Chart;
             const maxVisibleChartItems = 12;
+
+            if (!Chart) {
+                console.error('Chart.js failed to load for analytics page');
+            }
 
             function summarizeChartSeries(items, formatter) {
                 const visibleItems = items.slice(0, maxVisibleChartItems);
@@ -589,8 +594,20 @@
                 return value.length > 14 ? `${value.slice(0, 12)}…` : value;
             }
 
+            function ensureChartJs() {
+                if (Chart) {
+                    return Promise.resolve(Chart);
+                }
+
+                return new Promise((resolve) => {
+                    window.addEventListener('chartjs:ready', () => resolve(window.Chart), { once: true });
+                    setTimeout(() => resolve(window.Chart), 1500);
+                });
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
-                @if($evmData->count() > 0)
+                ensureChartJs().then(() => {
+                    @if($evmData->count() > 0)
                 const evmCtx = document.getElementById('evmChart');
                 if (evmCtx) {
                     const evmRows = {!! json_encode($evmData->map(function ($item) {
