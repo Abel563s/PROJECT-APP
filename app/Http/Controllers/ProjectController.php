@@ -99,15 +99,19 @@ class ProjectController extends Controller
     {
         $dataDate = $request->filled('data_date') ? $request->data_date : null;
 
-        $progressQueryDataDate = \App\Models\ProjectProgressUpdate::query();
-        if ($dataDate) {
-            $progressQueryDataDate->whereDate('project_progress_updates.data_date', $dataDate);
+        $effectiveDataDate = $dataDate;
+        if (!$effectiveDataDate || \App\Models\ProjectProgressUpdate::query()
+            ->whereDate('project_progress_updates.data_date', $effectiveDataDate)
+            ->count() === 0
+        ) {
+            $effectiveDataDate = \App\Models\ProjectProgressUpdate::query()
+                ->whereNotNull('data_date')
+                ->max('data_date');
         }
-        $projectIdsWithUpdates = $progressQueryDataDate->distinct('project_id')->pluck('project_id');
 
-        if ($dataDate && $projectIdsWithUpdates->isEmpty()) {
-            $projectIdsWithUpdates = \App\Models\ProjectProgressUpdate::query()->distinct('project_id')->pluck('project_id');
-        }
+        $progressQueryDataDate = \App\Models\ProjectProgressUpdate::query()
+            ->whereDate('project_progress_updates.data_date', $effectiveDataDate);
+        $projectIdsWithUpdates = $progressQueryDataDate->distinct('project_id')->pluck('project_id');
 
         $projectsQuery = Project::query();
         if ($projectIdsWithUpdates->isNotEmpty()) {
@@ -144,22 +148,9 @@ class ProjectController extends Controller
             return \App\Models\ProjectProgressUpdate::query();
         };
 
-        $useUnfilteredData = false;
-        if ($dataDate) {
-            $filteredCount = \App\Models\ProjectProgressUpdate::query()
-                ->whereDate('project_progress_updates.data_date', $dataDate)
-                ->count();
-            if ($filteredCount === 0) {
-                $useUnfilteredData = true;
-            }
-        }
-
-        $puBase = function () use ($dataDate, $useUnfilteredData) {
-            $q = \App\Models\ProjectProgressUpdate::query();
-            if ($dataDate && !$useUnfilteredData) {
-                $q->whereDate('project_progress_updates.data_date', $dataDate);
-            }
-            return $q;
+        $puBase = function () use ($effectiveDataDate) {
+            return \App\Models\ProjectProgressUpdate::query()
+                ->whereDate('project_progress_updates.data_date', $effectiveDataDate);
         };
 
         $totalProjectsFromUpdates = $puBase()->select('project_id')->distinct()->count('project_id');
@@ -185,7 +176,7 @@ class ProjectController extends Controller
             ->orderBy('total_pv', 'desc')
             ->get();
 
-        $sCurveData = $puBaseScurve()->with('project')
+        $sCurveData = $puBaseScurve()->whereNotNull('data_date')->with('project')
             ->orderBy('data_date', 'asc')
             ->get()
             ->groupBy('data_date')
@@ -194,7 +185,7 @@ class ProjectController extends Controller
                 $cpiValues = $updates->filter(fn($u) => $u->cost_actual > 0)->map(fn($u) => $u->cost_planned / $u->cost_actual);
                 $dateSource = $updates->first()->data_date ?: $updates->first()->created_at;
                 return [
-                    'date' => $dateSource ? \Carbon\Carbon::parse($dateSource)->format('M dd, Y') : null,
+                    'date' => $dateSource ? \Carbon\Carbon::parse($dateSource)->format('M d, Y') : null,
                     'spi' => $spiValues->isNotEmpty() ? round($spiValues->avg(), 2) : 0,
                     'cpi' => $cpiValues->isNotEmpty() ? round($cpiValues->avg(), 2) : 0,
                     'count' => $updates->count(),
