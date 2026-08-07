@@ -561,31 +561,50 @@
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const chartData = {
-                    evmData: {!! json_encode($evmData->map(function ($item) {
-                        return [
-                            'project_code' => $item->project_code,
-                            'project_name' => $item->project_name,
-                            'pv' => (float) $item->total_pv,
-                            'ev' => (float) $item->total_ev,
-                            'ac' => (float) $item->total_ac,
-                        ];
-                    })->values()) !!},
-                    sCurveData: {!! json_encode($sCurveData->all()) !!},
-                    sectorValues: {!! json_encode($sectorValues->toArray()) !!},
-                    schedulePerformanceData: {!! json_encode($schedulePerformanceData ?? []) !!},
-                    projectTypes: {!! json_encode($projectTypes->toArray()) !!}
-                };
+     @push('scripts')
+         <script>
+             document.addEventListener('DOMContentLoaded', function () {
+                 const chartData = {
+                     evmData: {!! json_encode($evmData->map(function ($item) {
+                         return [
+                             'project_code' => $item->project_code,
+                             'project_name' => $item->project_name,
+                             'pv' => (float) $item->total_pv,
+                             'ev' => (float) $item->total_ev,
+                             'ac' => (float) $item->total_ac,
+                         ];
+                     })->values()) !!},
+                     sCurveData: {!! json_encode($sCurveData->all()) !!},
+                     sectorValues: {!! json_encode($sectorValues->toArray()) !!},
+                     schedulePerformanceData: {!! json_encode($schedulePerformanceData ?? []) !!},
+                     projectTypes: {!! json_encode($projectTypes->toArray()) !!}
+                 };
 
-                if (window.initializeAnalyticsCharts) {
-                    window.initializeAnalyticsCharts(chartData);
-                } else {
-                    console.error('Analytics chart initializer was not loaded');
-                }
-            });
-        </script>
-    @endpush
+                 function initCharts() {
+                     if (window.initializeAnalyticsCharts) {
+                         window.initializeAnalyticsCharts(chartData);
+                     } else {
+                         console.error('Analytics chart initializer was not loaded');
+                     }
+                 }
+
+                 if (window.initializeAnalyticsCharts) {
+                     initCharts();
+                 } else {
+                     let attempts = 0;
+                     const maxAttempts = 30;
+                     const interval = setInterval(function () {
+                         attempts++;
+                         if (window.initializeAnalyticsCharts) {
+                             clearInterval(interval);
+                             initCharts();
+                         } else if (attempts >= maxAttempts) {
+                             clearInterval(interval);
+                             console.error('Analytics chart initializer was not loaded after waiting');
+                         }
+                     }, 100);
+                 }
+             });
+         </script>
+     @endpush
 </x-app-layout>
