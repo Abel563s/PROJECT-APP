@@ -877,21 +877,26 @@
                 }
                 @endif
 
-                const sCurveData = {!! json_encode($sCurveData) !!};
+                const sCurveData = {!! json_encode($sCurveData->all()) !!};
                 const allDates = [];
                 const spiValues = [];
                 const cpiValues = [];
 
                 if (sCurveData && Array.isArray(sCurveData) && sCurveData.length > 0) {
                     sCurveData.forEach(update => {
-                        allDates.push(update.date);
-                        spiValues.push(update.spi);
-                        cpiValues.push(update.cpi);
+                        const date = update.date;
+                        const spi = Number.isFinite(update.spi) ? update.spi : 0;
+                        const cpi = Number.isFinite(update.cpi) ? update.cpi : 0;
+                        if (date !== null && date !== undefined) {
+                            allDates.push(date);
+                            spiValues.push(spi);
+                            cpiValues.push(cpi);
+                        }
                     });
                 }
 
                 function roundToNice(value, roundUp = false) {
-                    if (value <= 0) return 0;
+                    if (!Number.isFinite(value) || value <= 0) return 0;
                     const exp = Math.floor(Math.log10(value));
                     const base = Math.pow(10, exp);
                     const normalized = value / base;
@@ -1025,12 +1030,20 @@
 
                 const cpiChartCtx = document.getElementById('cpiChart');
                 if (cpiChartCtx) {
-                    buildLineChart(cpiChartCtx, allDates, cpiValues, '#2563eb', 'CPI', 1.0);
+                    try {
+                        buildLineChart(cpiChartCtx, allDates, cpiValues, '#2563eb', 'CPI', 1.0);
+                    } catch (e) {
+                        console.error('Failed to render CPI S-curve:', e);
+                    }
                 }
 
                 const spiChartCtx = document.getElementById('spiChart');
                 if (spiChartCtx) {
-                    buildLineChart(spiChartCtx, allDates, spiValues, '#10b981', 'SPI', 100, '%');
+                    try {
+                        buildLineChart(spiChartCtx, allDates, spiValues, '#10b981', 'SPI', 100, '%');
+                    } catch (e) {
+                        console.error('Failed to render SPI S-curve:', e);
+                    }
                 }
 
                 const sectorCtx = document.getElementById('sectorDistributionChart');
