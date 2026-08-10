@@ -98,6 +98,8 @@ class ProjectController extends Controller
     public function analytics(Request $request)
     {
         $dataDate = $request->filled('data_date') ? $request->data_date : null;
+        $selectedProjectId = $request->filled('project_id') ? $request->project_id : null;
+        $selectedSector = $request->filled('sector') ? $request->sector : null;
 
         $effectiveDataDate = $dataDate;
         if (!$effectiveDataDate || \App\Models\ProjectProgressUpdate::query()
@@ -111,11 +113,25 @@ class ProjectController extends Controller
 
         $progressQueryDataDate = \App\Models\ProjectProgressUpdate::query()
             ->whereDate('project_progress_updates.data_date', $effectiveDataDate);
+        
+        if ($selectedProjectId) {
+            $progressQueryDataDate->where('project_progress_updates.project_id', $selectedProjectId);
+        }
+        
         $projectIdsWithUpdates = $progressQueryDataDate->distinct('project_id')->pluck('project_id');
 
+        $allProjectIdsWithUpdates = \App\Models\ProjectProgressUpdate::query()
+            ->distinct('project_id')
+            ->pluck('project_id');
+
         $projectsQuery = Project::query();
-        if ($projectIdsWithUpdates->isNotEmpty()) {
-            $projectsQuery->whereIn('id', $projectIdsWithUpdates);
+        if ($selectedProjectId) {
+            $projectsQuery->where('id', $selectedProjectId);
+        } elseif ($selectedSector) {
+            $projectsQuery->where('project_type', $selectedSector);
+        }
+        if ($allProjectIdsWithUpdates->isNotEmpty()) {
+            $projectsQuery->whereIn('id', $allProjectIdsWithUpdates);
         }
         $projects = $projectsQuery->get();
 
@@ -127,18 +143,24 @@ class ProjectController extends Controller
         $costVariance = $totalPortfolioValue - $totalCostAtCompletion;
         $avgScheduleVariance = $projects->count() > 0 ? $projects->avg(fn($p) => $p->schedule_variance) : 0;
 
-        $projectTypes = Project::whereIn('id', $projectIdsWithUpdates)
+        $projectTypes = Project::whereIn('id', $allProjectIdsWithUpdates)
+            ->when($selectedSector, fn($q) => $q->where('project_type', $selectedSector))
+            ->when($selectedProjectId, fn($q) => $q->where('id', $selectedProjectId))
             ->groupBy('project_type')
             ->selectRaw('project_type, count(*) as count')
             ->pluck('count', 'project_type');
 
-        $clientValues = Project::whereIn('id', $projectIdsWithUpdates)
+        $clientValues = Project::whereIn('id', $allProjectIdsWithUpdates)
+            ->when($selectedSector, fn($q) => $q->where('project_type', $selectedSector))
+            ->when($selectedProjectId, fn($q) => $q->where('id', $selectedProjectId))
             ->whereNotNull('project_client')
             ->selectRaw('project_client, sum(contract_budget + variation + supplementary) as total_value')
             ->groupBy('project_client')
             ->pluck('total_value', 'project_client');
 
-        $sectorValues = Project::whereIn('id', $projectIdsWithUpdates)
+        $sectorValues = Project::whereIn('id', $allProjectIdsWithUpdates)
+            ->when($selectedSector, fn($q) => $q->where('project_type', $selectedSector))
+            ->when($selectedProjectId, fn($q) => $q->where('id', $selectedProjectId))
             ->whereNotNull('project_type')
             ->groupBy('project_type')
             ->selectRaw('project_type, count(*) as project_count')
@@ -148,12 +170,32 @@ class ProjectController extends Controller
             return \App\Models\ProjectProgressUpdate::query();
         };
 
-        $puBase = function () use ($effectiveDataDate) {
-            return \App\Models\ProjectProgressUpdate::query()
+        $puBase = function () use ($effectiveDataDate, $selectedProjectId, $selectedSector) {
+            $q = \App\Models\ProjectProgressUpdate::query()
                 ->whereDate('project_progress_updates.data_date', $effectiveDataDate);
+            if ($selectedProjectId) {
+                $q->where('project_progress_updates.project_id', $selectedProjectId);
+            } elseif ($selectedSector) {
+                $q->whereHas('project', fn($pq) => $pq->where('project_type', $selectedSector));
+            }
+            return $q;
         };
 
         $totalProjectsFromUpdates = $puBase()->select('project_id')->distinct()->count('project_id');
+
+        $allProjectsWithUpdates = \App\Models\ProjectProgressUpdate::query()
+            ->join('projects', 'project_progress_updates.project_id', '=', 'projects.id')
+            ->select('projects.id', 'projects.project_code', 'projects.project_name')
+            ->distinct()
+            ->orderBy('projects.project_code');
+
+        if ($selectedProjectId) {
+            $allProjectsWithUpdates = $allProjectsWithUpdates->where('project_progress_updates.project_id', $selectedProjectId);
+        } elseif ($selectedSector) {
+            $allProjectsWithUpdates = $allProjectsWithUpdates->where('projects.project_type', $selectedSector);
+        }
+
+        $allProjectsWithUpdates = $allProjectsWithUpdates->get();
         $totalRevenuePlanned = $puBase()->sum('revenue_planned');
         $totalRevenueActual = $puBase()->sum('revenue_actual');
         $totalCostActual = $puBase()->sum('cost_actual');
@@ -335,7 +377,11 @@ class ProjectController extends Controller
             'avgWeightedCpi',
             'sectorWeightedSpi',
             'sectorWeightedCpi',
-            'dataDate'
+            'dataDate',
+            'effectiveDataDate',
+            'allProjectsWithUpdates',
+            'selectedProjectId',
+            'selectedSector'
         ));
     }
 

@@ -195,7 +195,7 @@
                 <i data-lucide="check-circle" class="w-4 h-4"></i>
             </div>
             <div>
-                <h4 class="text-sm font-black text-slate-900">Final Archival & Status</h4>
+                <h4 class="text-sm font-black text-slate-900">Closing Status</h4>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Operational state</p>
             </div>
         </div>

@@ -67,7 +67,7 @@ class DashboardController extends Controller
         }
 
         if ($request->filled('sector') && $request->sector !== 'all') {
-            $query->where('consultancy_sector', $request->sector);
+            $query->where('project_type', $request->sector);
         }
 
         if ($request->filled('lifecycle_status') && $request->lifecycle_status !== 'all') {
@@ -79,7 +79,7 @@ class DashboardController extends Controller
         }
 
         if ($request->filled('consultant_type') && $request->consultant_type !== 'all') {
-            $query->where('consultant', $request->consultant_type);
+            $query->where('consultancy_sector', $request->consultant_type);
         }
 
         if ($request->filled('variation_type') && $request->variation_type !== 'all') {
@@ -268,12 +268,12 @@ class DashboardController extends Controller
         ];
 
         $filters = [
-            'project_types' => Project::groupBy('project_type')->pluck('project_type')->filter()->sort()->values()->all(),
+            'project_types' => ['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'],
             'project_statuses' => ['Not Completed', 'PPA Received', 'PA Received', 'FA Received', 'Snag / Di-Snag', 'Waiting for PA'],
             'clients' => Project::whereNotNull('project_client')->groupBy('project_client')->pluck('project_client')->sort()->values()->all(),
-            'sectors' => Project::whereNotNull('consultancy_sector')->groupBy('consultancy_sector')->pluck('consultancy_sector')->sort()->values()->all(),
-            'consultant_types' => Project::whereNotNull('consultant')->groupBy('consultant')->pluck('consultant')->sort()->values()->all(),
-            'delivery_methods' => Project::groupBy('delivery_method')->pluck('delivery_method')->filter()->sort()->values()->all(),
+            'sectors' => ['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'],
+            'consultant_types' => ['Government', 'Private', 'Client / Engineering Team'],
+            'delivery_methods' => ['DB', 'DBB', 'DB-LS', 'DB-ADM', 'DBB-ADM', 'DB-CP'],
             'lifecycle_statuses' => ['in progress', 'completed', 'suspended'],
         ];
 

@@ -223,14 +223,14 @@
     <div id="createModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeCreateModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f]/30 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+                <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f]/30 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 shrink-0">
                     <h3 class="text-base font-black text-white">New Progress Update</h3>
                     <button onclick="closeCreateModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
-                <div id="createModalContent" class="p-6">
+                <div id="createModalContent" class="p-6 overflow-y-auto flex-1">
                     <div class="flex items-center justify-center py-12">
                         <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
                     </div>
@@ -243,14 +243,14 @@
     <div id="viewModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeViewModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
+                <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 shrink-0">
                     <h3 class="text-base font-black text-slate-900">Progress Update Details</h3>
                     <button onclick="closeViewModal()" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
-                <div id="viewModalContent" class="p-6">
+                <div id="viewModalContent" class="p-6 overflow-y-auto flex-1">
                     <div class="flex items-center justify-center py-12">
                         <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
                     </div>
@@ -263,14 +263,14 @@
     <div id="editModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeEditModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+                <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 shrink-0">
                     <h3 class="text-base font-black text-slate-900">Edit Progress Update</h3>
                     <button onclick="closeEditModal()" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
-                <div id="editModalContent" class="p-6">
+                <div id="editModalContent" class="p-6 overflow-y-auto flex-1">
                     <div class="flex items-center justify-center py-12">
                         <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
                     </div>

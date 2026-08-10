@@ -29,7 +29,7 @@
 
         <!-- Filters -->
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 w-fit mx-auto">
-            <div class="flex flex-wrap items-center justify-center gap-3">
+            <div class="flex flex-wrap items-end justify-center gap-3">
                 <div class="relative min-w-[220px] max-w-[320px]">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300"></i>
                     <input type="text" id="searchInput" placeholder="Search project..."
@@ -37,37 +37,49 @@
                         class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                 </div>
 
-                <div class="relative min-w-[160px]">
-                    <select id="filterSector" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
-                        <option value="all">All Sectors</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                <div class="flex flex-col gap-1 min-w-[160px]">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Sector</label>
+                    <div class="relative">
+                        <select id="filterSector" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
+                            <option value="all">All Sectors</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                    </div>
                 </div>
 
-                <div class="relative min-w-[160px]">
-                    <select id="filterDeliveryMethod" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
-                        <option value="all">All Delivery Methods</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                <div class="flex flex-col gap-1 min-w-[160px]">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Delivery Method</label>
+                    <div class="relative">
+                        <select id="filterDeliveryMethod" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
+                            <option value="all">All Delivery Methods</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                    </div>
                 </div>
 
-                <div class="relative min-w-[160px]">
-                    <select id="filterConsultantType" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
-                        <option value="all">All Consultant Types</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                <div class="flex flex-col gap-1 min-w-[160px]">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Consultant Type</label>
+                    <div class="relative">
+                        <select id="filterConsultantType" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
+                            <option value="all">All Consultant Types</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                    </div>
                 </div>
 
-                <div class="relative min-w-[160px]">
-                    <select id="filterLifecycleStatus" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
-                        <option value="all">All Project Statuses</option>
-                        <option value="completed">Completed</option>
-                        <option value="in progress">In Progress</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                <div class="flex flex-col gap-1 min-w-[160px]">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Status</label>
+                    <div class="relative">
+                        <select id="filterLifecycleStatus" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
+                            <option value="all">All Project Statuses</option>
+                            <option value="completed">Completed</option>
+                            <option value="in progress">In Progress</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                    </div>
                 </div>
 
-                <button onclick="clearFilters()" class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm shrink-0" title="Clear Filters">
+                <button onclick="clearFilters()" class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm shrink-0 self-end" title="Clear Filters">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
@@ -1087,15 +1099,7 @@
                             <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-[#00ADC5] text-[10px] font-black tabular-nums">${start + index}</span>
                         </td>
                         <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#00515f] to-[#00ADC5] flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#00ADC5]/30">
-                                    <span class="font-black text-[10px] text-white tracking-tight leading-none text-center">${project.project_code}</span>
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="text-sm font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors break-words">${project.project_name}</p>
-                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">${project.project_type}</p>
-                                </div>
-                            </div>
+                            <span class="text-sm font-black text-slate-900 group-hover:text-[#00ADC5] transition-colors">${project.project_code}</span>
                         </td>
                         <td class="px-6 py-4 text-center">${scheduleBadge}</td>
                         <td class="px-6 py-4 text-center">${budgetBadge}</td>
