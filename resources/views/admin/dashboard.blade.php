@@ -832,7 +832,7 @@
                 return;
             }
 
-            const chartHeight = Math.max(520, categories.length * 28);
+            const chartHeight = Math.max(520, categories.length * 20);
             const chartWidth = Math.max(900, categories.length * 110);
             const chartContainer = document.getElementById('chartContainer');
             if (chartContainer) {
