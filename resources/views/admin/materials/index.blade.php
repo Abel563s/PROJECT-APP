@@ -321,6 +321,7 @@
                     document.getElementById('createModalContent').innerHTML = html;
                     document.getElementById('createModal').classList.remove('hidden');
                     if (window.lucide) lucide.createIcons();
+                    initProjectSearch();
                 });
         }
 

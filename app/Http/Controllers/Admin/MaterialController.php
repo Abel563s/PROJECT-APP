@@ -63,13 +63,13 @@ class MaterialController extends Controller
         if (request()->has('partial')) {
             return view('admin.materials.create-modal', [
                 'departments' => $this->departmentsForUser(),
-                'projects' => \App\Models\Project::where('status', 'active')->orderBy('project_name')->get(['id', 'project_code', 'project_name'])
+                'projects' => \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name'])
             ]);
         }
 
         return view('admin.materials.create', [
             'departments' => $this->departmentsForUser(),
-            'projects' => \App\Models\Project::where('status', 'active')->orderBy('project_name')->get(['id', 'project_code', 'project_name'])
+            'projects' => \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name'])
         ]);
     }
 
@@ -216,7 +216,7 @@ class MaterialController extends Controller
     {
         $this->authorizeEditHrRecord($material);
 
-        $projects = \App\Models\Project::where('status', 'active')->orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+        $projects = \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
 
         if (request()->has('partial')) {
             return view('admin.materials.edit-modal', [

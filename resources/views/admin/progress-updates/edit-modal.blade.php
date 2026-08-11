@@ -19,7 +19,7 @@
                 <select name="project_id" required
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
                     @foreach($projects as $project)
-                        <option value="{{ $project->id }}" {{ $update->project_id == $project->id ? 'selected' : '' }}>{{ $project->project_name }} ({{ $project->custom_id }})</option>
+                        <option value="{{ $project->id }}" {{ $update->project_id == $project->id ? 'selected' : '' }}>{{ $project->project_code }}</option>
                     @endforeach
                 </select>
             </div>

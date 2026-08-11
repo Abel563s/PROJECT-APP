@@ -897,8 +897,8 @@
                 },
                 plotOptions: {
                     bar: {
-                        horizontal: true,
-                        barHeight: '70%',
+                        horizontal: false,
+                        columnWidth: '55%',
                         borderRadius: 6,
                         borderRadiusApplication: 'end',
                         distributed: true,
@@ -910,19 +910,20 @@
                 }],
                 xaxis: {
                     categories: categories,
-                    min: minVal - padding,
-                    max: maxVal + padding,
-                    tickAmount: tickAmount,
                     labels: {
-                        style: { fontSize: '10px', fontWeight: 800, colors: '#00ADC5' },
-                        formatter: (val) => `${Math.round(val)}%`
+                        style: { fontSize: '10px', fontWeight: 800, colors: '#334155' },
+                        rotate: -45,
+                        rotateAlways: true,
+                        hideOverlappingLabels: true,
+                        trim: true,
                     },
                     axisBorder: { show: false },
                     axisTicks: { show: false },
                 },
                 yaxis: {
                     labels: {
-                        style: { fontSize: '10px', fontWeight: 800, colors: '#334155' },
+                        style: { fontSize: '10px', fontWeight: 800, colors: '#00ADC5' },
+                        formatter: (val) => `${Math.round(val)}%`
                     }
                 },
                 colors: colors,
