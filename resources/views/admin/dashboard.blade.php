@@ -921,6 +921,9 @@
                     axisTicks: { show: false },
                 },
                 yaxis: {
+                    min: Math.min(minVal, 0) - Math.max(range * 0.15, 2),
+                    max: Math.max(maxVal, 0) + Math.max(range * 0.15, 2),
+                    tickAmount: range > 60 ? 7 : range > 30 ? 5 : 3,
                     labels: {
                         style: { fontSize: '10px', fontWeight: 800, colors: '#00ADC5' },
                         formatter: (val) => `${Math.round(val)}%`
