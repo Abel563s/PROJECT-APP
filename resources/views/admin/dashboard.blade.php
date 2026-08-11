@@ -832,7 +832,7 @@
                 return;
             }
 
-            const chartHeight = Math.max(520, categories.length * 48);
+            const chartHeight = Math.max(520, categories.length * 28);
             const chartWidth = Math.max(900, categories.length * 110);
             const chartContainer = document.getElementById('chartContainer');
             if (chartContainer) {
@@ -900,8 +900,8 @@
                 plotOptions: {
                     bar: {
                         horizontal: false,
-                        columnWidth: '55%',
-                        borderRadius: 6,
+                        columnWidth: '40%',
+                        borderRadius: 4,
                         borderRadiusApplication: 'end',
                         distributed: true,
                     }
