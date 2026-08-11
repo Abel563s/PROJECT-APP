@@ -276,7 +276,7 @@
             </div>
 
             <!-- Chart -->
-            <div id="chartContainer" class="px-5 py-4 w-full bg-gradient-to-b from-white to-slate-50/50" style="max-height: 520px; overflow-x: auto; overflow-y: hidden;">
+            <div id="chartContainer" class="px-5 py-4 w-full bg-gradient-to-b from-white to-slate-50/50" style="overflow-x: auto;">
                 <div id="chart" class="h-full w-full"></div>
             </div>
         </div>
