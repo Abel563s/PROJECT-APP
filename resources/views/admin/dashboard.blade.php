@@ -276,7 +276,7 @@
             </div>
 
             <!-- Chart -->
-            <div id="chartContainer" class="px-5 py-4 w-full bg-gradient-to-b from-white to-slate-50/50" style="max-height: 600px; overflow-y: auto;">
+            <div id="chartContainer" class="px-5 py-4 w-full bg-gradient-to-b from-white to-slate-50/50" style="max-height: 520px; overflow-x: auto; overflow-y: hidden;">
                 <div id="chart" class="h-full w-full"></div>
             </div>
         </div>
@@ -832,7 +832,8 @@
                 return;
             }
 
-            const chartHeight = Math.max(420, categories.length * 32);
+            const chartHeight = Math.max(520, categories.length * 48);
+            const chartWidth = Math.max(900, categories.length * 110);
             const chartContainer = document.getElementById('chartContainer');
             if (chartContainer) {
                 chartContainer.style.height = `${chartHeight}px`;
@@ -874,6 +875,7 @@
                 chart: {
                     type: 'bar',
                     height: chartHeight,
+                    width: chartWidth,
                     animations: {
                         enabled: true,
                         easing: 'easeinout',
