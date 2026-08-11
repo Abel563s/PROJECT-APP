@@ -106,9 +106,9 @@ class DashboardController extends Controller
                 $schedulePerformancePercent = 0;
             } elseif ($project->baseline_finish_date) {
                 if ($project->actual_finish_date) {
-                    $svForStatus = $project->baseline_finish_date->diffInDays($project->actual_start_date);
+                    $svForStatus = $project->actual_finish_date->diffInDays($project->baseline_finish_date);
                 } else {
-                    $svForStatus = $project->baseline_finish_date->diffInDays(now());
+                    $svForStatus = now()->diffInDays($project->baseline_finish_date);
                 }
 
                 if ($svForStatus < 0) {
@@ -137,9 +137,9 @@ class DashboardController extends Controller
                     $schedulePerformancePercent = 0;
                 } else {
                     if ($project->actual_finish_date) {
-                        $remainingDays = $project->baseline_finish_date->diffInDays($project->actual_finish_date);
+                        $remainingDays = $project->actual_finish_date->diffInDays($project->baseline_finish_date);
                     } else {
-                        $remainingDays = $project->baseline_finish_date->diffInDays(now());
+                        $remainingDays = now()->diffInDays($project->baseline_finish_date);
                     }
                     $schedulePerformancePercent = round(($remainingDays / $baselineDuration) * 100, 1);
                 }
