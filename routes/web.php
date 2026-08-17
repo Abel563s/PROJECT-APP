@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
         // Project Payments
         Route::get('/projects/payments', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'index'])->name('projects.payments.index');
         Route::get('/projects/{project}/payments', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'manage'])->name('projects.payments.manage');
+        Route::get('/projects/{project}/payments/create-modal', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'create'])->name('projects.payments.create-modal');
         Route::post('/projects/{project}/payments', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'store'])->name('projects.payments.store');
         Route::get('/payments/{payment}', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'show'])->name('projects.payments.show');
 

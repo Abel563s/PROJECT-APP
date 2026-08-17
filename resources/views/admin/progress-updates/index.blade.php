@@ -2,7 +2,7 @@
     <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
 
         <!-- Compact Header -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-3 border-b border-slate-100 items-center">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-900/20">
                     <i data-lucide="trending-up" class="w-4 h-4"></i>
@@ -14,19 +14,23 @@
                     <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Operational Performance Matrix</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <div class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-100 rounded-xl shadow-sm">
-                    <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>
-                    <span class="text-[9px] font-black text-slate-900 tracking-widest uppercase leading-tight">{{ $updates->total() }} Metrics Filed</span>
-                </div>
 
+            <div class="flex justify-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-b from-[#00515f] to-black rounded-lg shadow-sm border border-white/10">
+                    <i data-lucide="trending-up" class="w-3.5 h-3.5 text-white/90"></i>
+                    <span class="text-base font-black text-white tracking-tight">{{ $updates->total() }}</span>
+                    <span class="text-[9px] font-black text-white/80 uppercase tracking-wider">Progress Updates</span>
+                </div>
+            </div>
+
+            <div class="flex justify-end">
                 <button onclick="openCreateModal()"
                    class="group/btn relative px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20">
-                    <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
-                    <span class="relative flex items-center gap-1.5">
-                        <i data-lucide="plus" class="w-3 h-3"></i>
-                        New Update
-                    </span>
+                   <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
+                   <span class="relative flex items-center gap-1.5">
+                       <i data-lucide="plus" class="w-3 h-3"></i>
+                       New Update
+                   </span>
                 </button>
             </div>
         </div>
@@ -41,7 +45,29 @@
                         class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                 </div>
 
-                <div class="flex items-center gap-3 shrink-0">
+                <div class="flex flex-wrap items-center gap-3 shrink-0">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Sector</span>
+                        <div class="relative group/select">
+                            <select name="project_sector" onchange="this.form.submit()"
+                                class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                                <option value="">All Sectors</option>
+                                @foreach(['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'] as $sector)
+                                    <option value="{{ $sector }}" {{ request('project_sector') == $sector ? 'selected' : '' }}>{{ $sector }}</option>
+                                @endforeach
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Data Date</span>
+                        <div class="relative group/select">
+                            <input type="date" name="data_date" value="{{ request('data_date') }}" onchange="this.form.submit()"
+                                class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                        </div>
+                    </div>
+
                     <div class="relative group/select">
                         <select name="project_id" onchange="this.form.submit()"
                             class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
@@ -55,9 +81,9 @@
                         <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
                     </div>
 
-                    @if(request()->anyFilled(['search', 'project_id']))
+                    @if(request()->anyFilled(['search', 'project_id', 'project_sector', 'data_date']))
                         <a href="{{ route('admin.progress-updates.index') }}"
-                            class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
+                            class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm self-end"
                             title="Clear Filters">
                             <i data-lucide="x" class="w-4 h-4"></i>
                         </a>
@@ -80,6 +106,7 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">CPI</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revenue Planned</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revenue Actual</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revenue Variance</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Data Date</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Last Edit</th>
                             <th class="px-6 py-3 text-right border-b border-[#00515f]/30"></th>
@@ -155,6 +182,16 @@
                                         {{ number_format($update->revenue_actual) }}
                                     </span>
                                 </td>
+                                <td class="px-6 py-4 text-right">
+                                    @php
+                                        $revenueVariance = ($update->revenue_actual ?? 0) - ($update->revenue_planned ?? 0);
+                                        $varianceColor = $revenueVariance >= 0 ? 'text-emerald-600' : 'text-rose-600';
+                                    @endphp
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 {{ $varianceColor }} text-[11px] font-black tabular-nums tracking-tight shadow-sm">
+                                        <span class="text-slate-500 font-bold mr-1">ETB</span>
+                                        {{ number_format($revenueVariance) }}
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('M d, Y') : '-' }}</span>
                                 </td>
@@ -189,7 +226,7 @@
                                 </td>
                             </tr>
                             <tr class="constraints-row bg-slate-50/60 hidden">
-                                <td colspan="11" class="px-6 py-3">
+                                <td colspan="12" class="px-6 py-3">
                                     <div class="flex items-start gap-2">
                                         <span class="text-[8px] font-black text-[#00515f] uppercase tracking-widest mt-0.5 shrink-0">Top Constraints</span>
                                         <p class="text-xs font-black text-[#00515f] leading-relaxed">{{ $update->top_constraints ?: '-' }}</p>
@@ -198,7 +235,7 @@
                             </tr>
                         @empty
                             <tr>
-                                        <td colspan="11" class="px-6 py-16 text-center">
+                                        <td colspan="12" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="trending-up" class="w-8 h-8"></i>
@@ -243,10 +280,10 @@
     <div id="viewModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeViewModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
-                <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 shrink-0">
-                    <h3 class="text-base font-black text-slate-900">Progress Update Details</h3>
-                    <button onclick="closeViewModal()" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors">
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col border border-slate-200">
+                <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
+                    <h3 class="text-base font-black text-white">Progress Update Details</h3>
+                    <button onclick="closeViewModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -287,48 +324,6 @@
                     document.getElementById('createModalContent').innerHTML = html;
                     document.getElementById('createModal').classList.remove('hidden');
                     if (window.lucide) lucide.createIcons();
-
-                    const plannedInput = document.querySelector('input[name="progress_planned"]');
-                    const actualInput = document.querySelector('input[name="progress_actual"]');
-                    const spiDisplay = document.getElementById('spiDisplay');
-
-                    if (plannedInput && actualInput && spiDisplay) {
-                        function updateSPI() {
-                            const planned = parseFloat(plannedInput.value) || 0;
-                            const actual = parseFloat(actualInput.value) || 0;
-                            const spi = planned > 0 ? ((actual / planned) * 100).toFixed(2) : '0.00';
-                            spiDisplay.textContent = spi + '%';
-                        }
-                        plannedInput.addEventListener('input', updateSPI);
-                        actualInput.addEventListener('input', updateSPI);
-                    }
-
-                    const costPlannedInput = document.getElementById('createCostPlanned');
-                    const costActualInput = document.getElementById('createCostActual');
-                    const cpiDisplay = document.getElementById('createCpiDisplay');
-
-                    if (costPlannedInput && costActualInput && cpiDisplay) {
-                        function updateCPI() {
-                            const planned = parseFloat(costPlannedInput.value) || 0;
-                            const actual = parseFloat(costActualInput.value) || 0;
-                            if (actual > 0) {
-                                const cpi = planned / actual;
-                                cpiDisplay.textContent = cpi.toFixed(2);
-                                if (cpi > 1.0) {
-                                    cpiDisplay.className = 'text-lg font-black text-emerald-600 mt-0.5';
-                                } else if (cpi === 1.0) {
-                                    cpiDisplay.className = 'text-lg font-black text-amber-600 mt-0.5';
-                                } else {
-                                    cpiDisplay.className = 'text-lg font-black text-rose-600 mt-0.5';
-                                }
-                            } else {
-                                cpiDisplay.textContent = '0.00';
-                                cpiDisplay.className = 'text-lg font-black text-slate-900 mt-0.5';
-                            }
-                        }
-                        costPlannedInput.addEventListener('input', updateCPI);
-                        costActualInput.addEventListener('input', updateCPI);
-                    }
                 });
         }
 
@@ -357,41 +352,6 @@
                     document.getElementById('editModalContent').innerHTML = html;
                     document.getElementById('editModal').classList.remove('hidden');
                     if (window.lucide) lucide.createIcons();
-
-                    const plannedInput = document.getElementById('editPlanned');
-                    const actualInput = document.getElementById('editActual');
-                    const spiDisplay = document.getElementById('editSpiDisplay');
-
-                    if (plannedInput && actualInput && spiDisplay) {
-                        function updateEditSPI() {
-                            const planned = parseFloat(plannedInput.value) || 0;
-                            const actual = parseFloat(actualInput.value) || 0;
-                            const spi = planned > 0 ? ((actual / planned) * 100).toFixed(2) : '0.00';
-                            spiDisplay.textContent = spi + '%';
-                        }
-                        plannedInput.addEventListener('input', updateEditSPI);
-                        actualInput.addEventListener('input', updateEditSPI);
-                    }
-
-                    const editCostPlannedInput = document.getElementById('editCostPlanned');
-                    const editCostActualInput = document.getElementById('editCostActual');
-                    const editCpiDisplay = document.getElementById('editCpiDisplay');
-
-                    if (editCostPlannedInput && editCostActualInput && editCpiDisplay) {
-                        function updateEditCPI() {
-                            const planned = parseFloat(editCostPlannedInput.value) || 0;
-                            const actual = parseFloat(editCostActualInput.value) || 0;
-                            if (actual > 0) {
-                                const cpi = planned / actual;
-                                const cpiColor = cpi > 1.0 ? 'text-emerald-600' : (cpi === 1.0 ? 'text-amber-600' : 'text-rose-600');
-                                editCpiDisplay.innerHTML = `<span class="${cpiColor}">${cpi.toFixed(2)}</span>`;
-                            } else {
-                                editCpiDisplay.innerHTML = `<span class="text-slate-900">0.00</span>`;
-                            }
-                        }
-                        editCostPlannedInput.addEventListener('input', updateEditCPI);
-                        editCostActualInput.addEventListener('input', updateEditCPI);
-                    }
                 });
         }
 

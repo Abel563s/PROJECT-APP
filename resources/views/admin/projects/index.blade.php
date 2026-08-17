@@ -2,7 +2,7 @@
     <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
 
         <!-- Compact Header -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-3 border-b border-slate-100 items-center">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-900/20">
                     <i data-lucide="layers" class="w-4 h-4"></i>
@@ -15,15 +15,15 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2">
-                <div class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-100 rounded-xl shadow-sm">
-                    <div class="w-1.5 h-1.5 rounded-full bg-[#00ADC5] animate-pulse"></div>
-                    <div class="flex flex-col">
-                        <span class="text-[9px] font-black text-slate-900 tracking-widest uppercase leading-tight">{{ $projects->total() }} Projects</span>
-                        <span class="text-[7px] font-bold text-slate-400 uppercase tracking-[0.2em] leading-tight">Registered</span>
-                    </div>
+            <div class="flex justify-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-b from-[#00515f] to-black rounded-lg shadow-sm border border-white/10">
+                    <i data-lucide="layers" class="w-3.5 h-3.5 text-white/90"></i>
+                    <span class="text-base font-black text-white tracking-tight">{{ $projects->total() }}</span>
+                    <span class="text-[9px] font-black text-white/80 uppercase tracking-wider">Projects Registered</span>
                 </div>
+            </div>
 
+            <div class="flex justify-end">
                 <button onclick="openCreateModal()"
                     class="group/btn relative px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20">
                     <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
@@ -47,13 +47,13 @@
 
                 <div class="flex flex-nowrap items-center gap-3 shrink-0 overflow-x-auto pb-1">
                     <div class="flex flex-col gap-1">
-                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Type</span>
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Sector</span>
                         <div class="relative group/select">
-                            <select name="type" onchange="this.form.submit()"
+                            <select name="project_sector" onchange="this.form.submit()"
                                 class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
-                                <option value="">All Modules</option>
-                                @foreach(['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'] as $type)
-                                    <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>{{ $type }}</option>
+                                <option value="">All Sectors</option>
+                                @foreach(['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'] as $sector)
+                                    <option value="{{ $sector }}" {{ request('project_sector') == $sector ? 'selected' : '' }}>{{ $sector }}</option>
                                 @endforeach
                             </select>
                             <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
@@ -61,27 +61,13 @@
                     </div>
 
                     <div class="flex flex-col gap-1">
-                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Method</span>
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Delivery Method</span>
                         <div class="relative group/select">
                             <select name="delivery_method" onchange="this.form.submit()"
                                 class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
                                 <option value="">All Methods</option>
-                                @foreach(['DBB', 'DB', 'CM', 'Negotiated'] as $method)
+                                @foreach(['DB', 'DBB'] as $method)
                                     <option value="{{ $method }}" {{ request('delivery_method') == $method ? 'selected' : '' }}>{{ $method }}</option>
-                                @endforeach
-                            </select>
-                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Sector</span>
-                        <div class="relative group/select">
-                            <select name="consultancy_sector" onchange="this.form.submit()"
-                                class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
-                                <option value="">All Sectors</option>
-                                @foreach(['Government', 'Private', 'Client / Engineering Team'] as $sector)
-                                    <option value="{{ $sector }}" {{ request('consultancy_sector') == $sector ? 'selected' : '' }}>{{ $sector }}</option>
                                 @endforeach
                             </select>
                             <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
@@ -91,18 +77,74 @@
                     <div class="flex flex-col gap-1">
                         <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Consultant Type</span>
                         <div class="relative group/select">
-                            <select name="consultant" onchange="this.form.submit()"
+                            <select name="consultant_type" onchange="this.form.submit()"
                                 class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
-                                <option value="">All Consultants</option>
-                                @foreach($consultantTypes as $consultant)
-                                    <option value="{{ $consultant }}" {{ request('consultant') == $consultant ? 'selected' : '' }}>{{ $consultant }}</option>
+                                <option value="">All Types</option>
+                                @foreach(['Government', 'Private', 'Client / Engineering Team'] as $type)
+                                    <option value="{{ $type }}" {{ request('consultant_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
                                 @endforeach
                             </select>
                             <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
                         </div>
                     </div>
 
-                    @if(request()->anyFilled(['search', 'type', 'delivery_method', 'consultancy_sector', 'consultant']))
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Budget Performance</span>
+                        <div class="relative group/select">
+                            <select name="budget_performance" onchange="this.form.submit()"
+                                class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                                <option value="">All</option>
+                                <option value="Above Budget" {{ request('budget_performance') == 'Above Budget' ? 'selected' : '' }}>Above Budget</option>
+                                <option value="Under Budget" {{ request('budget_performance') == 'Under Budget' ? 'selected' : '' }}>Under Budget</option>
+                                <option value="On Budget" {{ request('budget_performance') == 'On Budget' ? 'selected' : '' }}>On Budget</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Cost Performance</span>
+                        <div class="relative group/select">
+                            <select name="cost_performance" onchange="this.form.submit()"
+                                class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                                <option value="">All</option>
+                                <option value="Above Allowable Cost" {{ request('cost_performance') == 'Above Allowable Cost' ? 'selected' : '' }}>Above Allowable Cost</option>
+                                <option value="Below Allowable Cost" {{ request('cost_performance') == 'Below Allowable Cost' ? 'selected' : '' }}>Below Allowable Cost</option>
+                                <option value="With Allowable Cost" {{ request('cost_performance') == 'With Allowable Cost' ? 'selected' : '' }}>With Allowable Cost</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Schedule Performance</span>
+                        <div class="relative group/select">
+                            <select name="schedule_performance" onchange="this.form.submit()"
+                                class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                                <option value="">All</option>
+                                <option value="Behind Schedule" {{ request('schedule_performance') == 'Behind Schedule' ? 'selected' : '' }}>Behind Schedule</option>
+                                <option value="Ahead of Schedule" {{ request('schedule_performance') == 'Ahead of Schedule' ? 'selected' : '' }}>Ahead of Schedule</option>
+                                <option value="On Schedule" {{ request('schedule_performance') == 'On Schedule' ? 'selected' : '' }}>On Schedule</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Status</span>
+                        <div class="relative group/select">
+                            <select name="project_status" onchange="this.form.submit()"
+                                class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                                <option value="">All</option>
+                                <option value="in progress" {{ request('project_status') == 'in progress' ? 'selected' : '' }}>In Progress</option>
+                                <option value="completed" {{ request('project_status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="suspended" {{ request('project_status') == 'suspended' ? 'selected' : '' }}>Suspended</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        </div>
+                    </div>
+
+                    @if(request()->anyFilled(['search', 'project_sector', 'delivery_method', 'consultant_type', 'budget_performance', 'cost_performance', 'schedule_performance', 'project_status']))
                         <a href="{{ route('admin.projects.index') }}"
                             class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm self-end"
                             title="Clear Filters">

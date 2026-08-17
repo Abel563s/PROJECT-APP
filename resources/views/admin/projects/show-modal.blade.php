@@ -130,6 +130,11 @@
                 $overallPerformance = 'Check Data';
                 $overallPerformanceColor = 'text-amber-600';
             }
+
+            $elapsedDays = null;
+            if ($project->baseline_start_date) {
+                $elapsedDays = \Carbon\Carbon::today()->diffInDays($project->baseline_start_date) + 1;
+            }
         @endphp
 
         <div class="space-y-3">
@@ -152,11 +157,14 @@
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revised Budget</p>
                         <p class="text-xs font-black text-slate-900">ETB {{ number_format($revisedBudgetAmount) }}</p>
                     </div>
+                    @if($project->status === 'completed')
                     <div>
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Budget at Completion</p>
                         <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->budget_at_completion) }}</p>
                     </div>
+                    @endif
                 </div>
+                @if($project->status === 'completed')
                 <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div>
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Budget Variance</p>
@@ -171,6 +179,7 @@
                         <p class="text-xs font-black {{ $signedBudgetVariance > 0 ? 'text-rose-600' : ($signedBudgetVariance < 0 ? 'text-emerald-600' : 'text-slate-900') }}">{{ $budgetPerformance }}</p>
                     </div>
                 </div>
+                @endif
             </div>
             <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
                 <p class="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">Cost Management</p>
@@ -179,22 +188,24 @@
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Planned Cost</p>
                         <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->total_allowable_cost) }}</p>
                     </div>
-                    <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost at Completion</p>
-                        <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->cost_at_completion) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Variance at Completion</p>
-                        <p class="text-xs font-black text-slate-900">ETB {{ number_format($costVariance) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost EAC Index %</p>
-                        <p class="text-xs font-black {{ $costEacIndex > 0 ? 'text-emerald-600' : ($costEacIndex < 0 ? 'text-rose-600' : 'text-slate-900') }}">{{ number_format($costEacIndex * 100, 2) }}%</p>
-                    </div>
-                    <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Performance</p>
-                        <p class="text-xs font-black {{ $costVariance < 0 ? 'text-rose-600' : ($costVariance > 0 ? 'text-emerald-600' : 'text-[#00ADC5]') }}">{{ $costPerformance }}</p>
-                    </div>
+                        @if($project->status === 'completed')
+                        <div>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost at Completion</p>
+                            <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->cost_at_completion) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Variance at Completion</p>
+                            <p class="text-xs font-black text-slate-900">ETB {{ number_format($costVariance) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost EAC Index %</p>
+                            <p class="text-xs font-black {{ $costEacIndex > 0 ? 'text-emerald-600' : ($costEacIndex < 0 ? 'text-rose-600' : 'text-slate-900') }}">{{ number_format($costEacIndex * 100, 2) }}%</p>
+                        </div>
+                        <div>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Performance</p>
+                            <p class="text-xs font-black {{ $costVariance < 0 ? 'text-rose-600' : ($costVariance > 0 ? 'text-emerald-600' : 'text-[#00ADC5]') }}">{{ $costPerformance }}</p>
+                        </div>
+                        @endif
                 </div>
             </div>
         </div>
@@ -248,6 +259,34 @@
                 </p>
             </div>
 
+            @if($project->baseline_start_date)
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Elapsed Days</p>
+                <p class="text-xs font-black text-slate-900">
+                    {{ \Carbon\Carbon::today()->diffInDays($project->baseline_start_date) + 1 }} days
+                </p>
+            </div>
+            @endif
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Approved EOT</p>
+                <p class="text-xs font-black text-slate-900">{{ $project->approved_eot ? $project->approved_eot->format('M d, Y') : '---' }}</p>
+            </div>
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Approved EOT Duration</p>
+                <p class="text-xs font-black text-slate-900">
+                    @if($project->approved_eot && $project->baseline_finish_date)
+                        {{ $project->approved_eot->diffInDays($project->baseline_finish_date) + 1 }} days
+                    @else
+                        ---
+                    @endif
+                </p>
+            </div>
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revision</p>
+                <p class="text-xs font-black text-slate-900">{{ $project->revision_number ?: '---' }}</p>
+            </div>
+
+            @if($project->status === 'completed')
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule Variance</p>
                 <p class="text-xs font-black text-slate-900">
@@ -275,7 +314,9 @@
                     @endif
                 </p>
             </div>
+            @endif
 
+            @if($project->status === 'completed')
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule Performance Index %</p>
                 <p class="text-xs font-black text-slate-900">
@@ -302,6 +343,8 @@
                     @endif
                 </p>
             </div>
+            @endif
+            @if($project->status === 'completed')
             <div class="col-span-3 flex justify-center">
                 <div class="text-center">
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule Status</p>
@@ -338,6 +381,7 @@
                     </p>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 

@@ -273,7 +273,7 @@ class DashboardController extends Controller
             'clients' => Project::whereNotNull('project_client')->groupBy('project_client')->pluck('project_client')->sort()->values()->all(),
             'sectors' => ['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'],
             'consultant_types' => ['Government', 'Private', 'Client / Engineering Team'],
-            'delivery_methods' => ['DB', 'DBB', 'DB-LS', 'DB-ADM', 'DBB-ADM', 'DB-CP'],
+            'delivery_methods' => ['DB', 'DBB'],
             'lifecycle_statuses' => ['in progress', 'completed', 'suspended'],
         ];
 

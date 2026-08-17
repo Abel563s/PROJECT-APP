@@ -14,6 +14,14 @@
                     <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Project Payment Management</p>
                 </div>
             </div>
+
+            <div class="flex justify-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-b from-[#00515f] to-black rounded-lg shadow-sm border border-white/10">
+                    <i data-lucide="banknote" class="w-3.5 h-3.5 text-white/90"></i>
+                    <span class="text-base font-black text-white tracking-tight">{{ $projects->total() }}</span>
+                    <span class="text-[9px] font-black text-white/80 uppercase tracking-wider">Projects Registered</span>
+                </div>
+            </div>
         </div>
 
         <!-- Search & Filter -->
@@ -36,84 +44,145 @@
             </div>
         </form>
 
-        <!-- Projects Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            @foreach($projects as $project)
-                <div class="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:shadow-cyan-100 transition-all duration-300 overflow-hidden">
-                    <div class="p-5 space-y-3">
-                        <div class="flex items-start justify-between">
-                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
-                                <i data-lucide="building-2" class="w-5 h-5"></i>
-                            </div>
-                            <span class="px-2 py-0.5 bg-slate-50 text-slate-400 rounded-md text-[8px] font-black tracking-widest uppercase">
-                                {{ $project->custom_id }}
-                            </span>
-                        </div>
-
-                        <div>
-                            <h3 class="text-sm font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">
-                                {{ $project->project_name }}
-                            </h3>
-                            <p class="text-[9px] font-black text-[#00ADC5] mt-0.5">{{ $project->project_code }}</p>
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <div class="flex items-center justify-between text-[10px]">
-                                <span class="text-slate-400 font-black uppercase tracking-widest">Contract Value</span>
-                                <span class="text-slate-900 font-black">ETB {{ number_format($project->total_project_value) }}</span>
-                            </div>
-                            <div class="flex items-center justify-between text-[10px]">
-                                <span class="text-slate-400 font-black uppercase tracking-widest">Total Certified</span>
-                                <span class="text-amber-500 font-black">ETB {{ number_format($project->total_certified) }}</span>
-                            </div>
-                            <div class="flex items-center justify-between text-[10px]">
-                                <span class="text-slate-400 font-black uppercase tracking-widest text-[#00ADC5]">Remaining Balance</span>
-                                <span class="text-slate-900 font-black">ETB {{ number_format($project->total_project_value - $project->total_certified) }}</span>
-                            </div>
-
+        <!-- Data Table -->
+        <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-50 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-gradient-to-b from-[#00515f] to-black">
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">#</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Contract Value</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Total Certified</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Total Paid</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Remaining Balance</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Payment Progress</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50/50">
+                        @forelse($projects as $project)
                             @php
-                                $progress = $project->total_project_value > 0 ? ($project->total_certified / $project->total_project_value) * 100 : 0;
+                                $contractValue = $project->total_project_value;
+                                $totalCertified = $project->total_certified ?? 0;
+                                $totalPaid = $project->total_paid ?? 0;
+                                $remainingBalance = $contractValue - $totalCertified;
+                                $paymentProgress = $contractValue > 0 ? ($totalPaid / $contractValue) * 100 : 0;
                             @endphp
+                            <tr class="group hover:bg-slate-50/80 transition-all duration-300 odd:bg-white even:bg-slate-50/20">
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="space-y-0.5">
+                                        <span class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">{{ $project->project_name }}</span>
+                                        <span class="text-[9px] font-black text-[#00ADC5]">{{ $project->project_code }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[11px] font-black tabular-nums tracking-tight shadow-sm">
+                                        <span class="text-slate-500 font-bold mr-1">ETB</span>
+                                        {{ number_format($contractValue) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[11px] font-black tabular-nums tracking-tight shadow-sm">
+                                        <span class="text-slate-500 font-bold mr-1">ETB</span>
+                                        {{ number_format($totalCertified) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[11px] font-black tabular-nums tracking-tight shadow-sm">
+                                        <span class="text-slate-500 font-bold mr-1">ETB</span>
+                                        {{ number_format($totalPaid) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[11px] font-black tabular-nums tracking-tight shadow-sm">
+                                        <span class="text-slate-500 font-bold mr-1">ETB</span>
+                                        {{ number_format($remainingBalance) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $paymentProgress >= 100 ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : ($paymentProgress > 0 ? 'bg-[#00ADC5]/10 text-[#00ADC5] border-[#00ADC5]/20' : 'bg-slate-100 text-slate-900 border-slate-200') }} border shadow-sm group-hover:shadow-md transition-all">
+                                        {{ number_format($paymentProgress, 1) }}%
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <a href="{{ route('admin.projects.payments.manage', $project) }}"
+                                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 text-slate-700 font-black text-[9px] uppercase tracking-widest rounded-lg hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all duration-300 shadow-sm">
+                                        <span>Manage</span>
+                                        <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="px-6 py-16 text-center">
+                                    <div class="flex flex-col items-center gap-4">
+                                        <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
+                                            <i data-lucide="database" class="w-8 h-8"></i>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <h3 class="text-lg font-black text-slate-900">No Projects Found</h3>
+                                            <p class="text-[9px] uppercase font-black tracking-widest text-slate-400">Create a project first to initialize financial protocols.</p>
+                                        </div>
+                                        <a href="{{ route('admin.projects.create') }}"
+                                            class="px-5 py-2 bg-slate-900 text-white rounded-lg font-black text-[9px] uppercase tracking-widest shadow-lg shadow-slate-900/10 hover:scale-105 active:scale-95 transition-all">
+                                            Initialize First Protocol
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-                            <div class="pt-1.5">
-                                <div class="flex items-center justify-between text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">
-                                    <span>Progress</span>
-                                    <span>{{ number_format($progress, 1) }}%</span>
-                                </div>
-                                <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-[#00ADC5] to-blue-500 rounded-full" style="width: {{ $progress }}%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="px-5 py-2.5 bg-slate-50 border-t border-slate-100">
-                        <a href="{{ route('admin.projects.payments.manage', $project) }}"
-                            class="w-full flex items-center justify-center gap-2 py-2 bg-white border border-slate-200 text-slate-700 font-black text-[9px] uppercase tracking-widest rounded-lg hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all duration-300 shadow-sm">
-                            <span>Manage Payments</span>
-                            <i data-lucide="arrow-right" class="w-3 h-3"></i>
-                        </a>
+            <!-- Footer -->
+            <div class="p-6 border-t border-slate-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50/30">
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5 px-3 h-10 bg-white border border-slate-100 rounded-xl">
+                        <span class="text-[9px] font-black text-slate-900 tracking-widest">{{ $projects->firstItem() ?: 0 }}</span>
+                        <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">to</span>
+                        <span class="text-[9px] font-black text-slate-400 tracking-widest">{{ $projects->lastItem() ?: 0 }}</span>
+                        <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">of</span>
+                        <span class="text-[9px] font-black text-slate-400 tracking-widest">{{ $projects->total() }}</span>
                     </div>
                 </div>
-            @endforeach
+
+                <div class="flex items-center gap-2">
+                    {{ $projects->links() }}
+                </div>
+            </div>
         </div>
-
-        @if($projects->hasPages())
-            <div class="px-4 py-4 border-t border-slate-50 bg-slate-50/30 rounded-2xl">
-                {{ $projects->links() }}
-            </div>
-        @endif
-
-        @if($projects->isEmpty())
-            <div class="py-16 text-center text-slate-400 bg-white rounded-2xl border border-slate-50">
-                <div class="flex flex-col items-center gap-3">
-                    <div class="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-200">
-                        <i data-lucide="database" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-base font-black text-slate-900">No Projects Found</h3>
-                    <p class="text-[9px] uppercase font-black tracking-widest text-slate-400">Create a project first to initialize financial protocols.</p>
-                </div>
-            </div>
-        @endif
     </div>
+
+    <script>
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeEditModal();
+                closeCreateModal();
+            }
+        });
+    </script>
+
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </x-app-layout>

@@ -1530,27 +1530,27 @@
                                             donut: {
                                                 labels: {
                                                     show: true,
-                                                    name: {
-                                                        show: true,
-                                                        fontSize: '8px',
-                                                        fontWeight: 700,
-                                                        color: '#64748b',
-                                                    },
-                                                    value: {
-                                                        show: true,
-                                                        fontSize: '14px',
-                                                        fontWeight: 800,
-                                                        color: '#0f172a',
-                                                        formatter: () => count
-                                                    },
-                                                    total: {
-                                                        show: true,
-                                                        label: cat.label,
-                                                        fontSize: '8px',
-                                                        fontWeight: 700,
-                                                        color: '#475569',
-                                                        formatter: () => percent + '%'
-                                                    }
+                                                         name: {
+                                                             show: true,
+                                                             fontSize: '11px',
+                                                             fontWeight: 700,
+                                                             color: '#64748b',
+                                                         },
+                                                         value: {
+                                                             show: true,
+                                                             fontSize: '16px',
+                                                             fontWeight: 800,
+                                                             color: '#0f172a',
+                                                             formatter: () => count
+                                                         },
+                                                         total: {
+                                                             show: true,
+                                                             label: cat.label,
+                                                             fontSize: '11px',
+                                                             fontWeight: 700,
+                                                             color: '#475569',
+                                                             formatter: () => percent + '%'
+                                                         }
                                                 }
                                             }
                                         }
@@ -1570,13 +1570,13 @@
                                                 show: true,
                                                 name: {
                                                     show: true,
-                                                    fontSize: '8px',
+                                                    fontSize: '11px',
                                                     fontWeight: 700,
                                                     color: '#64748b',
                                                 },
                                                 value: {
                                                     show: true,
-                                                    fontSize: '14px',
+                                                    fontSize: '16px',
                                                     fontWeight: 800,
                                                     color: '#0f172a',
                                                     formatter: (val) => val
@@ -1584,7 +1584,7 @@
                                                 total: {
                                                     show: true,
                                                     label: config.totalLabel,
-                                                    fontSize: '8px',
+                                                    fontSize: '11px',
                                                     fontWeight: 700,
                                                     color: '#475569',
                                                     formatter: () => total.toString()
@@ -1612,13 +1612,13 @@
                                 show: true,
                                 name: {
                                     show: true,
-                                    fontSize: '8px',
+                                    fontSize: '11px',
                                     fontWeight: 700,
                                     color: '#64748b',
                                 },
                                 value: {
                                     show: true,
-                                    fontSize: '14px',
+                                    fontSize: '16px',
                                     fontWeight: 800,
                                     color: '#0f172a',
                                     formatter: (val) => val
@@ -1626,7 +1626,7 @@
                                 total: {
                                     show: true,
                                     label: config.totalLabel,
-                                    fontSize: '8px',
+                                    fontSize: '11px',
                                     fontWeight: 700,
                                     color: '#475569',
                                     formatter: () => total.toString()
@@ -1650,21 +1650,21 @@
                 responsive: [
                     {
                         breakpoint: 480,
-                        options: {
-                            chart: {
-                                height: 200
-                            },
-                            plotOptions: {
-                                pie: {
-                                    donut: {
-                                        labels: {
-                                            value: { fontSize: '12px' },
-                                            total: { fontSize: '8px' }
+                                        options: {
+                                            chart: {
+                                                height: 200
+                                            },
+                                            plotOptions: {
+                                                pie: {
+                                                    donut: {
+                                                        labels: {
+                                                            value: { fontSize: '14px' },
+                                                            total: { fontSize: '10px' }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
-                                    }
-                                }
-                            }
-                        }
                     }
                 ]
             });
@@ -1686,9 +1686,9 @@
                 return `
                     <div class="analytics-legend-item flex items-center gap-1.5 ${isActive ? 'bg-white/80 p-0.5 rounded border border-slate-200 shadow-sm' : ''} cursor-pointer hover:bg-slate-50 rounded transition-all px-1.5 py-0.5 border border-transparent hover:border-slate-100" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
                         <span class="w-1.5 h-1.5 rounded-sm flex-shrink-0 ${mutedClass}" style="background-color: ${cat.color};"></span>
-                        <span class="text-[7px] font-black ${mutedClass} uppercase tracking-wider truncate max-w-[80px]">${cat.label}</span>
-                        <span class="text-[7px] font-black ${mutedClass} ml-auto">${count}</span>
-                        <span class="text-[7px] font-black ${mutedClass} w-6 text-right">${percent}%</span>
+                        <span class="text-[10px] font-black ${mutedClass} uppercase tracking-wider truncate max-w-[80px]">${cat.label}</span>
+                        <span class="text-[10px] font-black ${mutedClass} ml-auto">${count}</span>
+                        <span class="text-[10px] font-black ${mutedClass} w-6 text-right">${percent}%</span>
                     </div>
                 `;
             }).join('');
@@ -2170,6 +2170,7 @@
         }
         #analyticsGrid .apexcharts-pie-label {
             font-family: 'Inter', sans-serif !important;
+            font-size: 11px !important;
         }
         #analyticsGrid .apexcharts-donut-series {
             transition: transform 0.3s ease;

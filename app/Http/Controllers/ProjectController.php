@@ -22,20 +22,55 @@ class ProjectController extends Controller
             });
         }
 
-        if ($request->filled('type') && $request->type !== 'All Modules') {
-            $query->where('project_type', $request->type);
+        if ($request->filled('project_sector') && $request->project_sector !== 'All Sectors') {
+            $query->where('project_type', $request->project_sector);
         }
 
         if ($request->filled('delivery_method') && $request->delivery_method !== 'All Methods') {
             $query->where('delivery_method', $request->delivery_method);
         }
 
-        if ($request->filled('consultancy_sector') && $request->consultancy_sector !== 'All Sectors') {
-            $query->where('consultancy_sector', $request->consultancy_sector);
+        if ($request->filled('consultant_type') && $request->consultant_type !== 'All Types') {
+            $query->where('consultancy_sector', $request->consultant_type);
         }
 
-        if ($request->filled('consultant') && $request->consultant !== 'All Consultants') {
-            $query->where('consultant', $request->consultant);
+        if ($request->filled('budget_performance') && $request->budget_performance !== 'All') {
+            if ($request->budget_performance === 'Above Budget') {
+                $query->whereRaw('IFNULL(revised_budget_amount, 0) > IFNULL(contract_budget, 0)');
+            } elseif ($request->budget_performance === 'Under Budget') {
+                $query->whereRaw('IFNULL(revised_budget_amount, 0) < IFNULL(contract_budget, 0)');
+            } elseif ($request->budget_performance === 'On Budget') {
+                $query->whereRaw('IFNULL(revised_budget_amount, 0) = IFNULL(contract_budget, 0)');
+            }
+        }
+
+        if ($request->filled('cost_performance') && $request->cost_performance !== 'All') {
+            if ($request->cost_performance === 'Above Allowable Cost') {
+                $query->whereRaw('IFNULL(cost_at_completion, 0) > IFNULL(total_allowable_cost, 0)');
+            } elseif ($request->cost_performance === 'Below Allowable Cost') {
+                $query->whereRaw('IFNULL(cost_at_completion, 0) < IFNULL(total_allowable_cost, 0)');
+            } elseif ($request->cost_performance === 'With Allowable Cost') {
+                $query->whereRaw('IFNULL(cost_at_completion, 0) = IFNULL(total_allowable_cost, 0)');
+            }
+        }
+
+        if ($request->filled('schedule_performance') && $request->schedule_performance !== 'All') {
+            if ($request->schedule_performance === 'Not Started') {
+                $query->whereNull('actual_start_date');
+            } elseif ($request->schedule_performance === 'Behind Schedule') {
+                $query->whereNotNull('actual_start_date')->whereNotNull('baseline_finish_date')->whereRaw('DATEDIFF(baseline_finish_date, actual_start_date) < 0');
+            } elseif ($request->schedule_performance === 'Ahead of Schedule') {
+                $query->whereNotNull('actual_start_date')->whereNotNull('baseline_finish_date')->whereRaw('DATEDIFF(baseline_finish_date, actual_start_date) > 0');
+            } elseif ($request->schedule_performance === 'On Schedule') {
+                $query->where(function ($q) {
+                    $q->whereNotNull('actual_start_date')->whereNull('baseline_finish_date')
+                      ->orWhereNotNull('actual_start_date')->whereNotNull('baseline_finish_date')->whereRaw('DATEDIFF(baseline_finish_date, actual_start_date) = 0');
+                });
+            }
+        }
+
+        if ($request->filled('project_status') && $request->project_status !== 'All') {
+            $query->where('status', $request->project_status);
         }
 
         $projects = $query->orderByDesc('baseline_start_date')->paginate(15)->withQueryString();

@@ -29,7 +29,7 @@
                     <h2 class="text-xl font-bold text-slate-900 tracking-tight font-outfit leading-none">
                         Active Projects <span class="font-black text-slate-900">Dashboard</span>
                     </h2>
-                    <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Macro-level reconnaissance & financial equilibrium</p>
+                    <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Project Overview & Financial Balance</p>
                 </div>
             </div>
             <form action="{{ route('admin.projects.analytics') }}" method="GET" class="flex flex-wrap items-center gap-2">
@@ -202,32 +202,13 @@
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-[#00ADC5] flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
                             <i data-lucide="gauge" class="w-5 h-5"></i>
                         </div>
-                        <div class="flex items-center gap-1
-                            @if($sectorWeightedSpi->isEmpty()) bg-slate-50 border-slate-100
-                            @elseif($avgWeightedSpi >= 100) bg-emerald-50 border-emerald-100
-                            @elseif($avgWeightedSpi >= 90) bg-amber-50 border-amber-100
-                            @else bg-rose-50 border-rose-100 @endif
-                            px-2 py-1 rounded-lg border">
-                            <span class="text-[9px] font-black
-                                @if($sectorWeightedSpi->isEmpty()) text-slate-500
-                                @elseif($avgWeightedSpi >= 100) text-emerald-700
-                                @elseif($avgWeightedSpi >= 90) text-amber-700
-                                @else text-rose-700 @endif
-                                uppercase">
-                                @if($avgWeightedSpi > 0)
-                                    @if($avgWeightedSpi >= 100) Ahead
-                                    @elseif($avgWeightedSpi >= 90) On Track
-                                    @else Behind @endif
-                                @else No Data @endif
-                            </span>
-                        </div>
                     </div>
                     <div class="mb-3">
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Average SPI</p>
                         <p class="text-4xl font-black
                             @if($sectorWeightedSpi->isEmpty()) text-slate-300
-                            @elseif($avgWeightedSpi >= 100) text-emerald-600
-                            @elseif($avgWeightedSpi >= 90) text-amber-600
+                            @elseif($avgWeightedSpi >= 80) text-emerald-600
+                            @elseif($avgWeightedSpi >= 70) text-[#fcba03]
                             @else text-rose-600 @endif
                             tracking-tighter leading-none">
                             {{ $avgWeightedSpi > 0 ? number_format($avgWeightedSpi, 2) . '%' : '---' }}
@@ -258,33 +239,25 @@
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
                             <i data-lucide="trending-down" class="w-5 h-5"></i>
                         </div>
-                        <div class="flex items-center gap-1
-                            @if($sectorWeightedCpi->isEmpty()) bg-slate-50 border-slate-100
-                            @elseif($avgWeightedCpi >= 1) bg-emerald-50 border-emerald-100
-                            @elseif($avgWeightedCpi >= 0.9) bg-amber-50 border-amber-100
-                            @else bg-rose-50 border-rose-100 @endif
-                            px-2 py-1 rounded-lg border">
-                            <span class="text-[9px] font-black
-                                @if($sectorWeightedCpi->isEmpty()) text-slate-500
-                                @elseif($avgWeightedCpi >= 1) text-emerald-700
-                                @elseif($avgWeightedCpi >= 0.9) text-amber-700
-                                @else text-rose-700 @endif
-                                uppercase">
-                                @if($avgWeightedCpi > 0)
-                                    @if($avgWeightedCpi >= 1) Under Budget
-                                    @elseif($avgWeightedCpi >= 0.9) On Budget
-                                    @else Over Budget @endif
-                                @else No Data @endif
-                            </span>
-                        </div>
+                        @if($avgWeightedCpi > 1)
+                            <div class="flex items-center gap-1 bg-emerald-50 border-emerald-100 px-2 py-1 rounded-lg border">
+                                <span class="text-[9px] font-black text-emerald-700 uppercase">Under Budget</span>
+                            </div>
+                        @elseif($avgWeightedCpi > 0 && $avgWeightedCpi < 1)
+                            
+                        @elseif($avgWeightedCpi > 0)
+                            <div class="flex items-center gap-1 bg-[#fcba03]/10 border-[#fcba03]/20 px-2 py-1 rounded-lg border">
+                                <span class="text-[9px] font-black text-[#fcba03] uppercase">On Budget</span>
+                            </div>
+                        @endif
                     </div>
                     <div class="mb-3">
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Average CPI</p>
                         <p class="text-4xl font-black
                             @if($sectorWeightedCpi->isEmpty()) text-slate-300
-                            @elseif($avgWeightedCpi >= 1) text-emerald-600
-                            @elseif($avgWeightedCpi >= 0.9) text-amber-600
-                            @else text-rose-600 @endif
+                            @elseif($avgWeightedCpi > 1) text-emerald-600
+                            @elseif($avgWeightedCpi < 1) text-rose-600
+                            @else text-[#fcba03] @endif
                             tracking-tighter leading-none">
                             {{ $avgWeightedCpi > 0 ? number_format($avgWeightedCpi, 2) : '---' }}
                         </p>

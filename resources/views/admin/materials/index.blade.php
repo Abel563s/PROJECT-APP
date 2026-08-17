@@ -2,7 +2,7 @@
     <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
 
         <!-- Compact Header -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-3 border-b border-slate-100 items-center">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-900/20">
                     <i data-lucide="package" class="w-4 h-4"></i>
@@ -15,15 +15,15 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2">
-                <div class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-100 rounded-xl shadow-sm">
-                    <div class="w-1.5 h-1.5 rounded-full bg-[#00ADC5] animate-pulse"></div>
-                    <div class="flex flex-col">
-                        <span class="text-[9px] font-black text-slate-900 tracking-widest uppercase leading-tight">{{ $records->total() ?? 0 }} Materials</span>
-                        <span class="text-[7px] font-bold text-slate-400 uppercase tracking-[0.2em] leading-tight">Registered</span>
-                    </div>
+            <div class="flex justify-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-b from-[#00515f] to-black rounded-lg shadow-sm border border-white/10">
+                    <i data-lucide="package" class="w-3.5 h-3.5 text-white/90"></i>
+                    <span class="text-base font-black text-white tracking-tight">{{ $records->total() ?? 0 }}</span>
+                    <span class="text-[9px] font-black text-white/80 uppercase tracking-wider">Materials Registered</span>
                 </div>
+            </div>
 
+            <div class="flex justify-end">
                 <button onclick="openCreateModal()"
                     class="group/btn relative px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20">
                     <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>

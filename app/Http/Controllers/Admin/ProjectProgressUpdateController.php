@@ -26,6 +26,16 @@ class ProjectProgressUpdateController extends Controller
             $query->where('project_id', $request->project_id);
         }
 
+        if ($request->filled('project_sector') && $request->project_sector !== 'All Sectors') {
+            $query->whereHas('project', function ($q) use ($request) {
+                $q->where('project_type', $request->project_sector);
+            });
+        }
+
+        if ($request->filled('data_date')) {
+            $query->whereDate('data_date', $request->data_date);
+        }
+
         $updates = $query->latest()->paginate(15)->withQueryString();
         $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
         return view('admin.progress-updates.index', compact('updates', 'projects'));
@@ -48,8 +58,12 @@ class ProjectProgressUpdateController extends Controller
             'progress_actual' => 'required|numeric|min:0',
             'revenue_planned' => 'nullable|numeric|min:0',
             'revenue_actual' => 'nullable|numeric|min:0',
+            'revenue_planned_weekly' => 'nullable|numeric|min:0',
+            'revenue_actual_weekly' => 'nullable|numeric|min:0',
             'cost_planned' => 'nullable|numeric|min:0',
             'cost_actual' => 'nullable|numeric|min:0',
+            'cost_planned_weekly' => 'nullable|numeric|min:0',
+            'cost_actual_weekly' => 'nullable|numeric|min:0',
             'completion_date' => 'nullable|date',
             'data_date' => 'required|date',
             'top_constraints' => 'nullable|string',
@@ -100,9 +114,14 @@ class ProjectProgressUpdateController extends Controller
             'progress_actual' => 'required|numeric|min:0',
             'revenue_planned' => 'nullable|numeric|min:0',
             'revenue_actual' => 'nullable|numeric|min:0',
+            'revenue_planned_weekly' => 'nullable|numeric|min:0',
+            'revenue_actual_weekly' => 'nullable|numeric|min:0',
             'cost_planned' => 'nullable|numeric|min:0',
             'cost_actual' => 'nullable|numeric|min:0',
+            'cost_planned_weekly' => 'nullable|numeric|min:0',
+            'cost_actual_weekly' => 'nullable|numeric|min:0',
             'completion_date' => 'nullable|date',
+            'data_date' => 'nullable|date',
             'top_constraints' => 'nullable|string',
             'client_issue' => 'nullable|string',
             'design_completion_approval' => 'nullable|string',

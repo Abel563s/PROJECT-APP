@@ -41,19 +41,27 @@ class ProjectPaymentController extends Controller
         $totalCertified = $project->payments->sum('certified_amount');
         $totalPaid = $project->payments->sum('amount_paid');
 
-        $contractValue = $project->total_project_value;
-        $outstandingBalance = $contractValue - $totalCertified;
-        $paymentProgress = $contractValue > 0 ? ($totalPaid / $contractValue) * 100 : 0;
+        $contractValue = $project->revised_budget_amount ?? $project->total_project_value;
 
         return view('admin.projects.payments.manage', compact(
             'project',
             'totalSubmitted',
             'totalCertified',
             'totalPaid',
-            'contractValue',
-            'outstandingBalance',
-            'paymentProgress'
+            'contractValue'
         ));
+    }
+
+    /**
+     * Show the form for creating a new payment (modal partial).
+     */
+    public function create(Project $project)
+    {
+        if (request()->has('partial')) {
+            return view('admin.projects.payments.create-modal', compact('project'));
+        }
+
+        return view('admin.projects.payments.create', compact('project'));
     }
 
     /**
@@ -62,8 +70,7 @@ class ProjectPaymentController extends Controller
     public function store(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'certificate_number' => 'required|string',
-            'certificate_date' => 'required|date',
+            'certificate_number' => 'nullable|string',
             'submitted_amount' => 'nullable|numeric|min:0',
             'submitted_date' => 'nullable|date',
             'certified_amount' => 'nullable|numeric|min:0',
