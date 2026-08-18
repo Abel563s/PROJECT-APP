@@ -49,20 +49,10 @@
         <form action="{{ route('admin.projects.issues.report') }}" method="GET" class="space-y-4">
             <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
                 <div class="flex flex-col gap-1">
-                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Search</span>
-                    <div class="relative group shrink-0 min-w-[200px]">
-                        <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Search issues..."
-                            class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
-                    </div>
-                </div>
-
-                <div class="flex flex-col gap-1">
-                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project</span>
-                    <div class="relative group/select">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project</label>
+                    <div class="relative">
                         <select name="project_id" onchange="this.form.submit()"
-                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
+                            class="appearance-none pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
                             <option value="all">All Projects</option>
                             @foreach($projects as $project)
                                 <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
@@ -70,72 +60,73 @@
                                 </option>
                             @endforeach
                         </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Status</span>
-                    <div class="relative group/select">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Status</label>
+                    <div class="relative">
                         <select name="status" onchange="this.form.submit()"
-                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                            class="appearance-none pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
                             <option value="all">All Statuses</option>
                             <option value="Open" {{ request('status') == 'Open' ? 'selected' : '' }}>Open</option>
                             <option value="In Progress" {{ request('status') == 'In Progress' ? 'selected' : '' }}>In Progress</option>
                             <option value="Closed" {{ request('status') == 'Closed' ? 'selected' : '' }}>Closed</option>
                             <option value="Cancelled" {{ request('status') == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
                         </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Impact</span>
-                    <div class="relative group/select">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Impact</label>
+                    <div class="relative">
                         <select name="impact" onchange="this.form.submit()"
-                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                            class="appearance-none pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
                             <option value="all">All Impacts</option>
                             <option value="High" {{ request('impact') == 'High' ? 'selected' : '' }}>High</option>
                             <option value="Medium" {{ request('impact') == 'Medium' ? 'selected' : '' }}>Medium</option>
                             <option value="Low" {{ request('impact') == 'Low' ? 'selected' : '' }}>Low</option>
                         </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Issue Type</span>
-                    <div class="relative group/select">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Issue Type</label>
+                    <div class="relative">
                         <select name="issue_type" onchange="this.form.submit()"
-                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
+                            class="appearance-none pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
                             <option value="all">All Issue Types</option>
                             @foreach($issueTypeCounts as $type => $count)
                                 <option value="{{ $type }}" {{ request('issue_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
                             @endforeach
                         </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">From</span>
-                        <input type="date" name="from_date" value="{{ request('from_date') }}" onchange="this.form.submit()"
-                            class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[9px] font-black text-slate-600 uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-cyan-100/50 w-[140px]">
-                    </div>
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">To</span>
-                        <input type="date" name="to_date" value="{{ request('to_date') }}" onchange="this.form.submit()"
-                            class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[9px] font-black text-slate-600 uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-cyan-100/50 w-[140px]">
-                    </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">From</label>
+                    <input type="date" name="from_date" value="{{ request('from_date') }}" onchange="this.form.submit()"
+                        class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[9px] font-black text-slate-600 uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-cyan-100/50 w-[140px]">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">To</label>
+                    <input type="date" name="to_date" value="{{ request('to_date') }}" onchange="this.form.submit()"
+                        class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[9px] font-black text-slate-600 uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-cyan-100/50 w-[140px]">
                 </div>
 
-                @if(request()->anyFilled(['search', 'project_id', 'status', 'impact', 'issue_type', 'from_date', 'to_date']))
-                    <a href="{{ route('admin.projects.issues.report') }}"
-                        class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm shrink-0 self-end"
-                        title="Clear Filters">
-                        <i data-lucide="x" class="w-4 h-4"></i>
-                    </a>
+                @if(request()->anyFilled(['project_id', 'status', 'impact', 'issue_type', 'from_date', 'to_date']))
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">&nbsp;</label>
+                        <a href="{{ route('admin.projects.issues.report') }}"
+                            class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
+                            title="Clear Filters">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </a>
+                    </div>
                 @endif
             </div>
         </form>
@@ -145,8 +136,8 @@
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-cyan-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center text-white shadow-lg shadow-slate-500/30">
+                            <i data-lucide="alert-circle" class="w-5 h-5"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Issues</p>
@@ -157,8 +148,8 @@
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-sky-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="circle" class="w-4 h-4"></i>
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/30">
+                            <i data-lucide="circle" class="w-5 h-5"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Open</p>
@@ -169,8 +160,8 @@
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-amber-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="loader" class="w-4 h-4"></i>
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/30">
+                            <i data-lucide="loader" class="w-5 h-5"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">In Progress</p>
@@ -181,8 +172,8 @@
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Closed</p>
@@ -193,8 +184,8 @@
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-red-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="clock" class="w-4 h-4"></i>
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white shadow-lg shadow-red-500/30">
+                            <i data-lucide="clock" class="w-5 h-5"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Overdue</p>
@@ -205,8 +196,8 @@
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-rose-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-rose-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="x-circle" class="w-4 h-4"></i>
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-500/30">
+                            <i data-lucide="x-circle" class="w-5 h-5"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cancelled</p>
@@ -310,7 +301,11 @@
                                         <div class="flex items-center justify-end gap-2">
                                             <div class="w-16 bg-slate-50 rounded-full h-1.5 overflow-hidden border border-slate-100">
                                                 <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full rounded-full" style="width: {{ $progress }}%"></div>
-                                            </div>
+        </div>
+
+        <!-- Filters -->
+        <form action="{{ route('admin.projects.issues.report') }}" method="GET" class="space-y-4">
+            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
                                             <span class="text-[9px] font-black text-slate-900 w-8 text-right">{{ $progress }}%</span>
                                         </div>
                                     </td>
