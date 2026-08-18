@@ -17,6 +17,17 @@
             .issue-kpi-card h3 {
                 animation: countUp 0.6s ease-out;
             }
+            .chart-fallback {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                color: #94a3b8;
+                font-weight: 800;
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
         </style>
 
         <!-- Header -->
@@ -31,16 +42,6 @@
                     </h2>
                     <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Issue Analytics & Reporting</p>
                 </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <button onclick="exportCSV()" class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
-                    <i data-lucide="download" class="w-3 h-3"></i>
-                    Export CSV
-                </button>
-                <button onclick="window.print()" class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
-                    <i data-lucide="printer" class="w-3 h-3"></i>
-                    Print
-                </button>
             </div>
         </div>
 
@@ -484,120 +485,107 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts" onerror="window.__apexchartsFailed=true"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            try {
-                const statusData = @json($statusCounts ?? []);
-                const impactData = @json($impactCounts ?? []);
-                const trendData = @json($monthlyTrend ?? []);
-                const typeData = @json($issueTypeCounts ?? []);
-                const sectorData = @json($sectorCounts ?? []);
-
-                const statusSeries = Object.values(statusData);
-                const statusLabels = Object.keys(statusData);
-                const statusColors = ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'];
-
-                const impactSeries = [impactData.High || 0, impactData.Medium || 0, impactData.Low || 0];
-                const impactColors = ['#ef4444', '#f59e0b', '#10b981'];
-
-                const typeLabels = Object.keys(typeData);
-                const typeValues = Object.values(typeData);
-                const typeColors = ['#00ADC5', '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#84cc16', '#22c55e', '#3b82f6'];
-
-                const sectorLabels = Object.keys(sectorData);
-                const sectorValues = Object.values(sectorData);
-                const sectorColors = ['#00ADC5', '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#84cc16'];
-
-                function createChartSafe(selector, config) {
-                    const el = document.querySelector(selector);
-                    if (!el) return;
-                    if (typeof ApexCharts === 'undefined') {
-                        el.innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 text-xs font-black">Chart library unavailable</div>';
-                        return;
-                    }
-                    try {
-                        new ApexCharts(el, config).render();
-                    } catch (e) {
-                        el.innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 text-xs font-black">Chart render failed</div>';
-                    }
-                }
-
-                createChartSafe('#statusChart', {
-                    chart: { type: 'donut', height: 280, animations: { enabled: true, easing: 'easeinout', speed: 500 } },
-                    series: statusSeries,
-                    labels: statusLabels,
-                    colors: statusColors,
-                    legend: { position: 'bottom', fontSize: '10px', fontWeight: 700, labels: { colors: '#475569' } },
-                    plotOptions: { pie: { donut: { size: '65%', labels: { show: true, value: { fontSize: '14px', fontWeight: 800, color: '#0f172a' }, total: { show: true, label: 'Total', fontSize: '11px', fontWeight: 700, color: '#64748b' } } } } },
-                    dataLabels: { enabled: true, style: { fontSize: '10px', fontWeight: 800 }, formatter: (val) => val > 0 ? val : '' },
-                    stroke: { show: true, width: 2, colors: ['#fff'] },
-                    tooltip: { theme: 'light' }
+            if (window.__apexchartsFailed || typeof ApexCharts === 'undefined') {
+                document.querySelectorAll('[id$="Chart"]').forEach(function (el) {
+                    el.innerHTML = '<div class=\"chart-fallback\">Chart unavailable</div>';
                 });
-
-                createChartSafe('#impactChart', {
-                    chart: { type: 'donut', height: 280, animations: { enabled: true, easing: 'easeinout', speed: 500 } },
-                    series: impactSeries,
-                    labels: ['High', 'Medium', 'Low'],
-                    colors: impactColors,
-                    legend: { position: 'bottom', fontSize: '10px', fontWeight: 700, labels: { colors: '#475569' } },
-                    plotOptions: { pie: { donut: { size: '65%', labels: { show: true, value: { fontSize: '14px', fontWeight: 800, color: '#0f172a' }, total: { show: true, label: 'Total', fontSize: '11px', fontWeight: 700, color: '#64748b' } } } } },
-                    dataLabels: { enabled: true, style: { fontSize: '10px', fontWeight: 800 }, formatter: (val) => val > 0 ? val : '' },
-                    stroke: { show: true, width: 2, colors: ['#fff'] },
-                    tooltip: { theme: 'light' }
-                });
-
-                createChartSafe('#trendChart', {
-                    chart: { type: 'bar', height: 280, animations: { enabled: true, easing: 'easeinout', speed: 500 }, toolbar: { show: false } },
-                    series: [{ name: 'Issues', data: Object.values(trendData) }],
-                    xaxis: { categories: Object.keys(trendData), labels: { style: { fontSize: '9px', fontWeight: 700, colors: '#475569' } }, axisBorder: { show: false }, axisTicks: { show: false } },
-                    yaxis: { labels: { style: { fontSize: '9px', fontWeight: 600, colors: '#64748b' }, formatter: (val) => Math.round(val) } },
-                    colors: ['#00ADC5'],
-                    dataLabels: { enabled: true, style: { fontSize: '9px', fontWeight: 800, colors: ['#000'] }, formatter: (val) => val > 0 ? val : '' },
-                    plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } },
-                    grid: { borderColor: '#EEF2F7', strokeDashArray: 4, padding: { left: 8, right: 16, top: 8, bottom: 8 } },
-                    tooltip: { theme: 'light' }
-                });
-
-                createChartSafe('#typeChart', {
-                    chart: { type: 'bar', height: 300, animations: { enabled: true, easing: 'easeinout', speed: 500 }, toolbar: { show: false } },
-                    series: [{ name: 'Issues', data: typeValues }],
-                    xaxis: { categories: typeLabels.map(l => l.length > 20 ? l.substring(0, 18) + '…' : l), labels: { style: { fontSize: '9px', fontWeight: 700, colors: '#475569' }, rotate: -30, rotateAlways: true }, axisBorder: { show: false }, axisTicks: { show: false } },
-                    yaxis: { labels: { style: { fontSize: '9px', fontWeight: 600, colors: '#64748b' }, formatter: (val) => Math.round(val) } },
-                    colors: typeColors,
-                    dataLabels: { enabled: true, style: { fontSize: '9px', fontWeight: 800, colors: ['#000'] }, formatter: (val) => val > 0 ? val : '' },
-                    plotOptions: { bar: { borderRadius: 4, columnWidth: '60%' } },
-                    grid: { borderColor: '#EEF2F7', strokeDashArray: 4, padding: { left: 8, right: 16, top: 8, bottom: 8 } },
-                    tooltip: { theme: 'light' }
-                });
-
-                createChartSafe('#sectorChart', {
-                    chart: { type: 'bar', height: 300, animations: { enabled: true, easing: 'easeinout', speed: 500 }, toolbar: { show: false } },
-                    series: [{ name: 'Issues', data: sectorValues }],
-                    xaxis: { categories: sectorLabels, labels: { style: { fontSize: '9px', fontWeight: 700, colors: '#475569' } }, axisBorder: { show: false }, axisTicks: { show: false } },
-                    yaxis: { labels: { style: { fontSize: '9px', fontWeight: 600, colors: '#64748b' }, formatter: (val) => Math.round(val) } },
-                    colors: sectorColors,
-                    dataLabels: { enabled: true, style: { fontSize: '9px', fontWeight: 800, colors: ['#000'] }, formatter: (val) => val > 0 ? val : '' },
-                    plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } },
-                    grid: { borderColor: '#EEF2F7', strokeDashArray: 4, padding: { left: 8, right: 16, top: 8, bottom: 8 } },
-                    tooltip: { theme: 'light' }
-                });
-
                 if (window.lucide) lucide.createIcons();
-            } catch (e) {
-                console.error('Issues report initialization error:', e);
+                return;
             }
-        });
 
-        function exportCSV() {
-            const table = document.querySelector('.overflow-x-auto table');
-            if (!table) return;
-            const rows = Array.from(table.querySelectorAll('tr'));
-            const csv = rows.map(row => Array.from(row.querySelectorAll('th, td')).map(cell => `"${cell.innerText.replace(/"/g, '""')}"`).join(',')).join('\n');
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `issues-report-${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-        }
-    </script>
+            const statusData = @json($statusCounts ?? []);
+            const impactData = @json($impactCounts ?? []);
+            const trendData = @json($monthlyTrend ?? []);
+            const typeData = @json($issueTypeCounts ?? []);
+            const sectorData = @json($sectorCounts ?? []);
+
+            const statusSeries = Object.values(statusData);
+            const statusLabels = Object.keys(statusData);
+            const statusColors = ['#3b82f6', '#f59e0b', '#10b981', '#ef4444'];
+
+            const impactSeries = [impactData.High || 0, impactData.Medium || 0, impactData.Low || 0];
+            const impactColors = ['#ef4444', '#f59e0b', '#10b981'];
+
+            const typeLabels = Object.keys(typeData);
+            const typeValues = Object.values(typeData);
+            const typeColors = ['#00ADC5', '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#84cc16', '#22c55e', '#3b82f6'];
+
+            const sectorLabels = Object.keys(sectorData);
+            const sectorValues = Object.values(sectorData);
+            const sectorColors = ['#00ADC5', '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#84cc16'];
+
+            function createChartSafe(selector, config) {
+                const el = document.querySelector(selector);
+                if (!el) return;
+                try {
+                    new ApexCharts(el, config).render();
+                } catch (e) {
+                    el.innerHTML = '<div class=\"chart-fallback\">Chart unavailable</div>';
+                }
+            }
+
+            createChartSafe('#statusChart', {
+                chart: { type: 'donut', height: 280, animations: { enabled: true, easing: 'easeinout', speed: 500 } },
+                series: statusSeries,
+                labels: statusLabels,
+                colors: statusColors,
+                legend: { position: 'bottom', fontSize: '10px', fontWeight: 700, labels: { colors: '#475569' } },
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, value: { fontSize: '14px', fontWeight: 800, color: '#0f172a' }, total: { show: true, label: 'Total', fontSize: '11px', fontWeight: 700, color: '#64748b' } } } } },
+                dataLabels: { enabled: true, style: { fontSize: '10px', fontWeight: 800 }, formatter: (val) => val > 0 ? val : '' },
+                stroke: { show: true, width: 2, colors: ['#fff'] },
+                tooltip: { theme: 'light' }
+            });
+
+            createChartSafe('#impactChart', {
+                chart: { type: 'donut', height: 280, animations: { enabled: true, easing: 'easeinout', speed: 500 } },
+                series: impactSeries,
+                labels: ['High', 'Medium', 'Low'],
+                colors: impactColors,
+                legend: { position: 'bottom', fontSize: '10px', fontWeight: 700, labels: { colors: '#475569' } },
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, value: { fontSize: '14px', fontWeight: 800, color: '#0f172a' }, total: { show: true, label: 'Total', fontSize: '11px', fontWeight: 700, color: '#64748b' } } } } },
+                dataLabels: { enabled: true, style: { fontSize: '10px', fontWeight: 800 }, formatter: (val) => val > 0 ? val : '' },
+                stroke: { show: true, width: 2, colors: ['#fff'] },
+                tooltip: { theme: 'light' }
+            });
+
+            createChartSafe('#trendChart', {
+                chart: { type: 'bar', height: 280, animations: { enabled: true, easing: 'easeinout', speed: 500 }, toolbar: { show: false } },
+                series: [{ name: 'Issues', data: Object.values(trendData) }],
+                xaxis: { categories: Object.keys(trendData), labels: { style: { fontSize: '9px', fontWeight: 700, colors: '#475569' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { fontSize: '9px', fontWeight: 600, colors: '#64748b' }, formatter: (val) => Math.round(val) } },
+                colors: ['#00ADC5'],
+                dataLabels: { enabled: true, style: { fontSize: '9px', fontWeight: 800, colors: ['#000'] }, formatter: (val) => val > 0 ? val : '' },
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } },
+                grid: { borderColor: '#EEF2F7', strokeDashArray: 4, padding: { left: 8, right: 16, top: 8, bottom: 8 } },
+                tooltip: { theme: 'light' }
+            });
+
+            createChartSafe('#typeChart', {
+                chart: { type: 'bar', height: 300, animations: { enabled: true, easing: 'easeinout', speed: 500 }, toolbar: { show: false } },
+                series: [{ name: 'Issues', data: typeValues }],
+                xaxis: { categories: typeLabels.map(l => l.length > 20 ? l.substring(0, 18) + '…' : l), labels: { style: { fontSize: '9px', fontWeight: 700, colors: '#475569' }, rotate: -30, rotateAlways: true }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { fontSize: '9px', fontWeight: 600, colors: '#64748b' }, formatter: (val) => Math.round(val) } },
+                colors: typeColors,
+                dataLabels: { enabled: true, style: { fontSize: '9px', fontWeight: 800, colors: ['#000'] }, formatter: (val) => val > 0 ? val : '' },
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '60%' } },
+                grid: { borderColor: '#EEF2F7', strokeDashArray: 4, padding: { left: 8, right: 16, top: 8, bottom: 8 } },
+                tooltip: { theme: 'light' }
+            });
+
+            createChartSafe('#sectorChart', {
+                chart: { type: 'bar', height: 300, animations: { enabled: true, easing: 'easeinout', speed: 500 }, toolbar: { show: false } },
+                series: [{ name: 'Issues', data: sectorValues }],
+                xaxis: { categories: sectorLabels, labels: { style: { fontSize: '9px', fontWeight: 700, colors: '#475569' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { fontSize: '9px', fontWeight: 600, colors: '#64748b' }, formatter: (val) => Math.round(val) } },
+                colors: sectorColors,
+                dataLabels: { enabled: true, style: { fontSize: '9px', fontWeight: 800, colors: ['#000'] }, formatter: (val) => val > 0 ? val : '' },
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } },
+                grid: { borderColor: '#EEF2F7', strokeDashArray: 4, padding: { left: 8, right: 16, top: 8, bottom: 8 } },
+                tooltip: { theme: 'light' }
+            });
+
+            if (window.lucide) lucide.createIcons();
+        });
 
         function exportCSV() {
             const table = document.querySelector('.overflow-x-auto table');
