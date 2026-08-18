@@ -259,16 +259,21 @@
                 </p>
             </div>
 
-            @if($project->baseline_start_date)
+            @if($project->status === 'completed')
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Elapsed Days</p>
+                <p class="text-xs font-black text-emerald-600">Completed</p>
+            </div>
+            @elseif($project->status === 'in progress' && $project->actual_start_date)
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Elapsed Days</p>
                 <p class="text-xs font-black text-slate-900">
-                    {{ \Carbon\Carbon::today()->diffInDays($project->baseline_start_date) + 1 }} days
+                    {{ \Carbon\Carbon::today()->diffInDays($project->actual_start_date) + 1 }} days
                 </p>
             </div>
             @endif
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Approved EOT</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revised Finish Date</p>
                 <p class="text-xs font-black text-slate-900">{{ $project->approved_eot ? $project->approved_eot->format('M d, Y') : '---' }}</p>
             </div>
             <div>
@@ -282,7 +287,7 @@
                 </p>
             </div>
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revision</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revision Number</p>
                 <p class="text-xs font-black text-slate-900">{{ $project->revision_number ?: '---' }}</p>
             </div>
 
