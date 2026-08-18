@@ -102,7 +102,7 @@
             $allowable = $project->total_allowable_cost ?? 0;
             $cac = $project->cost_at_completion ?? 0;
             $costEacIndex = $allowable > 0 ? ($allowable - $cac) / $allowable : 0;
-            $costPerformance = $costVariance < 0 ? 'Above Allowable Cost' : ($costVariance > 0 ? 'Below Allowable Cost' : 'Withn Allowable Cost');
+            $costPerformance = $costVariance < 0 ? 'Above Allowable Cost' : ($costVariance > 0 ? 'Below Allowable Cost' : 'Within Allowable Cost');
 
             $scheduleStatus = 'On Schedule';
             if (!$project->actual_start_date) {
@@ -185,7 +185,7 @@
                 <p class="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">Cost Management</p>
                 <div class="grid grid-cols-2 xl:grid-cols-3 gap-3">
                     <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Planned Cost</p>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Planned Cost</p>
                         <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->total_allowable_cost) }}</p>
                     </div>
                         @if($project->status === 'completed')
@@ -194,7 +194,7 @@
                             <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->cost_at_completion) }}</p>
                         </div>
                         <div>
-                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Variance at Completion</p>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Variance</p>
                             <p class="text-xs font-black text-slate-900">ETB {{ number_format($costVariance) }}</p>
                         </div>
                         <div>
@@ -231,7 +231,7 @@
                 <p class="text-xs font-black text-slate-900">{{ $project->baseline_finish_date ? $project->baseline_finish_date->format('M d, Y') : '---' }}</p>
             </div>
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Project Duration</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Baelineline Duration</p>
                 <p class="text-xs font-black text-slate-900">
                     @if($project->baseline_start_date && $project->baseline_finish_date)
                         {{ abs($project->baseline_finish_date->diffInDays($project->baseline_start_date)) }} days

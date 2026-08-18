@@ -50,7 +50,7 @@ class ProjectController extends Controller
                 $query->whereRaw('IFNULL(cost_at_completion, 0) > IFNULL(total_allowable_cost, 0)');
             } elseif ($request->cost_performance === 'Below Allowable Cost') {
                 $query->whereRaw('IFNULL(cost_at_completion, 0) < IFNULL(total_allowable_cost, 0)');
-            } elseif ($request->cost_performance === 'Withn Allowable Cost') {
+            } elseif ($request->cost_performance === 'Within Allowable Cost') {
                 $query->whereRaw('IFNULL(cost_at_completion, 0) = IFNULL(total_allowable_cost, 0)');
             }
         }
