@@ -93,7 +93,7 @@
                                         <td class="px-4 py-3">
                                             <div class="flex flex-col">
                                                 <span class="font-black text-slate-900 text-xs">#{{ $payment->certificate_number }}</span>
-                                                <span class="text-[9px] font-bold text-slate-400 uppercase">{{ $payment->certificate_date->format('d M, Y') }}</span>
+                                                <span class="text-[9px] font-bold text-slate-400 uppercase">{{ $payment->certificate_date ? $payment->certificate_date->format('d M, Y') : '-' }}</span>
                                             </div>
                                         </td>
 
