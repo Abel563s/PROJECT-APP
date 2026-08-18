@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Issue;
 use App\Models\Project;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
@@ -692,8 +693,147 @@ class ProjectController extends Controller
         return redirect()->back()->with('success', 'Issue deleted successfully.');
     }
 
-    public function issuesReport()
+    public function issuesReport(Request $request)
     {
-        return view('admin.projects.issues-report');
+        $query = Issue::query()->with('project');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('issue', 'like', "%{$search}%")
+                    ->orWhere('issue_type', 'like', "%{$search}%")
+                    ->orWhere('project_code', 'like', "%{$search}%")
+                    ->orWhere('raised_by', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('project_id') && $request->project_id !== 'all') {
+            $query->where('project_id', $request->project_id);
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('impact') && $request->impact !== 'all') {
+            $query->where('impact', $request->impact);
+        }
+
+        if ($request->filled('issue_type') && $request->issue_type !== 'all') {
+            $query->where('issue_type', $request->issue_type);
+        }
+
+        if ($request->filled('from_date')) {
+            $query->whereDate('raised_date', '>=', $request->from_date);
+        }
+
+        if ($request->filled('to_date')) {
+            $query->whereDate('raised_date', '<=', $request->to_date);
+        }
+
+        $allIssues = $query->get();
+
+        $total = $allIssues->count();
+        $open = $allIssues->where('status', 'Open')->count();
+        $inProgress = $allIssues->where('status', 'In Progress')->count();
+        $closed = $allIssues->where('status', 'Closed')->count();
+        $cancelled = $allIssues->where('status', 'Cancelled')->count();
+
+        $today = Carbon::today();
+        $overdue = $allIssues->filter(function ($issue) use ($today) {
+            return $issue->planned_resolution_date
+                && $issue->planned_resolution_date->isPast()
+                && !in_array($issue->status, ['Closed', 'Cancelled']);
+        })->count();
+
+        $highImpact = $allIssues->where('impact', 'High')->count();
+        $mediumImpact = $allIssues->where('impact', 'Medium')->count();
+        $lowImpact = $allIssues->where('impact', 'Low')->count();
+
+        $statusCounts = [
+            'Open' => $open,
+            'In Progress' => $inProgress,
+            'Closed' => $closed,
+            'Cancelled' => $cancelled,
+        ];
+
+        $impactCounts = [
+            'High' => $highImpact,
+            'Medium' => $mediumImpact,
+            'Low' => $lowImpact,
+        ];
+
+        $issueTypeCounts = $allIssues->groupBy('issue_type')->map->count()->sortDesc()->take(10);
+        $sectorCounts = $allIssues->groupBy(function ($issue) {
+            return $issue->project?->project_type ?? 'Unknown';
+        })->map->count()->sortDesc()->take(8);
+
+        $monthlyTrend = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $monthStart = Carbon::now()->subMonths($i)->startOfMonth();
+            $monthEnd = Carbon::now()->subMonths($i)->endOfMonth();
+            $label = $monthStart->format('M Y');
+            $count = $allIssues->filter(function ($issue) use ($monthStart, $monthEnd) {
+                return $issue->raised_date && $issue->raised_date->between($monthStart, $monthEnd);
+            })->count();
+            $monthlyTrend[$label] = $count;
+        }
+
+        $topProjects = $allIssues->groupBy('project_id')
+            ->map(function ($group) {
+                $project = $group->first()->project;
+                return [
+                    'project_name' => $project?->project_name ?? 'Unknown',
+                    'project_code' => $project?->project_code ?? 'N/A',
+                    'count' => $group->count(),
+                    'open' => $group->where('status', 'Open')->count(),
+                    'closed' => $group->where('status', 'Closed')->count(),
+                ];
+            })
+            ->sortByDesc('count')
+            ->take(10)
+            ->values();
+
+        $avgResolutionDays = $allIssues->filter(function ($issue) {
+            return $issue->raised_date && $issue->issue_closed_date;
+        })->map(function ($issue) {
+            return $issue->raised_date->diffInDays($issue->issue_closed_date);
+        })->avg();
+
+        $resolutionTimesArray = $allIssues->filter(function ($issue) {
+            return $issue->raised_date && $issue->issue_closed_date;
+        })->map(function ($issue) {
+            return $issue->raised_date->diffInDays($issue->issue_closed_date);
+        })->sort()->values()->all();
+
+        $p50 = !empty($resolutionTimesArray) ? $resolutionTimesArray[max(0, floor((count($resolutionTimesArray) - 1) * 0.5))] : 0;
+        $p90 = !empty($resolutionTimesArray) ? $resolutionTimesArray[max(0, floor((count($resolutionTimesArray) - 1) * 0.9))] : 0;
+
+        $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+
+        $issues = $query->orderByDesc('raised_date')->paginate(15)->withQueryString();
+
+        return view('admin.projects.issues-report', compact(
+            'issues',
+            'projects',
+            'total',
+            'open',
+            'inProgress',
+            'closed',
+            'cancelled',
+            'overdue',
+            'highImpact',
+            'mediumImpact',
+            'lowImpact',
+            'statusCounts',
+            'impactCounts',
+            'issueTypeCounts',
+            'sectorCounts',
+            'monthlyTrend',
+            'topProjects',
+            'avgResolutionDays',
+            'p50',
+            'p90',
+        ));
     }
 }

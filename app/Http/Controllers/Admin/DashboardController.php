@@ -293,7 +293,6 @@ class DashboardController extends Controller
             'delivery_method' => [
                 'DB' => $filteredProjects->where('status', 'completed')->where('delivery_method', 'DB')->count(),
                 'DBB' => $filteredProjects->where('status', 'completed')->where('delivery_method', 'DBB')->count(),
-                'DB-LS' => $filteredProjects->where('status', 'completed')->where('delivery_method', 'DB-LS')->count(),
                 'total' => $filteredProjects->where('status', 'completed')->count(),
             ],
             'contract_variation' => [
@@ -413,7 +412,7 @@ class DashboardController extends Controller
             }
         }
 
-        $deliveryMethods = ['DB', 'DBB', 'DB-LS'];
+        $deliveryMethods = ['DB', 'DBB'];
         $deliveryLabels = [];
         $deliveryDatasets = [
             ['name' => 'Behind Schedule', 'values' => [], 'counts' => []],

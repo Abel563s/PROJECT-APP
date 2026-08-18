@@ -957,7 +957,7 @@
                     style: {
                         fontSize: dataLabelFontSize,
                         fontWeight: 800,
-                        colors: ['#fff']
+                        colors: ['#000']
                     },
                     formatter: (val) => {
                         const icon = val > 0 ? '▲' : val < 0 ? '▼' : '●';
@@ -1342,7 +1342,6 @@
                 categories: [
                     { key: 'DB', label: 'DB', color: '#10b981' },
                     { key: 'DBB', label: 'DBB', color: '#00ADC5' },
-                    { key: 'DB-LS', label: 'DB-LS', color: '#6366f1' },
                 ],
                 totalLabel: 'Completed',
                 filterParam: 'delivery_method',

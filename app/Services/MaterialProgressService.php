@@ -224,16 +224,25 @@ class MaterialProgressService
             $out['current_planned_stage'] = 'No Planned Dates';
         } else {
             $today = Carbon::today();
-            $closestStage = null;
-            $closestDiff = null;
+            $upcoming = [];
+            $past = [];
             foreach ($plannedStages as $name => $date) {
-                $diff = $date->diffInDays($today);
-                if ($closestDiff === null || $diff < $closestDiff) {
-                    $closestDiff = $diff;
-                    $closestStage = $name;
+                if ($date->greaterThanOrEqualTo($today)) {
+                    $upcoming[] = ['name' => $name, 'date' => $date, 'diff' => $date->diffInDays($today)];
+                } else {
+                    $past[] = ['name' => $name, 'date' => $date, 'diff' => $today->diffInDays($date)];
                 }
             }
-            $out['current_planned_stage'] = $closestStage;
+
+            if (!empty($upcoming)) {
+                usort($upcoming, fn($a, $b) => $a['diff'] <=> $b['diff']);
+                $out['current_planned_stage'] = $upcoming[0]['name'];
+            } elseif (!empty($past)) {
+                usort($past, fn($a, $b) => $a['diff'] <=> $b['diff']);
+                $out['current_planned_stage'] = $past[0]['name'];
+            } else {
+                $out['current_planned_stage'] = 'No Planned Dates';
+            }
         }
 
         $actualStageKeys = [
