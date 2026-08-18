@@ -337,7 +337,10 @@
                                 } else {
                                     $remainingDays = $project->baseline_finish_date->diffInDays(\Carbon\Carbon::today());
                                 }
-                                $spi = round(($remainingDays / $baselineDuration) * 100, 1); 
+                                $spi = round(($remainingDays / $baselineDuration) * 100, 1);
+                                if ($spi == 0) {
+                                    $spi = 0;
+                                }
                             }
                         }
                     @endphp
