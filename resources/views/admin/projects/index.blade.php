@@ -110,7 +110,7 @@
                                 <option value="">All</option>
                                 <option value="Above Allowable Cost" {{ request('cost_performance') == 'Above Allowable Cost' ? 'selected' : '' }}>Above Allowable Cost</option>
                                 <option value="Below Allowable Cost" {{ request('cost_performance') == 'Below Allowable Cost' ? 'selected' : '' }}>Below Allowable Cost</option>
-                                <option value="With Allowable Cost" {{ request('cost_performance') == 'With Allowable Cost' ? 'selected' : '' }}>With Allowable Cost</option>
+                                <option value="Withn Allowable Cost" {{ request('cost_performance') == 'Withn Allowable Cost' ? 'selected' : '' }}>Withn Allowable Cost</option>
                             </select>
                             <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
                         </div>
@@ -234,7 +234,7 @@
                                         $budgetPerformance = $signedBudgetVariance > 0 ? 'Above Budget' : ($signedBudgetVariance < 0 ? 'Under Budget' : 'On Budget');
 
                                         $costVariance = ($project->total_allowable_cost ?? 0) - ($project->cost_at_completion ?? 0);
-                                        $costPerformance = $costVariance < 0 ? 'Above Allowable Cost' : ($costVariance > 0 ? 'Below Allowable Cost' : 'With Allowable Cost');
+                                        $costPerformance = $costVariance < 0 ? 'Above Allowable Cost' : ($costVariance > 0 ? 'Below Allowable Cost' : 'Withn Allowable Cost');
 
                                         if (!$project->actual_start_date) {
                                             $scheduleStatus = 'Not Started';

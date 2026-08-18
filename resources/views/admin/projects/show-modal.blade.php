@@ -102,7 +102,7 @@
             $allowable = $project->total_allowable_cost ?? 0;
             $cac = $project->cost_at_completion ?? 0;
             $costEacIndex = $allowable > 0 ? ($allowable - $cac) / $allowable : 0;
-            $costPerformance = $costVariance < 0 ? 'Above Allowable Cost' : ($costVariance > 0 ? 'Below Allowable Cost' : 'With Allowable Cost');
+            $costPerformance = $costVariance < 0 ? 'Above Allowable Cost' : ($costVariance > 0 ? 'Below Allowable Cost' : 'Withn Allowable Cost');
 
             $scheduleStatus = 'On Schedule';
             if (!$project->actual_start_date) {
@@ -150,7 +150,7 @@
                         <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->variation) }}</p>
                     </div>
                     <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Supp.</p>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Supplementary</p>
                         <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->supplementary) }}</p>
                     </div>
                     <div>
@@ -171,7 +171,7 @@
                         <p class="text-xs font-black {{ $budgetVariance > 0 ? 'text-emerald-600' : ($budgetVariance < 0 ? 'text-rose-600' : 'text-slate-900') }}">ETB {{ number_format($budgetVariance) }}</p>
                     </div>
                     <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Budget Index %</p>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">BPI</p>
                         <p class="text-xs font-black {{ $budgetIndex < 0 ? 'text-rose-600' : ($budgetIndex > 0 ? 'text-amber-600' : 'text-slate-900') }}">{{ number_format($budgetIndex * 100, 2) }}%</p>
                     </div>
                     <div>
@@ -198,7 +198,7 @@
                             <p class="text-xs font-black text-slate-900">ETB {{ number_format($costVariance) }}</p>
                         </div>
                         <div>
-                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost EAC Index %</p>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">CPI</p>
                             <p class="text-xs font-black {{ $costEacIndex > 0 ? 'text-emerald-600' : ($costEacIndex < 0 ? 'text-rose-600' : 'text-slate-900') }}">{{ number_format($costEacIndex * 100, 2) }}%</p>
                         </div>
                         <div>
@@ -318,7 +318,7 @@
 
             @if($project->status === 'completed')
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule Performance Index %</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">SPI</p>
                 <p class="text-xs font-black text-slate-900">
                     @php
                         $spi = null;
@@ -332,7 +332,7 @@
                                 } else {
                                     $remainingDays = $project->baseline_finish_date->diffInDays(\Carbon\Carbon::today());
                                 }
-                                $spi = round(($remainingDays / $baselineDuration) * 100, 1);
+                                $spi = round(($remainingDays / $baselineDuration) * 100, 1); 
                             }
                         }
                     @endphp
@@ -347,7 +347,7 @@
             @if($project->status === 'completed')
             <div class="col-span-3 flex justify-center">
                 <div class="text-center">
-                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule Status</p>
+                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule Performance</p>
                     <p class="text-sm font-black">
                         @php
                             $scheduleStatus = null;

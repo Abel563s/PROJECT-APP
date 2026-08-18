@@ -168,7 +168,7 @@ class DashboardController extends Controller
             } elseif ($costVariance > 0) {
                 $costPerformance = 'Below Allowable Cost';
             } else {
-                $costPerformance = 'With Allowable Cost';
+                $costPerformance = 'Withn Allowable Cost';
             }
 
             if ($scheduleStatus !== 'Behind Schedule' && $budgetPerformance !== 'Above Budget' && $scheduleStatus !== 'Not Started') {
@@ -239,7 +239,7 @@ class DashboardController extends Controller
         $budgetAbove = $filteredProjects->where('budget_performance', 'Above Budget')->count();
 
         $costBelow = $filteredProjects->where('cost_performance', 'Below Allowable Cost')->count();
-        $costWithin = $filteredProjects->where('cost_performance', 'With Allowable Cost')->count();
+        $costWithin = $filteredProjects->where('cost_performance', 'Withn Allowable Cost')->count();
         $costAbove = $filteredProjects->where('cost_performance', 'Above Allowable Cost')->count();
 
         $overallGood = $filteredProjects->where('overall_performance', 'Good')->count();
@@ -309,7 +309,7 @@ class DashboardController extends Controller
             ],
             'cost_performance' => [
                 'below' => $filteredProjects->where('status', 'completed')->where('cost_performance', 'Below Allowable Cost')->count(),
-                'with_allowable' => $filteredProjects->where('status', 'completed')->where('cost_performance', 'With Allowable Cost')->count(),
+                'with_allowable' => $filteredProjects->where('status', 'completed')->where('cost_performance', 'Withn Allowable Cost')->count(),
                 'above' => $filteredProjects->where('status', 'completed')->where('cost_performance', 'Above Allowable Cost')->count(),
                 'total' => $filteredProjects->where('status', 'completed')->count(),
             ],
@@ -380,7 +380,7 @@ class DashboardController extends Controller
 
         $scheduleStatuses = ['Behind Schedule', 'Ahead of Schedule', 'On Schedule'];
         $budgetStatuses = ['Under Budget', 'On Budget', 'Above Budget'];
-        $costStatuses = ['Below Allowable Cost', 'With Allowable Cost', 'Above Allowable Cost'];
+        $costStatuses = ['Below Allowable Cost', 'Withn Allowable Cost', 'Above Allowable Cost'];
 
         $variationGroups = [
             'Projects with Addition' => $completedProjects->filter(fn($p) => $p['variation'] > 0),
@@ -436,7 +436,7 @@ class DashboardController extends Controller
         $sectorLabels = [];
         $sectorCostDatasets = [
             ['name' => 'Below Allowable Cost', 'values' => [], 'counts' => []],
-            ['name' => 'With Allowable Cost', 'values' => [], 'counts' => []],
+            ['name' => 'Withn Allowable Cost', 'values' => [], 'counts' => []],
             ['name' => 'Above Allowable Cost', 'values' => [], 'counts' => []],
         ];
         $sectorBudgetDatasets = [

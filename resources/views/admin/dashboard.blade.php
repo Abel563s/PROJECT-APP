@@ -1139,7 +1139,7 @@
         function getCostBadge(status) {
             const config = {
                 'Below Allowable Cost': 'bg-emerald-50 text-emerald-600 border-emerald-200',
-                'With Allowable Cost': 'bg-blue-50 text-blue-600 border-blue-200',
+                'Withn Allowable Cost': 'bg-blue-50 text-blue-600 border-blue-200',
                 'Above Allowable Cost': 'bg-rose-50 text-rose-600 border-rose-200',
             };
             return `<span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider ${config[status] || 'bg-slate-100 text-slate-600 border-slate-200'} border shadow-sm">${status}</span>`;
@@ -1376,7 +1376,7 @@
                 description: 'Completed projects cost health against allowable limits.',
                 categories: [
                     { key: 'below', label: 'Below Allowable Cost', color: '#10b981' },
-                    { key: 'with_allowable', label: 'With Allowable Cost', color: '#00ADC5' },
+                    { key: 'with_allowable', label: 'Withn Allowable Cost', color: '#00ADC5' },
                     { key: 'above', label: 'Above Allowable Cost', color: '#f43f5e' },
                 ],
                 totalLabel: 'Below/With/Above',
@@ -1853,7 +1853,7 @@
                 'On Budget': ['#00ADC5', '#00ADC5'],
                 'Above Budget': ['#EF4444', '#F87171'],
                 'Below Allowable Cost': ['#22C55E', '#4ADE80'],
-                'With Allowable Cost': ['#00ADC5', '#00ADC5'],
+                'Withn Allowable Cost': ['#FFA500', '#FFA500'],
                 'Above Allowable Cost': ['#EF4444', '#F87171'],
             };
 
