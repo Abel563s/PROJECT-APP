@@ -108,12 +108,7 @@
                                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="min-w-0">
-                                        <p class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors break-words">
-                                            {{ $issue->project?->project_name ?? 'N/A' }}
-                                        </p>
-                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{{ $issue->project_code ?? '---' }}</p>
-                                    </div>
+                                    <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $issue->project_code ?? '---' }}</p>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm">

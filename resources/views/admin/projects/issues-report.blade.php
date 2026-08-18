@@ -46,8 +46,8 @@
         </div>
 
         <!-- Filters -->
-        <form action="{{ route('admin.projects.issues.report') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
+        <form action="{{ route('admin.projects.issues.report') }}" method="GET" class="flex justify-center">
+            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-full max-w-7xl">
                 <div class="min-w-[220px] max-w-[320px] relative group shrink-0">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
@@ -145,7 +145,7 @@
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                            <i data-lucide="alert-circle" class="w-4 h-4 text-white"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Issues</p>
@@ -157,7 +157,7 @@
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="circle" class="w-4 h-4"></i>
+                            <i data-lucide="circle" class="w-4 h-4 text-white"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Open</p>
@@ -169,7 +169,7 @@
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="loader" class="w-4 h-4"></i>
+                            <i data-lucide="loader" class="w-4 h-4 text-white"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">In Progress</p>
@@ -181,7 +181,7 @@
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            <i data-lucide="check-circle" class="w-4 h-4 text-white"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Closed</p>
@@ -193,7 +193,7 @@
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="clock" class="w-4 h-4"></i>
+                            <i data-lucide="clock" class="w-4 h-4 text-white"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Overdue</p>
@@ -205,7 +205,7 @@
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-rose-600 flex items-center justify-center text-white shadow-md">
-                            <i data-lucide="x-circle" class="w-4 h-4"></i>
+                            <i data-lucide="x-circle" class="w-4 h-4 text-white"></i>
                         </div>
                     </div>
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cancelled</p>
