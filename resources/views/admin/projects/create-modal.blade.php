@@ -1,6 +1,6 @@
 <form action="{{ route('admin.projects.store') }}" method="POST" id="createModalForm" class="space-y-4">
     @csrf
-    <input type="hidden" name="status" value="in progress">
+    <input type="hidden" name="status" value="in progress" id="projectStatusInput">
 
     <!-- Section 1: Project Identity -->
     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
@@ -266,4 +266,12 @@
     }
 
     document.addEventListener('DOMContentLoaded', generateProjectCode);
+
+    const actualFinishInput = document.querySelector('input[name="actual_finish_date"]');
+    const statusInput = document.getElementById('projectStatusInput');
+    if (actualFinishInput && statusInput) {
+        actualFinishInput.addEventListener('change', function () {
+            statusInput.value = this.value ? 'completed' : 'in progress';
+        });
+    }
 </script>

@@ -1,6 +1,7 @@
 <form action="{{ route('admin.projects.update', $project->id) }}" method="POST" id="editModalForm" class="space-y-4">
     @csrf
     @method('PUT')
+    <input type="hidden" name="status" value="{{ $project->status }}" id="projectStatusInput">
 
     <!-- Section 1: Project Identity -->
     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
@@ -242,3 +243,13 @@
         </button>
     </div>
 </form>
+
+<script>
+    const actualFinishInput = document.querySelector('input[name="actual_finish_date"]');
+    const statusInput = document.getElementById('projectStatusInput');
+    if (actualFinishInput && statusInput) {
+        actualFinishInput.addEventListener('change', function () {
+            statusInput.value = this.value ? 'completed' : '{{ $project->status }}';
+        });
+    }
+</script>

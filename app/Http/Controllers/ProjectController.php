@@ -126,6 +126,10 @@ class ProjectController extends Controller
 
         $validated['status'] = $validated['status'] ?? 'in progress';
 
+        if (!empty($validated['actual_finish_date'])) {
+            $validated['status'] = 'completed';
+        }
+
         Project::create($validated);
 
         return redirect()->route('admin.projects.index')->with('success', 'Project created successfully.');
@@ -468,6 +472,10 @@ class ProjectController extends Controller
             'fa_received_at' => 'nullable|date',
         ]);
 
+        if (!empty($validated['actual_finish_date'])) {
+            $validated['status'] = 'completed';
+        }
+
         $project->update($validated);
 
         return redirect()->route('admin.projects.index')->with('success', 'Project updated successfully.');
@@ -587,6 +595,14 @@ class ProjectController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('impact') && $request->impact !== 'all') {
+            $query->where('impact', $request->impact);
+        }
+
+        if ($request->filled('issue_type') && $request->issue_type !== 'all') {
+            $query->where('issue_type', $request->issue_type);
+        }
+
         if ($request->has('partial') && $request->get('action') === 'create') {
             $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name', 'project_type', 'consultancy_sector']);
             return view('admin.projects.issues.create-modal', compact('projects'))->render();
@@ -594,8 +610,9 @@ class ProjectController extends Controller
 
         $issues = $query->orderByDesc('raised_date')->paginate(15)->withQueryString();
         $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name', 'project_type', 'consultancy_sector']);
+        $issueTypes = Issue::query()->select('issue_type')->distinct()->orderBy('issue_type')->pluck('issue_type');
 
-        return view('admin.projects.issues', compact('issues', 'projects'));
+        return view('admin.projects.issues', compact('issues', 'projects', 'issueTypes'));
     }
 
     public function issuesEdit(Request $request, Issue $issue)
