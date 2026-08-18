@@ -43,11 +43,7 @@
                     <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Issue Analytics & Reporting</p>
                 </div>
             </div>
-        </div>
-
-        <!-- Filters -->
-        <form action="{{ route('admin.projects.issues.report') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
+            <form action="{{ route('admin.projects.issues.report') }}" method="GET" class="flex flex-wrap items-center gap-2">
                 <div class="flex flex-col gap-1">
                     <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project</label>
                     <div class="relative">
@@ -128,15 +124,13 @@
                         </a>
                     </div>
                 @endif
-            </div>
-        </form>
-
-        <!-- KPI Cards -->
+            </form>
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-cyan-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center text-white shadow-lg shadow-slate-500/30">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #64748b, #475569);">
                             <i data-lucide="alert-circle" class="w-5 h-5"></i>
                         </div>
                     </div>
@@ -148,7 +142,7 @@
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-sky-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/30">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">
                             <i data-lucide="circle" class="w-5 h-5"></i>
                         </div>
                     </div>
@@ -160,7 +154,7 @@
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-amber-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/30">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
                             <i data-lucide="loader" class="w-5 h-5"></i>
                         </div>
                     </div>
@@ -172,7 +166,7 @@
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #10b981, #059669);">
                             <i data-lucide="check-circle" class="w-5 h-5"></i>
                         </div>
                     </div>
@@ -184,7 +178,7 @@
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-red-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white shadow-lg shadow-red-500/30">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
                             <i data-lucide="clock" class="w-5 h-5"></i>
                         </div>
                     </div>
@@ -196,7 +190,7 @@
             <div class="issue-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-rose-200 transition-all duration-300 overflow-hidden">
                 <div class="relative z-10 p-4">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-rose-500/30">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(135deg, #f43f5e, #e11d48);">
                             <i data-lucide="x-circle" class="w-5 h-5"></i>
                         </div>
                     </div>
