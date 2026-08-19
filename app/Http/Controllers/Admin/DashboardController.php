@@ -120,9 +120,6 @@ class DashboardController extends Controller
 
                 if ($baselineDuration > 0) {
                     $remainingDays = $actualFinish->diffInDays($project->baseline_finish_date);
-                    if ($project->actual_finish_date > $project->baseline_finish_date) {
-                        $remainingDays = -$remainingDays;
-                    }
                     $schedulePerformancePercent = round(($remainingDays / $baselineDuration) * 100, 1);
                 }
             } else {
