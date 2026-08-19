@@ -263,6 +263,11 @@
                         <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Lowest</span>
                         <span id="kpiLowest" class="text-xs font-black text-rose-600">0%</span>
                     </div>
+                    <div class="w-px h-4 bg-slate-200"></div>
+                    <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl inline-flex">
+                        <button onclick="switchStatusTab('in progress')" id="status-tab-in progress" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-900 shadow-sm">In Progress</button>
+                        <button onclick="switchStatusTab('completed')" id="status-tab-completed" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-900">Completed</button>
+                    </div>
                 </div>
             </div>
 
@@ -363,6 +368,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         let currentTab = 'schedule';
+        let currentStatusTab = 'in progress';
         let allProjects = [];
         let filteredProjects = [];
         let currentPage = 1;
@@ -379,6 +385,11 @@
             schedule: 'Project Schedule Performance',
             budget: 'Project Budget Performance',
             cost: 'Project Cost Performance'
+        };
+
+        const statusTabTitles = {
+            'in progress': 'In Progress',
+            completed: 'Completed'
         };
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -688,6 +699,25 @@
             return formatNumber(rounded);
         }
 
+        function switchStatusTab(status) {
+            currentStatusTab = status;
+            document.querySelectorAll('.status-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+                btn.classList.add('text-slate-500');
+            });
+            const activeBtn = document.getElementById(`status-tab-${status}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-500');
+                activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+            }
+            currentPage = 1;
+            renderMiniKpis();
+            renderLegend();
+            renderChart();
+            renderTable();
+            updateSubtitle();
+        }
+
         function switchTab(tab) {
             currentTab = tab;
             document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -707,7 +737,8 @@
         function updateSubtitle() {
             const subtitle = document.getElementById('chartSubtitle');
             if (subtitle) {
-                let text = `${tabTitles[currentTab]} • Last updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                const statusLabel = statusTabTitles[currentStatusTab] || currentStatusTab;
+                let text = `${statusLabel} • ${tabTitles[currentTab]} • Last updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
                 if (activeChartFilter) {
                     text = `${activeChartFilter.label} • ${text}`;
                 }
@@ -728,8 +759,13 @@
             }
         }
 
+        function getStatusFilteredProjects() {
+            return filteredProjects.filter(p => p.status === currentStatusTab);
+        }
+
         function renderMiniKpis() {
-            const values = filteredProjects.map(p => {
+            const projects = getStatusFilteredProjects();
+            const values = projects.map(p => {
                 if (currentTab === 'schedule') return p.schedule_performance_percent;
                 if (currentTab === 'budget') return p.budget_index_percent;
                 return p.cost_performance_percent;
@@ -782,7 +818,13 @@
         }
 
         function getChartData() {
-            const sorted = [...filteredProjects].sort((a, b) => {
+            const projects = getStatusFilteredProjects();
+            const sorted = [...projects].sort((a, b) => {
+                const statusOrder = { 'Ahead of Schedule': 1, 'On Schedule': 2, 'Behind Schedule': 3, 'Not Started': 4 };
+                const statusA = statusOrder[a.schedule_status] ?? 5;
+                const statusB = statusOrder[b.schedule_status] ?? 5;
+                if (statusA !== statusB) return statusA - statusB;
+
                 const valA = currentTab === 'schedule' ? a.schedule_performance_percent : currentTab === 'budget' ? a.budget_index_percent : a.cost_performance_percent;
                 const valB = currentTab === 'schedule' ? b.schedule_performance_percent : currentTab === 'budget' ? b.budget_index_percent : b.cost_performance_percent;
                 return valB - valA;
@@ -826,7 +868,7 @@
             const { categories, values, colors, sortedProjects } = getChartData();
             const chartEl = document.querySelector('#chart');
 
-            if (filteredProjects.length === 0) {
+            if (categories.length === 0) {
                 chartEl.innerHTML = '<div class="flex items-center justify-center h-full text-slate-400 text-sm font-black">No data available for the selected filters</div>';
                 currentChartMeta = { categories: [], values: [], colors: [], average: 0 };
                 return;
@@ -1020,18 +1062,26 @@
                     custom: function({ series, seriesIndex, dataPointIndex, w }) {
                         const project = sortedProjects[dataPointIndex];
                         if (!project) return '';
-                        let content = `<div style="padding: 10px 14px; font-family: 'Inter', sans-serif; min-width: 220px; border-radius: 10px;">`;
+                        let content = `<div style="padding: 10px 14px; font-family: 'Inter', sans-serif; min-width: 260px; border-radius: 10px;">`;
                         content += `<div style="font-weight: 800; font-size: 12px; color: #0f172a; margin-bottom: 6px;">${project.project_name}</div>`;
-                        content += `<div style="font-weight: 700; font-size: 10px; color: #64748b; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.08em;">${tabTitles[currentTab]}</div>`;
+                        content += `<div style="font-weight: 700; font-size: 10px; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.08em;">${project.project_code} • ${tabTitles[currentTab]}</div>`;
 
                         if (currentTab === 'schedule') {
                             const statusColor = project.schedule_status === 'Behind Schedule' ? '#ef4444' : project.schedule_status === 'Ahead of Schedule' ? '#10b981' : '#3b82f6';
                             content += `<div style="font-weight: 800; font-size: 20px; color: ${project.schedule_performance_percent < 0 ? '#ef4444' : project.schedule_performance_percent > 0 ? '#10b981' : '#94a3b8'}; margin-bottom: 8px;">${Math.round(project.schedule_performance_percent)}%</div>`;
-                            content += `<div style="display: grid; gap: 3px; font-size: 10px; color: #475569;">`;
+                            content += `<div style="display: grid; gap: 3px; font-size: 10px; color: #475569; margin-bottom: 8px;">`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Status</span><span style="font-weight: 700; color: ${statusColor};">${project.schedule_status}</span></div>`;
-                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Variance</span><span style="font-weight: 700;">${project.schedule_variance_days > 0 ? '+' : ''}${Math.round(project.schedule_variance_days)} Days</span></div>`;
+                            const varianceLabel = project.schedule_variance_days > 0 ? '+' + Math.round(project.schedule_variance_days) + ' days late' : project.schedule_variance_days < 0 ? Math.abs(Math.round(project.schedule_variance_days)) + ' days early' : 'On time';
+                            const varianceColor = project.schedule_variance_days > 0 ? '#ef4444' : project.schedule_variance_days < 0 ? '#10b981' : '#64748b';
+                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Variance</span><span style="font-weight: 700; color: ${varianceColor};">${varianceLabel}</span></div>`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Actual Duration</span><span style="font-weight: 700;">${Math.round(project.actual_duration)} Days</span></div>`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Baseline Duration</span><span style="font-weight: 700;">${Math.round(project.baseline_duration)} Days</span></div>`;
+                            content += `</div>`;
+                            content += `<div style="border-top: 1px solid #e2e8f0; padding-top: 6px; display: grid; gap: 3px; font-size: 10px; color: #475569;">`;
+                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Baseline Start</span><span style="font-weight: 700;">${project.baseline_start_date || '---'}</span></div>`;
+                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Baseline Finish</span><span style="font-weight: 700;">${project.baseline_finish_date || '---'}</span></div>`;
+                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Actual Start</span><span style="font-weight: 700;">${project.actual_start_date || '---'}</span></div>`;
+                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Actual Finish</span><span style="font-weight: 700;">${project.actual_finish_date || '---'}</span></div>`;
                             content += `</div>`;
                         } else if (currentTab === 'budget') {
                             const perfColor = project.budget_performance === 'Above Budget' ? '#ef4444' : project.budget_performance === 'Under Budget' ? '#10b981' : '#3b82f6';
@@ -1063,16 +1113,17 @@
         }
 
         function renderTable() {
+            const projects = getStatusFilteredProjects();
             const tbody = document.getElementById('performanceTableBody');
             const start = (currentPage - 1) * perPage + 1;
-            const end = Math.min(start + perPage - 1, filteredProjects.length);
-            document.getElementById('projectCount').textContent = `${filteredProjects.length} Projects`;
+            const end = Math.min(start + perPage - 1, projects.length);
+            document.getElementById('projectCount').textContent = `${projects.length} Projects`;
 
-            document.getElementById('paginationStart').textContent = filteredProjects.length > 0 ? start : 0;
+            document.getElementById('paginationStart').textContent = projects.length > 0 ? start : 0;
             document.getElementById('paginationEnd').textContent = end;
-            document.getElementById('paginationTotal').textContent = filteredProjects.length;
+            document.getElementById('paginationTotal').textContent = projects.length;
 
-            if (filteredProjects.length === 0) {
+            if (projects.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="5" class="px-6 py-16 text-center">
@@ -1092,7 +1143,7 @@
                 return;
             }
 
-            const pageProjects = filteredProjects.slice(start - 1, end);
+            const pageProjects = projects.slice(start - 1, end);
 
             tbody.innerHTML = pageProjects.map((project, index) => {
                 const scheduleBadge = getScheduleBadge(project.schedule_status);
@@ -1166,6 +1217,8 @@
             const costColor = project.cost_performance === 'Above Allowable Cost' ? 'text-rose-600' : project.cost_performance === 'Below Allowable Cost' ? 'text-emerald-600' : 'text-blue-600';
             const overallColor = project.overall_performance === 'Good' ? 'text-emerald-600' : 'text-rose-600';
 
+            const isCompleted = project.status === 'completed';
+
             document.getElementById('drawerContent').innerHTML = `
                 <div class="space-y-4">
                     <div class="grid grid-cols-3 gap-3">
@@ -1198,7 +1251,9 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Variance</p>
-                                <p class="text-sm font-black ${project.schedule_variance_days > 0 ? 'text-rose-600' : project.schedule_variance_days < 0 ? 'text-emerald-600' : 'text-slate-900'}">${project.schedule_variance_days > 0 ? '+' : ''}${Math.round(project.schedule_variance_days)} Days</p>
+                                <p class="text-sm font-black">
+                                    ${project.schedule_variance_days > 0 ? '<span class="text-rose-600">+' + Math.round(project.schedule_variance_days) + ' days late</span>' : project.schedule_variance_days < 0 ? '<span class="text-emerald-600">' + Math.abs(Math.round(project.schedule_variance_days)) + ' days early</span>' : '<span class="text-slate-900">On time</span>'}
+                                </p>
                             </div>
                             <div>
                                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Actual Duration</p>
@@ -1246,6 +1301,34 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
+                        <h4 class="text-xs font-black text-slate-900">Timeline</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Baseline Start</p>
+                                <p class="text-sm font-black text-slate-900">${project.baseline_start_date || '---'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Baseline Finish</p>
+                                <p class="text-sm font-black text-slate-900">${project.baseline_finish_date || '---'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Actual Start</p>
+                                <p class="text-sm font-black text-slate-900">${project.actual_start_date || '---'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Actual Finish</p>
+                                <p class="text-sm font-black text-slate-900">${project.actual_finish_date || '---'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-slate-100 rounded-xl p-4">
+                        <a href="/admin/projects/${project.id}" class="flex items-center justify-center w-full px-4 py-2.5 bg-slate-900 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all">
+                            View Full Details
+                        </a>
+                    </div>
                 </div>
             `;
 
@@ -1265,12 +1348,13 @@
         }
 
         function exportCSV() {
-            if (filteredProjects.length === 0) {
+            const projects = getStatusFilteredProjects();
+            if (projects.length === 0) {
                 alert('No data to export');
                 return;
             }
             const headers = ['Project Code', 'Project Name', 'Schedule Performance %', 'Schedule Status', 'Budget Index %', 'Budget Performance', 'Cost Performance %', 'Cost Performance', 'Overall Performance'];
-            const rows = filteredProjects.map(p => [
+            const rows = projects.map(p => [
                 p.project_code,
                 p.project_name,
                 p.schedule_performance_percent + '%',

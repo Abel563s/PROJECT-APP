@@ -104,45 +104,29 @@ class DashboardController extends Controller
             if (!$project->actual_start_date) {
                 $scheduleStatus = 'Not Started';
                 $schedulePerformancePercent = 0;
-            } elseif ($project->baseline_finish_date) {
-                if ($project->actual_finish_date) {
-                    $svForStatus = $project->actual_finish_date->diffInDays($project->baseline_finish_date);
-                } else {
-                    $svForStatus = now()->diffInDays($project->baseline_finish_date);
-                }
+            } elseif ($project->baseline_start_date && $project->baseline_finish_date) {
+                $baselineDuration = abs($project->baseline_finish_date->diffInDays($project->baseline_start_date));
+                $actualFinish = $project->actual_finish_date ?: now();
+                $actualDuration = abs($actualFinish->diffInDays($project->actual_start_date));
+                $scheduleVariance = $actualDuration - $baselineDuration;
 
-                if ($svForStatus < 0) {
+                if ($scheduleVariance > 0) {
                     $scheduleStatus = 'Behind Schedule';
-                } elseif ($svForStatus > 0) {
+                } elseif ($scheduleVariance < 0) {
                     $scheduleStatus = 'Ahead of Schedule';
                 } else {
                     $scheduleStatus = 'On Schedule';
                 }
-            } else {
-                $scheduleStatus = 'On Schedule';
-            }
 
-            if ($project->baseline_start_date && $project->baseline_finish_date) {
-                $baselineDuration = abs($project->baseline_finish_date->diffInDays($project->baseline_start_date));
-            }
-
-            if ($project->baseline_start_date && $project->baseline_finish_date && $project->actual_start_date) {
-                $actualFinish = $project->actual_finish_date ?: now();
-                $actualDuration = abs($actualFinish->diffInDays($project->actual_start_date));
-                $scheduleVariance = $actualDuration - $baselineDuration;
-            }
-
-            if ($project->baseline_start_date && $project->baseline_finish_date) {
-                if ($baselineDuration == 0) {
-                    $schedulePerformancePercent = 0;
-                } else {
-                    if ($project->actual_finish_date) {
-                        $remainingDays = $project->actual_finish_date->diffInDays($project->baseline_finish_date);
-                    } else {
-                        $remainingDays = now()->diffInDays($project->baseline_finish_date);
+                if ($baselineDuration > 0) {
+                    $remainingDays = $actualFinish->diffInDays($project->baseline_finish_date);
+                    if ($project->actual_finish_date > $project->baseline_finish_date) {
+                        $remainingDays = -$remainingDays;
                     }
                     $schedulePerformancePercent = round(($remainingDays / $baselineDuration) * 100, 1);
                 }
+            } else {
+                $scheduleStatus = 'On Schedule';
             }
 
             $revisedBudget = (float) ($project->revised_budget_amount > 0 ? $project->revised_budget_amount : $project->contract_budget);

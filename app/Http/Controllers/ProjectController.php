@@ -59,13 +59,13 @@ class ProjectController extends Controller
             if ($request->schedule_performance === 'Not Started') {
                 $query->whereNull('actual_start_date');
             } elseif ($request->schedule_performance === 'Behind Schedule') {
-                $query->whereNotNull('actual_start_date')->whereNotNull('baseline_finish_date')->whereRaw('DATEDIFF(baseline_finish_date, actual_start_date) < 0');
+                $query->whereNotNull('actual_start_date')->whereNotNull('baseline_finish_date')->whereNotNull('baseline_start_date')->whereRaw('ABS(DATEDIFF(IFNULL(actual_finish_date, NOW()), actual_start_date)) - ABS(DATEDIFF(baseline_finish_date, baseline_start_date)) > 0');
             } elseif ($request->schedule_performance === 'Ahead of Schedule') {
-                $query->whereNotNull('actual_start_date')->whereNotNull('baseline_finish_date')->whereRaw('DATEDIFF(baseline_finish_date, actual_start_date) > 0');
+                $query->whereNotNull('actual_start_date')->whereNotNull('baseline_finish_date')->whereNotNull('baseline_start_date')->whereRaw('ABS(DATEDIFF(IFNULL(actual_finish_date, NOW()), actual_start_date)) - ABS(DATEDIFF(baseline_finish_date, baseline_start_date)) < 0');
             } elseif ($request->schedule_performance === 'On Schedule') {
                 $query->where(function ($q) {
                     $q->whereNotNull('actual_start_date')->whereNull('baseline_finish_date')
-                      ->orWhereNotNull('actual_start_date')->whereNotNull('baseline_finish_date')->whereRaw('DATEDIFF(baseline_finish_date, actual_start_date) = 0');
+                      ->orWhereNotNull('actual_start_date')->whereNotNull('baseline_finish_date')->whereNotNull('baseline_start_date')->whereRaw('ABS(DATEDIFF(IFNULL(actual_finish_date, NOW()), actual_start_date)) - ABS(DATEDIFF(baseline_finish_date, baseline_start_date)) = 0');
                 });
             }
         }

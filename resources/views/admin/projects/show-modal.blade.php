@@ -107,17 +107,18 @@
             $scheduleStatus = 'On Schedule';
             if (!$project->actual_start_date) {
                 $scheduleStatus = 'Not Started';
-            } elseif ($project->baseline_finish_date) {
-                if ($project->actual_finish_date) {
-                    $svForStatus = $project->baseline_finish_date->diffInDays($project->actual_start_date);
-                } else {
-                    $svForStatus = $project->baseline_finish_date->diffInDays(\Carbon\Carbon::today());
-                }
+            } elseif ($project->baseline_start_date && $project->baseline_finish_date) {
+                $baselineDuration = abs($project->baseline_finish_date->diffInDays($project->baseline_start_date));
+                $actualFinish = $project->actual_finish_date ?: \Carbon\Carbon::today();
+                $actualDuration = abs($actualFinish->diffInDays($project->actual_start_date));
+                $svForStatus = $actualDuration - $baselineDuration;
                 if ($svForStatus < 0) {
-                    $scheduleStatus = 'Behind Schedule';
-                } elseif ($svForStatus > 0) {
                     $scheduleStatus = 'Ahead of Schedule';
+                } elseif ($svForStatus > 0) {
+                    $scheduleStatus = 'Behind Schedule';
                 }
+            } else {
+                $scheduleStatus = 'On Schedule';
             }
 
             if ($scheduleStatus !== 'Behind Schedule' && $budgetPerformance !== 'Above Budget' && $scheduleStatus !== 'Not Started') {
@@ -308,9 +309,9 @@
                     @endphp
                     @if($sv2 !== null)
                         @if($sv2 > 0)
-                            <span class="text-rose-600">+{{ $sv2 }} days late</span>
+                            <span class="text-rose-600">{{ $sv2 }} days late</span>
                         @elseif($sv2 < 0)
-                            <span class="text-emerald-600">{{ $sv2 }} days early</span>
+                            <span class="text-emerald-600">{{ abs($sv2) }} days early</span>
                         @else
                             <span class="text-slate-900">On time</span>
                         @endif
@@ -357,30 +358,25 @@
                 <div class="text-center">
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule Performance</p>
                     <p class="text-sm font-black">
-                        @php
-                            $scheduleStatus = null;
-                            $scheduleStatusColor = 'text-slate-900';
-                            if (!$project->actual_start_date) {
-                                $scheduleStatus = 'Not Started';
-                                $scheduleStatusColor = 'text-slate-500';
-                            } elseif ($project->baseline_finish_date) {
-                                if ($project->actual_finish_date) {
-                                    $svForStatus = $project->baseline_finish_date->diffInDays($project->actual_start_date);
-                                } else {
-                                    $svForStatus = $project->baseline_finish_date->diffInDays(\Carbon\Carbon::today());
-                                }
-                                if ($svForStatus < 0) {
-                                    $scheduleStatus = 'Behind Schedule';
-                                    $scheduleStatusColor = 'text-rose-600';
-                                } elseif ($svForStatus > 0) {
-                                    $scheduleStatus = 'Ahead of Schedule';
-                                    $scheduleStatusColor = 'text-emerald-600';
-                                } else {
-                                    $scheduleStatus = 'On Schedule';
-                                    $scheduleStatusColor = 'text-[#00ADC5]';
-                                }
+                    @php
+                        $scheduleStatus = null;
+                        $scheduleStatusColor = 'text-slate-900';
+                        if (!$project->actual_start_date) {
+                            $scheduleStatus = 'Not Started';
+                            $scheduleStatusColor = 'text-slate-500';
+                        } elseif (isset($sv2)) {
+                            if ($sv2 > 0) {
+                                $scheduleStatus = 'Behind Schedule';
+                                $scheduleStatusColor = 'text-rose-600';
+                            } elseif ($sv2 < 0) {
+                                $scheduleStatus = 'Ahead of Schedule';
+                                $scheduleStatusColor = 'text-emerald-600';
+                            } else {
+                                $scheduleStatus = 'On Schedule';
+                                $scheduleStatusColor = 'text-[#00ADC5]';
                             }
-                        @endphp
+                        }
+                    @endphp
                         @if($scheduleStatus)
                             <span class="{{ $scheduleStatusColor }}">{{ $scheduleStatus }}</span>
                         @else

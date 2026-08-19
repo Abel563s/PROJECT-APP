@@ -238,15 +238,14 @@
 
                                         if (!$project->actual_start_date) {
                                             $scheduleStatus = 'Not Started';
-                                        } elseif ($project->baseline_finish_date) {
-                                            if ($project->actual_finish_date) {
-                                                $svForStatus = $project->baseline_finish_date->diffInDays($project->actual_start_date);
-                                            } else {
-                                                $svForStatus = $project->baseline_finish_date->diffInDays(\Carbon\Carbon::today());
-                                            }
-                                            if ($svForStatus < 0) {
+                                        } elseif ($project->baseline_start_date && $project->baseline_finish_date) {
+                                            $baselineDuration = abs($project->baseline_finish_date->diffInDays($project->baseline_start_date));
+                                            $actualFinish = $project->actual_finish_date ?: \Carbon\Carbon::today();
+                                            $actualDuration = abs($actualFinish->diffInDays($project->actual_start_date));
+                                            $sv2 = $actualDuration - $baselineDuration;
+                                            if ($sv2 > 0) {
                                                 $scheduleStatus = 'Behind Schedule';
-                                            } elseif ($svForStatus > 0) {
+                                            } elseif ($sv2 < 0) {
                                                 $scheduleStatus = 'Ahead of Schedule';
                                             } else {
                                                 $scheduleStatus = 'On Schedule';
