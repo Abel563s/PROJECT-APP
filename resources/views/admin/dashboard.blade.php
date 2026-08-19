@@ -265,7 +265,7 @@
                     </div>
                     <div class="w-px h-4 bg-slate-200"></div>
                     <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl inline-flex">
-                        <button onclick="switchStatusTab('in progress')" id="status-tab-in progress" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-900 shadow-sm">In Progress</button>
+                        <button onclick="switchStatusTab('in progress')" id="status-tab-in-progress" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-900 shadow-sm">In Progress</button>
                         <button onclick="switchStatusTab('completed')" id="status-tab-completed" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-900">Completed</button>
                     </div>
                 </div>
@@ -760,7 +760,7 @@
         }
 
         function getStatusFilteredProjects() {
-            return filteredProjects.filter(p => p.status === currentStatusTab);
+            return filteredProjects.filter(p => (p.status || '').toLowerCase() === currentStatusTab.toLowerCase());
         }
 
         function renderMiniKpis() {
@@ -847,9 +847,15 @@
                     else if (val > -20) colors.push('#f59e0b');
                     else colors.push('#ef4444');
                 } else if (currentTab === 'budget' || currentTab === 'cost') {
-                    if (val < 0) colors.push('#10b981');
-                    else if (val === 0) colors.push('#94a3b8');
-                    else colors.push('#ef4444');
+                    if (currentTab === 'budget') {
+                        if (val > 0) colors.push('#10b981');
+                        else if (val === 0) colors.push('#94a3b8');
+                        else colors.push('#ef4444');
+                    } else {
+                        if (val > 0) colors.push('#10b981');
+                        else if (val === 0) colors.push('#94a3b8');
+                        else colors.push('#ef4444');
+                    }
                 } else {
                     colors.push('#00ADC5');
                 }
@@ -1085,7 +1091,7 @@
                             content += `</div>`;
                         } else if (currentTab === 'budget') {
                             const perfColor = project.budget_performance === 'Above Budget' ? '#ef4444' : project.budget_performance === 'Under Budget' ? '#10b981' : '#3b82f6';
-                            content += `<div style="font-weight: 800; font-size: 20px; color: ${project.budget_index_percent > 0 ? '#ef4444' : project.budget_index_percent < 0 ? '#10b981' : '#94a3b8'}; margin-bottom: 8px;">${Math.round(project.budget_index_percent)}%</div>`;
+                            content += `<div style="font-weight: 800; font-size: 20px; color: ${project.budget_index_percent < 0 ? '#ef4444' : project.budget_index_percent > 0 ? '#10b981' : '#94a3b8'}; margin-bottom: 8px;">${Math.round(project.budget_index_percent)}%</div>`;
                             content += `<div style="display: grid; gap: 3px; font-size: 10px; color: #475569;">`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Performance</span><span style="font-weight: 700; color: ${perfColor};">${project.budget_performance}</span></div>`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Budget Variance</span><span style="font-weight: 700;">ETB ${Math.round(project.budget_variance).toLocaleString()}</span></div>`;
@@ -1486,19 +1492,19 @@
                 card.className = 'analytics-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col';
                 card.innerHTML = `
                     <div class="absolute inset-0 bg-gradient-to-br from-slate-50/0 to-slate-50/0 group-hover:from-slate-50/60 group-hover:to-slate-50/30 transition-all duration-300 pointer-events-none"></div>
-                    <div class="relative z-10 flex flex-col flex-1 p-3">
-                        <div class="flex items-center justify-between mb-2">
+                    <div class="relative z-10 flex flex-col flex-1 p-2.5">
+                        <div class="flex items-center justify-between mb-1.5">
                             <div>
                                 <h4 class="text-[9px] font-black text-slate-900 uppercase tracking-widest leading-none">${config.title}</h4>
                                 <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest mt-0.5 leading-none">${config.description}</p>
                             </div>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-100 text-[8px] font-black text-slate-500 uppercase tracking-wider shadow-sm">${total} Projects</span>
                         </div>
-                        <div class="flex items-center justify-center py-2 relative" style="height: 240px; overflow: visible;">
+                        <div class="flex items-center justify-center py-1 relative" style="height: 220px; overflow: visible;">
                             <div id="chart-${chartId}" class="w-full h-full relative" style="z-index: 1; overflow: visible !important;"></div>
                         </div>
                         <div id="legend-${chartId}" class="mt-auto analytics-legend-wrapper"></div>
-                        <div class="mt-1.5 pt-2 border-t border-slate-100 overflow-hidden">
+                        <div class="mt-1 pt-1.5 border-t border-slate-100 overflow-hidden">
                             <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest analytics-insight">${getInsight(chartId, data, total)}</p>
                         </div>
                     </div>
@@ -1507,7 +1513,7 @@
             });
 
             Object.keys(analyticsConfig).forEach(chartId => {
-                createDonutChart(chartId, analytics[chartId] || {});
+                createPieChart(chartId, analytics[chartId] || {});
             });
 
             if (window.lucide) lucide.createIcons();
@@ -1535,7 +1541,7 @@
             return `${maxKey.label} is the largest group at ${percent}%.`;
         }
 
-        function createDonutChart(chartId, data) {
+        function createPieChart(chartId, data) {
             const config = analyticsConfig[chartId];
             const total = data.total || 0;
             const chartEl = document.getElementById(`chart-${chartId}`);
@@ -1558,7 +1564,6 @@
             const series = config.categories.map(cat => data[cat.key] || 0);
             const labels = config.categories.map(cat => cat.label);
             const colors = config.categories.map(cat => cat.color);
-            const positiveCategories = config.categories.filter(cat => (data[cat.key] || 0) > 0);
 
             const allZero = series.every(v => v === 0);
             if (allZero) {
@@ -1574,14 +1579,21 @@
             }
 
             if (analyticsCharts[chartId]) {
+                const oldTooltip = chartEl.parentElement.querySelector('.pie-custom-tooltip');
+                if (oldTooltip) oldTooltip.remove();
                 analyticsCharts[chartId].destroy();
             }
 
-            let lastHoveredIndex = -1;
+            const wrapper = chartEl.parentElement;
+            const customTooltip = document.createElement('div');
+            customTooltip.className = 'pie-custom-tooltip';
+            customTooltip.style.cssText = 'position: absolute; pointer-events: none; z-index: 50; display: none; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); padding: 10px 14px; min-width: 200px; font-family: Inter, sans-serif; transition: opacity 0.15s ease;';
+            wrapper.style.position = wrapper.style.position || 'relative';
+            wrapper.appendChild(customTooltip);
 
             analyticsCharts[chartId] = new ApexCharts(chartEl, {
                 chart: {
-                    type: 'donut',
+                    type: 'pie',
                     height: '100%',
                     animations: {
                         enabled: true,
@@ -1599,84 +1611,30 @@
                         mouseMove: (event, chartContext, { dataPointIndex }) => {
                             chartContext.el.style.cursor = dataPointIndex !== undefined && dataPointIndex >= 0 ? 'pointer' : 'default';
 
-                            if (dataPointIndex === lastHoveredIndex) return;
-                            lastHoveredIndex = dataPointIndex;
-
                             if (dataPointIndex >= 0 && dataPointIndex < config.categories.length) {
                                 const cat = config.categories[dataPointIndex];
                                 const count = data[cat.key] || 0;
                                 const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+                                customTooltip.innerHTML = `
+                                    <div style="font-weight: 800; font-size: 11px; color: #0f172a; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">${cat.label}</div>
+                                    <div style="font-weight: 800; font-size: 22px; color: ${cat.color}; margin-bottom: 4px;">${count} <span style="font-size: 11px; font-weight: 700; color: #64748b;">Projects</span></div>
+                                    <div style="font-weight: 700; font-size: 11px; color: #64748b;">${percent}% of ${total}</div>
+                                `;
+                                customTooltip.style.display = 'block';
 
-                                chartContext.updateOptions({
-                                    plotOptions: {
-                                        pie: {
-                                            donut: {
-                                                labels: {
-                                                    show: true,
-                                                         name: {
-                                                             show: true,
-                                                             fontSize: '11px',
-                                                             fontWeight: 700,
-                                                             color: '#64748b',
-                                                         },
-                                                         value: {
-                                                             show: true,
-                                                             fontSize: '16px',
-                                                             fontWeight: 800,
-                                                             color: '#0f172a',
-                                                             formatter: () => count
-                                                         },
-                                                         total: {
-                                                             show: true,
-                                                             label: cat.label,
-                                                             fontSize: '11px',
-                                                             fontWeight: 700,
-                                                             color: '#475569',
-                                                             formatter: () => percent + '%'
-                                                         }
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
+                                const rect = wrapper.getBoundingClientRect();
+                                let left = event.clientX - rect.left + 12;
+                                let top = event.clientY - rect.top - 12;
+
+                                customTooltip.style.left = left + 'px';
+                                customTooltip.style.top = top + 'px';
+                            } else {
+                                customTooltip.style.display = 'none';
                             }
                         },
-                        mouseLeave: (event, chartContext) => {
+                        mouseLeave: () => {
+                            customTooltip.style.display = 'none';
                             chartContext.el.style.cursor = 'default';
-                            lastHoveredIndex = -1;
-
-                            chartContext.updateOptions({
-                                plotOptions: {
-                                    pie: {
-                                        donut: {
-                                            labels: {
-                                                show: true,
-                                                name: {
-                                                    show: true,
-                                                    fontSize: '11px',
-                                                    fontWeight: 700,
-                                                    color: '#64748b',
-                                                },
-                                                value: {
-                                                    show: true,
-                                                    fontSize: '16px',
-                                                    fontWeight: 800,
-                                                    color: '#0f172a',
-                                                    formatter: (val) => val
-                                                },
-                                                total: {
-                                                    show: true,
-                                                    label: config.totalLabel,
-                                                    fontSize: '11px',
-                                                    fontWeight: 700,
-                                                    color: '#475569',
-                                                    formatter: () => total.toString()
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            });
                         }
                     },
                     dropShadow: {
@@ -1689,32 +1647,11 @@
                 },
                 plotOptions: {
                     pie: {
-                        donut: {
-                            size: '72%',
-                            labels: {
-                                show: true,
-                                name: {
-                                    show: true,
-                                    fontSize: '11px',
-                                    fontWeight: 700,
-                                    color: '#64748b',
-                                },
-                                value: {
-                                    show: true,
-                                    fontSize: '16px',
-                                    fontWeight: 800,
-                                    color: '#0f172a',
-                                    formatter: (val) => val
-                                },
-                                total: {
-                                    show: true,
-                                    label: config.totalLabel,
-                                    fontSize: '11px',
-                                    fontWeight: 700,
-                                    color: '#475569',
-                                    formatter: () => total.toString()
-                                }
-                            }
+                        startAngle: 0,
+                        endAngle: 360,
+                        expandOnClick: false,
+                        dataLabels: {
+                            offset: -5
                         }
                     }
                 },
@@ -1728,26 +1665,34 @@
                     colors: ['#fff']
                 },
                 dataLabels: {
-                    enabled: false
+                    enabled: true,
+                    formatter: function(val) {
+                        if (val < 8) return '';
+                        return Math.round(val) + '%';
+                    },
+                    style: {
+                        fontSize: '10px',
+                        fontWeight: 700,
+                        colors: ['#ffffff']
+                    },
+                    dropShadow: {
+                        enabled: false
+                    }
                 },
+                tooltip: { enabled: false },
                 responsive: [
                     {
                         breakpoint: 480,
-                                        options: {
-                                            chart: {
-                                                height: 200
-                                            },
-                                            plotOptions: {
-                                                pie: {
-                                                    donut: {
-                                                        labels: {
-                                                            value: { fontSize: '14px' },
-                                                            total: { fontSize: '10px' }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
+                        options: {
+                            chart: {
+                                height: 200
+                            },
+                            dataLabels: {
+                                style: {
+                                    fontSize: '9px'
+                                }
+                            }
+                        }
                     }
                 ]
             });
@@ -1766,12 +1711,14 @@
                 const percent = total > 0 ? Math.round((count / total) * 100) : 0;
                 const isActive = activeChartFilter && activeChartFilter.chart === chartId && activeChartFilter.value === cat.key;
                 const mutedClass = count === 0 ? 'text-slate-300' : '';
+                const activeClass = isActive ? 'bg-white/80 border border-slate-200 shadow-sm' : 'border border-transparent';
                 return `
-                    <div class="analytics-legend-item flex items-center gap-1.5 ${isActive ? 'bg-white/80 p-0.5 rounded border border-slate-200 shadow-sm' : ''} cursor-pointer hover:bg-slate-50 rounded transition-all px-1.5 py-0.5 border border-transparent hover:border-slate-100" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
-                        <span class="w-1.5 h-1.5 rounded-sm flex-shrink-0 ${mutedClass}" style="background-color: ${cat.color};"></span>
-                        <span class="text-[10px] font-black ${mutedClass} uppercase tracking-wider truncate max-w-[80px]">${cat.label}</span>
-                        <span class="text-[10px] font-black ${mutedClass} ml-auto">${count}</span>
-                        <span class="text-[10px] font-black ${mutedClass} w-6 text-right">${percent}%</span>
+                    <div class="analytics-legend-item inline-flex items-center gap-1 ${mutedClass} ${activeClass} cursor-pointer hover:bg-slate-50 rounded transition-all px-1.5 py-0.5" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
+                        <span class="w-1.5 h-1.5 rounded-sm flex-shrink-0" style="background-color: ${cat.color};"></span>
+                        <span class="text-[10px] font-black uppercase tracking-wider truncate">${cat.label}</span>
+                        <span class="text-[10px] font-black text-slate-500 mx-0.5">${count}</span>
+                        <span class="text-[9px] font-medium text-slate-400">·</span>
+                        <span class="text-[10px] font-black text-slate-500">${percent}%</span>
                     </div>
                 `;
             }).join('');
@@ -2230,12 +2177,12 @@
 
         .analytics-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 440px;
+            height: 400px;
             position: relative;
             overflow: visible;
         }
         .analytics-card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-4px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
         #analyticsGrid .apexcharts-canvas {
@@ -2243,23 +2190,17 @@
             position: relative;
             z-index: 10;
         }
-        #analyticsGrid .apexcharts-donut {
+        #analyticsGrid .apexcharts-pie {
             max-width: 100%;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
             transition: filter 0.3s ease;
         }
-        #analyticsGrid .analytics-card:hover .apexcharts-donut {
+        #analyticsGrid .analytics-card:hover .apexcharts-pie {
             filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));
         }
         #analyticsGrid .apexcharts-pie-label {
             font-family: 'Inter', sans-serif !important;
-            font-size: 11px !important;
-        }
-        #analyticsGrid .apexcharts-donut-series {
-            transition: transform 0.3s ease;
-        }
-        #analyticsGrid .apexcharts-donut-series:hover {
-            transform: scale(1.02);
+            font-size: 10px !important;
         }
         #analyticsGrid .analytics-card {
             background: #FFFFFF;
@@ -2271,44 +2212,27 @@
             overflow: visible !important;
         }
         #analyticsGrid .apexcharts-tooltip {
-            z-index: 99999 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            display: block !important;
-            pointer-events: none !important;
+            z-index: 50 !important;
         }
         .analytics-legend-item {
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
+            line-height: 1;
         }
         .analytics-legend-item:hover {
             background: #f8fafc;
-            transform: translateX(2px);
         }
         .analytics-legend-wrapper {
             display: flex;
             flex-wrap: wrap;
-            gap: 3px;
-            max-height: 60px;
-            overflow-y: auto;
+            gap: 2px;
             align-items: center;
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 transparent;
+            justify-content: center;
         }
         .analytics-insight {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-        }
-        .analytics-legend-wrapper::-webkit-scrollbar {
-            width: 4px;
-        }
-        .analytics-legend-wrapper::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .analytics-legend-wrapper::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 4px;
         }
 
         #chartContainer .apexcharts-bar-area {
