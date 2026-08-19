@@ -705,7 +705,7 @@
                 btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
                 btn.classList.add('text-slate-500');
             });
-            const activeBtn = document.getElementById(`status-tab-${status}`);
+            const activeBtn = document.getElementById(`status-tab-${status.replace(/\s+/g, '-')}`);
             if (activeBtn) {
                 activeBtn.classList.remove('text-slate-500');
                 activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');

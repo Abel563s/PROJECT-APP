@@ -515,7 +515,7 @@
                 colors: statusColors,
                 legend: { position: 'bottom', fontSize: '10px', fontWeight: 700, labels: { colors: '#475569' } },
                 plotOptions: { pie: { donut: { size: '65%', labels: { show: true, value: { fontSize: '14px', fontWeight: 800, color: '#0f172a' }, total: { show: true, label: 'Total', fontSize: '11px', fontWeight: 700, color: '#64748b' } } } } },
-                dataLabels: { enabled: true, style: { fontSize: '10px', fontWeight: 800 }, formatter: (val) => val > 0 ? val : '' },
+                dataLabels: { enabled: true, style: { fontSize: '10px', fontWeight: 800 }, formatter: (val) => val > 0 ? Math.round(val) : '' },
                 stroke: { show: true, width: 2, colors: ['#fff'] },
                 tooltip: { theme: 'light' }
             });
@@ -527,7 +527,7 @@
                 colors: impactColors,
                 legend: { position: 'bottom', fontSize: '10px', fontWeight: 700, labels: { colors: '#475569' } },
                 plotOptions: { pie: { donut: { size: '65%', labels: { show: true, value: { fontSize: '14px', fontWeight: 800, color: '#0f172a' }, total: { show: true, label: 'Total', fontSize: '11px', fontWeight: 700, color: '#64748b' } } } } },
-                dataLabels: { enabled: true, style: { fontSize: '10px', fontWeight: 800 }, formatter: (val) => val > 0 ? val : '' },
+                dataLabels: { enabled: true, style: { fontSize: '10px', fontWeight: 800 }, formatter: (val) => val > 0 ? Math.round(val) : '' },
                 stroke: { show: true, width: 2, colors: ['#fff'] },
                 tooltip: { theme: 'light' }
             });
