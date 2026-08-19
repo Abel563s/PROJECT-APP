@@ -15,7 +15,14 @@ class ProjectPaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Project::query()->where('status', 'in progress');
+        $query = Project::query();
+
+        $status = $request->filled('status') ? $request->status : 'in progress';
+        if ($status === 'in progress') {
+            $query->where('status', 'in progress');
+        } elseif ($status === 'completed') {
+            $query->where('status', 'completed');
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;

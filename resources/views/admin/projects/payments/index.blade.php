@@ -34,7 +34,16 @@
                         class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                 </div>
 
-                @if(request()->anyFilled('search'))
+                <div class="relative group/select">
+                    <select name="status" onchange="this.form.submit()"
+                        class="appearance-none pl-4 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                        <option value="in progress" {{ request('status', 'in progress') == 'in progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                </div>
+
+                @if(request()->anyFilled(['search', 'status']))
                     <a href="{{ route('admin.projects.payments.index') }}"
                         class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
                         title="Clear Filters">
