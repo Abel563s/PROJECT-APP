@@ -144,10 +144,28 @@
                                             </span>
                                         </td>
                                         <td class="px-4 py-3 text-right">
-                                            <button onclick="showPaymentDetail({{ $payment->id }})"
-                                                class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-sky-500 hover:border-sky-500 hover:shadow-sm transition-all">
-                                                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                            </button>
+                                            <div class="flex items-center justify-end gap-1.5">
+                                                <button onclick="showPaymentDetail({{ $payment->id }})"
+                                                    class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-sky-500 hover:border-sky-500 hover:shadow-sm transition-all"
+                                                    title="View">
+                                                    <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                                </button>
+                                                <button onclick="openEditModal({{ $payment->id }})"
+                                                    class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-amber-500 hover:border-amber-500 hover:shadow-sm transition-all"
+                                                    title="Edit">
+                                                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                                </button>
+                                                <form action="{{ route('admin.projects.payments.destroy', $payment) }}" method="POST" class="inline"
+                                                    onsubmit="return confirm('Are you sure you want to delete this payment certificate? This action cannot be undone.');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-rose-500 hover:border-rose-500 hover:shadow-sm transition-all"
+                                                        title="Delete">
+                                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
@@ -188,6 +206,33 @@
                 </button>
             </div>
             <div id="paymentModalContent" class="p-6 overflow-y-auto flex-1">
+                <div class="flex items-center justify-center py-12">
+                    <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Payment Modal -->
+    <div id="editPaymentModal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm hidden">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
+                        <i data-lucide="pencil" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-black text-white">Edit Payment</h3>
+                        <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Update certificate entry</p>
+                    </div>
+                </div>
+                <button onclick="closeEditModal()"
+                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div id="editPaymentModalContent" class="p-6 overflow-y-auto flex-1">
                 <div class="flex items-center justify-center py-12">
                     <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
                 </div>
@@ -276,6 +321,26 @@
                         if (window.lucide) lucide.createIcons();
                     });
             }
+
+            function openEditModal(paymentId) {
+                fetch(`{{ route('admin.projects.payments.edit-modal', ['payment' => '__ID__']) }}`.replace('__ID__', paymentId) + '?partial=1')
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('editPaymentModalContent').innerHTML = html;
+                        document.getElementById('editPaymentModal').classList.remove('hidden');
+                        document.body.style.overflow = 'hidden';
+                        if (window.lucide) lucide.createIcons();
+                    });
+            }
+
+            function closeEditModal() {
+                document.getElementById('editPaymentModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            document.getElementById('editPaymentModal').addEventListener('click', function (e) {
+                if (e.target === this) closeEditModal();
+            });
 
             function closePaymentModal() {
                 document.getElementById('paymentModal').classList.add('hidden');

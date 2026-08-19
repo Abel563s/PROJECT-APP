@@ -52,6 +52,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/projects/{project}/payments/create-modal', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'create'])->name('projects.payments.create-modal');
         Route::post('/projects/{project}/payments', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'store'])->name('projects.payments.store');
         Route::get('/payments/{payment}', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'show'])->name('projects.payments.show');
+        Route::get('/payments/{payment}/edit-modal', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'edit'])->name('projects.payments.edit-modal');
+        Route::put('/payments/{payment}', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'update'])->name('projects.payments.update');
+        Route::delete('/payments/{payment}', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'destroy'])->name('projects.payments.destroy');
 
         Route::resource('projects', \App\Http\Controllers\ProjectController::class);
         Route::patch('/projects/{project}/toggle-status', [\App\Http\Controllers\ProjectController::class, 'toggleStatus'])->name('projects.toggle-status');

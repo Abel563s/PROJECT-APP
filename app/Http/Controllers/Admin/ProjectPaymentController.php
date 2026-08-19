@@ -15,7 +15,7 @@ class ProjectPaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Project::query();
+        $query = Project::query()->where('status', 'in progress');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -113,5 +113,72 @@ class ProjectPaymentController extends Controller
     public function show(ProjectPayment $payment)
     {
         return response()->json($payment);
+    }
+
+    /**
+     * Show the form for editing the specified payment (modal partial).
+     */
+    public function edit(ProjectPayment $payment)
+    {
+        if (request()->has('partial')) {
+            return view('admin.projects.payments.edit-modal', compact('payment'));
+        }
+
+        return view('admin.projects.payments.edit', compact('payment'));
+    }
+
+    /**
+     * Update the specified payment in storage.
+     */
+    public function update(Request $request, ProjectPayment $payment)
+    {
+        $validated = $request->validate([
+            'certificate_number' => 'nullable|string',
+            'submitted_amount' => 'nullable|numeric|min:0',
+            'submitted_date' => 'nullable|date',
+            'certified_amount' => 'nullable|numeric|min:0',
+            'certified_date' => 'nullable|date',
+            'amount_paid' => 'nullable|numeric|min:0',
+            'payment_date' => 'nullable|date',
+            'remarks' => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $payment->update($validated);
+
+            $project = $payment->project;
+            $project->total_certified = $project->payments()->sum('certified_amount');
+            $project->total_paid = $project->payments()->sum('amount_paid');
+            $project->save();
+
+            DB::commit();
+            return back()->with('success', 'Payment certificate updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to update payment: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove the specified payment from storage.
+     */
+    public function destroy(ProjectPayment $payment)
+    {
+        DB::beginTransaction();
+        try {
+            $project = $payment->project;
+            $payment->delete();
+
+            $project->total_certified = $project->payments()->sum('certified_amount');
+            $project->total_paid = $project->payments()->sum('amount_paid');
+            $project->save();
+
+            DB::commit();
+            return back()->with('success', 'Payment certificate deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to delete payment: ' . $e->getMessage());
+        }
     }
 }

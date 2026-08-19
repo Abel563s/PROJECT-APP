@@ -74,10 +74,7 @@
                                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="space-y-0.5">
-                                        <span class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">{{ $project->project_name }}</span>
-                                        <span class="text-[9px] font-black text-[#00ADC5]">{{ $project->project_code }}</span>
-                                    </div>
+                                    <span class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">{{ $project->project_code }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[11px] font-black tabular-nums tracking-tight shadow-sm">

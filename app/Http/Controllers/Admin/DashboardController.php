@@ -126,18 +126,14 @@ class DashboardController extends Controller
                 $scheduleStatus = 'On Schedule';
             }
 
-            $revisedBudget = (float) ($project->revised_budget_amount > 0 ? $project->revised_budget_amount : $project->contract_budget);
+            $revisedBudgetAmount = ($project->contract_budget ?? 0) + ($project->variation ?? 0) + ($project->supplementary ?? 0);
+            $revisedBudget = $revisedBudgetAmount;
             $contractBudget = (float) ($project->contract_budget ?? 0);
-            $signedBudgetVariance = $revisedBudget - $contractBudget;
-            $budgetIndexPercent = $contractBudget > 0 ? round(($signedBudgetVariance / $contractBudget) * 100, 1) : 0;
-
-            if ($signedBudgetVariance > 0) {
-                $budgetPerformance = 'Above Budget';
-            } elseif ($signedBudgetVariance < 0) {
-                $budgetPerformance = 'Under Budget';
-            } else {
-                $budgetPerformance = 'On Budget';
-            }
+            $budgetAtCompletion = (float) ($project->budget_at_completion ?? 0);
+            $signedBudgetVariance = $revisedBudget - $budgetAtCompletion;
+            $budgetVariance = $revisedBudget - $budgetAtCompletion;
+            $budgetPerformance = $budgetVariance > 0 ? 'Above Budget' : ($budgetVariance < 0 ? 'Under Budget' : 'On Budget');
+            $budgetIndexPercent = $revisedBudget > 0 ? round(($budgetVariance / $revisedBudget) * 100, 1) : 0;
 
             $allowableCost = (float) ($project->total_allowable_cost ?? 0);
             $costAtCompletion = (float) ($project->cost_at_completion ?? 0);
