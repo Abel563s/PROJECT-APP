@@ -1,7 +1,8 @@
-    <form action="{{ route('admin.projects.issues.store') }}" method="POST" id="createIssueForm" class="space-y-4">
+    <form action="{{ $project ? route('admin.projects.issues.store', $project) : route('admin.projects.issues.store') }}" method="POST" id="createIssueForm" class="space-y-4">
     @csrf
-    <input type="hidden" name="sector" id="issueSector">
-    <input type="hidden" name="project_code" id="issueProjectCode">
+    <input type="hidden" name="project_id" value="{{ $project->id ?? '' }}">
+    <input type="hidden" name="sector" id="issueSector" value="{{ $project->consultancy_sector ?? '' }}">
+    <input type="hidden" name="project_code" id="issueProjectCode" value="{{ $project->project_code ?? '' }}">
     <input type="hidden" name="last_updated_date" id="lastUpdatedDate">
 
     <!-- Section 1: Project Reference -->
@@ -12,21 +13,17 @@
             </div>
             <div>
                 <h4 class="text-sm font-black text-slate-900">Project Reference</h4>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Link issue to existing project</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Issue will be registered for this project</p>
             </div>
         </div>
-        <div class="grid grid-cols-1 gap-3">
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Project</label>
-                <select name="project_id" id="issueProjectSelect" required
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                    <option value="">Select Project</option>
-                    @foreach($projects as $project)
-                        <option value="{{ $project->id }}" data-sector="{{ $project->consultancy_sector }}" data-code="{{ $project->project_code }}">
-                            {{ $project->project_code }} - {{ $project->project_name }}
-                        </option>
-                    @endforeach
-                </select>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Project Code</p>
+                <p class="text-xs font-black text-slate-900">{{ $project->project_code ?? '---' }}</p>
+            </div>
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Project Name</p>
+                <p class="text-xs font-black text-slate-900">{{ $project->project_name ?? '---' }}</p>
             </div>
         </div>
     </div>

@@ -1,4 +1,5 @@
 <div class="space-y-4">
+    <span class="hidden issue-data-date">{{ $issue->date ? $issue->date->format('M d, Y') : '---' }}</span>
     <div class="bg-slate-50 rounded-xl p-4">
         <div class="flex items-center justify-between mb-3">
             <div>
@@ -80,10 +81,6 @@
             </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Data Date</p>
-                <p class="text-xs font-black text-slate-900">{{ $issue->date ? $issue->date->format('M d, Y') : '---' }}</p>
-            </div>
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Raised Date</p>
                 <p class="text-xs font-black text-slate-900">{{ $issue->raised_date ? $issue->raised_date->format('M d, Y') : '---' }}</p>
