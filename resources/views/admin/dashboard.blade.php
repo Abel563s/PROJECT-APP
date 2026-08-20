@@ -1084,14 +1084,16 @@
                             else if (schedulePercent > 0) schedulePercentColor = '#f59e0b';
                             else schedulePercentColor = '#ef4444';
                             content += `<div style="font-weight: 800; font-size: 20px; color: ${schedulePercentColor}; margin-bottom: 8px;">${schedulePercent}%</div>`;
-                            content += `<div style="display: grid; gap: 3px; font-size: 10px; color: #475569; margin-bottom: 8px;">`;
-                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Status</span><span style="font-weight: 700; color: ${statusColor};">${project.schedule_status}</span></div>`;
-                            const varianceLabel = project.schedule_variance_days > 0 ? '+' + Math.round(project.schedule_variance_days) + ' days late' : project.schedule_variance_days < 0 ? Math.abs(Math.round(project.schedule_variance_days)) + ' days early' : 'On time';
-                            const varianceColor = project.schedule_variance_days > 0 ? '#ef4444' : project.schedule_variance_days < 0 ? '#10b981' : '#64748b';
-                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Variance</span><span style="font-weight: 700; color: ${varianceColor};">${varianceLabel}</span></div>`;
-                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Actual Duration</span><span style="font-weight: 700;">${Math.round(project.actual_duration)} Days</span></div>`;
-                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Baseline Duration</span><span style="font-weight: 700;">${Math.round(project.baseline_duration)} Days</span></div>`;
-                            content += `</div>`;
+                            if (project.status === 'completed') {
+                                content += `<div style="display: grid; gap: 3px; font-size: 10px; color: #475569; margin-bottom: 8px;">`;
+                                content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Status</span><span style="font-weight: 700; color: ${statusColor};">${project.schedule_status}</span></div>`;
+                                const varianceLabel = project.schedule_variance_days > 0 ? '+' + Math.round(project.schedule_variance_days) + ' days late' : project.schedule_variance_days < 0 ? Math.abs(Math.round(project.schedule_variance_days)) + ' days early' : 'On time';
+                                const varianceColor = project.schedule_variance_days > 0 ? '#ef4444' : project.schedule_variance_days < 0 ? '#10b981' : '#64748b';
+                                content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Variance</span><span style="font-weight: 700; color: ${varianceColor};">${varianceLabel}</span></div>`;
+                                content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Actual Duration</span><span style="font-weight: 700;">${Math.round(project.actual_duration)} Days</span></div>`;
+                                content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Baseline Duration</span><span style="font-weight: 700;">${Math.round(project.baseline_duration)} Days</span></div>`;
+                                content += `</div>`;
+                            }
                             if (project.progress_planned !== null && project.progress_actual !== null) {
                                 content += `<div style="border-top: 1px solid #e2e8f0; padding-top: 6px; display: grid; gap: 3px; font-size: 10px; color: #475569;">`;
                                 content += `<div style="font-weight: 700; color: #0f172a; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.05em;">Progress Update</div>`;
