@@ -1269,16 +1269,13 @@
                         </div>
                     </div>
 
-                    ${!isCompleted ? `
                     <div class="bg-white border border-slate-100 rounded-xl p-4">
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Overall Performance</span>
                             <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider ${project.overall_performance === 'Good' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-rose-50 text-rose-600 border border-rose-200'}">${project.overall_performance}</span>
                         </div>
                     </div>
-                    ` : ''}
 
-                    ${isCompleted ? `
                     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
                         <h4 class="text-xs font-black text-slate-900">Schedule Variance</h4>
                         <div class="grid grid-cols-2 gap-3">
@@ -1298,204 +1295,7 @@
                             </div>
                         </div>
                     </div>
-                    ` : `
-                    <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-lg bg-cyan-50 flex items-center justify-center text-[#00ADC5]">
-                                <i data-lucide="target" class="w-4 h-4"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-black text-slate-900">Performance Matrix</h4>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Core performance data</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Progress Planned</p>
-                                <p class="text-xs font-black text-slate-900">${project.progress_planned ?? '---'}%</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Progress Actual</p>
-                                <p class="text-xs font-black text-slate-900">${project.progress_actual ?? '---'}%</p>
-                            </div>
-                            <div class="col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">SPI</p>
-                                        <h4 class="text-lg font-black text-slate-900 mt-0.5">
-                                            ${project.progress_planned > 0 ? '<span class="' + (project.schedule_performance_percent >= 80 ? 'text-emerald-600' : project.schedule_performance_percent >= 70 ? 'text-[#fcba03]' : 'text-rose-600') + '">' + Math.round(project.schedule_performance_percent) + '%</span>' : '<span class="text-slate-900">0%</span>'}
-                                        </h4>
-                                    </div>
-                                    <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-[#00ADC5] shadow-sm">
-                                        <i data-lucide="gauge" class="w-5 h-5"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                                <i data-lucide="banknote" class="w-4 h-4"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-black text-slate-900">Revenue</h4>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue planned and actual</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revenue Planned (PV)</p>
-                                <p class="text-xs font-black text-slate-900">ETB ${number_format(project.progress_revenue_planned ?? 0)}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revenue Actual (EV)</p>
-                                <p class="text-xs font-black text-slate-900">ETB ${number_format(project.progress_revenue_actual ?? 0)}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revenue Planned Weekly</p>
-                                <p class="text-xs font-black text-slate-900">ETB ${number_format(project.progress_revenue_planned_weekly ?? 0)}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revenue Actual Weekly</p>
-                                <p class="text-xs font-black text-slate-900">ETB ${number_format(project.progress_revenue_actual_weekly ?? 0)}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600">
-                                <i data-lucide="trending-down" class="w-4 h-4"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-black text-slate-900">Cost</h4>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Cost planned and actual</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Planned</p>
-                                <p class="text-xs font-black text-slate-900">ETB ${number_format(project.progress_cost_planned ?? 0)}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Actual</p>
-                                <p class="text-xs font-black text-slate-900">ETB ${number_format(project.progress_cost_actual ?? 0)}</p>
-                            </div>
-                            <div class="col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">CPI</p>
-                                        <h4 class="text-lg font-black text-slate-900 mt-0.5">
-                                            ${(() => { const costPlanned = project.progress_cost_planned ?? 0; const costActual = project.progress_cost_actual ?? 0; const cpi = costActual > 0 ? costPlanned / costActual : 0; const cpiColor = cpi > 1.0 ? 'text-emerald-600' : (cpi === 1.0 ? 'text-[#fcba03]' : 'text-rose-600'); return '<span class="' + cpiColor + '">' + (typeof number_format !== 'undefined' ? number_format(cpi) : cpi.toFixed(2)) + '</span>'; })()}
-                                        </h4>
-                                    </div>
-                                    <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-[#00ADC5] shadow-sm">
-                                        <i data-lucide="gauge" class="w-5 h-5"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Planned Weekly</p>
-                                <p class="text-xs font-black text-slate-900">ETB ${number_format(project.progress_cost_planned_weekly ?? 0)}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Actual Weekly</p>
-                                <p class="text-xs font-black text-slate-900">ETB ${number_format(project.progress_cost_actual_weekly ?? 0)}</p>
-                            </div>
-                            <div class="col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">CPI Weekly</p>
-                                        <h4 class="text-lg font-black text-slate-900 mt-0.5">
-                                            ${(() => { const costPlannedWeekly = project.progress_cost_planned_weekly ?? 0; const costActualWeekly = project.progress_cost_actual_weekly ?? 0; const cpiWeekly = costActualWeekly > 0 ? costPlannedWeekly / costActualWeekly : 0; const cpiWeeklyColor = cpiWeekly > 1.0 ? 'text-emerald-600' : (cpiWeekly === 1.0 ? 'text-[#fcba03]' : 'text-rose-600'); return '<span class="' + cpiWeeklyColor + '">' + (typeof number_format !== 'undefined' ? number_format(cpiWeekly) : cpiWeekly.toFixed(2)) + '</span>'; })()}
-                                        </h4>
-                                    </div>
-                                    <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-[#00ADC5] shadow-sm">
-                                        <i data-lucide="gauge" class="w-5 h-5"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-lg bg-sky-50 flex items-center justify-center text-sky-600">
-                                <i data-lucide="calendar" class="w-4 h-4"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-black text-slate-900">Dates</h4>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Completion and data date</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Latest Completion Date</p>
-                                <p class="text-xs font-black text-slate-900">${project.progress_completion_date ? new Date(project.progress_completion_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '---'}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Data Date</p>
-                                <p class="text-xs font-black text-slate-900">${project.progress_data_date ? new Date(project.progress_data_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '---'}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-                                <i data-lucide="alert-triangle" class="w-4 h-4"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-black text-slate-900">Operational Log</h4>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Constraints and issues</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Top Constraints</p>
-                                <p class="text-xs font-black text-slate-900 leading-relaxed">${project.progress_top_constraints || '---'}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Client Issues</p>
-                                <p class="text-xs font-black text-slate-900 leading-relaxed">${project.progress_client_issue || '---'}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Design Completion</p>
-                                <p class="text-xs font-black text-slate-900 leading-relaxed">${project.progress_design_completion_approval || '---'}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Material Submittal</p>
-                                <p class="text-xs font-black text-slate-900 leading-relaxed">${project.progress_material_submittal_approval || '---'}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Material Delivery</p>
-                                <p class="text-xs font-black text-slate-900 leading-relaxed">${project.progress_material_delivery || '---'}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Labor</p>
-                                <p class="text-xs font-black text-slate-900 leading-relaxed">${project.progress_labor || '---'}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Machinery</p>
-                                <p class="text-xs font-black text-slate-900 leading-relaxed">${project.progress_machinery_equipment || '---'}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Subcontractor</p>
-                                <p class="text-xs font-black text-slate-900 leading-relaxed">${project.progress_subcontractor || '---'}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Finance</p>
-                                <p class="text-xs font-black text-slate-900 leading-relaxed">${project.progress_finance || '---'}</p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Constraints</p>
-                                <p class="text-xs font-black text-slate-900 leading-relaxed">${project.progress_operation_constraint || '---'}</p>
-                            </div>
-                        </div>
-                    </div>
-                    ` : `
                     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
                         <h4 class="text-xs font-black text-slate-900">Budget Variance</h4>
                         <div class="grid grid-cols-2 gap-3">
@@ -1553,7 +1353,6 @@
                             </div>
                         </div>
                     </div>
-                    `}
 
                     <div class="bg-white border border-slate-100 rounded-xl p-4">
                         <a href="/admin/projects/${project.id}" class="flex items-center justify-center w-full px-4 py-2.5 bg-slate-900 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all">
