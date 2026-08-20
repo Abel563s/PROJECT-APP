@@ -95,7 +95,31 @@ class DashboardController extends Controller
 
         $projects = $query->get();
 
-        $progressUpdatesByProject = ProjectProgressUpdate::select('project_id', 'progress_planned', 'progress_actual', 'data_date', 'top_constraints')
+        $progressUpdatesByProject = ProjectProgressUpdate::select(
+                'project_id',
+                'progress_planned',
+                'progress_actual',
+                'revenue_planned',
+                'revenue_actual',
+                'revenue_planned_weekly',
+                'revenue_actual_weekly',
+                'cost_planned',
+                'cost_actual',
+                'cost_planned_weekly',
+                'cost_actual_weekly',
+                'completion_date',
+                'data_date',
+                'top_constraints',
+                'client_issue',
+                'design_completion_approval',
+                'material_submittal_approval',
+                'material_delivery',
+                'labor',
+                'machinery_equipment',
+                'subcontractor',
+                'finance',
+                'operation_constraint'
+            )
             ->orderBy('data_date', 'desc')
             ->orderBy('id', 'desc')
             ->get()
@@ -206,6 +230,24 @@ class DashboardController extends Controller
                 'progress_actual' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->progress_actual ?? null) : null,
                 'progress_data_date' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->data_date?->format('Y-m-d') ?? null) : null,
                 'progress_top_constraints' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->top_constraints ?? null) : null,
+                'progress_revenue_planned' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->revenue_planned ?? null) : null,
+                'progress_revenue_actual' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->revenue_actual ?? null) : null,
+                'progress_revenue_planned_weekly' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->revenue_planned_weekly ?? null) : null,
+                'progress_revenue_actual_weekly' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->revenue_actual_weekly ?? null) : null,
+                'progress_cost_planned' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->cost_planned ?? null) : null,
+                'progress_cost_actual' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->cost_actual ?? null) : null,
+                'progress_cost_planned_weekly' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->cost_planned_weekly ?? null) : null,
+                'progress_cost_actual_weekly' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->cost_actual_weekly ?? null) : null,
+                'progress_completion_date' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->completion_date?->format('Y-m-d') ?? null) : null,
+                'progress_client_issue' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->client_issue ?? null) : null,
+                'progress_design_completion_approval' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->design_completion_approval ?? null) : null,
+                'progress_material_submittal_approval' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->material_submittal_approval ?? null) : null,
+                'progress_material_delivery' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->material_delivery ?? null) : null,
+                'progress_labor' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->labor ?? null) : null,
+                'progress_machinery_equipment' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->machinery_equipment ?? null) : null,
+                'progress_subcontractor' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->subcontractor ?? null) : null,
+                'progress_finance' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->finance ?? null) : null,
+                'progress_operation_constraint' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->operation_constraint ?? null) : null,
                 'budget_index_percent' => $budgetIndexPercent,
                 'budget_performance' => $budgetPerformance,
                 'budget_variance' => $signedBudgetVariance,
