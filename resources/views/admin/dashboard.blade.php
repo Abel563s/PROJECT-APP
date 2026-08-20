@@ -830,7 +830,9 @@
                 return valB - valA;
             });
 
-            const visibleProjects = sorted;
+            const visibleProjects = currentStatusTab === 'in progress' && currentTab === 'schedule'
+                ? sorted.filter(p => p.has_valid_spi)
+                : sorted;
             const categories = [];
             const values = [];
             const colors = [];

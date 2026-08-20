@@ -108,6 +108,7 @@ class DashboardController extends Controller
             $baselineDuration = 0;
             $actualDuration = 0;
             $scheduleVariance = 0;
+            $hasValidSpi = false;
 
             if (!$project->actual_start_date) {
                 $scheduleStatus = 'Not Started';
@@ -131,6 +132,7 @@ class DashboardController extends Controller
                 } elseif ($project->status === 'in progress') {
                     $latestUpdate = $progressUpdatesByProject->get($project->id);
                     if ($latestUpdate && $latestUpdate->progress_planned > 0) {
+                        $hasValidSpi = true;
                         $schedulePerformancePercent = round(($latestUpdate->progress_actual / $latestUpdate->progress_planned) * 100, 1);
                     } elseif ($baselineDuration > 0) {
                         $remainingDays = $actualFinish->diffInDays($project->baseline_finish_date);
@@ -197,6 +199,7 @@ class DashboardController extends Controller
                 'schedule_performance_percent' => $schedulePerformancePercent,
                 'schedule_status' => $scheduleStatus,
                 'schedule_variance_days' => $scheduleVariance,
+                'has_valid_spi' => $hasValidSpi,
                 'actual_duration' => $actualDuration,
                 'baseline_duration' => $baselineDuration,
                 'budget_index_percent' => $budgetIndexPercent,
