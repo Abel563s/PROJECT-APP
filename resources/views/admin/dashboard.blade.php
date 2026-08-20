@@ -1247,8 +1247,6 @@
             const costColor = project.cost_performance === 'Above Allowable Cost' ? 'text-rose-600' : project.cost_performance === 'Below Allowable Cost' ? 'text-emerald-600' : 'text-blue-600';
             const overallColor = project.overall_performance === 'Good' ? 'text-emerald-600' : 'text-rose-600';
 
-            const isCompleted = project.status === 'completed';
-
             document.getElementById('drawerContent').innerHTML = `
                 <div class="space-y-4">
                     <div class="grid grid-cols-3 gap-3">
