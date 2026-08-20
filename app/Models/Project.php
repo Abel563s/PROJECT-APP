@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Issue;
 
 class Project extends Model
 {
@@ -154,6 +155,11 @@ class Project extends Model
     public function payments()
     {
         return $this->hasMany(ProjectPayment::class);
+    }
+
+    public function issues()
+    {
+        return $this->hasMany(Issue::class);
     }
 
     protected static function booted()

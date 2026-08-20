@@ -32,6 +32,12 @@ class IssueController extends Controller
             });
         }
 
+        if ($request->filled('issue_status')) {
+            $query->whereHas('issues', function ($q) use ($request) {
+                $q->where('status', $request->issue_status);
+            });
+        }
+
         $projects = $query->orderByDesc('baseline_start_date')->paginate(15)->withQueryString();
         return view('admin.projects.issues.index', compact('projects'));
     }

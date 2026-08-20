@@ -43,7 +43,18 @@
                     <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
                 </div>
 
-                @if(request()->anyFilled(['search', 'status']))
+                <div class="relative group/select">
+                    <select name="issue_status" onchange="this.form.submit()"
+                        class="appearance-none pl-4 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
+                        <option value="">All Issue Statuses</option>
+                        <option value="Open" {{ request('issue_status') == 'Open' ? 'selected' : '' }}>Open</option>
+                        <option value="In Progress" {{ request('issue_status') == 'In Progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="Closed" {{ request('issue_status') == 'Closed' ? 'selected' : '' }}>Closed</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                </div>
+
+                @if(request()->anyFilled(['search', 'status', 'issue_status']))
                     <a href="{{ route('admin.projects.issues.index') }}"
                         class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
                         title="Clear Filters">
