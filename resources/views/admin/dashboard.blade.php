@@ -841,10 +841,10 @@
                 const val = currentTab === 'schedule' ? p.schedule_performance_percent : currentTab === 'budget' ? p.budget_index_percent : p.cost_performance_percent;
                 values.push(val);
                 if (currentTab === 'schedule') {
-                    if (val > 20) colors.push('#059669');
-                    else if (val > 0) colors.push('#10b981');
-                    else if (val === 0) colors.push('#94a3b8');
-                    else if (val > -20) colors.push('#f59e0b');
+                    if (val > 100) colors.push('#059669');
+                    else if (val === 100) colors.push('#94a3b8');
+                    else if (val > 80) colors.push('#10b981');
+                    else if (val > 0) colors.push('#f59e0b');
                     else colors.push('#ef4444');
                 } else if (currentTab === 'budget' || currentTab === 'cost') {
                     if (currentTab === 'budget') {
@@ -1074,7 +1074,14 @@
 
                         if (currentTab === 'schedule') {
                             const statusColor = project.schedule_status === 'Behind Schedule' ? '#ef4444' : project.schedule_status === 'Ahead of Schedule' ? '#10b981' : '#3b82f6';
-                            content += `<div style="font-weight: 800; font-size: 20px; color: ${project.schedule_performance_percent < 0 ? '#ef4444' : project.schedule_performance_percent > 0 ? '#10b981' : '#94a3b8'}; margin-bottom: 8px;">${Math.round(project.schedule_performance_percent)}%</div>`;
+                            const schedulePercent = Math.round(project.schedule_performance_percent);
+                            let schedulePercentColor = '#94a3b8';
+                            if (schedulePercent > 100) schedulePercentColor = '#10b981';
+                            else if (schedulePercent === 100) schedulePercentColor = '#94a3b8';
+                            else if (schedulePercent >= 80) schedulePercentColor = '#10b981';
+                            else if (schedulePercent > 0) schedulePercentColor = '#f59e0b';
+                            else schedulePercentColor = '#ef4444';
+                            content += `<div style="font-weight: 800; font-size: 20px; color: ${schedulePercentColor}; margin-bottom: 8px;">${schedulePercent}%</div>`;
                             content += `<div style="display: grid; gap: 3px; font-size: 10px; color: #475569; margin-bottom: 8px;">`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Status</span><span style="font-weight: 700; color: ${statusColor};">${project.schedule_status}</span></div>`;
                             const varianceLabel = project.schedule_variance_days > 0 ? '+' + Math.round(project.schedule_variance_days) + ' days late' : project.schedule_variance_days < 0 ? Math.abs(Math.round(project.schedule_variance_days)) + ' days early' : 'On time';

@@ -218,7 +218,7 @@
                                     @php
                                         $duration = '';
                                         if ($project->baseline_start_date && $project->baseline_finish_date) {
-                                            $duration = abs($project->baseline_finish_date->diffInDays($project->baseline_start_date));
+                                            $duration = abs($project->baseline_finish_date->diffInDays($project->baseline_start_date)) + 1;
                                         }
                                     @endphp
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm">

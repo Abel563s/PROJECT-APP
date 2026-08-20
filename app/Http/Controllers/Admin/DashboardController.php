@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Models\ProjectProgressUpdate;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -94,7 +95,14 @@ class DashboardController extends Controller
 
         $projects = $query->get();
 
-        $filteredProjects = $projects->map(function ($project) {
+        $progressUpdatesByProject = ProjectProgressUpdate::select('project_id', 'progress_planned', 'progress_actual')
+            ->orderBy('data_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->groupBy('project_id')
+            ->map(fn($updates) => $updates->first());
+
+        $filteredProjects = $projects->map(function ($project) use ($progressUpdatesByProject) {
             $scheduleStatus = null;
             $schedulePerformancePercent = 0;
             $baselineDuration = 0;
@@ -118,7 +126,17 @@ class DashboardController extends Controller
                     $scheduleStatus = 'On Schedule';
                 }
 
-                if ($baselineDuration > 0) {
+                if ($project->status === 'completed' && $actualDuration > 0 && $baselineDuration > 0) {
+                    $schedulePerformancePercent = round(($baselineDuration / $actualDuration) * 100, 1);
+                } elseif ($project->status === 'in progress') {
+                    $latestUpdate = $progressUpdatesByProject->get($project->id);
+                    if ($latestUpdate && $latestUpdate->progress_planned > 0) {
+                        $schedulePerformancePercent = round(($latestUpdate->progress_actual / $latestUpdate->progress_planned) * 100, 1);
+                    } elseif ($baselineDuration > 0) {
+                        $remainingDays = $actualFinish->diffInDays($project->baseline_finish_date);
+                        $schedulePerformancePercent = round(($remainingDays / $baselineDuration) * 100, 1);
+                    }
+                } elseif ($baselineDuration > 0) {
                     $remainingDays = $actualFinish->diffInDays($project->baseline_finish_date);
                     $schedulePerformancePercent = round(($remainingDays / $baselineDuration) * 100, 1);
                 }
