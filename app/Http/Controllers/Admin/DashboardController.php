@@ -95,7 +95,7 @@ class DashboardController extends Controller
 
         $projects = $query->get();
 
-        $progressUpdatesByProject = ProjectProgressUpdate::select('project_id', 'progress_planned', 'progress_actual')
+        $progressUpdatesByProject = ProjectProgressUpdate::select('project_id', 'progress_planned', 'progress_actual', 'data_date', 'top_constraints')
             ->orderBy('data_date', 'desc')
             ->orderBy('id', 'desc')
             ->get()
@@ -202,6 +202,10 @@ class DashboardController extends Controller
                 'has_valid_spi' => $hasValidSpi,
                 'actual_duration' => $actualDuration,
                 'baseline_duration' => $baselineDuration,
+                'progress_planned' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->progress_planned ?? null) : null,
+                'progress_actual' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->progress_actual ?? null) : null,
+                'progress_data_date' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->data_date?->format('Y-m-d') ?? null) : null,
+                'progress_top_constraints' => $hasValidSpi ? ($progressUpdatesByProject->get($project->id)?->top_constraints ?? null) : null,
                 'budget_index_percent' => $budgetIndexPercent,
                 'budget_performance' => $budgetPerformance,
                 'budget_variance' => $signedBudgetVariance,

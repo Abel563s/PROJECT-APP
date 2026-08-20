@@ -1092,6 +1092,19 @@
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Actual Duration</span><span style="font-weight: 700;">${Math.round(project.actual_duration)} Days</span></div>`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Baseline Duration</span><span style="font-weight: 700;">${Math.round(project.baseline_duration)} Days</span></div>`;
                             content += `</div>`;
+                            if (project.progress_planned !== null && project.progress_actual !== null) {
+                                content += `<div style="border-top: 1px solid #e2e8f0; padding-top: 6px; display: grid; gap: 3px; font-size: 10px; color: #475569;">`;
+                                content += `<div style="font-weight: 700; color: #0f172a; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.05em;">Progress Update</div>`;
+                                content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Progress Planned</span><span style="font-weight: 700;">${project.progress_planned}%</span></div>`;
+                                content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Progress Actual</span><span style="font-weight: 700;">${project.progress_actual}%</span></div>`;
+                                if (project.progress_data_date) {
+                                    content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Data Date</span><span style="font-weight: 700;">${project.progress_data_date}</span></div>`;
+                                }
+                                if (project.progress_top_constraints) {
+                                    content += `<div style="margin-top: 3px; padding-top: 3px; border-top: 1px dashed #e2e8f0;"><span style="font-weight: 600; color: #94a3b8;">Top Constraints</span><p style="font-weight: 700; color: #334155; margin-top: 2px;">${project.progress_top_constraints}</p></div>`;
+                                }
+                                content += `</div>`;
+                            }
                             content += `<div style="border-top: 1px solid #e2e8f0; padding-top: 6px; display: grid; gap: 3px; font-size: 10px; color: #475569;">`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Baseline Start</span><span style="font-weight: 700;">${project.baseline_start_date || '---'}</span></div>`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Baseline Finish</span><span style="font-weight: 700;">${project.baseline_finish_date || '---'}</span></div>`;
