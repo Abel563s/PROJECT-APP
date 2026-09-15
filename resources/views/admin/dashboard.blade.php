@@ -222,7 +222,7 @@
                 <div class="relative z-10 p-2">
                     <div class="flex items-center justify-between mb-1">
                         <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
-                            <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-white"></i>
+                            <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
                         </div>
                         <div class="flex items-center gap-1 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-100">
                             <span class="text-[8px] font-black text-indigo-700 uppercase">Project Status</span>
