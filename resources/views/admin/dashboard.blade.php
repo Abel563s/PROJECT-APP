@@ -222,7 +222,7 @@
                 <div class="relative z-10 p-2">
                     <div class="flex items-center justify-between mb-1">
                         <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
-                            <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+                            <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-white"></i>
                         </div>
                         <div class="flex items-center gap-1 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-100">
                             <span class="text-[8px] font-black text-indigo-700 uppercase">Project Status</span>
@@ -758,11 +758,10 @@
                 const val = currentTab === 'schedule' ? p.schedule_performance_percent : currentTab === 'budget' ? p.budget_index_percent : p.cost_performance_percent;
                 values.push(val);
                 if (currentTab === 'schedule') {
-                    if (val > 100) colors.push('#059669');
-                    else if (val === 100) colors.push('#94a3b8');
-                    else if (val > 80) colors.push('#10b981');
-                    else if (val > 0) colors.push('#f59e0b');
-                    else colors.push('#ef4444');
+                    if (p.schedule_status === 'Ahead of Schedule') colors.push('#10b981');
+                    else if (p.schedule_status === 'On Schedule') colors.push('#f59e0b');
+                    else if (p.schedule_status === 'Behind Schedule') colors.push('#ef4444');
+                    else colors.push('#94a3b8');
                 } else if (currentTab === 'budget' || currentTab === 'cost') {
                     if (currentTab === 'budget') {
                         if (val > 0) colors.push('#10b981');
