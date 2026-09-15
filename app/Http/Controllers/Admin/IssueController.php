@@ -160,6 +160,57 @@ class IssueController extends Controller
     }
 
     /**
+     * Display issue history across all projects.
+     */
+    public function history(Request $request)
+    {
+        $query = Issue::query()->with('project');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('issue', 'like', "%{$search}%")
+                    ->orWhere('issue_type', 'like', "%{$search}%")
+                    ->orWhere('raised_by', 'like', "%{$search}%")
+                    ->orWhereHas('project', function ($q2) use ($search) {
+                        $q2->where('project_name', 'like', "%{$search}%")
+                            ->orWhere('project_code', 'like', "%{$search}%")
+                            ->orWhere('custom_id', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->project_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('impact')) {
+            $query->where('impact', $request->impact);
+        }
+
+        if ($request->filled('issue_type')) {
+            $query->where('issue_type', $request->issue_type);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
+        $issues = $query->orderByDesc('raised_date')->paginate(15)->withQueryString();
+        $projects = \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+
+        return view('admin.projects.issues.history', compact('issues', 'projects'));
+    }
+
+    /**
      * Remove the specified issue from storage.
      */
     public function destroy(Issue $issue)

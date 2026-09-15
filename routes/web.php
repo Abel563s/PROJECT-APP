@@ -60,6 +60,7 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/projects/{project}/toggle-status', [\App\Http\Controllers\ProjectController::class, 'toggleStatus'])->name('projects.toggle-status');
         Route::get('/projects/next-code', [\App\Http\Controllers\ProjectController::class, 'nextCode'])->name('projects.next-code');
         Route::get('/projects/issues', [\App\Http\Controllers\Admin\IssueController::class, 'index'])->name('projects.issues.index');
+        Route::get('/projects/issues/history', [\App\Http\Controllers\Admin\IssueController::class, 'history'])->name('projects.issues.history');
         Route::get('/projects/{project}/issues', [\App\Http\Controllers\Admin\IssueController::class, 'manage'])->name('projects.issues.manage');
         Route::get('/projects/{project}/issues/create-modal', [\App\Http\Controllers\Admin\IssueController::class, 'create'])->name('projects.issues.create-modal');
         Route::post('/projects/{project}/issues', [\App\Http\Controllers\Admin\IssueController::class, 'store'])->name('projects.issues.store');

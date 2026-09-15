@@ -86,54 +86,54 @@
         </div>
 
         <!-- Executive KPI Summary Cards -->
-        <div id="executiveKpiRow" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div id="executiveKpiRow" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
             <!-- Total Projects -->
-            <div class="dashboard-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-cyan-200 transition-all duration-300 overflow-hidden cursor-pointer" onclick="filterByStatus('all')">
+            <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-cyan-200 transition-all duration-300 overflow-hidden cursor-pointer" onclick="filterByStatus('all')">
                 <div class="absolute inset-0 bg-gradient-to-br from-cyan-50/0 to-cyan-50/0 group-hover:from-cyan-50/50 group-hover:to-cyan-50/30 transition-all duration-300"></div>
-                <div class="relative z-10 p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-[#00ADC5] flex items-center justify-center text-white shadow-lg shadow-cyan-500/30">
-                            <i data-lucide="folder-open" class="w-5 h-5"></i>
+                <div class="relative z-10 p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-[#00ADC5] flex items-center justify-center text-white shadow-md shadow-cyan-500/30">
+                            <i data-lucide="folder-open" class="w-4 h-4"></i>
                         </div>
-                        <div class="flex items-center gap-1 bg-cyan-50 px-2 py-1 rounded-lg border border-cyan-100">
-                            <i data-lucide="trending-up" class="w-3 h-3 text-cyan-600"></i>
-                            <span class="text-[9px] font-black text-cyan-700 uppercase">Active</span>
+                        <div class="flex items-center gap-1 bg-cyan-50 px-1.5 py-0.5 rounded-md border border-cyan-100">
+                            <i data-lucide="trending-up" class="w-2.5 h-2.5 text-cyan-600"></i>
+                            <span class="text-[8px] font-black text-cyan-700 uppercase">Active</span>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Projects</p>
-                        <p class="text-4xl font-black text-slate-900 tracking-tighter leading-none">
+                    <div class="mb-2">
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total Projects</p>
+                        <p class="text-xl font-black text-slate-900 tracking-tighter leading-none">
                             <span class="counter" data-target="0">0</span>
                         </p>
                     </div>
-                    <div class="pt-3 border-t border-slate-100">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2">By Status</p>
-                        <div class="space-y-1.5">
+                    <div class="pt-2 border-t border-slate-100">
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">By Status</p>
+                        <div class="space-y-1">
                             <div class="flex items-center justify-between">
-                                <span class="text-[9px] font-bold text-slate-600 truncate max-w-[80px]">Completed</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-12 bg-slate-50 rounded-full h-1.5 overflow-hidden border border-slate-100">
+                                <span class="text-[8px] font-bold text-slate-600 truncate max-w-[70px]">Completed</span>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-8 bg-slate-50 rounded-full h-1 overflow-hidden border border-slate-100">
                                         <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full rounded-full" id="completedBar" style="width: 0%"></div>
                                     </div>
-                                    <span class="text-[9px] font-black text-slate-900 w-5 text-right kpi-breakdown-count" data-key="completed">0</span>
+                                    <span class="text-[8px] font-black text-slate-900 w-3 text-right kpi-breakdown-count" data-key="completed">0</span>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-[9px] font-bold text-slate-600 truncate max-w-[80px]">In Progress</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-12 bg-slate-50 rounded-full h-1.5 overflow-hidden border border-slate-100">
+                                <span class="text-[8px] font-bold text-slate-600 truncate max-w-[70px]">In Progress</span>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-8 bg-slate-50 rounded-full h-1 overflow-hidden border border-slate-100">
                                         <div class="bg-gradient-to-r from-blue-500 to-blue-400 h-full rounded-full" id="inProgressBar" style="width: 0%"></div>
                                     </div>
-                                    <span class="text-[9px] font-black text-slate-900 w-5 text-right kpi-breakdown-count" data-key="in_progress">0</span>
+                                    <span class="text-[8px] font-black text-slate-900 w-3 text-right kpi-breakdown-count" data-key="in_progress">0</span>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-[9px] font-bold text-slate-600 truncate max-w-[80px]">Suspended</span>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-12 bg-slate-50 rounded-full h-1.5 overflow-hidden border border-slate-100">
+                                <span class="text-[8px] font-bold text-slate-600 truncate max-w-[70px]">Suspended</span>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-8 bg-slate-50 rounded-full h-1 overflow-hidden border border-slate-100">
                                         <div class="bg-gradient-to-r from-amber-500 to-amber-400 h-full rounded-full" id="suspendedBar" style="width: 0%"></div>
                                     </div>
-                                    <span class="text-[9px] font-black text-slate-900 w-5 text-right kpi-breakdown-count" data-key="suspended">0</span>
+                                    <span class="text-[8px] font-black text-slate-900 w-3 text-right kpi-breakdown-count" data-key="suspended">0</span>
                                 </div>
                             </div>
                         </div>
@@ -142,82 +142,98 @@
             </div>
 
             <!-- Completed Projects -->
-            <div class="dashboard-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-200 transition-all duration-300 overflow-hidden">
+            <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-emerald-200 transition-all duration-300 overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/0 to-cyan-50/0 group-hover:from-emerald-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
-                <div class="relative z-10 p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-[#00ADC5] flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
-                            <i data-lucide="wallet" class="w-5 h-5"></i>
+                <div class="relative z-10 p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-[#00ADC5] flex items-center justify-center text-white shadow-md shadow-emerald-500/30">
+                            <i data-lucide="wallet" class="w-4 h-4"></i>
                         </div>
-                        <div class="flex items-center gap-1 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100">
-                            <span class="text-[9px] font-black text-emerald-700 uppercase">Revised Budget</span>
+                        <div class="flex items-center gap-1 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100">
+                            <span class="text-[8px] font-black text-emerald-700 uppercase">Revised Budget</span>
                         </div>
                     </div>
-                    <div class="mb-2">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Completed Projects</p>
-                        <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none">
-                            <span class="text-[9px] font-black text-slate-400 mr-0.5">ETB</span>
+                    <div class="mb-1">
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Completed Projects</p>
+                        <p class="text-xl font-black text-slate-900 tracking-tighter leading-none">
+                            <span class="text-[8px] font-black text-slate-400 mr-0.5">ETB</span>
                             <span class="counter-currency" data-target="0">0</span>
                         </p>
                     </div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                        <span class="kpi-count-label">0</span> Completed Projects
+                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">
+                        <span class="kpi-count-label">0</span> Projects
                     </p>
                 </div>
             </div>
 
             <!-- In Progress Projects -->
-            <div class="dashboard-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-amber-200 transition-all duration-300 overflow-hidden">
+            <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-amber-200 transition-all duration-300 overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-amber-50/0 to-cyan-50/0 group-hover:from-amber-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
-                <div class="relative z-10 p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center text-white shadow-lg shadow-amber-500/30">
-                            <i data-lucide="banknote" class="w-5 h-5"></i>
+                <div class="relative z-10 p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-amber-500/30">
+                            <i data-lucide="banknote" class="w-4 h-4"></i>
                         </div>
-                        <div class="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
-                            <span class="text-[9px] font-black text-amber-700 uppercase">Revised Budget</span>
+                        <div class="flex items-center gap-1 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-100">
+                            <span class="text-[8px] font-black text-amber-700 uppercase">Revised Budget</span>
                         </div>
                     </div>
-                    <div class="mb-2">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">In Progress Projects</p>
-                        <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none">
-                            <span class="text-[9px] font-black text-slate-400 mr-0.5">ETB</span>
+                    <div class="mb-1">
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">In Progress Projects</p>
+                        <p class="text-xl font-black text-slate-900 tracking-tighter leading-none">
+                            <span class="text-[8px] font-black text-slate-400 mr-0.5">ETB</span>
                             <span class="counter-currency" data-target="0">0</span>
                         </p>
                     </div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                        <span class="kpi-count-label">0</span> Active Projects
+                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">
+                        <span class="kpi-count-label">0</span> Active
                     </p>
                 </div>
             </div>
 
             <!-- Suspended Projects -->
-            <div class="dashboard-kpi-card group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-rose-200 transition-all duration-300 overflow-hidden">
+            <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-rose-200 transition-all duration-300 overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-rose-50/0 to-cyan-50/0 group-hover:from-rose-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
-                <div class="relative z-10 p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center text-white shadow-lg shadow-rose-500/30">
-                            <i data-lucide="hard-hat" class="w-5 h-5"></i>
+                <div class="relative z-10 p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-rose-500/30">
+                            <i data-lucide="hard-hat" class="w-4 h-4"></i>
                         </div>
-                        <div class="flex items-center gap-1 bg-rose-50 px-2 py-1 rounded-lg border border-rose-100">
-                            <span class="text-[9px] font-black text-rose-700 uppercase">Revised Budget</span>
+                        <div class="flex items-center gap-1 bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-100">
+                            <span class="text-[8px] font-black text-rose-700 uppercase">Revised Budget</span>
                         </div>
                     </div>
-                    <div class="mb-2">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Suspended Projects</p>
-                        <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none">
-                            <span class="text-[9px] font-black text-slate-400 mr-0.5">ETB</span>
+                    <div class="mb-1">
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Suspended Projects</p>
+                        <p class="text-xl font-black text-slate-900 tracking-tighter leading-none">
+                            <span class="text-[8px] font-black text-slate-400 mr-0.5">ETB</span>
                             <span class="counter-currency" data-target="0">0</span>
                         </p>
                     </div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                        <span class="kpi-count-label">0</span> Suspended Projects
+                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">
+                        <span class="kpi-count-label">0</span> Projects
                     </p>
+                </div>
+            </div>
+
+            <!-- Project Status Pie Chart -->
+            <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all duration-300 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/0 to-cyan-50/0 group-hover:from-indigo-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
+                <div class="relative z-10 p-3">
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
+                            <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                        </div>
+                        <div class="flex items-center gap-1 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-100">
+                            <span class="text-[8px] font-black text-indigo-700 uppercase">Project Status</span>
+                        </div>
+                    </div>
+                    <div id="statusPieChart" class="w-full" style="height: 140px;"></div>
                 </div>
             </div>
         </div>
 
-            <div id="analyticsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
+        <div id="analyticsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
                 <!-- Charts injected by JS -->
             </div>
 
@@ -265,8 +281,8 @@
                     </div>
                     <div class="w-px h-4 bg-slate-200"></div>
                     <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl inline-flex">
-                        <button onclick="switchStatusTab('in progress')" id="status-tab-in-progress" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-900 shadow-sm">In Progress</button>
-                        <button onclick="switchStatusTab('completed')" id="status-tab-completed" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-900">Completed</button>
+                        <button onclick="switchStatusTab('in progress')" id="status-tab-in-progress" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-900">In Progress</button>
+                        <button onclick="switchStatusTab('completed')" id="status-tab-completed" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-900 shadow-sm">Completed</button>
                     </div>
                 </div>
             </div>
@@ -291,60 +307,7 @@
             <!-- Charts injected by JS -->
         </div>
 
-        <!-- Performance Table -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-                <div>
-                    <h3 class="text-sm font-black text-slate-900 tracking-tight">Performance Table</h3>
-                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Detailed project metrics</p>
-                </div>
-                <span id="projectCount" class="text-[9px] font-black text-slate-400 uppercase tracking-widest">0 Projects</span>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-gradient-to-b from-[#00515f] to-black">
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">#</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Schedule</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Budget</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Cost</th>
-                        </tr>
-                    </thead>
-                    <tbody id="performanceTableBody" class="divide-y divide-slate-50">
-                        <tr>
-                        <td colspan="5" class="px-6 py-16 text-center">
-                                <div class="flex flex-col items-center gap-4">
-                                    <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
-                                        <i data-lucide="loader" class="w-8 h-8 animate-spin"></i>
-                                    </div>
-                                    <div class="space-y-1">
-                                        <h3 class="text-lg font-black text-slate-900">Loading Performance Data</h3>
-                                        <p class="text-[9px] uppercase font-black tracking-widest text-slate-400">Please wait while we analyze the portfolio.</p>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
-                <div class="flex items-center gap-2">
-                    <span class="text-[9px] font-black text-slate-900 tracking-widest" id="paginationStart">0</span>
-                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">to</span>
-                    <span class="text-[9px] font-black text-slate-400 tracking-widest" id="paginationEnd">0</span>
-                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">of</span>
-                    <span class="text-[9px] font-black text-slate-400 tracking-widest" id="paginationTotal">0</span>
-                </div>
-                <div class="flex items-center gap-1.5" id="paginationControls">
-                    <!-- Pagination buttons injected by JS -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Drill Down Drawer -->
+        <!-- Drill Down Drawer -->
     <div id="drillDownDrawer" class="hidden fixed inset-0 z-50 overflow-hidden">
         <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeDrillDown()"></div>
         <div class="absolute right-0 top-0 h-full w-full max-w-lg bg-white shadow-2xl transform transition-transform duration-300 translate-x-full" id="drawerPanel">
@@ -368,7 +331,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         let currentTab = 'schedule';
-        let currentStatusTab = 'in progress';
+        let currentStatusTab = 'completed';
         let allProjects = [];
         let filteredProjects = [];
         let currentPage = 1;
@@ -503,8 +466,7 @@
                     renderChart();
                     renderAnalyticsGrid();
                     renderComparativeAnalytics();
-                    renderTable();
-                    renderPagination();
+                    renderStatusPieChart();
                     updateSubtitle();
                 })
                 .catch(err => {
@@ -517,52 +479,6 @@
                     el.textContent = 'Network error loading dashboard. Please refresh.';
                     document.querySelector('.space-y-4')?.prepend(el);
                 });
-        }
-
-        function renderPagination() {
-            const container = document.getElementById('paginationControls');
-            if (!container) return;
-
-            const total = parseInt(document.getElementById('paginationTotal')?.textContent || '0', 10);
-            if (totalPages <= 1) {
-                container.innerHTML = '';
-                return;
-            }
-
-            let html = '';
-            html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg text-[9px] font-black border ${currentPage === 1 ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'} transition-all">Prev</button>`;
-
-            const maxButtons = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
-            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
-            if (endPage - startPage < maxButtons - 1) {
-                startPage = Math.max(1, endPage - maxButtons + 1);
-            }
-
-            if (startPage > 1) {
-                html += `<button onclick="goToPage(1)" class="px-2.5 py-1 rounded-lg text-[9px] font-black bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all">1</button>`;
-                if (startPage > 2) html += `<span class="text-[9px] font-black text-slate-400 px-1">...</span>`;
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                html += `<button onclick="goToPage(${i})" class="px-2.5 py-1 rounded-lg text-[9px] font-black transition-all ${i === currentPage ? 'bg-[#00515f] text-white border-[#00515f]' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'}">${i}</button>`;
-            }
-
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) html += `<span class="text-[9px] font-black text-slate-400 px-1">...</span>`;
-                html += `<button onclick="goToPage(${totalPages})" class="px-2.5 py-1 rounded-lg text-[9px] font-black bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all">${totalPages}</button>`;
-            }
-
-            html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg text-[9px] font-black border ${currentPage === totalPages ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'} transition-all">Next</button>`;
-
-            container.innerHTML = html;
-        }
-
-        function goToPage(page) {
-            if (page < 1 || page > totalPages || page === currentPage) return;
-            currentPage = page;
-            window.scrollTo({ top: document.getElementById('performanceTableBody')?.getBoundingClientRect().top + window.scrollY - 100, behavior: 'smooth' });
-            loadDashboardData();
         }
 
         function applyFilters() {
@@ -583,7 +499,6 @@
             document.getElementById('filterConsultantType').value = 'all';
             document.getElementById('filterLifecycleStatus').value = 'all';
             document.getElementById('searchInput').value = '';
-            currentPage = 1;
             activeChartFilter = null;
             updateClearFilterButton();
             applyFilters();
@@ -593,12 +508,7 @@
             const statusSelect = document.getElementById('filterLifecycleStatus');
             if (!statusSelect) return;
             statusSelect.value = status;
-            currentPage = 1;
             applyFilters();
-            setTimeout(() => {
-                const table = document.getElementById('performanceTableBody');
-                if (table) table.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 300);
         }
 
         function renderExecutiveKpis() {
@@ -714,7 +624,7 @@
             renderMiniKpis();
             renderLegend();
             renderChart();
-            renderTable();
+            renderStatusPieChart();
             updateSubtitle();
         }
 
@@ -730,7 +640,6 @@
             renderMiniKpis();
             renderLegend();
             renderChart();
-            renderTable();
             updateSubtitle();
         }
 
@@ -1142,60 +1051,58 @@
             chartInstance.render();
         }
 
-        function renderTable() {
-            const projects = getStatusFilteredProjects();
-            const tbody = document.getElementById('performanceTableBody');
-            const start = (currentPage - 1) * perPage + 1;
-            const end = Math.min(start + perPage - 1, projects.length);
-            document.getElementById('projectCount').textContent = `${projects.length} Projects`;
+        function renderStatusPieChart() {
+            const existingChart = document.getElementById('statusPieChart');
+            if (!existingChart) return;
 
-            document.getElementById('paginationStart').textContent = projects.length > 0 ? start : 0;
-            document.getElementById('paginationEnd').textContent = end;
-            document.getElementById('paginationTotal').textContent = projects.length;
+            const kpis = window.latestExecutiveKpis || {};
+            const totalProjects = kpis.total_projects || {};
+            const completed = totalProjects.completed || 0;
+            const inProgress = totalProjects.in_progress || 0;
+            const suspended = totalProjects.suspended || 0;
 
-            if (projects.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="px-6 py-16 text-center">
-                            <div class="flex flex-col items-center gap-4">
-                                <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
-                                    <i data-lucide="search-x" class="w-8 h-8"></i>
-                                </div>
-                                <div class="space-y-1">
-                                    <h3 class="text-lg font-black text-slate-900">No Projects Found</h3>
-                                    <p class="text-[9px] uppercase font-black tracking-widest text-slate-400">Try adjusting the filters to see more results.</p>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                if (window.lucide) lucide.createIcons();
-                return;
+            const series = [completed, inProgress, suspended];
+            const labels = ['Completed', 'In Progress', 'Suspended'];
+            const colors = ['#10b981', '#f59e0b', '#f43f5e'];
+
+            if (window.statusPieInstance) {
+                window.statusPieInstance.destroy();
             }
 
-            const pageProjects = projects.slice(start - 1, end);
+            window.statusPieInstance = new ApexCharts(existingChart, {
+                chart: {
+                    type: 'donut',
+                    height: '100%',
+                    animations: { enabled: true, easing: 'easeinout', speed: 500 }
+                },
+                series: series,
+                labels: labels,
+                colors: colors,
+                legend: { position: 'bottom', fontSize: '10px', fontWeight: 700, labels: { colors: '#475569' } },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '65%',
+                            labels: {
+                                show: true,
+                                value: { fontSize: '14px', fontWeight: 800, color: '#0f172a' },
+                                total: {
+                                    show: true,
+                                    label: 'Total',
+                                    fontSize: '11px',
+                                    fontWeight: 700,
+                                    color: '#64748b'
+                                }
+                            }
+                        }
+                    }
+                },
+                dataLabels: { enabled: true, style: { fontSize: '10px', fontWeight: 800 }, formatter: (val) => val > 0 ? Math.round(val) : '' },
+                stroke: { show: true, width: 2, colors: ['#fff'] },
+                tooltip: { theme: 'light' }
+            });
 
-            tbody.innerHTML = pageProjects.map((project, index) => {
-                const scheduleBadge = getScheduleBadge(project.schedule_status);
-                const budgetBadge = getBudgetBadge(project.budget_performance);
-                const costBadge = getCostBadge(project.cost_performance);
-
-                return `
-                    <tr class="group hover:bg-slate-50/80 transition-all duration-300 cursor-pointer" onclick="openDrillDown(allProjects.find(p => p.id === ${project.id}))">
-                        <td class="px-6 py-4 text-center">
-                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-[#00ADC5] text-[10px] font-black tabular-nums">${start + index}</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="text-sm font-black text-slate-900 group-hover:text-[#00ADC5] transition-colors">${project.project_code}</span>
-                        </td>
-                        <td class="px-6 py-4 text-center">${scheduleBadge}</td>
-                        <td class="px-6 py-4 text-center">${budgetBadge}</td>
-                        <td class="px-6 py-4 text-center">${costBadge}</td>
-                    </tr>
-                `;
-            }).join('');
-
-            if (window.lucide) lucide.createIcons();
+            window.statusPieInstance.render();
         }
 
         function getScheduleBadge(status) {
@@ -1428,9 +1335,9 @@
                 title: 'Project Status',
                 description: 'Current lifecycle distribution of all projects.',
                 categories: [
-                    { key: 'completed', label: 'Completed', color: '#10b981' },
-                    { key: 'in_progress', label: 'In Progress', color: '#f59e0b' },
-                    { key: 'suspended', label: 'Suspended', color: '#f43f5e' },
+                    { key: 'completed', label: 'Completed', abbr: 'CMP', color: '#10b981' },
+                    { key: 'in_progress', label: 'In Progress', abbr: 'INP', color: '#f59e0b' },
+                    { key: 'suspended', label: 'Suspended', abbr: 'SUS', color: '#f43f5e' },
                 ],
                 totalLabel: 'Total',
                 filterParam: 'lifecycle_status',
@@ -1440,9 +1347,9 @@
                 title: 'Schedule Performance',
                 description: 'Completed projects schedule performance',
                 categories: [
-                    { key: 'ahead', label: 'Ahead of Schedule', color: '#10b981' },
-                    { key: 'on_schedule', label: 'On Schedule', color: '#00ADC5' },
-                    { key: 'behind', label: 'Behind Schedule', color: '#f43f5e' },
+                    { key: 'ahead', label: 'Ahead of Schedule', abbr: 'AHD', color: '#10b981' },
+                    { key: 'on_schedule', label: 'On Schedule', abbr: 'ONS', color: '#00ADC5' },
+                    { key: 'behind', label: 'Behind Schedule', abbr: 'BHD', color: '#f43f5e' },
                 ],
                 totalLabel: 'Completed',
                 filterParam: 'schedule_filter',
@@ -1463,9 +1370,9 @@
                 title: 'Contract Variation',
                 description: 'Projects with contract additions, omissions, or no change.',
                 categories: [
-                    { key: 'addition', label: 'Addition', color: '#00ADC5' },
-                    { key: 'omission', label: 'Omission', color: '#f59e0b' },
-                    { key: 'no_variation', label: 'No Variation', color: '#10b981' },
+                    { key: 'addition', label: 'Addition', abbr: 'ADD', color: '#00ADC5' },
+                    { key: 'omission', label: 'Omission', abbr: 'OMT', color: '#f59e0b' },
+                    { key: 'no_variation', label: 'No Variation', abbr: 'NON', color: '#10b981' },
                 ],
                 totalLabel: 'Total',
                 filterParam: 'variation_type',
@@ -1475,9 +1382,9 @@
                 title: 'Consultancy Sector',
                 description: 'Completed projects by consultancy sector',
                 categories: [
-                    { key: 'private', label: 'Private Consultancy', color: '#10b981' },
-                    { key: 'client_engineering', label: 'Client Engineering Team', color: '#6366f1' },
-                    { key: 'government', label: 'Government Consultancy', color: '#f59e0b' },
+                    { key: 'private', label: 'Private Consultancy', abbr: 'PRV', color: '#10b981' },
+                    { key: 'client_engineering', label: 'Client Engineering Team', abbr: 'CET', color: '#6366f1' },
+                    { key: 'government', label: 'Government Consultancy', abbr: 'GOV', color: '#f59e0b' },
                 ],
                 totalLabel: 'Completed',
                 filterParam: 'sector',
@@ -1487,9 +1394,9 @@
                 title: 'Cost Performance',
                 description: 'Completed projects cost health against allowable limits.',
                 categories: [
-                    { key: 'below', label: 'Below Allowable Cost', color: '#10b981' },
-                    { key: 'with_allowable', label: 'Within Allowable Cost', color: '#00ADC5' },
-                    { key: 'above', label: 'Above Allowable Cost', color: '#f43f5e' },
+                    { key: 'below', label: 'Below Allowable Cost', abbr: 'BLW', color: '#10b981' },
+                    { key: 'with_allowable', label: 'Within Allowable Cost', abbr: 'WTH', color: '#00ADC5' },
+                    { key: 'above', label: 'Above Allowable Cost', abbr: 'ABV', color: '#f43f5e' },
                 ],
                 totalLabel: 'Below/With/Above',
                 filterParam: 'cost_filter',
@@ -1522,12 +1429,16 @@
                             </div>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-100 text-[8px] font-black text-slate-500 uppercase tracking-wider shadow-sm">${total} Projects</span>
                         </div>
-                        <div class="flex items-center justify-center py-1 relative" style="height: 220px; overflow: visible;">
-                            <div id="chart-${chartId}" class="w-full h-full relative" style="z-index: 1; overflow: visible !important;"></div>
-                        </div>
-                        <div id="legend-${chartId}" class="mt-auto analytics-legend-wrapper"></div>
-                        <div class="mt-1 pt-1.5 border-t border-slate-100 overflow-hidden">
-                            <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest analytics-insight">${getInsight(chartId, data, total)}</p>
+                        <div class="flex flex-row items-center gap-3 chart-legend-row">
+                            <div class="flex-shrink-0 flex items-center justify-center" style="width: 240px; height: 240px;">
+                                <div id="chart-${chartId}" class="w-full h-full relative" style="z-index: 1; overflow: visible !important;"></div>
+                            </div>
+                            <div class="flex-1 flex flex-col min-w-0">
+                                <div id="legend-${chartId}" class="analytics-legend-wrapper flex-1"></div>
+                                <div class="mt-2 pt-1.5 border-t border-slate-100 overflow-hidden">
+                                    <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest analytics-insight">${getInsight(chartId, data, total)}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1704,7 +1615,7 @@
                 tooltip: { enabled: false },
                 responsive: [
                     {
-                        breakpoint: 480,
+                        breakpoint: 768,
                         options: {
                             chart: {
                                 height: 200
@@ -1726,21 +1637,17 @@
         function buildLegend(chartId, data, config) {
             const legendEl = document.getElementById(`legend-${chartId}`);
             if (!legendEl) return;
-            const total = data.total || 0;
 
             legendEl.innerHTML = config.categories.map(cat => {
                 const count = data[cat.key] || 0;
-                const percent = total > 0 ? Math.round((count / total) * 100) : 0;
                 const isActive = activeChartFilter && activeChartFilter.chart === chartId && activeChartFilter.value === cat.key;
                 const mutedClass = count === 0 ? 'text-slate-300' : '';
                 const activeClass = isActive ? 'bg-white/80 border border-slate-200 shadow-sm' : 'border border-transparent';
                 return `
-                    <div class="analytics-legend-item inline-flex items-center gap-1 ${mutedClass} ${activeClass} cursor-pointer hover:bg-slate-50 rounded transition-all px-1.5 py-0.5" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
+                    <div class="analytics-legend-item flex items-center gap-1.5 py-0.5 cursor-pointer hover:bg-slate-50 rounded transition-all px-1 ${mutedClass} ${activeClass}" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
                         <span class="w-1.5 h-1.5 rounded-sm flex-shrink-0" style="background-color: ${cat.color};"></span>
-                        <span class="text-[10px] font-black uppercase tracking-wider truncate">${cat.label}</span>
-                        <span class="text-[10px] font-black text-slate-500 mx-0.5">${count}</span>
-                        <span class="text-[9px] font-medium text-slate-400">·</span>
-                        <span class="text-[10px] font-black text-slate-500">${percent}%</span>
+                        <span class="text-[9px] font-black uppercase tracking-wider truncate">${cat.abbr || cat.label}</span>
+                        <span class="text-[9px] font-black text-slate-500 ml-auto">${count}</span>
                     </div>
                 `;
             }).join('');
@@ -1823,32 +1730,6 @@
                 const card = document.createElement('div');
                 card.className = 'comparative-card bg-white rounded-[18px] border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-250 overflow-hidden flex flex-col';
                 
-                const summariesHtml = (chartData.summaries || []).map((summary, idx) => {
-                    const icon = chartData.icons?.[idx] || '';
-                    const label = chartData.xaxis?.[idx] || `Category ${idx + 1}`;
-                    if (summary.empty) {
-                        return `
-                            <div class="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2 border border-slate-100">
-                                <span class="text-sm">${icon}</span>
-                                <div>
-                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">${label}</p>
-                                    <p class="text-[9px] font-black text-slate-400">No Data</p>
-                                </div>
-                            </div>
-                        `;
-                    }
-                    return `
-                        <div class="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2 border border-slate-100">
-                            <span class="text-sm">${icon}</span>
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">${label}</p>
-                                <p class="text-[9px] font-black text-slate-900">Highest <span class="text-emerald-600">${summary.highest}%</span></p>
-                                <p class="text-[8px] font-black text-slate-400">Avg ${summary.average}% • Low ${summary.lowest}%</p>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
                 const accentColor = chartData.series?.[0]?.counts ? '#00ADC5' : '#6366f1';
                 card.innerHTML = `
                     <div class="h-0.5 w-full" style="background: linear-gradient(to right, ${accentColor}, ${accentColor}66);"></div>
@@ -1867,7 +1748,6 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="mt-2 flex flex-wrap items-center gap-2">${summariesHtml}</div>
                         <div id="comparative-legend-${chartId}" class="mt-3 flex flex-wrap items-center gap-3"></div>
                         <div class="flex-1 min-h-[280px] mt-2">
                             <div id="comparative-chart-${chartId}" class="w-full h-full"></div>
@@ -1901,23 +1781,32 @@
             const colors = {
                 'Behind Schedule': ['#EF4444', '#F87171'],
                 'Ahead of Schedule': ['#22C55E', '#4ADE80'],
-                'On Schedule': ['#00ADC5', '#00ADC5'],
+                'On Schedule': ['#f59e0b', '#f59e0b'],
                 'Under Budget': ['#22C55E', '#4ADE80'],
-                'On Budget': ['#00ADC5', '#00ADC5'],
+                'On Budget': ['#f59e0b', '#f59e0b'],
                 'Above Budget': ['#EF4444', '#F87171'],
                 'Below Allowable Cost': ['#22C55E', '#4ADE80'],
                 'Within Allowable Cost': ['#FFA500', '#FFA500'],
                 'Above Allowable Cost': ['#EF4444', '#F87171'],
+                'Average SPI %': ['#6366f1', '#6366f1'],
+                'Projects': ['#00ADC5', '#00ADC5'],
             };
 
+            const isHorizontal = chartData.horizontal === true;
             const barColors = chartData.series.map(s => colors[s.name] || ['#00ADC5', '#00ADC5']);
             const groupTotals = (chartData.summaries || []).map(s => s.total || 0);
+            const isSingleSeries = chartData.series.length === 1;
+            const palette = ['#10b981', '#f59e0b', '#00ADC5', '#6366f1', '#EF4444', '#8b5cf6', '#EC4899', '#14b8a6'];
+            const pointColors = isSingleSeries
+                ? chartData.xaxis.map((_, i) => palette[i % palette.length])
+                : barColors.map(c => c[0]);
 
             comparativeCharts[chartId] = new ApexCharts(chartEl, {
                 chart: {
                     type: 'bar',
                     height: '100%',
                     stacked: false,
+                    labels: isHorizontal ? chartData.xaxis : undefined,
                     animations: {
                         enabled: true,
                         easing: 'easeinout',
@@ -1940,15 +1829,22 @@
                 },
                 plotOptions: {
                     bar: {
-                        horizontal: false,
-                        columnWidth: '60%',
+                        horizontal: isHorizontal,
+                        columnWidth: isHorizontal ? '80%' : '60%',
                         borderRadius: 8,
-                        borderRadiusApplication: 'top',
-                        distributed: false,
+                        borderRadiusApplication: isHorizontal ? 'bottom' : 'top',
+                        distributed: isSingleSeries,
                     }
                 },
                 series: series,
-                xaxis: {
+                xaxis: isHorizontal ? {
+                    categories: chartData.xaxis,
+                    labels: {
+                        style: { fontSize: '9px', fontWeight: 700, colors: '#475569' },
+                    },
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                } : {
                     categories: chartData.xaxis,
                     labels: {
                         style: { fontSize: '9px', fontWeight: 700, colors: '#475569' },
@@ -1958,7 +1854,15 @@
                     axisBorder: { show: false },
                     axisTicks: { show: false },
                 },
-                yaxis: {
+                yaxis: isHorizontal ? {
+                    min: 0,
+                    max: 100,
+                    tickAmount: 5,
+                    labels: {
+                        style: { fontSize: '9px', fontWeight: 600, colors: '#64748b' },
+                        formatter: (val) => val + '%'
+                    }
+                } : {
                     min: 0,
                     max: 100,
                     tickAmount: 5,
@@ -1967,12 +1871,12 @@
                         formatter: (val) => val + '%'
                     }
                 },
-                colors: barColors.map(c => c[0]),
+                colors: pointColors,
                 fill: {
-                    type: 'gradient',
-                    gradient: {
+                    type: isSingleSeries ? 'solid' : 'gradient',
+                    gradient: isSingleSeries ? undefined : {
                         shade: 'light',
-                        type: 'vertical',
+                        type: isHorizontal ? 'horizontal' : 'vertical',
                         shadeIntensity: 0.2,
                         gradientToColors: barColors.map(c => c[1]),
                         inverseColors: false,
@@ -1988,9 +1892,10 @@
                         fontWeight: 800,
                         colors: ['#fff']
                     },
-                    formatter: (val) => val > 0 ? val + '%' : '',
-                    textAnchor: 'middle',
-                    offsetY: -16,
+                    formatter: (val) => val > 0 ? (isHorizontal ? val : val + '%') : '',
+                    textAnchor: isHorizontal ? 'start' : 'middle',
+                    offsetX: isHorizontal ? 6 : 0,
+                    offsetY: isHorizontal ? 0 : -16,
                 },
                 legend: { show: false },
                 tooltip: {
@@ -2002,11 +1907,11 @@
                         const percent = series[seriesIndex][dataPointIndex];
                         const count = chartData.series[seriesIndex]?.counts?.[dataPointIndex] ?? 0;
                         const groupTotal = groupTotals[dataPointIndex] || 0;
-                        const color = barColors[seriesIndex]?.[0] || '#6366f1';
+                        const color = isSingleSeries ? pointColors[dataPointIndex] : (barColors[seriesIndex]?.[0] || '#6366f1');
                         return `
                             <div style="padding: 12px 16px; font-family: 'Inter', sans-serif; min-width: 220px; border-radius: 12px; background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
                                 <div style="font-weight: 800; font-size: 11px; color: #0f172a; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">${category}</div>
-                                <div style="font-weight: 800; font-size: 24px; color: ${color}; margin-bottom: 4px;">${percent}%</div>
+                                <div style="font-weight: 800; font-size: 24px; color: ${color}; margin-bottom: 4px;">${percent}${isHorizontal ? '' : '%'}</div>
                                 <div style="font-weight: 700; font-size: 11px; color: #475569; margin-bottom: 8px;">${count} Projects • ${groupTotal} in group</div>
                                 <div style="font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Click to view projects</div>
                             </div>
@@ -2017,8 +1922,8 @@
                     borderColor: '#EEF2F7',
                     strokeDashArray: 4,
                     padding: { left: 8, right: 12, top: 12, bottom: 8 },
-                    xaxis: { lines: { show: false } },
-                    yaxis: { lines: { show: true } },
+                    xaxis: { lines: { show: isHorizontal } },
+                    yaxis: { lines: { show: !isHorizontal } },
                 },
                 markers: {
                     shape: 'circle',
@@ -2030,14 +1935,15 @@
                         options: {
                             plotOptions: {
                                 bar: {
-                                    columnWidth: '65%',
+                                    columnWidth: isHorizontal ? '85%' : '65%',
                                 }
                             },
                             dataLabels: {
-                                offsetY: -12,
+                                offsetY: isHorizontal ? 0 : -12,
+                                offsetX: isHorizontal ? 4 : 0,
                                 style: { fontSize: '8px' }
                             },
-                            xaxis: {
+                            xaxis: isHorizontal ? {} : {
                                 labels: {
                                     rotate: -45,
                                 }
@@ -2054,17 +1960,34 @@
         function buildComparativeLegend(chartId, chartData, barColors) {
             const legendEl = document.getElementById(`comparative-legend-${chartId}`);
             if (!legendEl) return;
-            legendEl.innerHTML = chartData.series.map((s, i) => {
-                const color = barColors[i]?.[0] || '#6366f1';
-                const totalCount = chartData.series[i]?.counts?.reduce((a, b) => a + b, 0) || 0;
-                return `
-                    <div class="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity" onclick="toggleComparativeSeries('${chartId}', ${i})">
-                        <span class="w-2.5 h-2.5 rounded-sm" style="background-color: ${color};"></span>
-                        <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">${s.name}</span>
-                        <span class="text-[8px] font-black text-slate-400">${totalCount} projects</span>
-                    </div>
-                `;
-            }).join('');
+            const isSingleSeries = chartData.series.length === 1;
+            const palette = ['#10b981', '#f59e0b', '#00ADC5', '#6366f1', '#EF4444', '#8b5cf6', '#EC4899', '#14b8a6'];
+
+            if (isSingleSeries) {
+                legendEl.innerHTML = chartData.xaxis.map((label, i) => {
+                    const color = palette[i % palette.length];
+                    const count = chartData.series[0]?.counts?.[i] ?? chartData.series[0]?.data?.[i] ?? 0;
+                    return `
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-sm" style="background-color: ${color};"></span>
+                            <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">${label}</span>
+                            <span class="text-[8px] font-black text-slate-400">${count} projects</span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                legendEl.innerHTML = chartData.series.map((s, i) => {
+                    const color = barColors[i]?.[0] || '#6366f1';
+                    const totalCount = chartData.series[i]?.counts?.reduce((a, b) => a + b, 0) || 0;
+                    return `
+                        <div class="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity" onclick="toggleComparativeSeries('${chartId}', ${i})">
+                            <span class="w-2.5 h-2.5 rounded-sm" style="background-color: ${color};"></span>
+                            <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">${s.name}</span>
+                            <span class="text-[8px] font-black text-slate-400">${totalCount} projects</span>
+                        </div>
+                    `;
+                }).join('');
+            }
         }
 
         function toggleComparativeSeries(chartId, seriesIndex) {
@@ -2199,7 +2122,7 @@
 
         .analytics-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 400px;
+            height: 380px;
             position: relative;
             overflow: visible;
         }
@@ -2245,16 +2168,44 @@
         }
         .analytics-legend-wrapper {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 2px;
-            align-items: center;
-            justify-content: center;
+            align-items: stretch;
+            justify-content: flex-start;
         }
         .analytics-insight {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .analytics-card .chart-legend-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            .analytics-card .chart-legend-row > div:first-child {
+                width: 200px;
+                height: 200px;
+            }
+            .analytics-card .analytics-legend-wrapper {
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+            }
+        }
+        @media (max-width: 480px) {
+            .analytics-card .chart-legend-row > div:first-child {
+                width: 100% !important;
+                height: auto !important;
+                aspect-ratio: 1;
+            }
+            .analytics-card .chart-legend-row > div:first-child > div {
+                height: 100% !important;
+            }
         }
 
         #chartContainer .apexcharts-bar-area {

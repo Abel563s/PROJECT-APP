@@ -122,7 +122,13 @@
                                 'label' => 'Issue Registry',
                                 'icon' => 'list',
                                 'route' => 'admin.projects.issues.index',
-                                'active' => request()->routeIs('admin.projects.issues.*') && !request()->routeIs('admin.projects.issues.report')
+                                'active' => request()->routeIs('admin.projects.issues.*') && !request()->routeIs('admin.projects.issues.report') && !request()->routeIs('admin.projects.issues.history')
+                            ],
+                            [
+                                'label' => 'Issue History',
+                                'icon' => 'clock',
+                                'route' => 'admin.projects.issues.history',
+                                'active' => request()->routeIs('admin.projects.issues.history')
                             ],
                             [
                                 'label' => 'Issue Report',

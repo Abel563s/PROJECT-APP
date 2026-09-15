@@ -464,6 +464,41 @@ class DashboardController extends Controller
             }
         }
 
+        $sectorTimeDatasets = [
+            ['name' => 'Average SPI %', 'values' => [], 'counts' => []],
+        ];
+        $sectorTimeLabels = [];
+        $sectorTimeGroupTotals = [];
+        foreach ($sectors as $sector) {
+            $sectorTimeLabels[] = $sector === 'Client / Engineering Team' ? 'Client Engineering Team' : ($sector === 'Private' ? 'Private Consultancy' : 'Government Consultancy');
+            $sectorProjects = $completedProjects->where('consultancy_sector', $sector);
+            $groupTotal = $sectorProjects->count();
+            $sectorTimeGroupTotals[] = $groupTotal;
+            if ($groupTotal > 0) {
+                $avgSpi = round($sectorProjects->avg('schedule_performance_percent'), 1);
+                $sectorTimeDatasets[0]['values'][] = $avgSpi;
+                $sectorTimeDatasets[0]['counts'][] = $groupTotal;
+            } else {
+                $sectorTimeDatasets[0]['values'][] = 0;
+                $sectorTimeDatasets[0]['counts'][] = 0;
+            }
+        }
+
+        $closingStatuses = ['FA Received', 'PA Received', 'PPA Received', 'Snag / Di-Snag', 'Waiting for PA', 'Not Completed'];
+        $closingLabels = [];
+        $closingDatasets = [
+            ['name' => 'Projects', 'values' => [], 'counts' => []],
+        ];
+        $closingGroupTotals = [];
+        $closingTotal = $filteredProjects->count();
+        foreach ($closingStatuses as $status) {
+            $closingLabels[] = $status;
+            $count = $filteredProjects->where('closing_status', $status)->count();
+            $closingDatasets[0]['values'][] = $closingTotal > 0 ? round(($count / $closingTotal) * 100) : 0;
+            $closingDatasets[0]['counts'][] = $count;
+            $closingGroupTotals[] = $closingTotal;
+        }
+
         $buildSummary = function ($groupTotals, $datasets) {
             $summaries = [];
             foreach ($groupTotals as $idx => $total) {
@@ -512,6 +547,23 @@ class DashboardController extends Controller
                 'series' => $sectorBudgetDatasets,
                 'summaries' => $buildSummary($sectorGroupTotals, $sectorBudgetDatasets),
                 'icons' => ['🏢', '👷', '🏛'],
+            ],
+            'time_by_sector' => [
+                'title' => 'Time Performance by Consultancy Sector',
+                'description' => 'Average SPI % for completed projects by consultancy sector.',
+                'xaxis' => $sectorTimeLabels,
+                'series' => $sectorTimeDatasets,
+                'summaries' => $buildSummary($sectorTimeGroupTotals, $sectorTimeDatasets),
+                'icons' => ['🏢', '👷', '🏛'],
+            ],
+            'closing_status' => [
+                'title' => 'Closing Status',
+                'description' => 'Project counts by closing status.',
+                'xaxis' => $closingLabels,
+                'series' => $closingDatasets,
+                'summaries' => $buildSummary($closingGroupTotals, $closingDatasets),
+                'icons' => ['📋'],
+                'horizontal' => true,
             ],
         ];
 
