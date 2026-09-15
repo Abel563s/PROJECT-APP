@@ -90,23 +90,23 @@
             <!-- Total Projects -->
             <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-cyan-200 transition-all duration-300 overflow-hidden cursor-pointer" onclick="filterByStatus('all')">
                 <div class="absolute inset-0 bg-gradient-to-br from-cyan-50/0 to-cyan-50/0 group-hover:from-cyan-50/50 group-hover:to-cyan-50/30 transition-all duration-300"></div>
-                <div class="relative z-10 p-3">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-[#00ADC5] flex items-center justify-center text-white shadow-md shadow-cyan-500/30">
-                            <i data-lucide="folder-open" class="w-4 h-4"></i>
+                <div class="relative z-10 p-2">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-[#00ADC5] flex items-center justify-center text-white shadow-md shadow-cyan-500/30">
+                            <i data-lucide="folder-open" class="w-3.5 h-3.5"></i>
                         </div>
                         <div class="flex items-center gap-1 bg-cyan-50 px-1.5 py-0.5 rounded-md border border-cyan-100">
                             <i data-lucide="trending-up" class="w-2.5 h-2.5 text-cyan-600"></i>
                             <span class="text-[8px] font-black text-cyan-700 uppercase">Active</span>
                         </div>
                     </div>
-                    <div class="mb-2">
+                    <div class="mb-1">
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total Projects</p>
                         <p class="text-xl font-black text-slate-900 tracking-tighter leading-none">
                             <span class="counter" data-target="0">0</span>
                         </p>
                     </div>
-                    <div class="pt-2 border-t border-slate-100">
+                    <div class="pt-1.5 border-t border-slate-100">
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">By Status</p>
                         <div class="space-y-1">
                             <div class="flex items-center justify-between">
@@ -144,10 +144,10 @@
             <!-- Completed Projects -->
             <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-emerald-200 transition-all duration-300 overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/0 to-cyan-50/0 group-hover:from-emerald-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
-                <div class="relative z-10 p-3">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-[#00ADC5] flex items-center justify-center text-white shadow-md shadow-emerald-500/30">
-                            <i data-lucide="wallet" class="w-4 h-4"></i>
+                <div class="relative z-10 p-2">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-[#00ADC5] flex items-center justify-center text-white shadow-md shadow-emerald-500/30">
+                            <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
                         </div>
                         <div class="flex items-center gap-1 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100">
                             <span class="text-[8px] font-black text-emerald-700 uppercase">Revised Budget</span>
@@ -169,10 +169,10 @@
             <!-- In Progress Projects -->
             <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-amber-200 transition-all duration-300 overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-amber-50/0 to-cyan-50/0 group-hover:from-amber-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
-                <div class="relative z-10 p-3">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-amber-500/30">
-                            <i data-lucide="banknote" class="w-4 h-4"></i>
+                <div class="relative z-10 p-2">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-amber-500/30">
+                            <i data-lucide="banknote" class="w-3.5 h-3.5"></i>
                         </div>
                         <div class="flex items-center gap-1 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-100">
                             <span class="text-[8px] font-black text-amber-700 uppercase">Revised Budget</span>
@@ -194,10 +194,10 @@
             <!-- Suspended Projects -->
             <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-rose-200 transition-all duration-300 overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-rose-50/0 to-cyan-50/0 group-hover:from-rose-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
-                <div class="relative z-10 p-3">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-rose-500/30">
-                            <i data-lucide="hard-hat" class="w-4 h-4"></i>
+                <div class="relative z-10 p-2">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-rose-500/30">
+                            <i data-lucide="hard-hat" class="w-3.5 h-3.5"></i>
                         </div>
                         <div class="flex items-center gap-1 bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-100">
                             <span class="text-[8px] font-black text-rose-700 uppercase">Revised Budget</span>
@@ -219,21 +219,27 @@
             <!-- Project Status Pie Chart -->
             <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all duration-300 overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/0 to-cyan-50/0 group-hover:from-indigo-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
-                <div class="relative z-10 p-3">
+                <div class="relative z-10 p-2">
                     <div class="flex items-center justify-between mb-1">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
-                            <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
+                            <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
                         </div>
                         <div class="flex items-center gap-1 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-100">
                             <span class="text-[8px] font-black text-indigo-700 uppercase">Project Status</span>
                         </div>
                     </div>
-                    <div id="statusPieChart" class="w-full" style="height: 140px;"></div>
+                        <div id="statusPieChart" class="w-full relative" style="height: 200px; perspective: 600px;">
+                            <div class="absolute inset-0 bg-gradient-to-b from-slate-100/40 to-transparent rounded-full blur-sm transform translate-y-1/2 scale-95"></div>
+                            <div class="relative z-10 transform rotateX(15deg)" style="transform-style: preserve-3d;">
+                                <div id="statusPieChartInner" class="w-full h-full"></div>
+                            </div>
+                        </div>
+                        <div id="statusPieLegend" class="flex flex-row items-center justify-center gap-2 mt-1.5"></div>
                 </div>
             </div>
         </div>
 
-        <div id="analyticsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
+        <div id="analyticsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3 mt-4">
                 <!-- Charts injected by JS -->
             </div>
 
@@ -1052,7 +1058,8 @@
         }
 
         function renderStatusPieChart() {
-            const existingChart = document.getElementById('statusPieChart');
+            const existingChart = document.getElementById('statusPieChartInner');
+            const legendEl = document.getElementById('statusPieLegend');
             if (!existingChart) return;
 
             const kpis = window.latestExecutiveKpis || {};
@@ -1064,6 +1071,7 @@
             const series = [completed, inProgress, suspended];
             const labels = ['Completed', 'In Progress', 'Suspended'];
             const colors = ['#10b981', '#f59e0b', '#f43f5e'];
+            const abbrs = ['CMP', 'INP', 'SUS'];
 
             if (window.statusPieInstance) {
                 window.statusPieInstance.destroy();
@@ -1071,38 +1079,61 @@
 
             window.statusPieInstance = new ApexCharts(existingChart, {
                 chart: {
-                    type: 'donut',
+                    type: 'pie',
                     height: '100%',
                     animations: { enabled: true, easing: 'easeinout', speed: 500 }
                 },
                 series: series,
                 labels: labels,
                 colors: colors,
-                legend: { position: 'bottom', fontSize: '10px', fontWeight: 700, labels: { colors: '#475569' } },
+                legend: { show: false },
                 plotOptions: {
                     pie: {
-                        donut: {
-                            size: '65%',
-                            labels: {
-                                show: true,
-                                value: { fontSize: '14px', fontWeight: 800, color: '#0f172a' },
-                                total: {
-                                    show: true,
-                                    label: 'Total',
-                                    fontSize: '11px',
-                                    fontWeight: 700,
-                                    color: '#64748b'
-                                }
-                            }
+                        startAngle: 0,
+                        endAngle: 360,
+                        expandOnClick: false,
+                        dataLabels: {
+                            offset: -5
                         }
                     }
                 },
-                dataLabels: { enabled: true, style: { fontSize: '10px', fontWeight: 800 }, formatter: (val) => val > 0 ? Math.round(val) : '' },
-                stroke: { show: true, width: 2, colors: ['#fff'] },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function(val) {
+                        if (val < 8) return '';
+                        return Math.round(val) + '%';
+                    },
+                    style: {
+                        fontSize: '10px',
+                        fontWeight: 800,
+                        colors: ['#ffffff']
+                    },
+                    dropShadow: {
+                        enabled: false
+                    }
+                },
+                stroke: {
+                    show: true,
+                    width: 2,
+                    colors: ['#fff']
+                },
                 tooltip: { theme: 'light' }
             });
 
             window.statusPieInstance.render();
+
+            if (legendEl) {
+                legendEl.innerHTML = abbrs.map((abbr, i) => {
+                    const count = series[i] || 0;
+                    return `
+                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-slate-50 border border-slate-100">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${colors[i]};"></span>
+                            <span class="text-[8px] font-black text-slate-600 uppercase tracking-wider">${abbr}</span>
+                            <span class="text-[8px] font-black text-slate-500">${count}</span>
+                        </span>
+                    `;
+                }).join('');
+            }
         }
 
         function getScheduleBadge(status) {
@@ -1331,18 +1362,6 @@
         let activeChartFilter = null;
 
         const analyticsConfig = {
-            project_status: {
-                title: 'Project Status',
-                description: 'Current lifecycle distribution of all projects.',
-                categories: [
-                    { key: 'completed', label: 'Completed', abbr: 'CMP', color: '#10b981' },
-                    { key: 'in_progress', label: 'In Progress', abbr: 'INP', color: '#f59e0b' },
-                    { key: 'suspended', label: 'Suspended', abbr: 'SUS', color: '#f43f5e' },
-                ],
-                totalLabel: 'Total',
-                filterParam: 'lifecycle_status',
-                emptyMessage: 'No projects available for status breakdown.',
-            },
             schedule_performance: {
                 title: 'Schedule Performance',
                 description: 'Completed projects schedule performance',
@@ -1425,20 +1444,17 @@
                         <div class="flex items-center justify-between mb-1.5">
                             <div>
                                 <h4 class="text-[9px] font-black text-slate-900 uppercase tracking-widest leading-none">${config.title}</h4>
-                                <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest mt-0.5 leading-none">${config.description}</p>
                             </div>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-100 text-[8px] font-black text-slate-500 uppercase tracking-wider shadow-sm">${total} Projects</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-50 border border-slate-100 text-[8px] font-black text-slate-500 uppercase tracking-wider shadow-sm">${total} Projects</span>
                         </div>
-                        <div class="flex flex-row items-center gap-3 chart-legend-row">
-                            <div class="flex-shrink-0 flex items-center justify-center" style="width: 240px; height: 240px;">
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="flex items-center justify-center" style="width: 200px; height: 200px;">
                                 <div id="chart-${chartId}" class="w-full h-full relative" style="z-index: 1; overflow: visible !important;"></div>
                             </div>
-                            <div class="flex-1 flex flex-col min-w-0">
-                                <div id="legend-${chartId}" class="analytics-legend-wrapper flex-1"></div>
-                                <div class="mt-2 pt-1.5 border-t border-slate-100 overflow-hidden">
-                                    <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest analytics-insight">${getInsight(chartId, data, total)}</p>
-                                </div>
-                            </div>
+                            <div id="legend-${chartId}" class="analytics-legend-wrapper flex flex-row flex-wrap items-center justify-center gap-2"></div>
+                        </div>
+                        <div class="mt-2 pt-1.5 border-t border-slate-100 overflow-hidden">
+                            <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest analytics-insight">${getInsight(chartId, data, total)}</p>
                         </div>
                     </div>
                 `;
@@ -1693,7 +1709,7 @@
 
         function exportAnalyticsCSV() {
             const analytics = window.latestAnalytics || {};
-            if (!analytics.project_status || analytics.project_status.total === 0) {
+            if (!analytics.schedule_performance || analytics.schedule_performance.total === 0) {
                 alert('No analytics data to export');
                 return;
             }
@@ -2122,7 +2138,7 @@
 
         .analytics-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 380px;
+            height: 300px;
             position: relative;
             overflow: visible;
         }
@@ -2168,10 +2184,11 @@
         }
         .analytics-legend-wrapper {
             display: flex;
-            flex-direction: column;
-            gap: 2px;
-            align-items: stretch;
-            justify-content: flex-start;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
         }
         .analytics-insight {
             display: -webkit-box;
@@ -2181,30 +2198,19 @@
         }
 
         @media (max-width: 768px) {
-            .analytics-card .chart-legend-row {
-                flex-direction: column;
-                align-items: center;
+            .analytics-card {
+                height: auto;
+                min-height: 300px;
             }
-            .analytics-card .chart-legend-row > div:first-child {
-                width: 200px;
-                height: 200px;
-            }
-            .analytics-card .analytics-legend-wrapper {
-                flex-direction: row;
-                flex-wrap: wrap;
-                align-items: center;
-                justify-content: center;
-                gap: 4px;
+            .analytics-card > div:last-child > div:first-child {
+                width: 180px;
+                height: 180px;
             }
         }
         @media (max-width: 480px) {
-            .analytics-card .chart-legend-row > div:first-child {
-                width: 100% !important;
-                height: auto !important;
-                aspect-ratio: 1;
-            }
-            .analytics-card .chart-legend-row > div:first-child > div {
-                height: 100% !important;
+            .analytics-card > div:last-child > div:first-child {
+                width: 160px;
+                height: 160px;
             }
         }
 
