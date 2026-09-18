@@ -195,17 +195,17 @@
             <!-- Project Status Pie Chart -->
             <div class="dashboard-kpi-card group relative rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden bg-indigo-50/40">
                 <div class="relative z-10 p-3.5">
-                    <div class="flex items-center justify-between mb-1.5">
+                    <div class="flex items-center justify-between mb-1">
                         <div class="w-8 h-8 rounded-lg bg-white border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-sm">
                             <i data-lucide="pie-chart" class="w-4 h-4"></i>
                         </div>
                         <span class="text-[8px] font-bold text-indigo-700 uppercase tracking-wider bg-white/80 border border-indigo-100 px-1.5 py-0.5 rounded-md">Project Status</span>
                     </div>
-                    <div class="flex flex-col items-center">
+                    <div class="flex flex-col items-center justify-center -mt-0.5">
                         <div id="statusPieChart" class="w-full" style="height: 120px;">
                             <div id="statusPieChartInner" class="w-full h-full"></div>
                         </div>
-                        <div id="statusPieLegend" class="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 mt-1"></div>
+                        <div id="statusPieLegend" class="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 mt-0.5"></div>
                     </div>
                 </div>
             </div>
@@ -1490,9 +1490,6 @@
                                 <div id="chart-${chartId}" class="w-full h-full relative" style="z-index: 1; overflow: visible !important;"></div>
                             </div>
                             <div id="legend-${chartId}" class="analytics-legend-wrapper flex flex-row flex-wrap items-center justify-center gap-2"></div>
-                        </div>
-                        <div class="mt-2 pt-1.5 border-t border-slate-100 overflow-hidden">
-                            <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest analytics-insight">${getInsight(chartId, data, total)}</p>
                         </div>
                     </div>
                 `;
