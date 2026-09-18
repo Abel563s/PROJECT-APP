@@ -17,28 +17,27 @@
             .dashboard-kpi-card h3 {
                 animation: countUp 0.6s ease-out;
             }
-            .kpi-card-total { border-color: #cbd5e1; background-color: rgba(224, 242, 254, 0.4); }
-            .kpi-card-completed { border-color: #cbd5e1; background-color: rgba(167, 243, 208, 0.35); }
-            .kpi-card-in-progress { border-color: #cbd5e1; background-color: rgba(253, 230, 138, 0.35); }
-            .kpi-card-suspended { border-color: #cbd5e1; background-color: rgba(254, 205, 211, 0.35); }
-            .kpi-card-status { border-color: #cbd5e1; background-color: rgba(233, 213, 255, 0.35); }
-            .kpi-badge-total { background-color: rgba(255, 255, 255, 0.85); border-color: #cbd5e1; color: #0e7490; }
-            .kpi-badge-completed { background-color: rgba(255, 255, 255, 0.85); border-color: #cbd5e1; color: #047857; }
-            .kpi-badge-in-progress { background-color: rgba(255, 255, 255, 0.85); border-color: #cbd5e1; color: #b45309; }
-            .kpi-badge-suspended { background-color: rgba(255, 255, 255, 0.85); border-color: #cbd5e1; color: #be123c; }
-            .kpi-badge-status { background-color: rgba(255, 255, 255, 0.85); border-color: #cbd5e1; color: #6d28d9; }
-            .kpi-icon-total { background-color: #ffffff; border-color: #cbd5e1; color: #06b6d4; }
-            .kpi-icon-completed { background-color: #ffffff; border-color: #cbd5e1; color: #10b981; }
-            .kpi-icon-in-progress { background-color: #ffffff; border-color: #cbd5e1; color: #f59e0b; }
-            .kpi-icon-suspended { background-color: #ffffff; border-color: #cbd5e1; color: #f43f5e; }
-            .kpi-icon-status { background-color: #ffffff; border-color: #cbd5e1; color: #6366f1; }
-            .performance-card { border-color: #cbd5e1; }
-            .analytics-card-pie { border-color: #cbd5e1; }
-            .status-pie-legend-chip { background-color: rgba(255,255,255,0.75); border: 1px solid #cbd5e1; }
-            .analytics-legend-inactive { background-color: rgba(255,255,255,0.55); border: 1px solid #cbd5e1; }
-            .analytics-legend-active { background-color: rgba(255,255,255,0.85); border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
-            .analytics-card-hover-overlay { background: rgba(248,250,252,0.5); }
-            .kpi-progress-track { background-color: rgba(255,255,255,0.6); }
+            .kpi-card-total { border: 1px solid #cbd5e1 !important; background-color: rgba(224, 242, 254, 0.4) !important; }
+            .kpi-card-completed { border: 1px solid #cbd5e1 !important; background-color: rgba(167, 243, 208, 0.35) !important; }
+            .kpi-card-in-progress { border: 1px solid #cbd5e1 !important; background-color: rgba(253, 230, 138, 0.35) !important; }
+            .kpi-card-suspended { border: 1px solid #cbd5e1 !important; background-color: rgba(254, 205, 211, 0.35) !important; }
+            .kpi-card-status { border: 1px solid #cbd5e1 !important; background-color: rgba(233, 213, 255, 0.35) !important; }
+            .kpi-badge-total { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #0e7490 !important; }
+            .kpi-badge-completed { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #047857 !important; }
+            .kpi-badge-in-progress { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #b45309 !important; }
+            .kpi-badge-suspended { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #be123c !important; }
+            .kpi-badge-status { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #6d28d9 !important; }
+            .kpi-icon-total { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #06b6d4 !important; }
+            .kpi-icon-completed { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #10b981 !important; }
+            .kpi-icon-in-progress { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #f59e0b !important; }
+            .kpi-icon-suspended { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #f43f5e !important; }
+            .kpi-icon-status { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #6366f1 !important; }
+            .performance-card { border: 1px solid #cbd5e1 !important; }
+            .kpi-progress-track { background-color: rgba(255,255,255,0.6) !important; }
+            .status-pie-legend-chip { background-color: rgba(255,255,255,0.75) !important; border: 1px solid #cbd5e1 !important; }
+            .analytics-legend-inactive { background-color: rgba(255,255,255,0.55) !important; border: 1px solid #cbd5e1 !important; }
+            .analytics-legend-active { background-color: rgba(255,255,255,0.85) !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.06) !important; }
+            .analytics-card-hover-overlay { background: rgba(248,250,252,0.5) !important; }
         </style>
 
         <!-- Dashboard Header -->
@@ -113,10 +112,10 @@
             <div class="dashboard-kpi-card group relative rounded-2xl border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer kpi-card-total" onclick="filterByStatus('all')">
                 <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1">
-                        <div class="w-8 h-8 rounded-lg shadow-sm kpi-icon-total">
+                        <div class="w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm kpi-icon-total">
                             <i data-lucide="folder-open" class="w-4 h-4"></i>
                         </div>
-                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md kpi-badge-total">Active</span>
+                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border kpi-badge-total">Active</span>
                     </div>
                     <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Total Projects</p>
                     <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">
@@ -158,10 +157,10 @@
             <div class="dashboard-kpi-card group relative rounded-2xl border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden kpi-card-completed">
                 <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1">
-                        <div class="w-8 h-8 rounded-lg shadow-sm kpi-icon-completed">
+                        <div class="w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm kpi-icon-completed">
                             <i data-lucide="wallet" class="w-4 h-4"></i>
                         </div>
-                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md kpi-badge-completed">Revised Budget</span>
+                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border kpi-badge-completed">Revised Budget</span>
                     </div>
                     <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Completed Projects</p>
                     <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">
@@ -178,10 +177,10 @@
             <div class="dashboard-kpi-card group relative rounded-2xl border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden kpi-card-in-progress">
                 <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1">
-                        <div class="w-8 h-8 rounded-lg shadow-sm kpi-icon-in-progress">
+                        <div class="w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm kpi-icon-in-progress">
                             <i data-lucide="banknote" class="w-4 h-4"></i>
                         </div>
-                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md kpi-badge-in-progress">Revised Budget</span>
+                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border kpi-badge-in-progress">Revised Budget</span>
                     </div>
                     <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">In Progress Projects</p>
                     <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">
@@ -198,10 +197,10 @@
             <div class="dashboard-kpi-card group relative rounded-2xl border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden kpi-card-suspended">
                 <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1">
-                        <div class="w-8 h-8 rounded-lg shadow-sm kpi-icon-suspended">
+                        <div class="w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm kpi-icon-suspended">
                             <i data-lucide="hard-hat" class="w-4 h-4"></i>
                         </div>
-                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md kpi-badge-suspended">Revised Budget</span>
+                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border kpi-badge-suspended">Revised Budget</span>
                     </div>
                     <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Suspended Projects</p>
                     <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">
@@ -218,10 +217,10 @@
             <div class="dashboard-kpi-card group relative rounded-2xl border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden kpi-card-status">
                 <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1">
-                        <div class="w-8 h-8 rounded-lg shadow-sm kpi-icon-status">
+                        <div class="w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm kpi-icon-status">
                             <i data-lucide="pie-chart" class="w-4 h-4"></i>
                         </div>
-                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md kpi-badge-status">Project Status</span>
+                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border kpi-badge-status">Project Status</span>
                     </div>
                     <div class="flex flex-col items-center justify-center -mt-0.5">
                         <div id="statusPieChart" class="w-full" style="height: 120px;">
