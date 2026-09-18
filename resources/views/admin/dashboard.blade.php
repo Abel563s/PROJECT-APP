@@ -18,10 +18,15 @@
                 animation: countUp 0.6s ease-out;
             }
             .kpi-card-total { border: 1px solid #cbd5e1 !important; background-color: rgba(224, 242, 254, 0.4) !important; }
+            .kpi-card-total > div:last-child { padding: 14px !important; }
             .kpi-card-completed { border: 1px solid #cbd5e1 !important; background-color: rgba(167, 243, 208, 0.35) !important; }
+            .kpi-card-completed > div:last-child { padding: 14px !important; }
             .kpi-card-in-progress { border: 1px solid #cbd5e1 !important; background-color: rgba(253, 230, 138, 0.35) !important; }
+            .kpi-card-in-progress > div:last-child { padding: 14px !important; }
             .kpi-card-suspended { border: 1px solid #cbd5e1 !important; background-color: rgba(254, 205, 211, 0.35) !important; }
+            .kpi-card-suspended > div:last-child { padding: 14px !important; }
             .kpi-card-status { border: 1px solid #cbd5e1 !important; background-color: rgba(233, 213, 255, 0.35) !important; }
+            .kpi-card-status > div:last-child { padding: 14px !important; }
             .kpi-badge-total { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #0e7490 !important; }
             .kpi-badge-completed { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #047857 !important; }
             .kpi-badge-in-progress { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #b45309 !important; }
@@ -226,7 +231,7 @@
                         <div id="statusPieChart" class="w-full" style="height: 120px;">
                             <div id="statusPieChartInner" class="w-full h-full"></div>
                         </div>
-                        <div id="statusPieLegend" class="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 mt-0.5"></div>
+                        <div id="statusPieLegend" class="flex flex-nowrap items-center justify-center gap-1 mt-0.5"></div>
                     </div>
                 </div>
             </div>
@@ -1186,10 +1191,10 @@
                 legendEl.innerHTML = labels.map((label, i) => {
                     const count = series[i] || 0;
                     return `
-                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full status-pie-legend-chip">
-                            <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color: ${colors[i]};"></span>
-                            <span class="text-[8px] font-bold text-slate-600 uppercase tracking-wider">${label}</span>
-                            <span class="text-[8px] font-black text-slate-900">${count}</span>
+                        <span class="inline-flex items-center gap-0.5 px-1 py-0.5 rounded-full status-pie-legend-chip whitespace-nowrap">
+                            <span class="w-1 h-1 rounded-full shrink-0" style="background-color: ${colors[i]};"></span>
+                            <span class="text-[7px] font-bold text-slate-600 uppercase tracking-wider">${label}</span>
+                            <span class="text-[7px] font-black text-slate-900">${count}</span>
                         </span>
                     `;
                 }).join('');
@@ -1510,7 +1515,7 @@
                             <div class="flex items-center justify-center" style="width: 200px; height: 200px;">
                                 <div id="chart-${chartId}" class="w-full h-full relative" style="z-index: 1; overflow: visible !important;"></div>
                             </div>
-                            <div id="legend-${chartId}" class="analytics-legend-wrapper flex flex-row flex-wrap items-center justify-center gap-2"></div>
+                            <div id="legend-${chartId}" class="analytics-legend-wrapper flex flex-row flex-nowrap items-center justify-center gap-1"></div>
                         </div>
                     </div>
                 `;
@@ -1613,10 +1618,11 @@
                                 onChartSegmentClick(chartId, clickedCat.key, clickedCat.label);
                             }
                         },
-                        mouseMove: (event, chartContext, { dataPointIndex }) => {
-                            chartContext.el.style.cursor = dataPointIndex !== undefined && dataPointIndex >= 0 ? 'pointer' : 'default';
+                        mouseMove: (event, chartContext, opts) => {
+                            const dataPointIndex = opts && opts.dataPointIndex;
+                            chartContext.el.style.cursor = typeof dataPointIndex === 'number' && dataPointIndex >= 0 ? 'pointer' : 'default';
 
-                            if (dataPointIndex >= 0 && dataPointIndex < config.categories.length) {
+                            if (typeof dataPointIndex === 'number' && dataPointIndex >= 0 && dataPointIndex < config.categories.length) {
                                 const cat = config.categories[dataPointIndex];
                                 const count = data[cat.key] || 0;
                                 const percent = total > 0 ? Math.round((count / total) * 100) : 0;
@@ -1639,7 +1645,6 @@
                         },
                         mouseLeave: () => {
                             customTooltip.style.display = 'none';
-                            chartContext.el.style.cursor = 'default';
                         }
                     },
                     dropShadow: {
@@ -1715,10 +1720,10 @@
                 const isActive = activeChartFilter && activeChartFilter.chart === chartId && activeChartFilter.value === cat.key;
                 const activeClass = isActive ? 'analytics-legend-active' : 'analytics-legend-inactive';
                 return `
-                    <div class="analytics-legend-item flex items-center gap-1.5 py-0.5 cursor-pointer hover:bg-slate-50 rounded transition-all px-1.5 ${activeClass}" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
+                    <div class="analytics-legend-item flex items-center gap-1 py-0.5 cursor-pointer hover:bg-slate-50 rounded transition-all px-1 whitespace-nowrap ${activeClass}" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
                         <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background-color: ${cat.color};"></span>
-                        <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider truncate">${cat.label}</span>
-                        <span class="text-[9px] font-black text-slate-900 ml-auto">${count}</span>
+                        <span class="text-[8px] font-black text-slate-600 uppercase tracking-wider truncate">${cat.label}</span>
+                        <span class="text-[8px] font-black text-slate-900 ml-auto">${count}</span>
                     </div>
                 `;
             }).join('');
@@ -2221,6 +2226,11 @@
         #analyticsGrid .analytics-card {
             background: #FFFFFF;
         }
+        #analyticsGrid .analytics-card-pie,
+        #analyticsGrid .analytics-card-pie * {
+            border: none !important;
+            outline: none !important;
+        }
         #analyticsGrid .apexcharts-canvas,
         #analyticsGrid .apexcharts-canvas > *,
         #analyticsGrid .apexcharts-tooltip,
@@ -2229,6 +2239,21 @@
         }
         #analyticsGrid .apexcharts-tooltip {
             z-index: 50 !important;
+        }
+        .analytics-card-pie .apexcharts-svg,
+        .analytics-card-pie .apexcharts-canvas {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        #statusPieChartInner,
+        #statusPieChartInner * {
+            border: none !important;
+            outline: none !important;
+        }
+        .analytics-card-pie {
+            border: 1px solid #cbd5e1 !important;
+            box-shadow: none !important;
         }
         .analytics-legend-item {
             transition: all 0.15s ease;
@@ -2241,10 +2266,12 @@
         .analytics-legend-wrapper {
             display: flex;
             flex-direction: row;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 4px;
             align-items: center;
             justify-content: center;
+            overflow-x: auto;
+            white-space: nowrap;
         }
         .analytics-insight {
             display: -webkit-box;
