@@ -231,7 +231,7 @@
                         <div id="statusPieChart" class="w-full" style="height: 120px;">
                             <div id="statusPieChartInner" class="w-full h-full"></div>
                         </div>
-                        <div id="statusPieLegend" class="flex flex-nowrap items-center justify-center gap-1 mt-0.5"></div>
+                        <div id="statusPieLegend" class="flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5 mt-0.5"></div>
                     </div>
                 </div>
             </div>
@@ -1191,8 +1191,8 @@
                 legendEl.innerHTML = labels.map((label, i) => {
                     const count = series[i] || 0;
                     return `
-                        <span class="inline-flex items-center gap-0.5 px-1 py-0.5 rounded-full status-pie-legend-chip whitespace-nowrap">
-                            <span class="w-1 h-1 rounded-full shrink-0" style="background-color: ${colors[i]};"></span>
+                        <span class="inline-flex items-center gap-0.5 px-0.5 py-0.5 rounded-full status-pie-legend-chip whitespace-nowrap">
+                            <span class="w-0.5 h-0.5 rounded-full shrink-0" style="background-color: ${colors[i]};"></span>
                             <span class="text-[7px] font-bold text-slate-600 uppercase tracking-wider">${label}</span>
                             <span class="text-[7px] font-black text-slate-900">${count}</span>
                         </span>
@@ -1431,9 +1431,9 @@
                 title: 'Schedule Performance',
                 description: 'Completed projects schedule performance',
                 categories: [
-                    { key: 'ahead', label: 'Ahead of Schedule', abbr: 'AHD', color: '#10b981' },
-                    { key: 'on_schedule', label: 'On Schedule', abbr: 'ONS', color: '#00ADC5' },
-                    { key: 'behind', label: 'Behind Schedule', abbr: 'BHD', color: '#f43f5e' },
+                    { key: 'ahead', label: 'Ahead', abbr: 'AHD', color: '#10b981' },
+                    { key: 'on_schedule', label: 'ON', abbr: 'ONS', color: '#00ADC5' },
+                    { key: 'behind', label: 'Behind', abbr: 'BHD', color: '#f43f5e' },
                 ],
                 totalLabel: 'Completed',
                 filterParam: 'schedule_filter',
@@ -1515,7 +1515,7 @@
                             <div class="flex items-center justify-center" style="width: 200px; height: 200px;">
                                 <div id="chart-${chartId}" class="w-full h-full relative" style="z-index: 1; overflow: visible !important;"></div>
                             </div>
-                            <div id="legend-${chartId}" class="analytics-legend-wrapper flex flex-row flex-nowrap items-center justify-center gap-1"></div>
+                            <div id="legend-${chartId}" class="analytics-legend-wrapper flex flex-row flex-wrap items-center justify-center gap-1"></div>
                         </div>
                     </div>
                 `;
@@ -1720,8 +1720,8 @@
                 const isActive = activeChartFilter && activeChartFilter.chart === chartId && activeChartFilter.value === cat.key;
                 const activeClass = isActive ? 'analytics-legend-active' : 'analytics-legend-inactive';
                 return `
-                    <div class="analytics-legend-item flex items-center gap-1 py-0.5 cursor-pointer hover:bg-slate-50 rounded transition-all px-1 whitespace-nowrap ${activeClass}" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
-                        <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background-color: ${cat.color};"></span>
+                    <div class="analytics-legend-item flex items-center gap-0.5 py-0.5 cursor-pointer hover:bg-slate-50 rounded transition-all px-1 whitespace-nowrap ${activeClass}" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
+                        <span class="w-1 h-1 rounded-full flex-shrink-0" style="background-color: ${cat.color};"></span>
                         <span class="text-[8px] font-black text-slate-600 uppercase tracking-wider truncate">${cat.label}</span>
                         <span class="text-[8px] font-black text-slate-900 ml-auto">${count}</span>
                     </div>
@@ -2266,12 +2266,10 @@
         .analytics-legend-wrapper {
             display: flex;
             flex-direction: row;
-            flex-wrap: nowrap;
-            gap: 4px;
+            flex-wrap: wrap;
+            gap: 3px;
             align-items: center;
             justify-content: center;
-            overflow-x: auto;
-            white-space: nowrap;
         }
         .analytics-insight {
             display: -webkit-box;
