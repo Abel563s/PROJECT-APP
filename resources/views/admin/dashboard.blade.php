@@ -5,7 +5,7 @@
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
             .dashboard-kpi-card:hover {
-                transform: translateY(-4px);
+                transform: translateY(-2px);
             }
             .dashboard-kpi-card .progress-bar {
                 transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
@@ -88,53 +88,44 @@
         <!-- Executive KPI Summary Cards -->
         <div id="executiveKpiRow" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
             <!-- Total Projects -->
-            <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-cyan-200 transition-all duration-300 overflow-hidden cursor-pointer" onclick="filterByStatus('all')">
-                <div class="absolute inset-0 bg-gradient-to-br from-cyan-50/0 to-cyan-50/0 group-hover:from-cyan-50/50 group-hover:to-cyan-50/30 transition-all duration-300"></div>
-                <div class="relative z-10 p-2">
+            <div class="dashboard-kpi-card group relative rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer bg-cyan-50/40" onclick="filterByStatus('all')">
+                <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1.5">
-                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-[#00ADC5] flex items-center justify-center text-white shadow-md shadow-cyan-500/30">
-                            <i data-lucide="folder-open" class="w-3.5 h-3.5"></i>
+                        <div class="w-8 h-8 rounded-lg bg-white border border-cyan-100 flex items-center justify-center text-cyan-600 shadow-sm">
+                            <i data-lucide="folder-open" class="w-4 h-4"></i>
                         </div>
-                        <div class="flex items-center gap-1 bg-cyan-50 px-1.5 py-0.5 rounded-md border border-cyan-100">
-                            <i data-lucide="trending-up" class="w-2.5 h-2.5 text-cyan-600"></i>
-                            <span class="text-[8px] font-black text-cyan-700 uppercase">Active</span>
+                        <span class="text-[8px] font-bold text-cyan-700 uppercase tracking-wider bg-white/80 border border-cyan-100 px-1.5 py-0.5 rounded-md">Active</span>
+                    </div>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Total Projects</p>
+                    <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">
+                        <span class="counter" data-target="0">0</span>
+                    </p>
+                    <div class="space-y-0.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[8px] font-semibold text-slate-500">Completed</span>
+                            <div class="flex items-center gap-1">
+                                <div class="w-5 bg-white/60 rounded-full h-0.5 overflow-hidden">
+                                    <div class="bg-emerald-500 h-full rounded-full" id="completedBar" style="width: 0%"></div>
+                                </div>
+                                <span class="text-[8px] font-bold text-slate-900 w-2 text-right kpi-breakdown-count" data-key="completed">0</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-1">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total Projects</p>
-                        <p class="text-xl font-black text-slate-900 tracking-tighter leading-none">
-                            <span class="counter" data-target="0">0</span>
-                        </p>
-                    </div>
-                    <div class="pt-1.5 border-t border-slate-100">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">By Status</p>
-                        <div class="space-y-1">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[8px] font-bold text-slate-600 truncate max-w-[70px]">Completed</span>
-                                <div class="flex items-center gap-1.5">
-                                    <div class="w-8 bg-slate-50 rounded-full h-1 overflow-hidden border border-slate-100">
-                                        <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full rounded-full" id="completedBar" style="width: 0%"></div>
-                                    </div>
-                                    <span class="text-[8px] font-black text-slate-900 w-3 text-right kpi-breakdown-count" data-key="completed">0</span>
+                        <div class="flex items-center justify-between">
+                            <span class="text-[8px] font-semibold text-slate-500">In Progress</span>
+                            <div class="flex items-center gap-1">
+                                <div class="w-5 bg-white/60 rounded-full h-0.5 overflow-hidden">
+                                    <div class="bg-blue-500 h-full rounded-full" id="inProgressBar" style="width: 0%"></div>
                                 </div>
+                                <span class="text-[8px] font-bold text-slate-900 w-2 text-right kpi-breakdown-count" data-key="in_progress">0</span>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-[8px] font-bold text-slate-600 truncate max-w-[70px]">In Progress</span>
-                                <div class="flex items-center gap-1.5">
-                                    <div class="w-8 bg-slate-50 rounded-full h-1 overflow-hidden border border-slate-100">
-                                        <div class="bg-gradient-to-r from-blue-500 to-blue-400 h-full rounded-full" id="inProgressBar" style="width: 0%"></div>
-                                    </div>
-                                    <span class="text-[8px] font-black text-slate-900 w-3 text-right kpi-breakdown-count" data-key="in_progress">0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-[8px] font-semibold text-slate-500">Suspended</span>
+                            <div class="flex items-center gap-1">
+                                <div class="w-5 bg-white/60 rounded-full h-0.5 overflow-hidden">
+                                    <div class="bg-amber-500 h-full rounded-full" id="suspendedBar" style="width: 0%"></div>
                                 </div>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-[8px] font-bold text-slate-600 truncate max-w-[70px]">Suspended</span>
-                                <div class="flex items-center gap-1.5">
-                                    <div class="w-8 bg-slate-50 rounded-full h-1 overflow-hidden border border-slate-100">
-                                        <div class="bg-gradient-to-r from-amber-500 to-amber-400 h-full rounded-full" id="suspendedBar" style="width: 0%"></div>
-                                    </div>
-                                    <span class="text-[8px] font-black text-slate-900 w-3 text-right kpi-breakdown-count" data-key="suspended">0</span>
-                                </div>
+                                <span class="text-[8px] font-bold text-slate-900 w-2 text-right kpi-breakdown-count" data-key="suspended">0</span>
                             </div>
                         </div>
                     </div>
@@ -142,99 +133,80 @@
             </div>
 
             <!-- Completed Projects -->
-            <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-emerald-200 transition-all duration-300 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/0 to-cyan-50/0 group-hover:from-emerald-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
-                <div class="relative z-10 p-2">
+            <div class="dashboard-kpi-card group relative rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden bg-emerald-50/40">
+                <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1.5">
-                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-[#00ADC5] flex items-center justify-center text-white shadow-md shadow-emerald-500/30">
-                            <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                        <div class="w-8 h-8 rounded-lg bg-white border border-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm">
+                            <i data-lucide="wallet" class="w-4 h-4"></i>
                         </div>
-                        <div class="flex items-center gap-1 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100">
-                            <span class="text-[8px] font-black text-emerald-700 uppercase">Revised Budget</span>
-                        </div>
+                        <span class="text-[8px] font-bold text-emerald-700 uppercase tracking-wider bg-white/80 border border-emerald-100 px-1.5 py-0.5 rounded-md">Revised Budget</span>
                     </div>
-                    <div class="mb-1">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Completed Projects</p>
-                        <p class="text-xl font-black text-slate-900 tracking-tighter leading-none">
-                            <span class="text-[8px] font-black text-slate-400 mr-0.5">ETB</span>
-                            <span class="counter-currency" data-target="0">0</span>
-                        </p>
-                    </div>
-                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                        <span class="kpi-count-label">0</span> Projects
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Completed Projects</p>
+                    <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">
+                        <span class="text-[10px] font-bold text-slate-400 mr-0.5">ETB</span>
+                        <span class="counter-currency" data-target="0">0</span>
+                    </p>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span class="kpi-count-label">0</span> <span class="text-slate-500 normal-case tracking-normal">Projects</span>
                     </p>
                 </div>
             </div>
 
             <!-- In Progress Projects -->
-            <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-amber-200 transition-all duration-300 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-amber-50/0 to-cyan-50/0 group-hover:from-amber-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
-                <div class="relative z-10 p-2">
+            <div class="dashboard-kpi-card group relative rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden bg-amber-50/40">
+                <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1.5">
-                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-amber-500/30">
-                            <i data-lucide="banknote" class="w-3.5 h-3.5"></i>
+                        <div class="w-8 h-8 rounded-lg bg-white border border-amber-100 flex items-center justify-center text-amber-600 shadow-sm">
+                            <i data-lucide="banknote" class="w-4 h-4"></i>
                         </div>
-                        <div class="flex items-center gap-1 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-100">
-                            <span class="text-[8px] font-black text-amber-700 uppercase">Revised Budget</span>
-                        </div>
+                        <span class="text-[8px] font-bold text-amber-700 uppercase tracking-wider bg-white/80 border border-amber-100 px-1.5 py-0.5 rounded-md">Revised Budget</span>
                     </div>
-                    <div class="mb-1">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">In Progress Projects</p>
-                        <p class="text-xl font-black text-slate-900 tracking-tighter leading-none">
-                            <span class="text-[8px] font-black text-slate-400 mr-0.5">ETB</span>
-                            <span class="counter-currency" data-target="0">0</span>
-                        </p>
-                    </div>
-                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                        <span class="kpi-count-label">0</span> Active
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">In Progress Projects</p>
+                    <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">
+                        <span class="text-[10px] font-bold text-slate-400 mr-0.5">ETB</span>
+                        <span class="counter-currency" data-target="0">0</span>
+                    </p>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span class="kpi-count-label">0</span> <span class="text-slate-500 normal-case tracking-normal">Active</span>
                     </p>
                 </div>
             </div>
 
             <!-- Suspended Projects -->
-            <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-rose-200 transition-all duration-300 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-rose-50/0 to-cyan-50/0 group-hover:from-rose-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
-                <div class="relative z-10 p-2">
+            <div class="dashboard-kpi-card group relative rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden bg-rose-50/40">
+                <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1.5">
-                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-rose-500/30">
-                            <i data-lucide="hard-hat" class="w-3.5 h-3.5"></i>
+                        <div class="w-8 h-8 rounded-lg bg-white border border-rose-100 flex items-center justify-center text-rose-600 shadow-sm">
+                            <i data-lucide="hard-hat" class="w-4 h-4"></i>
                         </div>
-                        <div class="flex items-center gap-1 bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-100">
-                            <span class="text-[8px] font-black text-rose-700 uppercase">Revised Budget</span>
-                        </div>
+                        <span class="text-[8px] font-bold text-rose-700 uppercase tracking-wider bg-white/80 border border-rose-100 px-1.5 py-0.5 rounded-md">Revised Budget</span>
                     </div>
-                    <div class="mb-1">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Suspended Projects</p>
-                        <p class="text-xl font-black text-slate-900 tracking-tighter leading-none">
-                            <span class="text-[8px] font-black text-slate-400 mr-0.5">ETB</span>
-                            <span class="counter-currency" data-target="0">0</span>
-                        </p>
-                    </div>
-                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                        <span class="kpi-count-label">0</span> Projects
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Suspended Projects</p>
+                    <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">
+                        <span class="text-[10px] font-bold text-slate-400 mr-0.5">ETB</span>
+                        <span class="counter-currency" data-target="0">0</span>
+                    </p>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span class="kpi-count-label">0</span> <span class="text-slate-500 normal-case tracking-normal">Projects</span>
                     </p>
                 </div>
             </div>
 
             <!-- Project Status Pie Chart -->
-            <div class="dashboard-kpi-card group relative bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all duration-300 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/0 to-cyan-50/0 group-hover:from-indigo-50/40 group-hover:to-cyan-50/40 transition-all duration-300"></div>
-                <div class="relative z-10 p-2">
-                    <div class="flex items-center justify-between mb-1">
-                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
-                            <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+            <div class="dashboard-kpi-card group relative rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden bg-indigo-50/40">
+                <div class="relative z-10 p-3.5">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="w-8 h-8 rounded-lg bg-white border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-sm">
+                            <i data-lucide="pie-chart" class="w-4 h-4"></i>
                         </div>
-                        <div class="flex items-center gap-1 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-100">
-                            <span class="text-[8px] font-black text-indigo-700 uppercase">Project Status</span>
-                        </div>
+                        <span class="text-[8px] font-bold text-indigo-700 uppercase tracking-wider bg-white/80 border border-indigo-100 px-1.5 py-0.5 rounded-md">Project Status</span>
                     </div>
-                        <div id="statusPieChart" class="w-full relative" style="height: 200px; perspective: 600px;">
-                            <div class="absolute inset-0 bg-gradient-to-b from-slate-100/40 to-transparent rounded-full blur-sm transform translate-y-1/2 scale-95"></div>
-                            <div class="relative z-10 transform rotateX(15deg)" style="transform-style: preserve-3d;">
-                                <div id="statusPieChartInner" class="w-full h-full"></div>
-                            </div>
+                    <div class="flex flex-col items-center">
+                        <div id="statusPieChart" class="w-full" style="height: 120px;">
+                            <div id="statusPieChartInner" class="w-full h-full"></div>
                         </div>
-                        <div id="statusPieLegend" class="flex flex-row items-center justify-center gap-2 mt-1.5"></div>
+                        <div id="statusPieLegend" class="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 mt-1"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -244,7 +216,7 @@
             </div>
 
         <!-- Performance Summary -->
-        <div class="bg-gradient-to-b from-white to-slate-50 rounded-2xl shadow-lg border border-slate-200/60 overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h3 class="text-sm font-black text-slate-900 tracking-tight">Performance Summary</h3>
@@ -252,11 +224,11 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div id="chartLegend" class="hidden sm:flex items-center gap-4 mr-4"></div>
-                    <button onclick="refreshChart()" class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
+                    <button onclick="refreshChart()" class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
                         <i data-lucide="refresh-cw" class="w-3 h-3"></i>
                         Refresh
                     </button>
-                    <button onclick="toggleFullscreen()" class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
+                    <button onclick="toggleFullscreen()" class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
                         <i data-lucide="maximize" class="w-3 h-3"></i>
                         Fullscreen
                     </button>
@@ -264,7 +236,7 @@
             </div>
 
             <!-- Mini KPI Row -->
-            <div id="miniKpiRow" class="px-5 py-3 bg-white/60 border-b border-slate-100">
+            <div id="miniKpiRow" class="px-5 py-3 bg-white border-b border-slate-100">
                 <div class="flex flex-wrap items-center gap-4">
                     <div class="flex items-center gap-2">
                         <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Projects</span>
@@ -286,6 +258,22 @@
                         <span id="kpiLowest" class="text-xs font-black text-rose-600">0%</span>
                     </div>
                     <div class="w-px h-4 bg-slate-200"></div>
+                    <div class="flex items-center gap-1.5">
+                        <select id="sectionFilterCategory" onchange="updateSectionFilterValues()" class="appearance-none bg-white border border-slate-200 rounded-lg pl-2 pr-7 py-1.5 text-[8px] font-black text-slate-600 uppercase tracking-wider cursor-pointer hover:border-slate-300 transition-all focus:ring-2 focus:ring-slate-100 focus:border-slate-300">
+                            <option value="">Filter By</option>
+                            <option value="status">Project Status</option>
+                            <option value="consultancy_sector">Consultancy Sector</option>
+                            <option value="delivery_method">Delivery Method</option>
+                            <option value="schedule_status">Schedule Status</option>
+                            <option value="project_type">Project Sector</option>
+                            <option value="budget_performance">Budget Performance</option>
+                            <option value="cost_performance">Cost Performance</option>
+                        </select>
+                        <select id="sectionFilterValue" onchange="applySectionFilter()" disabled class="appearance-none bg-white border border-slate-200 rounded-lg pl-2 pr-7 py-1.5 text-[8px] font-black text-slate-600 uppercase tracking-wider cursor-pointer hover:border-slate-300 transition-all focus:ring-2 focus:ring-slate-100 focus:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                    <div class="w-px h-4 bg-slate-200"></div>
                     <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl inline-flex">
                         <button onclick="switchStatusTab('in progress')" id="status-tab-in-progress" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-900">In Progress</button>
                         <button onclick="switchStatusTab('completed')" id="status-tab-completed" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-900 shadow-sm">Completed</button>
@@ -303,7 +291,7 @@
             </div>
 
             <!-- Chart -->
-            <div id="chartContainer" class="px-5 py-4 w-full bg-gradient-to-b from-white to-slate-50/50">
+            <div id="chartContainer" class="px-5 py-4 w-full">
                 <div id="chart" class="h-full w-full"></div>
             </div>
         </div>
@@ -349,6 +337,7 @@
         window.latestAnalytics = {};
         window.latestExecutiveKpis = {};
         window.latestComparativeAnalytics = {};
+        let sectionFilter = { category: null, value: null };
 
         const tabTitles = {
             schedule: 'Project Schedule Performance',
@@ -517,6 +506,57 @@
             applyFilters();
         }
 
+        function updateSectionFilterValues() {
+            const categorySelect = document.getElementById('sectionFilterCategory');
+            const valueSelect = document.getElementById('sectionFilterValue');
+            if (!categorySelect || !valueSelect) return;
+
+            const category = categorySelect.value;
+            valueSelect.innerHTML = '<option value="">All</option>';
+
+            if (!category) {
+                valueSelect.disabled = true;
+                sectionFilter = { category: null, value: null };
+                renderChart();
+                return;
+            }
+
+            const values = new Set();
+            (filteredProjects || []).forEach(p => {
+                const val = p[category];
+                if (val !== null && val !== undefined && val !== '') {
+                    values.add(String(val));
+                }
+            });
+
+            Array.from(values).sort().forEach(val => {
+                const option = document.createElement('option');
+                option.value = val;
+                option.textContent = val;
+                valueSelect.appendChild(option);
+            });
+
+            valueSelect.disabled = false;
+            sectionFilter = { category, value: null };
+            renderChart();
+        }
+
+        function applySectionFilter() {
+            const categorySelect = document.getElementById('sectionFilterCategory');
+            const valueSelect = document.getElementById('sectionFilterValue');
+            if (!categorySelect || !valueSelect) return;
+
+            const category = categorySelect.value;
+            const value = valueSelect.value;
+            sectionFilter = { category, value };
+            renderChart();
+        }
+
+        function getSectionFilteredProjects(projects) {
+            if (!sectionFilter.category || !sectionFilter.value) return projects;
+            return projects.filter(p => String(p[sectionFilter.category]) === sectionFilter.value);
+        }
+
         function renderExecutiveKpis() {
             const kpis = window.latestExecutiveKpis || {};
             const totalProjects = kpis.total_projects?.total ?? 0;
@@ -679,7 +719,7 @@
         }
 
         function renderMiniKpis() {
-            const projects = getStatusFilteredProjects();
+            const projects = getSectionFilteredProjects(getStatusFilteredProjects());
             const values = projects.map(p => {
                 if (currentTab === 'schedule') return p.schedule_performance_percent;
                 if (currentTab === 'budget') return p.budget_index_percent;
@@ -716,7 +756,7 @@
                     <span class="text-[9px] font-black text-slate-600 uppercase tracking-widest">${aheadLabel}</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-sm bg-slate-400"></span>
+                    <span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span>
                     <span class="text-[9px] font-black text-slate-600 uppercase tracking-widest">${onLabel}</span>
                 </div>
                 <div class="flex items-center gap-1.5">
@@ -733,7 +773,7 @@
         }
 
         function getChartData() {
-            const projects = getStatusFilteredProjects();
+            const projects = getSectionFilteredProjects(getStatusFilteredProjects());
             const sorted = [...projects].sort((a, b) => {
                 const statusOrder = { 'Ahead of Schedule': 1, 'On Schedule': 2, 'Behind Schedule': 3, 'Not Started': 4 };
                 const statusA = statusOrder[a.schedule_status] ?? 5;
@@ -796,10 +836,11 @@
                 return;
             }
 
-            const chartHeight = Math.max(520, categories.length * 20);
+            const chartHeight = 420;
             const chartContainer = document.getElementById('chartContainer');
             if (chartContainer) {
                 chartContainer.style.height = `${chartHeight}px`;
+                chartContainer.style.overflow = 'hidden';
             }
 
             const columnWidth = categories.length <= 5 ? '60%' : categories.length <= 15 ? '40%' : categories.length <= 30 ? '25%' : '15%';
@@ -887,9 +928,9 @@
                     axisTicks: { show: false },
                 },
                 yaxis: {
-                    min: Math.min(minVal, 0) - Math.max(range * 0.15, 2),
-                    max: Math.max(maxVal, 0) + Math.max(range * 0.15, 2),
-                    tickAmount: range > 60 ? 7 : range > 30 ? 5 : 3,
+                    min: Math.floor(Math.min(minVal, 0) - Math.max(range * 0.15, 2)),
+                    max: Math.ceil(Math.max(maxVal, 0) + Math.max(range * 0.15, 2)),
+                    tickAmount: Math.min(8, Math.max(3, Math.round(range / 10) + 1)),
                     labels: {
                         style: { fontSize: '10px', fontWeight: 800, colors: '#00ADC5' },
                         formatter: (val) => `${Math.round(val)}%`
@@ -1070,7 +1111,6 @@
             const series = [completed, inProgress, suspended];
             const labels = ['Completed', 'In Progress', 'Suspended'];
             const colors = ['#10b981', '#f59e0b', '#f43f5e'];
-            const abbrs = ['CMP', 'INP', 'SUS'];
 
             if (window.statusPieInstance) {
                 window.statusPieInstance.destroy();
@@ -1092,18 +1132,18 @@
                         endAngle: 360,
                         expandOnClick: false,
                         dataLabels: {
-                            offset: -5
+                            offset: -4
                         }
                     }
                 },
                 dataLabels: {
                     enabled: true,
                     formatter: function(val) {
-                        if (val < 8) return '';
+                        if (val < 10) return '';
                         return Math.round(val) + '%';
                     },
                     style: {
-                        fontSize: '10px',
+                        fontSize: '9px',
                         fontWeight: 800,
                         colors: ['#ffffff']
                     },
@@ -1122,13 +1162,13 @@
             window.statusPieInstance.render();
 
             if (legendEl) {
-                legendEl.innerHTML = abbrs.map((abbr, i) => {
+                legendEl.innerHTML = labels.map((label, i) => {
                     const count = series[i] || 0;
                     return `
-                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-slate-50 border border-slate-100">
-                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${colors[i]};"></span>
-                            <span class="text-[8px] font-black text-slate-600 uppercase tracking-wider">${abbr}</span>
-                            <span class="text-[8px] font-black text-slate-500">${count}</span>
+                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-white/70 border border-slate-200/70">
+                            <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color: ${colors[i]};"></span>
+                            <span class="text-[8px] font-bold text-slate-600 uppercase tracking-wider">${label}</span>
+                            <span class="text-[8px] font-black text-slate-900">${count}</span>
                         </span>
                     `;
                 }).join('');
@@ -1400,9 +1440,9 @@
                 title: 'Consultancy Sector',
                 description: 'Completed projects by consultancy sector',
                 categories: [
-                    { key: 'private', label: 'Private Consultancy', abbr: 'PRV', color: '#10b981' },
-                    { key: 'client_engineering', label: 'Client Engineering Team', abbr: 'CET', color: '#6366f1' },
-                    { key: 'government', label: 'Government Consultancy', abbr: 'GOV', color: '#f59e0b' },
+                    { key: 'private', label: 'Private', abbr: 'PRV', color: '#10b981' },
+                    { key: 'client_engineering', label: 'Client Engineering', abbr: 'CET', color: '#6366f1' },
+                    { key: 'government', label: 'Government', abbr: 'GOV', color: '#f59e0b' },
                 ],
                 totalLabel: 'Completed',
                 filterParam: 'sector',
@@ -1412,9 +1452,9 @@
                 title: 'Cost Performance',
                 description: 'Completed projects cost health against allowable limits.',
                 categories: [
-                    { key: 'below', label: 'Below Allowable Cost', abbr: 'BLW', color: '#10b981' },
-                    { key: 'with_allowable', label: 'Within Allowable Cost', abbr: 'WTH', color: '#00ADC5' },
-                    { key: 'above', label: 'Above Allowable Cost', abbr: 'ABV', color: '#f43f5e' },
+                    { key: 'below', label: 'Below', abbr: 'BLW', color: '#10b981' },
+                    { key: 'with_allowable', label: 'Within', abbr: 'WTH', color: '#00ADC5' },
+                    { key: 'above', label: 'Above', abbr: 'ABV', color: '#f43f5e' },
                 ],
                 totalLabel: 'Below/With/Above',
                 filterParam: 'cost_filter',
@@ -1444,7 +1484,6 @@
                             <div>
                                 <h4 class="text-[9px] font-black text-slate-900 uppercase tracking-widest leading-none">${config.title}</h4>
                             </div>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-50 border border-slate-100 text-[8px] font-black text-slate-500 uppercase tracking-wider shadow-sm">${total} Projects</span>
                         </div>
                         <div class="flex flex-col items-center gap-2">
                             <div class="flex items-center justify-center" style="width: 200px; height: 200px;">
@@ -1656,13 +1695,12 @@
             legendEl.innerHTML = config.categories.map(cat => {
                 const count = data[cat.key] || 0;
                 const isActive = activeChartFilter && activeChartFilter.chart === chartId && activeChartFilter.value === cat.key;
-                const mutedClass = count === 0 ? 'text-slate-300' : '';
-                const activeClass = isActive ? 'bg-white/80 border border-slate-200 shadow-sm' : 'border border-transparent';
+                const activeClass = isActive ? 'bg-white/80 border border-slate-200 shadow-sm' : 'bg-white/50 border border-slate-200/60';
                 return `
-                    <div class="analytics-legend-item flex items-center gap-1.5 py-0.5 cursor-pointer hover:bg-slate-50 rounded transition-all px-1 ${mutedClass} ${activeClass}" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
-                        <span class="w-1.5 h-1.5 rounded-sm flex-shrink-0" style="background-color: ${cat.color};"></span>
-                        <span class="text-[9px] font-black uppercase tracking-wider truncate">${cat.abbr || cat.label}</span>
-                        <span class="text-[9px] font-black text-slate-500 ml-auto">${count}</span>
+                    <div class="analytics-legend-item flex items-center gap-1.5 py-0.5 cursor-pointer hover:bg-slate-50 rounded transition-all px-1.5 ${activeClass}" onclick="onChartSegmentClick('${chartId}', '${cat.key}', '${cat.label}')">
+                        <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background-color: ${cat.color};"></span>
+                        <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider truncate">${cat.label}</span>
+                        <span class="text-[9px] font-black text-slate-900 ml-auto">${count}</span>
                     </div>
                 `;
             }).join('');
@@ -2177,6 +2215,7 @@
         .analytics-legend-item {
             transition: all 0.15s ease;
             line-height: 1;
+            border: 1px solid transparent;
         }
         .analytics-legend-item:hover {
             background: #f8fafc;
@@ -2213,6 +2252,10 @@
             }
         }
 
+        #chartContainer {
+            height: 420px;
+            overflow: hidden;
+        }
         #chartContainer .apexcharts-bar-area {
             filter: drop-shadow(0 3px 4px rgba(0,0,0,0.12));
             transition: filter 0.2s ease;
