@@ -25,21 +25,26 @@
             .kpi-card-in-progress > div:last-child { padding: 14px !important; }
             .kpi-card-suspended { border: 1px solid #cbd5e1 !important; background-color: rgba(254, 205, 211, 0.35) !important; }
             .kpi-card-suspended > div:last-child { padding: 14px !important; }
-            .kpi-card-status { border: 1px solid #cbd5e1 !important; background-color: rgba(233, 213, 255, 0.35) !important; }
-            .kpi-card-status > div:last-child { padding: 14px !important; }
             .kpi-badge-total { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #0e7490 !important; }
             .kpi-badge-completed { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #047857 !important; }
             .kpi-badge-in-progress { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #b45309 !important; }
             .kpi-badge-suspended { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #be123c !important; }
-            .kpi-badge-status { background-color: rgba(255, 255, 255, 0.85) !important; border: 1px solid #cbd5e1 !important; color: #6d28d9 !important; }
             .kpi-icon-total { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #06b6d4 !important; }
             .kpi-icon-completed { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #10b981 !important; }
             .kpi-icon-in-progress { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #f59e0b !important; }
             .kpi-icon-suspended { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #f43f5e !important; }
-            .kpi-icon-status { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #6366f1 !important; }
             .performance-card { border: 1px solid #cbd5e1 !important; }
             .kpi-progress-track { background-color: rgba(255,255,255,0.6) !important; }
-            .status-pie-legend-chip { background-color: rgba(255,255,255,0.75) !important; border: 1px solid #cbd5e1 !important; }
+            .kpi-insight-text { color: #64748b !important; margin-top: 4px !important; }
+            #executiveKpiRow .dashboard-kpi-card {
+                display: flex;
+                flex-direction: column;
+            }
+            #executiveKpiRow .dashboard-kpi-card > div:last-child {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
             .analytics-legend-inactive { background-color: rgba(255,255,255,0.55) !important; border: 1px solid #cbd5e1 !important; }
             .analytics-legend-active { background-color: rgba(255,255,255,0.85) !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.06) !important; }
             .analytics-card-hover-overlay { background: rgba(248,250,252,0.5) !important; }
@@ -112,7 +117,7 @@
         </div>
 
         <!-- Executive KPI Summary Cards -->
-        <div id="executiveKpiRow" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
+        <div id="executiveKpiRow" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
             <!-- Total Projects -->
             <div class="dashboard-kpi-card group relative rounded-2xl border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer kpi-card-total" onclick="filterByStatus('all')">
                 <div class="relative z-10 p-3.5">
@@ -123,36 +128,29 @@
                         <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border kpi-badge-total">Active</span>
                     </div>
                     <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Total Projects</p>
-                    <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">
-                        <span class="counter" data-target="0">0</span>
-                    </p>
-                    <div class="space-y-0.5">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[8px] font-semibold text-slate-500">Completed</span>
-                            <div class="flex items-center gap-1">
-                                <div class="w-5 kpi-progress-track rounded-full h-0.5 overflow-hidden">
-                                    <div class="bg-emerald-500 h-full rounded-full" id="completedBar" style="width: 0%"></div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">
+                                <span class="counter" data-target="0">0</span>
+                            </p>
+                            <div class="space-y-0.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[8px] font-semibold text-slate-500">Completed</span>
+                                    <span class="text-[8px] font-black text-slate-900 kpi-breakdown-count" data-key="completed">0</span>
                                 </div>
-                                <span class="text-[8px] font-bold text-slate-900 w-2 text-right kpi-breakdown-count" data-key="completed">0</span>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[8px] font-semibold text-slate-500">In Progress</span>
+                                    <span class="text-[8px] font-black text-slate-900 kpi-breakdown-count" data-key="in_progress">0</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[8px] font-semibold text-slate-500">Suspended</span>
+                                    <span class="text-[8px] font-black text-slate-900 kpi-breakdown-count" data-key="suspended">0</span>
+                                </div>
                             </div>
+                            <p class="text-[7px] font-bold text-slate-400 mt-1 kpi-insight-text truncate"></p>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-[8px] font-semibold text-slate-500">In Progress</span>
-                            <div class="flex items-center gap-1">
-                                <div class="w-5 kpi-progress-track rounded-full h-0.5 overflow-hidden">
-                                    <div class="bg-blue-500 h-full rounded-full" id="inProgressBar" style="width: 0%"></div>
-                                </div>
-                                <span class="text-[8px] font-bold text-slate-900 w-2 text-right kpi-breakdown-count" data-key="in_progress">0</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-[8px] font-semibold text-slate-500">Suspended</span>
-                            <div class="flex items-center gap-1">
-                                <div class="w-5 kpi-progress-track rounded-full h-0.5 overflow-hidden">
-                                    <div class="bg-amber-500 h-full rounded-full" id="suspendedBar" style="width: 0%"></div>
-                                </div>
-                                <span class="text-[8px] font-bold text-slate-900 w-2 text-right kpi-breakdown-count" data-key="suspended">0</span>
-                            </div>
+                        <div class="shrink-0" style="width: 110px; height: 110px;">
+                            <div id="statusPieChartInner" class="w-full h-full"></div>
                         </div>
                     </div>
                 </div>
@@ -172,9 +170,10 @@
                         <span class="text-[10px] font-bold text-slate-400 mr-0.5">ETB</span>
                         <span class="counter-currency" data-target="0">0</span>
                     </p>
-                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">
                         <span class="kpi-count-label">0</span> <span class="text-slate-500 normal-case tracking-normal">Projects</span>
                     </p>
+                    <p class="text-[7px] font-bold text-slate-400 kpi-insight-text"></p>
                 </div>
             </div>
 
@@ -192,9 +191,10 @@
                         <span class="text-[10px] font-bold text-slate-400 mr-0.5">ETB</span>
                         <span class="counter-currency" data-target="0">0</span>
                     </p>
-                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">
                         <span class="kpi-count-label">0</span> <span class="text-slate-500 normal-case tracking-normal">Active</span>
                     </p>
+                    <p class="text-[7px] font-bold text-slate-400 kpi-insight-text"></p>
                 </div>
             </div>
 
@@ -212,27 +212,10 @@
                         <span class="text-[10px] font-bold text-slate-400 mr-0.5">ETB</span>
                         <span class="counter-currency" data-target="0">0</span>
                     </p>
-                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">
                         <span class="kpi-count-label">0</span> <span class="text-slate-500 normal-case tracking-normal">Projects</span>
                     </p>
-                </div>
-            </div>
-
-            <!-- Project Status Pie Chart -->
-            <div class="dashboard-kpi-card group relative rounded-2xl border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden kpi-card-status">
-                <div class="relative z-10 p-3.5">
-                    <div class="flex items-center justify-between mb-1">
-                        <div class="w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm kpi-icon-status">
-                            <i data-lucide="pie-chart" class="w-4 h-4"></i>
-                        </div>
-                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border kpi-badge-status">Project Status</span>
-                    </div>
-                    <div class="flex flex-col items-center justify-center -mt-0.5">
-                        <div id="statusPieChart" class="w-full" style="height: 120px;">
-                            <div id="statusPieChartInner" class="w-full h-full"></div>
-                        </div>
-                        <div id="statusPieLegend" class="flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5 mt-0.5"></div>
-                    </div>
+                    <p class="text-[7px] font-bold text-slate-400 kpi-insight-text"></p>
                 </div>
             </div>
         </div>
@@ -283,10 +266,16 @@
                         <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Lowest</span>
                         <span id="kpiLowest" class="text-xs font-black text-rose-600">0%</span>
                     </div>
-                    <div class="w-px h-4 bg-slate-200"></div>
-                    <div class="flex items-center gap-1.5">
-                        <select id="sectionFilterCategory" onchange="updateSectionFilterValues()" class="appearance-none bg-white border border-slate-200 rounded-lg pl-2 pr-7 py-1.5 text-[8px] font-black text-slate-600 uppercase tracking-wider cursor-pointer hover:border-slate-300 transition-all focus:ring-2 focus:ring-slate-100 focus:border-slate-300">
-                            <option value="">Filter By</option>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="px-5 py-3 bg-white border-b border-slate-100">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Filter By</span>
+                        <select id="sectionFilterCategory" onchange="updateSectionFilterValues()" class="appearance-none bg-white border border-slate-200 rounded-lg pl-2 pr-7 py-1.5 text-[8px] font-black text-slate-600 uppercase tracking-wider cursor-pointer hover:border-slate-300 transition-all focus:ring-2 focus:ring-slate-100 focus:border-slate-300 shadow-sm">
+                            <option value="">All Categories</option>
                             <option value="status">Project Status</option>
                             <option value="consultancy_sector">Consultancy Sector</option>
                             <option value="delivery_method">Delivery Method</option>
@@ -295,14 +284,12 @@
                             <option value="budget_performance">Budget Performance</option>
                             <option value="cost_performance">Cost Performance</option>
                         </select>
-                        <select id="sectionFilterValue" onchange="applySectionFilter()" disabled class="appearance-none bg-white border border-slate-200 rounded-lg pl-2 pr-7 py-1.5 text-[8px] font-black text-slate-600 uppercase tracking-wider cursor-pointer hover:border-slate-300 transition-all focus:ring-2 focus:ring-slate-100 focus:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Value</span>
+                        <select id="sectionFilterValue" onchange="applySectionFilter()" disabled class="appearance-none bg-white border border-slate-200 rounded-lg pl-2 pr-7 py-1.5 text-[8px] font-black text-slate-600 uppercase tracking-wider cursor-pointer hover:border-slate-300 transition-all focus:ring-2 focus:ring-slate-100 focus:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm">
                             <option value="">All</option>
                         </select>
-                    </div>
-                    <div class="w-px h-4 bg-slate-200"></div>
-                    <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl inline-flex">
-                        <button onclick="switchStatusTab('in progress')" id="status-tab-in-progress" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-900">In Progress</button>
-                        <button onclick="switchStatusTab('completed')" id="status-tab-completed" class="status-tab-btn px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all bg-white text-slate-900 shadow-sm">Completed</button>
                     </div>
                 </div>
             </div>
@@ -322,9 +309,53 @@
             </div>
         </div>
 
-        <!-- Comparative Performance Analytics -->
-        <div id="comparativeGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Charts injected by JS -->
+        <!-- Project Performance Matrix -->
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 overflow-hidden">
+            <div class="p-5 border-b border-slate-100">
+                <h3 class="text-sm font-black text-slate-900 tracking-tight">Project Performance Matrix</h3>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Grouped performance breakdowns by dimension</p>
+            </div>
+            <div class="p-5 space-y-4">
+                <!-- Schedule Performance -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="p-4 border-b border-slate-50 text-center">
+                        <h4 class="text-xs font-black text-slate-900 uppercase tracking-widest">Schedule Performance</h4>
+                    </div>
+                    <div class="p-4">
+                        <div id="matrixScheduleRow" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+                    </div>
+                </div>
+
+                <!-- Contract Budget Performance -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="p-4 border-b border-slate-50 text-center">
+                        <h4 class="text-xs font-black text-slate-900 uppercase tracking-widest">Contract Budget Performance</h4>
+                    </div>
+                    <div class="p-4">
+                        <div id="matrixBudgetRow" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+                    </div>
+                </div>
+
+                <!-- Cost Performance -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="p-4 border-b border-slate-50 text-center">
+                        <h4 class="text-xs font-black text-slate-900 uppercase tracking-widest">Cost Performance</h4>
+                    </div>
+                    <div class="p-4">
+                        <div id="matrixCostRow" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+                    </div>
+                </div>
+
+                <!-- Closing Status -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div class="p-4 border-b border-slate-50 text-center">
+                        <h4 class="text-xs font-black text-slate-900 uppercase tracking-widest">Closing Status</h4>
+                    </div>
+                    <div class="p-4">
+                        <div id="matrixClosingChart" class="w-full" style="height: 220px;"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Drill Down Drawer -->
@@ -351,7 +382,6 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         let currentTab = 'schedule';
-        let currentStatusTab = 'completed';
         let allProjects = [];
         let filteredProjects = [];
         let currentPage = 1;
@@ -369,11 +399,6 @@
             schedule: 'Project Schedule Performance',
             budget: 'Project Budget Performance',
             cost: 'Project Cost Performance'
-        };
-
-        const statusTabTitles = {
-            'in progress': 'In Progress',
-            completed: 'Completed'
         };
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -486,8 +511,8 @@
                     renderLegend();
                     renderChart();
                     renderAnalyticsGrid();
-                    renderComparativeAnalytics();
                     renderStatusPieChart();
+                    renderProjectPerformanceMatrix();
                     updateSubtitle();
                 })
                 .catch(err => {
@@ -633,6 +658,32 @@
 
             const suspendedCountEl = document.querySelector('#executiveKpiRow .dashboard-kpi-card:nth-child(4) .kpi-count-label');
             if (suspendedCountEl) suspendedCountEl.textContent = suspendedCount;
+
+            const totalInsight = document.querySelector('#executiveKpiRow .dashboard-kpi-card:first-child .kpi-insight-text');
+            if (totalInsight) {
+                const parts = [];
+                if (completed > 0) parts.push(`${completed} completed`);
+                if (inProgress > 0) parts.push(`${inProgress} active`);
+                if (suspended > 0) parts.push(`${suspended} suspended`);
+                totalInsight.textContent = parts.length > 0 ? parts.join(' · ') : 'No projects';
+            }
+
+            const completedInsight = document.querySelector('#executiveKpiRow .dashboard-kpi-card:nth-child(2) .kpi-insight-text');
+            if (completedInsight) {
+                const pct = totalForBreakdown > 0 ? Math.round((completed / totalForBreakdown) * 100) : 0;
+                completedInsight.textContent = `${pct}% of project portfolio`;
+            }
+
+            const inProgressInsight = document.querySelector('#executiveKpiRow .dashboard-kpi-card:nth-child(3) .kpi-insight-text');
+            if (inProgressInsight) {
+                const pct = totalForBreakdown > 0 ? Math.round((inProgress / totalForBreakdown) * 100) : 0;
+                inProgressInsight.textContent = `${pct}% of project portfolio`;
+            }
+
+            const suspendedInsight = document.querySelector('#executiveKpiRow .dashboard-kpi-card:nth-child(4) .kpi-insight-text');
+            if (suspendedInsight) {
+                suspendedInsight.textContent = suspended > 0 ? `${suspended} project${suspended > 1 ? 's' : ''} currently suspended` : 'No suspended projects';
+            }
         }
 
         function animateCounter(el, target, isCurrency) {
@@ -670,34 +721,19 @@
         function formatCompactCurrency(num) {
             const rounded = Math.round(num);
             const absNum = Math.abs(rounded);
-            let suffix = '';
-            if (absNum >= 1_000_000_000_000) suffix = 'T';
-            else if (absNum >= 1_000_000_000) suffix = 'B';
-            else if (absNum >= 1_000_000) suffix = 'M';
-            else if (absNum >= 1_000) suffix = 'K';
-            if (suffix) {
-                return formatNumber(rounded) + `<span class="text-[10px] font-black text-slate-400 ml-0.5">${suffix}</span>`;
+            if (absNum >= 1_000_000_000) {
+                const val = (rounded / 1_000_000_000).toFixed(2);
+                return `${val}<span class="text-[10px] font-black text-slate-400 ml-0.5">B</span>`;
+            }
+            if (absNum >= 1_000_000) {
+                const val = (rounded / 1_000_000).toFixed(1);
+                const trimmed = val.replace(/\.0+$/, '');
+                return `${trimmed}<span class="text-[10px] font-black text-slate-400 ml-0.5">M</span>`;
+            }
+            if (absNum >= 1_000) {
+                return formatNumber(rounded) + `<span class="text-[10px] font-black text-slate-400 ml-0.5">K</span>`;
             }
             return formatNumber(rounded);
-        }
-
-        function switchStatusTab(status) {
-            currentStatusTab = status;
-            document.querySelectorAll('.status-tab-btn').forEach(btn => {
-                btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
-                btn.classList.add('text-slate-500');
-            });
-            const activeBtn = document.getElementById(`status-tab-${status.replace(/\s+/g, '-')}`);
-            if (activeBtn) {
-                activeBtn.classList.remove('text-slate-500');
-                activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
-            }
-            currentPage = 1;
-            renderMiniKpis();
-            renderLegend();
-            renderChart();
-            renderStatusPieChart();
-            updateSubtitle();
         }
 
         function switchTab(tab) {
@@ -718,7 +754,7 @@
         function updateSubtitle() {
             const subtitle = document.getElementById('chartSubtitle');
             if (subtitle) {
-                const statusLabel = statusTabTitles[currentStatusTab] || currentStatusTab;
+                const statusLabel = 'Completed';
                 let text = `${statusLabel} • ${tabTitles[currentTab]} • Last updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
                 if (activeChartFilter) {
                     text = `${activeChartFilter.label} • ${text}`;
@@ -741,7 +777,7 @@
         }
 
         function getStatusFilteredProjects() {
-            return filteredProjects.filter(p => (p.status || '').toLowerCase() === currentStatusTab.toLowerCase());
+            return filteredProjects.filter(p => (p.status || '').toLowerCase() === 'completed');
         }
 
         function renderMiniKpis() {
@@ -811,9 +847,7 @@
                 return valB - valA;
             });
 
-            const visibleProjects = currentStatusTab === 'in progress' && currentTab === 'schedule'
-                ? sorted.filter(p => p.has_valid_spi)
-                : sorted;
+            const visibleProjects = sorted;
             const categories = [];
             const values = [];
             const colors = [];
@@ -1158,14 +1192,14 @@
                         endAngle: 360,
                         expandOnClick: false,
                         dataLabels: {
-                            offset: -4
+                            offset: -2
                         }
                     }
                 },
                 dataLabels: {
                     enabled: true,
                     formatter: function(val) {
-                        if (val < 10) return '';
+                        if (val < 15) return '';
                         return Math.round(val) + '%';
                     },
                     style: {
@@ -1198,6 +1232,226 @@
                         </span>
                     `;
                 }).join('');
+            }
+        }
+
+        function renderProjectPerformanceMatrix() {
+            const matrix = window.latestComparativeAnalytics || {};
+
+            const scheduleConfigs = [
+                { key: 'time_by_delivery', container: 'matrixScheduleRow', title: 'Schedule Performance by Delivery Method' },
+                { key: 'time_by_variation', container: 'matrixScheduleRow', title: 'Schedule Performance by Contract Variation' },
+                { key: 'time_by_sector', container: 'matrixScheduleRow', title: 'Schedule Performance by Consultancy Sector' },
+            ];
+
+            const budgetConfigs = [
+                { key: 'budget_by_delivery', container: 'matrixBudgetRow', title: 'Contract Budget Performance by Delivery Method' },
+                { key: 'budget_by_sector', container: 'matrixBudgetRow', title: 'Contract Budget Performance by Consultancy Sector' },
+                { key: 'budget_by_schedule', container: 'matrixBudgetRow', title: 'Contract Budget Performance by Schedule Performance' },
+            ];
+
+            const costConfigs = [
+                { key: 'cost_by_delivery', container: 'matrixCostRow', title: 'Cost Performance by Delivery Method' },
+                { key: 'cost_by_variation', container: 'matrixCostRow', title: 'Cost Performance by Contract Variation' },
+                { key: 'cost_by_sector', container: 'matrixCostRow', title: 'Cost Performance by Consultancy Sector' },
+            ];
+
+            const allConfigs = [...scheduleConfigs, ...budgetConfigs, ...costConfigs];
+
+            allConfigs.forEach(config => {
+                const container = document.getElementById(config.container);
+                if (!container) return;
+
+                const chartData = matrix[config.key];
+                if (!chartData) return;
+
+                const chartId = `matrix-${config.key}`;
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300';
+                card.innerHTML = `
+                    <div class="p-3 border-b border-slate-50">
+                        <p class="text-[8px] font-black text-slate-900 uppercase tracking-widest truncate">${config.title}</p>
+                    </div>
+                    <div class="p-3">
+                        <div id="${chartId}" style="height: 180px;"></div>
+                    </div>
+                `;
+                container.appendChild(card);
+
+                const categories = chartData.xaxis || [];
+                const series = (chartData.series || []).map(ds => ({
+                    name: ds.name,
+                    data: ds.values || [],
+                }));
+
+                const colors = chartData.series?.map((ds, idx) => {
+                    if (idx === 0) return '#10b981';
+                    if (idx === 1) return '#00ADC5';
+                    return '#f59e0b';
+                }) || ['#10b981', '#00ADC5', '#f59e0b'];
+
+                if (categories.length === 0 || series.length === 0) {
+                    document.getElementById(chartId).innerHTML = `
+                        <div class="flex items-center justify-center h-full text-slate-400 text-[9px] font-black">No data</div>
+                    `;
+                    return;
+                }
+
+                new ApexCharts(document.getElementById(chartId), {
+                    chart: {
+                        type: 'bar',
+                        height: 180,
+                        animations: { enabled: true, easing: 'easeinout', speed: 400 },
+                        toolbar: { show: false },
+                        background: 'transparent',
+                        dropShadow: { enabled: true, top: 2, left: 0, blur: 4, opacity: 0.15 },
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '55%',
+                            borderRadius: 3,
+                            borderRadiusApplication: 'end',
+                            distributed: false,
+                        },
+                    },
+                    series: series,
+                    xaxis: {
+                        categories: categories,
+                        labels: {
+                            style: { fontSize: '8px', fontWeight: 700, colors: '#475569' },
+                            rotate: 0,
+                            rotateAlways: false,
+                            hideOverlappingLabels: true,
+                            trim: true,
+                        },
+                        axisBorder: { show: false },
+                        axisTicks: { show: false },
+                    },
+                    yaxis: {
+                        labels: {
+                            style: { fontSize: '8px', fontWeight: 700, colors: '#00ADC5' },
+                            formatter: (val) => `${Math.round(val)}%`,
+                        },
+                    },
+                    colors: colors,
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shade: 'light',
+                            type: 'horizontal',
+                            shadeIntensity: 0.2,
+                            gradientToColors: colors,
+                            inverseColors: false,
+                            opacityFrom: 1,
+                            opacityTo: 0.85,
+                        },
+                    },
+                    legend: {
+                        show: true,
+                        position: 'top',
+                        fontSize: '8px',
+                        fontWeight: 700,
+                        markers: { width: 8, height: 8, radius: 2 },
+                        itemMargin: { horizontal: 6, vertical: 0 },
+                    },
+                    tooltip: {
+                        theme: 'light',
+                        y: { formatter: (val) => `${Math.round(val)}%` },
+                    },
+                    grid: {
+                        borderColor: '#f1f5f9',
+                        strokeDashArray: 3,
+                        xaxis: { lines: { show: false } },
+                        yaxis: { lines: { show: true } },
+                        padding: { top: 0, right: 8, bottom: 0, left: 0 },
+                    },
+                    dataLabels: { enabled: false },
+                    theme: { mode: 'light' },
+                }).render();
+            });
+
+            const closingData = matrix.closing_status;
+            if (closingData) {
+                const closingContainer = document.getElementById('matrixClosingChart');
+                if (closingContainer) {
+                    const closingSeries = closingData.series?.[0]?.values || [];
+                    const closingLabels = closingData.xaxis || [];
+                    const closingCounts = closingData.series?.[0]?.counts || [];
+
+                    const palette = ['#10b981', '#f59e0b', '#00ADC5', '#6366f1', '#EF4444', '#8b5cf6', '#EC4899', '#14b8a6'];
+                    const pointColors = closingLabels.map((_, i) => palette[i % palette.length]);
+
+                    if (closingSeries.length > 0) {
+                        new ApexCharts(closingContainer, {
+                            chart: {
+                                type: 'bar',
+                                height: 220,
+                                animations: { enabled: true, easing: 'easeinout', speed: 400 },
+                                toolbar: { show: false },
+                                background: 'transparent',
+                            },
+                            plotOptions: {
+                                bar: {
+                                    horizontal: true,
+                                    columnWidth: '60%',
+                                    borderRadius: 3,
+                                    borderRadiusApplication: 'end',
+                                    distributed: true,
+                                },
+                            },
+                            series: [{ name: 'Projects', data: closingSeries }],
+                            xaxis: {
+                                categories: closingLabels,
+                                labels: {
+                                    style: { fontSize: '9px', fontWeight: 700, colors: '#475569' },
+                                },
+                                axisBorder: { show: false },
+                                axisTicks: { show: false },
+                            },
+                            yaxis: {
+                                labels: {
+                                    style: { fontSize: '9px', fontWeight: 700, colors: '#475569' },
+                                    offsetX: -6,
+                                },
+                            },
+                            colors: pointColors,
+                            fill: {
+                                type: 'solid',
+                            },
+                            dataLabels: {
+                                enabled: true,
+                                style: {
+                                    fontSize: '9px',
+                                    fontWeight: 800,
+                                    colors: ['#fff'],
+                                },
+                                formatter: (val) => val > 0 ? `${Math.round(val)}%` : '',
+                                textAnchor: 'start',
+                                offsetX: 6,
+                                offsetY: 0,
+                            },
+                            legend: { show: false },
+                            tooltip: {
+                                theme: 'light',
+                                y: {
+                                    formatter: (val, opts) => {
+                                        const count = closingCounts[opts.dataPointIndex] ?? val;
+                                        return `${Math.round(val)}% (${count} projects)`;
+                                    },
+                                },
+                            },
+                            grid: {
+                                borderColor: '#f1f5f9',
+                                strokeDashArray: 3,
+                                xaxis: { lines: { show: true } },
+                                yaxis: { lines: { show: false } },
+                                padding: { top: 0, right: 12, bottom: 0, left: 12 },
+                            },
+                            theme: { mode: 'light' },
+                        }).render();
+                    }
+                }
             }
         }
 
@@ -1427,28 +1681,17 @@
         let activeChartFilter = null;
 
         const analyticsConfig = {
-            schedule_performance: {
-                title: 'Schedule Performance',
-                description: 'Completed projects schedule performance',
-                categories: [
-                    { key: 'ahead', label: 'Ahead', abbr: 'AHD', color: '#10b981' },
-                    { key: 'on_schedule', label: 'ON', abbr: 'ONS', color: '#00ADC5' },
-                    { key: 'behind', label: 'Behind', abbr: 'BHD', color: '#f43f5e' },
-                ],
-                totalLabel: 'Completed',
-                filterParam: 'schedule_filter',
-                emptyMessage: 'No completed projects available for schedule review.',
-            },
             delivery_method: {
                 title: 'Delivery Method',
                 description: 'Completed projects delivery approach.',
                 categories: [
-                    { key: 'DB', label: 'DB', color: '#10b981' },
-                    { key: 'DBB', label: 'DBB', color: '#00ADC5' },
+                    { key: 'DB', label: 'DB', abbr: 'DB', color: '#10b981' },
+                    { key: 'DBB', label: 'DBB', abbr: 'DBB', color: '#00ADC5' },
                 ],
                 totalLabel: 'Completed',
                 filterParam: 'delivery_method',
                 emptyMessage: 'No completed projects available for delivery method breakdown.',
+                order: 1,
             },
             contract_variation: {
                 title: 'Contract Variation',
@@ -1461,6 +1704,7 @@
                 totalLabel: 'Total',
                 filterParam: 'variation_type',
                 emptyMessage: 'No project variation data available.',
+                order: 2,
             },
             consultancy_sector: {
                 title: 'Consultancy Sector',
@@ -1473,6 +1717,7 @@
                 totalLabel: 'Completed',
                 filterParam: 'sector',
                 emptyMessage: 'No completed projects available for sector breakdown.',
+                order: 3,
             },
             cost_performance: {
                 title: 'Cost Performance',
@@ -1485,8 +1730,24 @@
                 totalLabel: 'Below/With/Above',
                 filterParam: 'cost_filter',
                 emptyMessage: 'No completed projects available for cost performance review.',
+                order: 4,
+            },
+            schedule_performance: {
+                title: 'Schedule Performance',
+                description: 'Completed projects schedule performance',
+                categories: [
+                    { key: 'ahead', label: 'Ahead', abbr: 'AHD', color: '#10b981' },
+                    { key: 'on_schedule', label: 'ON', abbr: 'ONS', color: '#00ADC5' },
+                    { key: 'behind', label: 'Behind', abbr: 'BHD', color: '#f43f5e' },
+                ],
+                totalLabel: 'Completed',
+                filterParam: 'schedule_filter',
+                emptyMessage: 'No completed projects available for schedule review.',
+                order: 5,
             },
         };
+
+        const analyticsChartOrder = Object.keys(analyticsConfig).sort((a, b) => (analyticsConfig[a].order || 0) - (analyticsConfig[b].order || 0));
 
         function renderAnalyticsGrid() {
             const grid = document.getElementById('analyticsGrid');
@@ -1495,7 +1756,7 @@
             const analytics = window.latestAnalytics || {};
             grid.innerHTML = '';
 
-            Object.keys(analyticsConfig).forEach(chartId => {
+            analyticsChartOrder.forEach(chartId => {
                 const config = analyticsConfig[chartId];
                 const data = analytics[chartId] || {};
                 const total = data.total || 0;
@@ -1506,49 +1767,266 @@
                 card.innerHTML = `
                     <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none analytics-card-hover-overlay"></div>
                     <div class="relative z-10 flex flex-col flex-1 p-2.5">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <div>
-                                <h4 class="text-[9px] font-black text-slate-900 uppercase tracking-widest leading-none">${config.title}</h4>
-                            </div>
+                        <div class="flex items-center justify-center mb-1.5">
+                            <h4 class="text-[9px] font-black text-slate-900 uppercase tracking-widest leading-none">${config.title}</h4>
                         </div>
                         <div class="flex flex-col items-center gap-2">
-                            <div class="flex items-center justify-center" style="width: 200px; height: 200px;">
+                            <div class="flex items-center justify-center" style="width: 170px; height: 170px;">
                                 <div id="chart-${chartId}" class="w-full h-full relative" style="z-index: 1; overflow: visible !important;"></div>
                             </div>
                             <div id="legend-${chartId}" class="analytics-legend-wrapper flex flex-row flex-wrap items-center justify-center gap-1"></div>
+                            <div id="insight-${chartId}" class="analytics-card-insight w-full text-center">
+                                <p id="analytics-insight-primary-${chartId}" class="text-[8px] font-black text-slate-700 leading-tight"></p>
+                                <p id="analytics-insight-secondary-${chartId}" class="text-[7px] font-bold text-slate-400 leading-tight mt-0.5"></p>
+                                <p id="analytics-insight-status-${chartId}" class="text-[7px] font-black mt-0.5"></p>
+                            </div>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
 
-            Object.keys(analyticsConfig).forEach(chartId => {
+            analyticsChartOrder.forEach(chartId => {
                 createPieChart(chartId, analytics[chartId] || {});
+                const data = analytics[chartId] || {};
+                const total = data.total || 0;
+                const insight = getInsight(chartId, data, total);
+
+                const primaryEl = document.getElementById(`analytics-insight-primary-${chartId}`);
+                const secondaryEl = document.getElementById(`analytics-insight-secondary-${chartId}`);
+                const statusEl = document.getElementById(`analytics-insight-status-${chartId}`);
+
+                if (primaryEl) primaryEl.textContent = insight.primary;
+                if (secondaryEl) secondaryEl.textContent = insight.secondary;
+                if (statusEl) {
+                    statusEl.textContent = insight.statusText;
+                    statusEl.style.color = insight.statusColor;
+                }
             });
 
             if (window.lucide) lucide.createIcons();
         }
 
         function getInsight(chartId, data, total) {
-            if (total === 0) return 'No data available.';
+            if (total === 0) {
+                return {
+                    primary: 'No data available.',
+                    secondary: '',
+                    statusColor: '#94a3b8',
+                    statusText: 'No data',
+                };
+            }
 
-            const config = analyticsConfig[chartId];
-            let maxKey = null;
-            let maxCount = 0;
-            config.categories.forEach(cat => {
-                const count = data[cat.key] || 0;
-                if (count > maxCount) {
-                    maxCount = count;
-                    maxKey = cat;
+            const categories = analyticsConfig[chartId]?.categories || [];
+            const counts = categories.map(cat => data[cat.key] || 0);
+
+            switch (chartId) {
+                case 'schedule_performance': {
+                    const ahead = counts[0] || 0;
+                    const onSchedule = counts[1] || 0;
+                    const behind = counts[2] || 0;
+
+                    if (behind > 0) {
+                        return {
+                            primary: `${behind} project${behind > 1 ? 's' : ''} ${behind > 1 ? 'are' : 'is'} currently behind schedule.`,
+                            secondary: 'Schedule status: Attention required',
+                            statusColor: '#f43f5e',
+                            statusText: 'Attention required',
+                        };
+                    }
+                    if (ahead > 0 && onSchedule > 0) {
+                        return {
+                            primary: `${ahead} project${ahead > 1 ? 's' : ''} ahead, ${onSchedule} on schedule, ${behind} behind.`,
+                            secondary: 'Schedule status: Mixed',
+                            statusColor: '#f59e0b',
+                            statusText: 'Mixed',
+                        };
+                    }
+                    if (ahead > 0) {
+                        return {
+                            primary: `${ahead} project${ahead > 1 ? 's' : ''} ${ahead > 1 ? 'are' : 'is'} ahead of schedule.`,
+                            secondary: 'Schedule status: On track',
+                            statusColor: '#10b981',
+                            statusText: 'On track',
+                        };
+                    }
+                    return {
+                        primary: 'All projects are currently on schedule.',
+                        secondary: 'Schedule status: On track',
+                        statusColor: '#10b981',
+                        statusText: 'On track',
+                    };
                 }
-            });
 
-            if (!maxKey || maxCount === 0) return 'No data available.';
+                case 'delivery_method': {
+                    const db = counts[0] || 0;
+                    const dbb = counts[1] || 0;
+                    const activeMethods = [db, dbb].filter(v => v > 0).length;
 
-            const percent = total > 0 ? Math.round((maxCount / total) * 100) : 0;
-            if (percent === 100) return `All projects are ${maxKey.label.toLowerCase()}.`;
-            if (percent >= 50) return `Most projects are ${maxKey.label.toLowerCase()}.`;
-            return `${maxKey.label} is the largest group at ${percent}%.`;
+                    if (activeMethods === 0) {
+                        return {
+                            primary: 'No delivery method data available.',
+                            secondary: '',
+                            statusColor: '#94a3b8',
+                            statusText: 'No data',
+                        };
+                    }
+
+                    if (activeMethods === 1) {
+                        const method = db > 0 ? 'Design-Build' : 'Design-Bid-Build';
+                        return {
+                            primary: `${Math.max(db, dbb)} project${Math.max(db, dbb) > 1 ? 's' : ''} using ${method}.`,
+                            secondary: `Most common: ${method}`,
+                            statusColor: '#00ADC5',
+                            statusText: method,
+                        };
+                    }
+
+                    return {
+                        primary: `Projects distributed across ${activeMethods} delivery methods.`,
+                        secondary: `Most common: ${db >= dbb ? 'Design-Build' : 'Design-Bid-Build'}`,
+                        statusColor: '#00ADC5',
+                        statusText: 'Mixed',
+                    };
+                }
+
+                case 'contract_variation': {
+                    const addition = counts[0] || 0;
+                    const omission = counts[1] || 0;
+                    const noVariation = counts[2] || 0;
+
+                    if (addition > 0 && omission === 0 && noVariation === 0) {
+                        return {
+                            primary: `${addition} project${addition > 1 ? 's' : ''} ${addition > 1 ? 'have' : 'has'} contract additions.`,
+                            secondary: `Variation status: ${addition} addition${addition > 1 ? 's' : ''}`,
+                            statusColor: '#00ADC5',
+                            statusText: 'Additions',
+                        };
+                    }
+
+                    if (addition === 0 && omission === 0 && noVariation === 0) {
+                        return {
+                            primary: 'No contract variations have been recorded.',
+                            secondary: 'Variation status: None',
+                            statusColor: '#10b981',
+                            statusText: 'None',
+                        };
+                    }
+
+                    const parts = [];
+                    if (addition > 0) parts.push(`${addition} addition${addition > 1 ? 's' : ''}`);
+                    if (omission > 0) parts.push(`${omission} omission${omission > 1 ? 's' : ''}`);
+                    if (noVariation > 0) parts.push(`${noVariation} no variation${noVariation > 1 ? 's' : ''}`);
+
+                    return {
+                        primary: `Contract variations include ${parts.slice(0, 2).join(' and ')}.`,
+                        secondary: `Variation status: ${parts[0]}`,
+                        statusColor: '#f59e0b',
+                        statusText: 'Mixed',
+                    };
+                }
+
+                case 'consultancy_sector': {
+                    const private = counts[0] || 0;
+                    const client = counts[1] || 0;
+                    const government = counts[2] || 0;
+
+                    if (private === 0 && client === 0 && government === 0) {
+                        return {
+                            primary: 'No consultancy sector data available.',
+                            secondary: '',
+                            statusColor: '#94a3b8',
+                            statusText: 'No data',
+                        };
+                    }
+
+                    const maxCount = Math.max(private, client, government);
+                    const maxLabel = categories[counts.indexOf(maxCount)]?.label || 'Unknown';
+
+                    if (maxCount === total) {
+                        return {
+                            primary: `${maxLabel} projects represent 100% of the current portfolio.`,
+                            secondary: `Primary sector: ${maxLabel}`,
+                            statusColor: '#6366f1',
+                            statusText: maxLabel,
+                        };
+                    }
+
+                    const percent = total > 0 ? Math.round((maxCount / total) * 100) : 0;
+                    return {
+                        primary: `${maxLabel} is the primary sector at ${percent}%.`,
+                        secondary: `Primary sector: ${maxLabel}`,
+                        statusColor: '#6366f1',
+                        statusText: maxLabel,
+                    };
+                }
+
+                case 'cost_performance': {
+                    const below = counts[0] || 0;
+                    const within = counts[1] || 0;
+                    const above = counts[2] || 0;
+
+                    if (above > 0 && within === 0 && below === 0) {
+                        return {
+                            primary: `${above} project${above > 1 ? 's' : ''} ${above > 1 ? 'are' : 'is'} currently above the target cost.`,
+                            secondary: 'Cost status: Above target',
+                            statusColor: '#f43f5e',
+                            statusText: 'Above target',
+                        };
+                    }
+
+                    if (within > 0 && above === 0 && below === 0) {
+                        return {
+                            primary: 'All projects are currently within the target cost.',
+                            secondary: 'Cost status: Within target',
+                            statusColor: '#10b981',
+                            statusText: 'Within target',
+                        };
+                    }
+
+                    if (below > 0 && within > 0 && above > 0) {
+                        return {
+                            primary: `${within} within target, ${above} above target, ${below} below target.`,
+                            secondary: 'Cost status: Mixed',
+                            statusColor: '#f59e0b',
+                            statusText: 'Mixed',
+                        };
+                    }
+
+                    if (within > 0 && above > 0) {
+                        return {
+                            primary: `${within} within target, while ${above} ${above > 1 ? 'are' : 'is'} above target.`,
+                            secondary: 'Cost status: Mixed',
+                            statusColor: '#f59e0b',
+                            statusText: 'Mixed',
+                        };
+                    }
+
+                    if (below > 0) {
+                        return {
+                            primary: `${below} project${below > 1 ? 's' : ''} ${below > 1 ? 'are' : 'is'} below the target cost.`,
+                            secondary: 'Cost status: Below target',
+                            statusColor: '#10b981',
+                            statusText: 'Below target',
+                        };
+                    }
+
+                    return {
+                        primary: 'No cost performance data available.',
+                        secondary: '',
+                        statusColor: '#94a3b8',
+                        statusText: 'No data',
+                    };
+                }
+
+                default:
+                    return {
+                        primary: `${total} project${total > 1 ? 's' : ''} in this category.`,
+                        secondary: '',
+                        statusColor: '#6366f1',
+                        statusText: 'Active',
+                    };
+            }
         }
 
         function createPieChart(chartId, data) {
@@ -1793,378 +2271,6 @@
             link.click();
         }
 
-        let comparativeCharts = {};
-
-        function renderComparativeAnalytics() {
-            const grid = document.getElementById('comparativeGrid');
-            if (!grid) return;
-            const data = window.latestComparativeAnalytics || {};
-            grid.innerHTML = '';
-
-            Object.keys(data).forEach(chartId => {
-                const chartData = data[chartId];
-                const card = document.createElement('div');
-                card.className = 'comparative-card bg-white rounded-[18px] border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-250 overflow-hidden flex flex-col';
-                
-                const accentColor = chartData.series?.[0]?.counts ? '#00ADC5' : '#6366f1';
-                card.innerHTML = `
-                    <div class="h-0.5 w-full" style="background: linear-gradient(to right, ${accentColor}, ${accentColor}66);"></div>
-                    <div class="p-4 flex flex-col flex-1">
-                        <div class="flex items-center justify-between mb-2">
-                            <div>
-                                <h4 class="text-[9px] font-black text-slate-900 uppercase tracking-widest">${chartData.title}</h4>
-                                <p class="text-[7px] font-black text-slate-400 uppercase tracking-widest mt-0.5">${chartData.description}</p>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <button onclick="exportComparativeChartPNG('${chartId}')" class="w-7 h-7 rounded-lg hover:bg-slate-50 flex items-center justify-center text-slate-300 hover:text-slate-600 transition-colors" title="Export PNG">
-                                    <i data-lucide="image" class="w-3.5 h-3.5"></i>
-                                </button>
-                                <button onclick="toggleComparativeFullscreen('${chartId}')" class="w-7 h-7 rounded-lg hover:bg-slate-50 flex items-center justify-center text-slate-300 hover:text-slate-600 transition-colors" title="Fullscreen">
-                                    <i data-lucide="maximize" class="w-3.5 h-3.5"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="comparative-legend-${chartId}" class="mt-3 flex flex-wrap items-center gap-3"></div>
-                        <div class="flex-1 min-h-[280px] mt-2">
-                            <div id="comparative-chart-${chartId}" class="w-full h-full"></div>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-
-            Object.keys(data).forEach(chartId => {
-                createComparativeChart(chartId, data[chartId]);
-            });
-
-            if (window.lucide) lucide.createIcons();
-        }
-
-        function createComparativeChart(chartId, chartData) {
-            const chartEl = document.getElementById(`comparative-chart-${chartId}`);
-            const legendEl = document.getElementById(`comparative-legend-${chartId}`);
-            if (!chartEl) return;
-
-            if (comparativeCharts[chartId]) {
-                comparativeCharts[chartId].destroy();
-            }
-
-            const series = chartData.series.map(s => ({
-                name: s.name,
-                data: s.values,
-            }));
-
-            const colors = {
-                'Behind Schedule': ['#EF4444', '#F87171'],
-                'Ahead of Schedule': ['#22C55E', '#4ADE80'],
-                'On Schedule': ['#f59e0b', '#f59e0b'],
-                'Under Budget': ['#22C55E', '#4ADE80'],
-                'On Budget': ['#f59e0b', '#f59e0b'],
-                'Above Budget': ['#EF4444', '#F87171'],
-                'Below Allowable Cost': ['#22C55E', '#4ADE80'],
-                'Within Allowable Cost': ['#FFA500', '#FFA500'],
-                'Above Allowable Cost': ['#EF4444', '#F87171'],
-                'Average SPI %': ['#6366f1', '#6366f1'],
-                'Projects': ['#00ADC5', '#00ADC5'],
-            };
-
-            const isHorizontal = chartData.horizontal === true;
-            const barColors = chartData.series.map(s => colors[s.name] || ['#00ADC5', '#00ADC5']);
-            const groupTotals = (chartData.summaries || []).map(s => s.total || 0);
-            const isSingleSeries = chartData.series.length === 1;
-            const palette = ['#10b981', '#f59e0b', '#00ADC5', '#6366f1', '#EF4444', '#8b5cf6', '#EC4899', '#14b8a6'];
-            const pointColors = isSingleSeries
-                ? chartData.xaxis.map((_, i) => palette[i % palette.length])
-                : barColors.map(c => c[0]);
-
-            comparativeCharts[chartId] = new ApexCharts(chartEl, {
-                chart: {
-                    type: 'bar',
-                    height: '100%',
-                    stacked: false,
-                    labels: isHorizontal ? chartData.xaxis : undefined,
-                    animations: {
-                        enabled: true,
-                        easing: 'easeinout',
-                        speed: 500,
-                        dynamicAnimation: { enabled: true, speed: 400 }
-                    },
-                    toolbar: { show: false },
-                    background: 'transparent',
-                    events: {
-                        dataPointSelection: (event, chartContext, { seriesIndex, dataPointIndex, w }) => {
-                            const category = w.globals.labels[dataPointIndex];
-                            const seriesName = w.globals.seriesNames[seriesIndex];
-                            const value = w.globals.series[seriesIndex][dataPointIndex];
-                            const count = chartData.series[seriesIndex]?.counts?.[dataPointIndex] ?? value;
-                            const groupTotal = groupTotals[dataPointIndex] || 0;
-                            const percent = groupTotal > 0 ? Math.round((count / groupTotal) * 100) : 0;
-                            openComparativeDrillDown(category, seriesName, count, percent, groupTotal);
-                        }
-                    }
-                },
-                plotOptions: {
-                    bar: {
-                        horizontal: isHorizontal,
-                        columnWidth: isHorizontal ? '80%' : '60%',
-                        borderRadius: 8,
-                        borderRadiusApplication: isHorizontal ? 'bottom' : 'top',
-                        distributed: isSingleSeries,
-                    }
-                },
-                series: series,
-                xaxis: isHorizontal ? {
-                    categories: chartData.xaxis,
-                    labels: {
-                        style: { fontSize: '9px', fontWeight: 700, colors: '#475569' },
-                    },
-                    axisBorder: { show: false },
-                    axisTicks: { show: false },
-                } : {
-                    categories: chartData.xaxis,
-                    labels: {
-                        style: { fontSize: '9px', fontWeight: 700, colors: '#475569' },
-                        rotate: -30,
-                        rotateAlways: false,
-                    },
-                    axisBorder: { show: false },
-                    axisTicks: { show: false },
-                },
-                yaxis: isHorizontal ? {
-                    min: 0,
-                    max: 100,
-                    tickAmount: 5,
-                    labels: {
-                        style: { fontSize: '9px', fontWeight: 600, colors: '#64748b' },
-                        formatter: (val) => val + '%'
-                    }
-                } : {
-                    min: 0,
-                    max: 100,
-                    tickAmount: 5,
-                    labels: {
-                        style: { fontSize: '9px', fontWeight: 600, colors: '#64748b' },
-                        formatter: (val) => val + '%'
-                    }
-                },
-                colors: pointColors,
-                fill: {
-                    type: isSingleSeries ? 'solid' : 'gradient',
-                    gradient: isSingleSeries ? undefined : {
-                        shade: 'light',
-                        type: isHorizontal ? 'horizontal' : 'vertical',
-                        shadeIntensity: 0.2,
-                        gradientToColors: barColors.map(c => c[1]),
-                        inverseColors: false,
-                        opacityFrom: 1,
-                        opacityTo: 0.9,
-                        stops: [0, 100]
-                    }
-                },
-                dataLabels: {
-                    enabled: true,
-                    style: {
-                        fontSize: '9px',
-                        fontWeight: 800,
-                        colors: ['#fff']
-                    },
-                    formatter: (val) => val > 0 ? (isHorizontal ? val : val + '%') : '',
-                    textAnchor: isHorizontal ? 'start' : 'middle',
-                    offsetX: isHorizontal ? 6 : 0,
-                    offsetY: isHorizontal ? 0 : -16,
-                },
-                legend: { show: false },
-                tooltip: {
-                    enabled: true,
-                    theme: 'light',
-                    custom: function({ series, seriesIndex, dataPointIndex, w }) {
-                        const category = w.globals.labels[dataPointIndex];
-                        const seriesName = w.globals.seriesNames[seriesIndex];
-                        const percent = series[seriesIndex][dataPointIndex];
-                        const count = chartData.series[seriesIndex]?.counts?.[dataPointIndex] ?? 0;
-                        const groupTotal = groupTotals[dataPointIndex] || 0;
-                        const color = isSingleSeries ? pointColors[dataPointIndex] : (barColors[seriesIndex]?.[0] || '#6366f1');
-                        return `
-                            <div style="padding: 12px 16px; font-family: 'Inter', sans-serif; min-width: 220px; border-radius: 12px; background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
-                                <div style="font-weight: 800; font-size: 11px; color: #0f172a; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">${category}</div>
-                                <div style="font-weight: 800; font-size: 24px; color: ${color}; margin-bottom: 4px;">${percent}${isHorizontal ? '' : '%'}</div>
-                                <div style="font-weight: 700; font-size: 11px; color: #475569; margin-bottom: 8px;">${count} Projects • ${groupTotal} in group</div>
-                                <div style="font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Click to view projects</div>
-                            </div>
-                        `;
-                    }
-                },
-                grid: {
-                    borderColor: '#EEF2F7',
-                    strokeDashArray: 4,
-                    padding: { left: 8, right: 12, top: 12, bottom: 8 },
-                    xaxis: { lines: { show: isHorizontal } },
-                    yaxis: { lines: { show: !isHorizontal } },
-                },
-                markers: {
-                    shape: 'circle',
-                    size: 0,
-                },
-                responsive: [
-                    {
-                        breakpoint: 768,
-                        options: {
-                            plotOptions: {
-                                bar: {
-                                    columnWidth: isHorizontal ? '85%' : '65%',
-                                }
-                            },
-                            dataLabels: {
-                                offsetY: isHorizontal ? 0 : -12,
-                                offsetX: isHorizontal ? 4 : 0,
-                                style: { fontSize: '8px' }
-                            },
-                            xaxis: isHorizontal ? {} : {
-                                labels: {
-                                    rotate: -45,
-                                }
-                            }
-                        }
-                    }
-                ]
-            });
-
-            comparativeCharts[chartId].render();
-            buildComparativeLegend(chartId, chartData, barColors);
-        }
-
-        function buildComparativeLegend(chartId, chartData, barColors) {
-            const legendEl = document.getElementById(`comparative-legend-${chartId}`);
-            if (!legendEl) return;
-            const isSingleSeries = chartData.series.length === 1;
-            const palette = ['#10b981', '#f59e0b', '#00ADC5', '#6366f1', '#EF4444', '#8b5cf6', '#EC4899', '#14b8a6'];
-
-            if (isSingleSeries) {
-                legendEl.innerHTML = chartData.xaxis.map((label, i) => {
-                    const color = palette[i % palette.length];
-                    const count = chartData.series[0]?.counts?.[i] ?? chartData.series[0]?.data?.[i] ?? 0;
-                    return `
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-sm" style="background-color: ${color};"></span>
-                            <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">${label}</span>
-                            <span class="text-[8px] font-black text-slate-400">${count} projects</span>
-                        </div>
-                    `;
-                }).join('');
-            } else {
-                legendEl.innerHTML = chartData.series.map((s, i) => {
-                    const color = barColors[i]?.[0] || '#6366f1';
-                    const totalCount = chartData.series[i]?.counts?.reduce((a, b) => a + b, 0) || 0;
-                    return `
-                        <div class="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity" onclick="toggleComparativeSeries('${chartId}', ${i})">
-                            <span class="w-2.5 h-2.5 rounded-sm" style="background-color: ${color};"></span>
-                            <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">${s.name}</span>
-                            <span class="text-[8px] font-black text-slate-400">${totalCount} projects</span>
-                        </div>
-                    `;
-                }).join('');
-            }
-        }
-
-        function toggleComparativeSeries(chartId, seriesIndex) {
-            const chart = comparativeCharts[chartId];
-            if (!chart) return;
-            const series = chart.w.config.series;
-            if (series[seriesIndex].hidden) {
-                chart.toggleSeries(seriesIndex);
-            } else {
-                chart.hideSeries(seriesIndex);
-            }
-        }
-
-        function openComparativeDrillDown(category, seriesName, count, percent, groupTotal) {
-            const drawer = document.getElementById('drillDownDrawer');
-            const panel = document.getElementById('drawerPanel');
-            document.getElementById('drawerProjectName').textContent = category;
-            document.getElementById('drawerProjectCode').textContent = seriesName;
-
-            const matchingKey = Object.keys(window.latestComparativeAnalytics || {}).find(key => {
-                const d = window.latestComparativeAnalytics[key];
-                return d.xaxis.includes(category);
-            });
-            const chartData = matchingKey ? window.latestComparativeAnalytics[matchingKey] : null;
-
-            document.getElementById('drawerContent').innerHTML = `
-                <div class="space-y-4">
-                    <div class="bg-slate-50 rounded-xl p-4 text-center">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">${category}</p>
-                        <p class="text-2xl font-black text-slate-900">${count} <span class="text-xs font-bold text-slate-500">Projects</span></p>
-                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">${percent}% of ${groupTotal}</p>
-                    </div>
-                    <div class="bg-white border border-slate-100 rounded-xl p-4">
-                        <h4 class="text-xs font-black text-slate-900 mb-2">Performance Category</h4>
-                        <p class="text-sm font-black text-slate-700">${seriesName}</p>
-                    </div>
-                    <div class="bg-white border border-slate-100 rounded-xl p-4">
-                        <h4 class="text-xs font-black text-slate-900 mb-2">Summary</h4>
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${groupTotal} total projects in this category. ${count} fall under ${seriesName}.</p>
-                    </div>
-                </div>
-            `;
-
-            drawer.classList.remove('hidden');
-            setTimeout(() => {
-                panel.classList.remove('translate-x-full');
-            }, 10);
-        }
-
-        function toggleComparativeFullscreen(chartId) {
-            const chart = comparativeCharts[chartId];
-            if (!chart) return;
-            const container = document.getElementById(`comparative-chart-${chartId}`);
-            if (!document.fullscreenElement) {
-                container.requestFullscreen().catch(() => {});
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
-        function exportComparativeChartPNG(chartId) {
-            const chart = comparativeCharts[chartId];
-            if (!chart) return;
-            chart.dataURI().then(({ imgURI }) => {
-                const link = document.createElement('a');
-                link.href = imgURI;
-                link.download = `comparative-${chartId}-${new Date().toISOString().split('T')[0]}.png`;
-                link.click();
-            });
-        }
-
-        function exportComparativeCSV() {
-            const data = window.latestComparativeAnalytics || {};
-            if (!Object.keys(data).length) {
-                alert('No comparative data to export');
-                return;
-            }
-
-            let csvContent = 'Chart,Category,Series,Count,Percentage\n';
-            Object.keys(data).forEach(chartId => {
-                const chartData = data[chartId];
-                chartData.series.forEach(s => {
-                    s.counts?.forEach((count, idx) => {
-                        const category = chartData.xaxis[idx] || '';
-                        const percent = s.values[idx] || 0;
-                        csvContent += `${chartData.title},"${category}","${s.name}",${count},${percent}%\n`;
-                    });
-                });
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `comparative-analytics-${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-        }
-
-        function refreshComparative() {
-            loadDashboardData();
-        }
-
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeDrillDown();
@@ -2318,34 +2424,6 @@
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
-        .comparative-card {
-            position: relative;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .comparative-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        #comparativeGrid .apexcharts-canvas {
-            margin: 0 auto;
-        }
-        #comparativeGrid .apexcharts-bar-area {
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.08));
-        }
-        #comparativeGrid .apexcharts-bar-area:hover {
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
-        }
-        #comparativeGrid .apexcharts-gridline {
-            stroke: #EEF2F7;
-            stroke-width: 1;
-            stroke-dasharray: 4;
-        }
-        .comparative-summary-chip {
-            background: linear-gradient(to bottom, #FFFFFF, #F8FAFC);
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-        }
-
         @media print {
             body * {
                 visibility: hidden;
@@ -2363,6 +2441,50 @@
             #drillDownDrawer, .fixed, button {
                 display: none !important;
             }
+        }
+        .matrix-card {
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+        }
+        #matrixScheduleRow .apexcharts-bar-area,
+        #matrixBudgetRow .apexcharts-bar-area,
+        #matrixCostRow .apexcharts-bar-area {
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.08));
+        }
+        #matrixClosingChart .apexcharts-bar-area {
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.08));
+        }
+        .analytics-card-insight {
+            border-top: 1px solid #f1f5f9;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 6px 8px;
+            margin-top: 8px;
+        }
+        .analytics-insight-primary {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .analytics-insight-secondary {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .analytics-insight-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .analytics-insight-status::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
         }
     </style>
 </x-app-layout>

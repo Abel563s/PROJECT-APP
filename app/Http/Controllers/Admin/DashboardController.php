@@ -484,6 +484,88 @@ class DashboardController extends Controller
             }
         }
 
+        $budgetByDeliveryLabels = [];
+        $budgetByDeliveryDatasets = [
+            ['name' => 'Under Budget', 'values' => [], 'counts' => []],
+            ['name' => 'On Budget', 'values' => [], 'counts' => []],
+            ['name' => 'Above Budget', 'values' => [], 'counts' => []],
+        ];
+        $budgetByDeliveryGroupTotals = [];
+        foreach ($deliveryMethods as $method) {
+            $budgetByDeliveryLabels[] = $method;
+            $methodProjects = $completedProjects->where('delivery_method', $method);
+            $groupTotal = $methodProjects->count();
+            $budgetByDeliveryGroupTotals[] = $groupTotal;
+            foreach ($budgetStatuses as $i => $status) {
+                $count = $methodProjects->where('budget_performance', $status)->count();
+                $budgetByDeliveryDatasets[$i]['counts'][] = $count;
+                $budgetByDeliveryDatasets[$i]['values'][] = $groupTotal > 0 ? round(($count / $groupTotal) * 100) : 0;
+            }
+        }
+
+        $budgetByScheduleLabels = [];
+        $budgetByScheduleDatasets = [
+            ['name' => 'Under Budget', 'values' => [], 'counts' => []],
+            ['name' => 'On Budget', 'values' => [], 'counts' => []],
+            ['name' => 'Above Budget', 'values' => [], 'counts' => []],
+        ];
+        $budgetByScheduleGroupTotals = [];
+        foreach ($scheduleStatuses as $status) {
+            $budgetByScheduleLabels[] = $status;
+            $statusProjects = $completedProjects->where('schedule_status', $status);
+            $groupTotal = $statusProjects->count();
+            $budgetByScheduleGroupTotals[] = $groupTotal;
+            foreach ($budgetStatuses as $i => $budgetStatus) {
+                $count = $statusProjects->where('budget_performance', $budgetStatus)->count();
+                $budgetByScheduleDatasets[$i]['counts'][] = $count;
+                $budgetByScheduleDatasets[$i]['values'][] = $groupTotal > 0 ? round(($count / $groupTotal) * 100) : 0;
+            }
+        }
+
+        $costByDeliveryLabels = [];
+        $costByDeliveryDatasets = [
+            ['name' => 'Below Allowable Cost', 'values' => [], 'counts' => []],
+            ['name' => 'Within Allowable Cost', 'values' => [], 'counts' => []],
+            ['name' => 'Above Allowable Cost', 'values' => [], 'counts' => []],
+        ];
+        $costByDeliveryGroupTotals = [];
+        foreach ($deliveryMethods as $method) {
+            $costByDeliveryLabels[] = $method;
+            $methodProjects = $completedProjects->where('delivery_method', $method);
+            $groupTotal = $methodProjects->count();
+            $costByDeliveryGroupTotals[] = $groupTotal;
+            foreach ($costStatuses as $i => $status) {
+                $count = $methodProjects->where('cost_performance', $status)->count();
+                $costByDeliveryDatasets[$i]['counts'][] = $count;
+                $costByDeliveryDatasets[$i]['values'][] = $groupTotal > 0 ? round(($count / $groupTotal) * 100) : 0;
+            }
+        }
+
+        $costByVariationLabels = [];
+        $costByVariationDatasets = [
+            ['name' => 'Below Allowable Cost', 'values' => [], 'counts' => []],
+            ['name' => 'Within Allowable Cost', 'values' => [], 'counts' => []],
+            ['name' => 'Above Allowable Cost', 'values' => [], 'counts' => []],
+        ];
+        $costByVariationGroupTotals = [];
+        foreach ($variationGroups as $label => $groupProjects) {
+            $costByVariationLabels[] = $label;
+            $groupTotal = $groupProjects->count();
+            $costByVariationGroupTotals[] = $groupTotal;
+            if ($groupTotal === 0) {
+                foreach ($costByVariationDatasets as &$ds) {
+                    $ds['values'][] = 0;
+                    $ds['counts'][] = 0;
+                }
+                continue;
+            }
+            foreach ($costStatuses as $i => $status) {
+                $count = $groupProjects->where('cost_performance', $status)->count();
+                $costByVariationDatasets[$i]['counts'][] = $count;
+                $costByVariationDatasets[$i]['values'][] = $groupTotal > 0 ? round(($count / $groupTotal) * 100) : 0;
+            }
+        }
+
         $closingStatuses = ['FA Received', 'PA Received', 'PPA Received', 'Snag / Di-Snag', 'Waiting for PA', 'Not Completed'];
         $closingLabels = [];
         $closingDatasets = [
@@ -564,6 +646,38 @@ class DashboardController extends Controller
                 'summaries' => $buildSummary($closingGroupTotals, $closingDatasets),
                 'icons' => ['📋'],
                 'horizontal' => true,
+            ],
+            'budget_by_delivery' => [
+                'title' => 'Contract Budget Performance by Delivery Method',
+                'description' => 'Compare completed projects by budget performance across delivery methods.',
+                'xaxis' => $budgetByDeliveryLabels,
+                'series' => $budgetByDeliveryDatasets,
+                'summaries' => $buildSummary($budgetByDeliveryGroupTotals, $budgetByDeliveryDatasets),
+                'icons' => ['🏗', '🏢', '⚙'],
+            ],
+            'budget_by_schedule' => [
+                'title' => 'Contract Budget Performance by Schedule Performance',
+                'description' => 'Compare completed projects by budget performance across schedule statuses.',
+                'xaxis' => $budgetByScheduleLabels,
+                'series' => $budgetByScheduleDatasets,
+                'summaries' => $buildSummary($budgetByScheduleGroupTotals, $budgetByScheduleDatasets),
+                'icons' => ['📅', '⏱', '⚠'],
+            ],
+            'cost_by_delivery' => [
+                'title' => 'Cost Performance by Delivery Method',
+                'description' => 'Compare completed projects by cost performance across delivery methods.',
+                'xaxis' => $costByDeliveryLabels,
+                'series' => $costByDeliveryDatasets,
+                'summaries' => $buildSummary($costByDeliveryGroupTotals, $costByDeliveryDatasets),
+                'icons' => ['🏗', '🏢', '⚙'],
+            ],
+            'cost_by_variation' => [
+                'title' => 'Cost Performance by Contract Variation',
+                'description' => 'Compare completed projects by cost performance across contract variation categories.',
+                'xaxis' => $costByVariationLabels,
+                'series' => $costByVariationDatasets,
+                'summaries' => $buildSummary($costByVariationGroupTotals, $costByVariationDatasets),
+                'icons' => ['➕', '➖', '—'],
             ],
         ];
 
