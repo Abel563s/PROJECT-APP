@@ -310,7 +310,7 @@
         </div>
 
         <!-- Project Performance Matrix -->
-        <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 overflow-hidden">
+        <div id="projectPerformanceMatrix" class="matrix-section-container bg-white rounded-2xl shadow-lg border border-slate-200/80 overflow-hidden">
             <div class="p-5 border-b border-slate-100">
                 <h3 class="text-sm font-black text-slate-900 tracking-tight">Project Performance Matrix</h3>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Grouped performance breakdowns by dimension</p>
@@ -904,6 +904,7 @@
             }
 
             const columnWidth = categories.length <= 5 ? '60%' : categories.length <= 15 ? '40%' : categories.length <= 30 ? '25%' : '15%';
+            const showDataLabels = categories.length <= 20;
 
             const allZero = values.every(v => v === 0);
             if (allZero) {
@@ -1018,11 +1019,11 @@
                     padding: { left: 8, right: 16, top: 8, bottom: 8 }
                 },
                 dataLabels: {
-                    enabled: true,
+                    enabled: showDataLabels,
                     style: {
                         fontSize: dataLabelFontSize,
                         fontWeight: 800,
-                        colors: ['#000']
+                        colors: ['#fff']
                     },
                     formatter: (val) => {
                         const icon = val > 0 ? '▲' : val < 0 ? '▼' : '●';
@@ -2442,9 +2443,30 @@
                 display: none !important;
             }
         }
-        .matrix-card {
-            border: 1px solid #cbd5e1;
-            background: #ffffff;
+        #matrixScheduleRow .apexcharts-canvas,
+        #matrixBudgetRow .apexcharts-canvas,
+        #matrixCostRow .apexcharts-canvas,
+        #matrixClosingChart .apexcharts-canvas {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        #matrixScheduleRow .apexcharts-svg,
+        #matrixBudgetRow .apexcharts-svg,
+        #matrixCostRow .apexcharts-svg,
+        #matrixClosingChart .apexcharts-svg {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .matrix-section-container {
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: none !important;
+        }
+        #projectPerformanceMatrix {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
         }
         #matrixScheduleRow .apexcharts-bar-area,
         #matrixBudgetRow .apexcharts-bar-area,
