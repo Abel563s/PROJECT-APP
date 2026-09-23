@@ -39,7 +39,7 @@
             <div class="col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">SPI</p>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">PSPI</p>
                         <h4 class="text-lg font-black text-slate-900 mt-0.5">
                             @php
                                 $spi = $update->progress_planned > 0 ? ($update->progress_actual / $update->progress_planned) * 100 : 0;
@@ -76,6 +76,23 @@
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revenue Actual (EV)</p>
                 <p class="text-xs font-black text-slate-900">ETB {{ number_format($update->revenue_actual) }}</p>
             </div>
+            <div class="col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">FSPI</p>
+                        <h4 class="text-lg font-black text-slate-900 mt-0.5">
+                            @php
+                                $fspi = $update->revenue_planned > 0 ? ($update->revenue_actual / $update->revenue_planned) * 100 : 0;
+                                $fspiColor = $fspi >= 80 ? 'text-emerald-600' : ($fspi >= 70 ? 'text-[#fcba03]' : 'text-rose-600');
+                            @endphp
+                            <span class="{{ $fspiColor }}">{{ number_format($fspi, 2) }}%</span>
+                        </h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-emerald-600 shadow-sm">
+                        <i data-lucide="banknote" class="w-5 h-5"></i>
+                    </div>
+                </div>
+            </div>
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revenue Planned Weekly</p>
                 <p class="text-xs font-black text-slate-900">ETB {{ number_format($update->revenue_planned_weekly) }}</p>
@@ -85,7 +102,6 @@
                 <p class="text-xs font-black text-slate-900">ETB {{ number_format($update->revenue_actual_weekly) }}</p>
             </div>
         </div>
-    </div>
 
     <!-- Cost -->
     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
@@ -169,9 +185,31 @@
         </div>
         <div class="grid grid-cols-2 gap-3">
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Latest Completion Date</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revised Finish Date</p>
                 <p class="text-xs font-black text-slate-900">{{ $update->completion_date ? \Carbon\Carbon::parse($update->completion_date)->format('M d, Y') : '---' }}</p>
             </div>
+            <div>
+                @php
+                    $baselineStart = $update->project->baseline_start_date ? \Carbon\Carbon::parse($update->project->baseline_start_date) : null;
+                    $baselineFinish = $update->project->baseline_finish_date ? \Carbon\Carbon::parse($update->project->baseline_finish_date) : null;
+                    $baselineDuration = $baselineStart && $baselineFinish ? $baselineStart->diffInDays($baselineFinish) : 0;
+                    $elapsedDays = $baselineStart ? (int) \Carbon\Carbon::now()->diffInDays($baselineStart) : 0;
+                    $elapsedDaysColor = $elapsedDays < 0 ? 'text-rose-600' : 'text-emerald-600';
+                    $elapsedPercent = $baselineDuration > 0 ? ($elapsedDays / $baselineDuration) * 100 : 0;
+                    $elapsedPercentColor = $elapsedPercent < 0 ? 'text-rose-600' : 'text-emerald-600';
+                @endphp
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Elapsed Days</p>
+                <p class="text-xs font-black {{ $elapsedDaysColor }}">
+                    {{ $baselineStart ? $elapsedDays . ' Days' : '---' }}
+                </p>
+            </div>
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Elapsed Days %</p>
+                <p class="text-xs font-black {{ $elapsedPercentColor }}">
+                    {{ $baselineStart && $baselineDuration > 0 ? round($elapsedPercent, 2) . '%' : '---' }}
+                </p>
+            </div>
+        </div>
         </div>
     </div>
 
