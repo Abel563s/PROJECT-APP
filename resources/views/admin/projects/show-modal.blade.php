@@ -97,12 +97,12 @@
             $budgetAtCompletion = $project->budget_at_completion ?? 0;
             $signedBudgetVariance = $revisedBudget - $budgetAtCompletion;
             $budgetVariance = $revisedBudget - $budgetAtCompletion;
-            $budgetPerformance = $budgetVariance > 0 ? 'Above Budget' : ($budgetVariance < 0 ? 'Under Budget' : 'On Budget');
-            $budgetIndex = $revisedBudget > 0 ? ($budgetVariance / $revisedBudget) : 0;
+            $budgetIndex = $budgetAtCompletion > 0 ? ($revisedBudget / $budgetAtCompletion) * 100 : 0;
+            $budgetPerformance = $budgetIndex < 100 ? 'Under Budget' : ($budgetIndex > 100 ? 'Above Budget' : 'On Budget');
             $allowable = $project->total_allowable_cost ?? 0;
             $cac = $project->cost_at_completion ?? 0;
-            $costEacIndex = $allowable > 0 ? ($allowable - $cac) / $allowable : 0;
-            $costPerformance = $costVariance < 0 ? 'Above Allowable Cost' : ($costVariance > 0 ? 'Below Allowable Cost' : 'Within Allowable Cost');
+            $cpi = $cac > 0 ? ($allowable / $cac) * 100 : 0;
+            $costPerformance = $cpi < 100 ? 'Above Allowable Cost' : ($cpi > 100 ? 'Below Allowable Cost' : 'Within Allowable Cost');
 
             $scheduleStatus = 'On Schedule';
             if (!$project->actual_start_date) {
@@ -173,11 +173,11 @@
                     </div>
                     <div>
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">BPI</p>
-                        <p class="text-xs font-black {{ $budgetIndex < 0 ? 'text-rose-600' : ($budgetIndex > 0 ? 'text-amber-600' : 'text-slate-900') }}">{{ number_format($budgetIndex * 100, 2) }}%</p>
+                        <p class="text-xs font-black {{ $budgetIndex < 100 ? 'text-emerald-600' : ($budgetIndex > 100 ? 'text-rose-600' : 'text-amber-600') }}">{{ number_format($budgetIndex, 2) }}%</p>
                     </div>
                     <div>
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Budget Performance</p>
-                        <p class="text-xs font-black {{ $signedBudgetVariance > 0 ? 'text-rose-600' : ($signedBudgetVariance < 0 ? 'text-emerald-600' : 'text-slate-900') }}">{{ $budgetPerformance }}</p>
+                        <p class="text-xs font-black {{ $budgetIndex < 100 ? 'text-emerald-600' : ($budgetIndex > 100 ? 'text-rose-600' : 'text-amber-600') }}">{{ $budgetPerformance }}</p>
                     </div>
                 </div>
                 @endif
@@ -200,11 +200,11 @@
                         </div>
                         <div>
                             <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">CPI</p>
-                            <p class="text-xs font-black {{ $costEacIndex > 0 ? 'text-emerald-600' : ($costEacIndex < 0 ? 'text-rose-600' : 'text-slate-900') }}">{{ number_format($costEacIndex * 100, 2) }}%</p>
+                            <p class="text-xs font-black {{ $cpi < 100 ? 'text-rose-600' : ($cpi > 100 ? 'text-emerald-600' : 'text-amber-600') }}">{{ number_format($cpi, 2) }}%</p>
                         </div>
                         <div>
                             <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Performance</p>
-                            <p class="text-xs font-black {{ $costVariance < 0 ? 'text-rose-600' : ($costVariance > 0 ? 'text-emerald-600' : 'text-[#00ADC5]') }}">{{ $costPerformance }}</p>
+                            <p class="text-xs font-black {{ $cpi < 100 ? 'text-rose-600' : ($cpi > 100 ? 'text-emerald-600' : 'text-amber-600') }}">{{ $costPerformance }}</p>
                         </div>
                         @endif
                 </div>

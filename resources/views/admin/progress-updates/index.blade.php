@@ -102,11 +102,11 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Planned</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Actual</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">SPI</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">PSPI</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">CPI</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revenue Planned</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revenue Actual</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revenue Variance</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">FSPI</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Data Date</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Last Edit</th>
                             <th class="px-6 py-3 text-right border-b border-[#00515f]/30"></th>
@@ -184,12 +184,11 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     @php
-                                        $revenueVariance = ($update->revenue_actual ?? 0) - ($update->revenue_planned ?? 0);
-                                        $varianceColor = $revenueVariance >= 0 ? 'text-emerald-600' : 'text-rose-600';
+                                        $fspi = $update->revenue_planned > 0 ? ($update->revenue_actual / $update->revenue_planned) * 100 : 0;
+                                        $fspiColor = $fspi >= 80 ? 'text-emerald-600' : ($fspi >= 70 ? 'text-amber-600' : 'text-rose-600');
                                     @endphp
-                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 {{ $varianceColor }} text-[11px] font-black tabular-nums tracking-tight shadow-sm">
-                                        <span class="text-slate-500 font-bold mr-1">ETB</span>
-                                        {{ number_format($revenueVariance) }}
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 {{ $fspiColor }} text-[11px] font-black tabular-nums tracking-tight shadow-sm">
+                                        {{ number_format($fspi, 1) }}%
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">

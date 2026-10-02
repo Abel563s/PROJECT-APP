@@ -152,21 +152,14 @@ class DashboardController extends Controller
             $budgetAtCompletion = (float) ($project->budget_at_completion ?? 0);
             $signedBudgetVariance = $revisedBudget - $budgetAtCompletion;
             $budgetVariance = $revisedBudget - $budgetAtCompletion;
-            $budgetPerformance = $budgetVariance > 0 ? 'Above Budget' : ($budgetVariance < 0 ? 'Under Budget' : 'On Budget');
-            $budgetIndexPercent = $revisedBudget > 0 ? round(($budgetVariance / $revisedBudget) * 100, 1) : 0;
+            $budgetIndexPercent = $budgetAtCompletion > 0 ? round(($revisedBudget / $budgetAtCompletion) * 100, 1) : 0;
+            $budgetPerformance = $budgetIndexPercent < 100 ? 'Under Budget' : ($budgetIndexPercent > 100 ? 'Above Budget' : 'On Budget');
 
             $allowableCost = (float) ($project->total_allowable_cost ?? 0);
             $costAtCompletion = (float) ($project->cost_at_completion ?? 0);
             $costVariance = $allowableCost - $costAtCompletion;
-            $costEacIndexPercent = $allowableCost > 0 ? round(($costVariance / $allowableCost) * 100, 1) : 0;
-
-            if ($costVariance < 0) {
-                $costPerformance = 'Above Allowable Cost';
-            } elseif ($costVariance > 0) {
-                $costPerformance = 'Below Allowable Cost';
-            } else {
-                $costPerformance = 'Within Allowable Cost';
-            }
+            $costEacIndexPercent = $costAtCompletion > 0 ? round(($allowableCost / $costAtCompletion) * 100, 1) : 0;
+            $costPerformance = $costEacIndexPercent < 100 ? 'Above Allowable Cost' : ($costEacIndexPercent > 100 ? 'Below Allowable Cost' : 'Within Allowable Cost');
 
             if ($scheduleStatus !== 'Behind Schedule' && $budgetPerformance !== 'Above Budget' && $scheduleStatus !== 'Not Started') {
                 $overallPerformance = 'Good';
@@ -190,6 +183,7 @@ class DashboardController extends Controller
                 'variation' => (float) ($project->variation ?? 0),
                 'contract_budget' => $contractBudget,
                 'revised_budget' => $revisedBudget,
+                'budget_at_completion' => $budgetAtCompletion,
                 'total_allowable_cost' => $allowableCost,
                 'cost_at_completion' => $costAtCompletion,
                 'baseline_start_date' => $project->baseline_start_date?->format('Y-m-d'),
@@ -313,6 +307,24 @@ class DashboardController extends Controller
                 'below' => $filteredProjects->where('status', 'completed')->where('cost_performance', 'Below Allowable Cost')->count(),
                 'with_allowable' => $filteredProjects->where('status', 'completed')->where('cost_performance', 'Within Allowable Cost')->count(),
                 'above' => $filteredProjects->where('status', 'completed')->where('cost_performance', 'Above Allowable Cost')->count(),
+                'total' => $filteredProjects->where('status', 'completed')->count(),
+            ],
+            'closing_status' => [
+                'pa_received' => $filteredProjects->where('status', 'completed')->where('closing_status', 'PA Received')->count(),
+                'fa_received' => $filteredProjects->where('status', 'completed')->where('closing_status', 'FA Received')->count(),
+                'total' => $filteredProjects->where('status', 'completed')->count(),
+            ],
+            'budget_performance' => [
+                'under' => $filteredProjects->where('status', 'completed')->where('budget_performance', 'Under Budget')->count(),
+                'on_budget' => $filteredProjects->where('status', 'completed')->where('budget_performance', 'On Budget')->count(),
+                'above' => $filteredProjects->where('status', 'completed')->where('budget_performance', 'Above Budget')->count(),
+                'total' => $filteredProjects->where('status', 'completed')->count(),
+            ],
+            'project_sector' => [
+                'building' => $filteredProjects->where('status', 'completed')->where('project_type', 'Building')->count(),
+                'fit_out' => $filteredProjects->where('status', 'completed')->where('project_type', 'Fit-Out')->count(),
+                'infrastructure' => $filteredProjects->where('status', 'completed')->where('project_type', 'Infrastructure')->count(),
+                'water_energy' => $filteredProjects->where('status', 'completed')->where('project_type', 'Water & Energy')->count(),
                 'total' => $filteredProjects->where('status', 'completed')->count(),
             ],
         ];

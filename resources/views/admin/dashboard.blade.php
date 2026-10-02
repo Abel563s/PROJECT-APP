@@ -220,9 +220,20 @@
             </div>
         </div>
 
-        <div id="analyticsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3 mt-4">
-                <!-- Charts injected by JS -->
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-black text-slate-900 tracking-tight">Completed Projects Analytics</h3>
+                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Distribution across key project dimensions</p>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[8px] font-black uppercase tracking-widest border border-emerald-100">Completed</span>
             </div>
+            <div class="p-5">
+                <div id="analyticsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <!-- Charts injected by JS -->
+                </div>
+            </div>
+        </div>
 
         <!-- Performance Summary -->
         <div class="bg-white rounded-2xl shadow-lg border overflow-hidden performance-card">
@@ -343,16 +354,6 @@
                     </div>
                     <div class="p-4">
                         <div id="matrixCostRow" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
-                    </div>
-                </div>
-
-                <!-- Closing Status -->
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300">
-                    <div class="p-4 border-b border-slate-50 text-center">
-                        <h4 class="text-xs font-black text-slate-900 uppercase tracking-widest">Closing Status</h4>
-                    </div>
-                    <div class="p-4">
-                        <div id="matrixClosingChart" class="w-full" style="height: 220px;"></div>
                     </div>
                 </div>
             </div>
@@ -808,9 +809,9 @@
 
         function renderLegend() {
             const container = document.getElementById('chartLegend');
-            const aheadLabel = currentTab === 'budget' || currentTab === 'cost' ? 'Below / Under' : 'Ahead';
-            const onLabel = currentTab === 'budget' ? 'On Budget' : currentTab === 'cost' ? 'Within Allowable' : 'On Schedule';
-            const behindLabel = currentTab === 'budget' || currentTab === 'cost' ? 'Above / Over' : 'Behind';
+            const aheadLabel = currentTab === 'schedule' ? 'Ahead' : currentTab === 'budget' ? 'Under Budget' : 'Below Allowable';
+            const onLabel = currentTab === 'schedule' ? 'On Schedule' : currentTab === 'budget' ? 'On Budget' : 'Within Allowable';
+            const behindLabel = currentTab === 'schedule' ? 'Behind' : currentTab === 'budget' ? 'Above Budget' : 'Above Allowable';
 
             container.innerHTML = `
                 <div class="flex items-center gap-1.5">
@@ -858,19 +859,18 @@
                 const val = currentTab === 'schedule' ? p.schedule_performance_percent : currentTab === 'budget' ? p.budget_index_percent : p.cost_performance_percent;
                 values.push(val);
                 if (currentTab === 'schedule') {
-                    if (p.schedule_status === 'Ahead of Schedule') colors.push('#10b981');
-                    else if (p.schedule_status === 'On Schedule') colors.push('#f59e0b');
-                    else if (p.schedule_status === 'Behind Schedule') colors.push('#ef4444');
-                    else colors.push('#94a3b8');
+                    if (p.schedule_performance_percent >= 100) colors.push('#10b981');
+                    else if (p.schedule_performance_percent >= 70) colors.push('#f59e0b');
+                    else colors.push('#ef4444');
                 } else if (currentTab === 'budget' || currentTab === 'cost') {
                     if (currentTab === 'budget') {
-                        if (val > 0) colors.push('#10b981');
-                        else if (val === 0) colors.push('#94a3b8');
+                        if (val < 100) colors.push('#10b981');
+                        else if (val === 100) colors.push('#f59e0b');
                         else colors.push('#ef4444');
                     } else {
-                        if (val > 0) colors.push('#10b981');
-                        else if (val === 0) colors.push('#94a3b8');
-                        else colors.push('#ef4444');
+                        if (val < 100) colors.push('#ef4444');
+                        else if (val === 100) colors.push('#f59e0b');
+                        else colors.push('#10b981');
                     }
                 } else {
                     colors.push('#00ADC5');
@@ -1087,18 +1087,14 @@
                         const project = sortedProjects[dataPointIndex];
                         if (!project) return '';
                         let content = `<div style="padding: 10px 14px; font-family: 'Inter', sans-serif; min-width: 260px; border-radius: 10px;">`;
-                        content += `<div style="font-weight: 800; font-size: 12px; color: #0f172a; margin-bottom: 6px;">${project.project_name}</div>`;
-                        content += `<div style="font-weight: 700; font-size: 10px; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.08em;">${project.project_code} • ${tabTitles[currentTab]}</div>`;
+                        content += `<div style="font-weight: 800; font-size: 12px; color: #0f172a; margin-bottom: 6px;">${project.project_code}</div>`;
 
                         if (currentTab === 'schedule') {
                             const statusColor = project.schedule_status === 'Behind Schedule' ? '#ef4444' : project.schedule_status === 'Ahead of Schedule' ? '#10b981' : '#3b82f6';
                             const schedulePercent = Math.round(project.schedule_performance_percent);
-                            let schedulePercentColor = '#94a3b8';
-                            if (schedulePercent > 100) schedulePercentColor = '#10b981';
-                            else if (schedulePercent === 100) schedulePercentColor = '#94a3b8';
-                            else if (schedulePercent >= 80) schedulePercentColor = '#10b981';
-                            else if (schedulePercent > 0) schedulePercentColor = '#f59e0b';
-                            else schedulePercentColor = '#ef4444';
+                            let schedulePercentColor = '#ef4444';
+                            if (schedulePercent >= 100) schedulePercentColor = '#10b981';
+                            else if (schedulePercent >= 70) schedulePercentColor = '#f59e0b';
                             content += `<div style="font-weight: 800; font-size: 20px; color: ${schedulePercentColor}; margin-bottom: 8px;">${schedulePercent}%</div>`;
                             if (project.status === 'completed') {
                                 content += `<div style="display: grid; gap: 3px; font-size: 10px; color: #475569; margin-bottom: 8px;">`;
@@ -1130,21 +1126,27 @@
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Actual Finish</span><span style="font-weight: 700;">${project.actual_finish_date || '---'}</span></div>`;
                             content += `</div>`;
                         } else if (currentTab === 'budget') {
-                            const perfColor = project.budget_performance === 'Above Budget' ? '#ef4444' : project.budget_performance === 'Under Budget' ? '#10b981' : '#3b82f6';
-                            content += `<div style="font-weight: 800; font-size: 20px; color: ${project.budget_index_percent < 0 ? '#ef4444' : project.budget_index_percent > 0 ? '#10b981' : '#94a3b8'}; margin-bottom: 8px;">${Math.round(project.budget_index_percent)}%</div>`;
+                            const perfColor = project.budget_performance === 'Above Budget' ? '#ef4444' : project.budget_performance === 'Under Budget' ? '#10b981' : '#f59e0b';
+                            const bpi = Math.round(project.budget_index_percent);
+                            const bpiColor = bpi < 100 ? '#10b981' : bpi > 100 ? '#ef4444' : '#f59e0b';
+                            content += `<div style="font-weight: 800; font-size: 20px; color: ${bpiColor}; margin-bottom: 8px;">${bpi}%</div>`;
                             content += `<div style="display: grid; gap: 3px; font-size: 10px; color: #475569;">`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Performance</span><span style="font-weight: 700; color: ${perfColor};">${project.budget_performance}</span></div>`;
-                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Budget Variance</span><span style="font-weight: 700;">ETB ${Math.round(project.budget_variance).toLocaleString()}</span></div>`;
-                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Contract Budget</span><span style="font-weight: 700;">ETB ${Math.round(project.contract_budget).toLocaleString()}</span></div>`;
+                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Budget at Completion</span><span style="font-weight: 700;">ETB ${Math.round(project.budget_at_completion).toLocaleString()}</span></div>`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Revised Budget</span><span style="font-weight: 700;">ETB ${Math.round(project.revised_budget).toLocaleString()}</span></div>`;
+                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Contract Budget</span><span style="font-weight: 700;">ETB ${Math.round(project.contract_budget).toLocaleString()}</span></div>`;
+                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Budget Variance</span><span style="font-weight: 700;">ETB ${Math.round(project.budget_variance).toLocaleString()}</span></div>`;
                             content += `</div>`;
                         } else if (currentTab === 'cost') {
-                            const perfColor = project.cost_performance === 'Above Allowable Cost' ? '#ef4444' : project.cost_performance === 'Below Allowable Cost' ? '#10b981' : '#3b82f6';
-                            content += `<div style="font-weight: 800; font-size: 20px; color: ${project.cost_performance_percent < 0 ? '#ef4444' : project.cost_performance_percent > 0 ? '#10b981' : '#94a3b8'}; margin-bottom: 8px;">${Math.round(project.cost_performance_percent)}%</div>`;
+                            const perfColor = project.cost_performance === 'Above Allowable Cost' ? '#ef4444' : project.cost_performance === 'Below Allowable Cost' ? '#10b981' : '#f59e0b';
+                            const cpi = Math.round(project.cost_performance_percent);
+                            const cpiColor = cpi < 100 ? '#ef4444' : cpi > 100 ? '#10b981' : '#f59e0b';
+                            content += `<div style="font-weight: 800; font-size: 20px; color: ${cpiColor}; margin-bottom: 8px;">${cpi}%</div>`;
                             content += `<div style="display: grid; gap: 3px; font-size: 10px; color: #475569;">`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Performance</span><span style="font-weight: 700; color: ${perfColor};">${project.cost_performance}</span></div>`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Allowable Cost</span><span style="font-weight: 700;">ETB ${Math.round(project.total_allowable_cost).toLocaleString()}</span></div>`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Cost at Completion</span><span style="font-weight: 700;">ETB ${Math.round(project.cost_at_completion).toLocaleString()}</span></div>`;
+                            content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Cost Variance</span><span style="font-weight: 700;">ETB ${Math.round(project.cost_variance).toLocaleString()}</span></div>`;
                             content += `</div>`;
                         }
                         content += `</div>`;
@@ -1179,7 +1181,7 @@
 
             window.statusPieInstance = new ApexCharts(existingChart, {
                 chart: {
-                    type: 'pie',
+                    type: 'donut',
                     height: '100%',
                     animations: { enabled: true, easing: 'easeinout', speed: 500 }
                 },
@@ -1194,6 +1196,19 @@
                         expandOnClick: false,
                         dataLabels: {
                             offset: -2
+                        },
+                        donut: {
+                            size: '60%',
+                            labels: {
+                                show: true,
+                                value: {
+                                    show: true,
+                                    fontSize: '14px',
+                                    fontWeight: 800,
+                                    color: '#0f172a',
+                                    offsetY: 0
+                                }
+                            }
                         }
                     }
                 },
@@ -1217,7 +1232,13 @@
                     width: 2,
                     colors: ['#fff']
                 },
-                tooltip: { theme: 'light' }
+                tooltip: {
+                    theme: 'light',
+                    style: {
+                        fontSize: '10px',
+                        fontFamily: 'Inter, sans-serif'
+                    }
+                }
             });
 
             window.statusPieInstance.render();
@@ -1267,11 +1288,12 @@
                 if (!chartData) return;
 
                 const chartId = `matrix-${config.key}`;
+                const isSectorChart = chartId.includes('time_by_sector') || chartId.includes('budget_by_sector') || chartId.includes('cost_by_sector');
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300';
                 card.innerHTML = `
                     <div class="p-3 border-b border-slate-50">
-                        <p class="text-[8px] font-black text-slate-900 uppercase tracking-widest truncate">${config.title}</p>
+                        <p class="text-[8px] font-black text-slate-900 uppercase tracking-widest leading-tight">${config.title}</p>
                     </div>
                     <div class="p-3">
                         <div id="${chartId}" style="height: 180px;"></div>
@@ -1285,11 +1307,15 @@
                     data: ds.values || [],
                 }));
 
-                const colors = chartData.series?.map((ds, idx) => {
-                    if (idx === 0) return '#10b981';
-                    if (idx === 1) return '#00ADC5';
-                    return '#f59e0b';
-                }) || ['#10b981', '#00ADC5', '#f59e0b'];
+                const getColorForDataset = (name) => {
+                    const normalized = (name || '').toLowerCase();
+                    if (normalized.includes('behind') || normalized.includes('above') || normalized.includes('above allowable') || normalized.includes('above budget')) return '#ef4444';
+                    if (normalized.includes('ahead') || normalized.includes('below') || normalized.includes('below allowable') || normalized.includes('under')) return '#10b981';
+                    if (normalized.includes('on') || normalized.includes('within')) return '#f59e0b';
+                    return '#00ADC5';
+                };
+
+                const colors = chartData.series?.map(ds => getColorForDataset(ds.name)) || ['#10b981', '#00ADC5', '#f59e0b'];
 
                 if (categories.length === 0 || series.length === 0) {
                     document.getElementById(chartId).innerHTML = `
@@ -1324,7 +1350,8 @@
                             rotate: 0,
                             rotateAlways: false,
                             hideOverlappingLabels: true,
-                            trim: true,
+                            trim: false,
+                            maxHeight: 40,
                         },
                         axisBorder: { show: false },
                         axisTicks: { show: false },
@@ -1358,6 +1385,10 @@
                     },
                     tooltip: {
                         theme: 'light',
+                        style: {
+                            fontSize: '10px',
+                            fontFamily: 'Inter, sans-serif'
+                        },
                         y: { formatter: (val) => `${Math.round(val)}%` },
                     },
                     grid: {
@@ -1371,89 +1402,6 @@
                     theme: { mode: 'light' },
                 }).render();
             });
-
-            const closingData = matrix.closing_status;
-            if (closingData) {
-                const closingContainer = document.getElementById('matrixClosingChart');
-                if (closingContainer) {
-                    const closingSeries = closingData.series?.[0]?.values || [];
-                    const closingLabels = closingData.xaxis || [];
-                    const closingCounts = closingData.series?.[0]?.counts || [];
-
-                    const palette = ['#10b981', '#f59e0b', '#00ADC5', '#6366f1', '#EF4444', '#8b5cf6', '#EC4899', '#14b8a6'];
-                    const pointColors = closingLabels.map((_, i) => palette[i % palette.length]);
-
-                    if (closingSeries.length > 0) {
-                        new ApexCharts(closingContainer, {
-                            chart: {
-                                type: 'bar',
-                                height: 220,
-                                animations: { enabled: true, easing: 'easeinout', speed: 400 },
-                                toolbar: { show: false },
-                                background: 'transparent',
-                            },
-                            plotOptions: {
-                                bar: {
-                                    horizontal: true,
-                                    columnWidth: '60%',
-                                    borderRadius: 3,
-                                    borderRadiusApplication: 'end',
-                                    distributed: true,
-                                },
-                            },
-                            series: [{ name: 'Projects', data: closingSeries }],
-                            xaxis: {
-                                categories: closingLabels,
-                                labels: {
-                                    style: { fontSize: '9px', fontWeight: 700, colors: '#475569' },
-                                },
-                                axisBorder: { show: false },
-                                axisTicks: { show: false },
-                            },
-                            yaxis: {
-                                labels: {
-                                    style: { fontSize: '9px', fontWeight: 700, colors: '#475569' },
-                                    offsetX: -6,
-                                },
-                            },
-                            colors: pointColors,
-                            fill: {
-                                type: 'solid',
-                            },
-                            dataLabels: {
-                                enabled: true,
-                                style: {
-                                    fontSize: '9px',
-                                    fontWeight: 800,
-                                    colors: ['#fff'],
-                                },
-                                formatter: (val) => val > 0 ? `${Math.round(val)}%` : '',
-                                textAnchor: 'start',
-                                offsetX: 6,
-                                offsetY: 0,
-                            },
-                            legend: { show: false },
-                            tooltip: {
-                                theme: 'light',
-                                y: {
-                                    formatter: (val, opts) => {
-                                        const count = closingCounts[opts.dataPointIndex] ?? val;
-                                        return `${Math.round(val)}% (${count} projects)`;
-                                    },
-                                },
-                            },
-                            grid: {
-                                borderColor: '#f1f5f9',
-                                strokeDashArray: 3,
-                                xaxis: { lines: { show: true } },
-                                yaxis: { lines: { show: false } },
-                                padding: { top: 0, right: 12, bottom: 0, left: 12 },
-                            },
-                            theme: { mode: 'light' },
-                        }).render();
-                    }
-                }
-            }
         }
 
         function getScheduleBadge(status) {
@@ -1469,7 +1417,7 @@
         function getBudgetBadge(status) {
             const config = {
                 'Under Budget': 'bg-emerald-50 text-emerald-600 border-emerald-200',
-                'On Budget': 'bg-blue-50 text-blue-600 border-blue-200',
+                'On Budget': 'bg-rose-50 text-rose-600 border-rose-200',
                 'Above Budget': 'bg-rose-50 text-rose-600 border-rose-200',
             };
             return `<span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider ${config[status] || 'bg-slate-100 text-slate-600 border-slate-200'} border shadow-sm">${status}</span>`;
@@ -1478,7 +1426,7 @@
         function getCostBadge(status) {
             const config = {
                 'Below Allowable Cost': 'bg-emerald-50 text-emerald-600 border-emerald-200',
-                'Within Allowable Cost': 'bg-blue-50 text-blue-600 border-blue-200',
+                'Within Allowable Cost': 'bg-rose-50 text-rose-600 border-rose-200',
                 'Above Allowable Cost': 'bg-rose-50 text-rose-600 border-rose-200',
             };
             return `<span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider ${config[status] || 'bg-slate-100 text-slate-600 border-slate-200'} border shadow-sm">${status}</span>`;
@@ -1501,8 +1449,8 @@
             document.getElementById('drawerProjectCode').textContent = project.project_code;
 
             const scheduleColor = project.schedule_status === 'Behind Schedule' ? 'text-rose-600' : project.schedule_status === 'Ahead of Schedule' ? 'text-emerald-600' : 'text-amber-600';
-            const budgetColor = project.budget_performance === 'Above Budget' ? 'text-rose-600' : project.budget_performance === 'Under Budget' ? 'text-emerald-600' : 'text-blue-600';
-            const costColor = project.cost_performance === 'Above Allowable Cost' ? 'text-rose-600' : project.cost_performance === 'Below Allowable Cost' ? 'text-emerald-600' : 'text-blue-600';
+            const budgetColor = project.budget_performance === 'Above Budget' ? 'text-rose-600' : project.budget_performance === 'Under Budget' ? 'text-emerald-600' : 'text-rose-600';
+            const costColor = project.cost_performance === 'Above Allowable Cost' ? 'text-rose-600' : project.cost_performance === 'Below Allowable Cost' ? 'text-emerald-600' : 'text-rose-600';
             const overallColor = project.overall_performance === 'Good' ? 'text-emerald-600' : 'text-rose-600';
 
             document.getElementById('drawerContent').innerHTML = `
@@ -1720,31 +1668,70 @@
                 emptyMessage: 'No completed projects available for sector breakdown.',
                 order: 3,
             },
+            closing_status: {
+                title: 'Closing Status',
+                description: 'Completed projects closing status for FA and PA received.',
+                categories: [
+                    { key: 'pa_received', label: 'PA Received', abbr: 'PA', color: '#6366f1' },
+                    { key: 'fa_received', label: 'FA Received', abbr: 'FA', color: '#10b981' },
+                ],
+                totalLabel: 'Completed',
+                filterParam: 'closing_status',
+                emptyMessage: 'No completed projects available for closing status review.',
+                order: 4,
+            },
             cost_performance: {
                 title: 'Cost Performance',
                 description: 'Completed projects cost health against allowable limits.',
                 categories: [
                     { key: 'below', label: 'Below', abbr: 'BLW', color: '#10b981' },
-                    { key: 'with_allowable', label: 'Within', abbr: 'WTH', color: '#00ADC5' },
+                    { key: 'with_allowable', label: 'Within', abbr: 'WTH', color: '#f59e0b' },
                     { key: 'above', label: 'Above', abbr: 'ABV', color: '#f43f5e' },
                 ],
                 totalLabel: 'Below/With/Above',
                 filterParam: 'cost_filter',
                 emptyMessage: 'No completed projects available for cost performance review.',
-                order: 4,
+                order: 5,
             },
             schedule_performance: {
                 title: 'Schedule Performance',
                 description: 'Completed projects schedule performance',
                 categories: [
                     { key: 'ahead', label: 'Ahead', abbr: 'AHD', color: '#10b981' },
-                    { key: 'on_schedule', label: 'ON', abbr: 'ONS', color: '#00ADC5' },
+                    { key: 'on_schedule', label: 'ON', abbr: 'ONS', color: '#f59e0b' },
                     { key: 'behind', label: 'Behind', abbr: 'BHD', color: '#f43f5e' },
                 ],
                 totalLabel: 'Completed',
                 filterParam: 'schedule_filter',
                 emptyMessage: 'No completed projects available for schedule review.',
-                order: 5,
+                order: 6,
+            },
+            budget_performance: {
+                title: 'Budget Performance',
+                description: 'Completed projects budget health against revised budget.',
+                categories: [
+                    { key: 'under', label: 'Under', abbr: 'UND', color: '#10b981' },
+                    { key: 'on_budget', label: 'On Budget', abbr: 'ON', color: '#f59e0b' },
+                    { key: 'above', label: 'Above', abbr: 'ABV', color: '#f43f5e' },
+                ],
+                totalLabel: 'Completed',
+                filterParam: 'budget_filter',
+                emptyMessage: 'No completed projects available for budget performance review.',
+                order: 7,
+            },
+            project_sector: {
+                title: 'Project Sector',
+                description: 'Completed projects by project sector.',
+                categories: [
+                    { key: 'building', label: 'Building', abbr: 'BLD', color: '#10b981' },
+                    { key: 'fit_out', label: 'Fit-Out', abbr: 'FIT', color: '#00ADC5' },
+                    { key: 'infrastructure', label: 'Infrastructure', abbr: 'INF', color: '#f59e0b' },
+                    { key: 'water_energy', label: 'Water & Energy', abbr: 'W&E', color: '#6366f1' },
+                ],
+                totalLabel: 'Completed',
+                filterParam: 'project_sector',
+                emptyMessage: 'No completed projects available for sector breakdown.',
+                order: 8,
             },
         };
 
@@ -1764,11 +1751,10 @@
                 const accentColor = config.categories[0]?.color || '#6366f1';
 
                 const card = document.createElement('div');
-                card.className = 'analytics-card group relative bg-white rounded-2xl border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col analytics-card-pie';
+                card.className = 'analytics-card group relative bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col analytics-card-pie';
                 card.innerHTML = `
-                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none analytics-card-hover-overlay"></div>
-                    <div class="relative z-10 flex flex-col flex-1 p-2.5">
-                        <div class="flex items-center justify-center mb-1.5">
+                    <div class="relative z-10 flex flex-col flex-1 p-3 pt-4">
+                        <div class="flex items-center justify-center mb-2">
                             <h4 class="text-[9px] font-black text-slate-900 uppercase tracking-widest leading-none">${config.title}</h4>
                         </div>
                         <div class="flex flex-col items-center gap-2">
@@ -2020,6 +2006,130 @@
                     };
                 }
 
+                case 'closing_status': {
+                    const paReceived = counts[0] || 0;
+                    const faReceived = counts[1] || 0;
+
+                    if (faReceived > 0 && paReceived === 0) {
+                        return {
+                            primary: `${faReceived} project${faReceived > 1 ? 's' : ''} ${faReceived > 1 ? 'have' : 'has'} received FA.`,
+                            secondary: 'Closing status: FA received',
+                            statusColor: '#10b981',
+                            statusText: 'FA received',
+                        };
+                    }
+
+                    if (paReceived > 0 && faReceived === 0) {
+                        return {
+                            primary: `${paReceived} project${paReceived > 1 ? 's' : ''} ${paReceived > 1 ? 'have' : 'has'} received PA.`,
+                            secondary: 'Closing status: PA received',
+                            statusColor: '#6366f1',
+                            statusText: 'PA received',
+                        };
+                    }
+
+                    if (faReceived > 0 && paReceived > 0) {
+                        return {
+                            primary: `${faReceived} with FA, ${paReceived} with PA received.`,
+                            secondary: 'Closing status: Mixed',
+                            statusColor: '#6366f1',
+                            statusText: 'Mixed',
+                        };
+                    }
+
+                    return {
+                        primary: 'No closing status data available.',
+                        secondary: '',
+                        statusColor: '#94a3b8',
+                        statusText: 'No data',
+                    };
+                }
+
+                case 'budget_performance': {
+                    const under = counts[0] || 0;
+                    const onBudget = counts[1] || 0;
+                    const above = counts[2] || 0;
+
+                    if (above > 0 && onBudget === 0 && under === 0) {
+                        return {
+                            primary: `${above} project${above > 1 ? 's' : ''} ${above > 1 ? 'are' : 'is'} above revised budget.`,
+                            secondary: 'Budget status: Above budget',
+                            statusColor: '#f43f5e',
+                            statusText: 'Above budget',
+                        };
+                    }
+
+                    if (onBudget > 0 && above === 0 && under === 0) {
+                        return {
+                            primary: 'All projects are currently on budget.',
+                            secondary: 'Budget status: On budget',
+                            statusColor: '#10b981',
+                            statusText: 'On budget',
+                        };
+                    }
+
+                    if (under > 0 && onBudget > 0 && above > 0) {
+                        return {
+                            primary: `${under} under, ${onBudget} on budget, ${above} above budget.`,
+                            secondary: 'Budget status: Mixed',
+                            statusColor: '#f59e0b',
+                            statusText: 'Mixed',
+                        };
+                    }
+
+                    if (under > 0) {
+                        return {
+                            primary: `${under} project${under > 1 ? 's' : ''} ${under > 1 ? 'are' : 'is'} under revised budget.`,
+                            secondary: 'Budget status: Under budget',
+                            statusColor: '#10b981',
+                            statusText: 'Under budget',
+                        };
+                    }
+
+                    return {
+                        primary: 'No budget performance data available.',
+                        secondary: '',
+                        statusColor: '#94a3b8',
+                        statusText: 'No data',
+                    };
+                }
+
+                case 'project_sector': {
+                    const building = counts[0] || 0;
+                    const fitOut = counts[1] || 0;
+                    const infrastructure = counts[2] || 0;
+                    const waterEnergy = counts[3] || 0;
+
+                    if (building === 0 && fitOut === 0 && infrastructure === 0 && waterEnergy === 0) {
+                        return {
+                            primary: 'No project sector data available.',
+                            secondary: '',
+                            statusColor: '#94a3b8',
+                            statusText: 'No data',
+                        };
+                    }
+
+                    const maxCount = Math.max(building, fitOut, infrastructure, waterEnergy);
+                    const maxLabel = categories[counts.indexOf(maxCount)]?.label || 'Unknown';
+
+                    if (maxCount === total) {
+                        return {
+                            primary: `${maxLabel} projects represent 100% of the current portfolio.`,
+                            secondary: `Primary sector: ${maxLabel}`,
+                            statusColor: '#6366f1',
+                            statusText: maxLabel,
+                        };
+                    }
+
+                    const percent = total > 0 ? Math.round((maxCount / total) * 100) : 0;
+                    return {
+                        primary: `${maxLabel} is the primary sector at ${percent}%.`,
+                        secondary: `Primary sector: ${maxLabel}`,
+                        statusColor: '#6366f1',
+                        statusText: maxLabel,
+                    };
+                }
+
                 default:
                     return {
                         primary: `${total} project${total > 1 ? 's' : ''} in this category.`,
@@ -2073,16 +2183,9 @@
                 analyticsCharts[chartId].destroy();
             }
 
-            const wrapper = chartEl.parentElement;
-            const customTooltip = document.createElement('div');
-            customTooltip.className = 'pie-custom-tooltip';
-            customTooltip.style.cssText = 'position: absolute; pointer-events: none; z-index: 50; display: none; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); padding: 10px 14px; min-width: 200px; font-family: Inter, sans-serif; transition: opacity 0.15s ease;';
-            wrapper.style.position = wrapper.style.position || 'relative';
-            wrapper.appendChild(customTooltip);
-
             analyticsCharts[chartId] = new ApexCharts(chartEl, {
                 chart: {
-                    type: 'pie',
+                    type: 'donut',
                     height: '100%',
                     animations: {
                         enabled: true,
@@ -2096,34 +2199,6 @@
                             if (clickedCat) {
                                 onChartSegmentClick(chartId, clickedCat.key, clickedCat.label);
                             }
-                        },
-                        mouseMove: (event, chartContext, opts) => {
-                            const dataPointIndex = opts && opts.dataPointIndex;
-                            chartContext.el.style.cursor = typeof dataPointIndex === 'number' && dataPointIndex >= 0 ? 'pointer' : 'default';
-
-                            if (typeof dataPointIndex === 'number' && dataPointIndex >= 0 && dataPointIndex < config.categories.length) {
-                                const cat = config.categories[dataPointIndex];
-                                const count = data[cat.key] || 0;
-                                const percent = total > 0 ? Math.round((count / total) * 100) : 0;
-                                customTooltip.innerHTML = `
-                                    <div style="font-weight: 800; font-size: 11px; color: #0f172a; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">${cat.label}</div>
-                                    <div style="font-weight: 800; font-size: 22px; color: ${cat.color}; margin-bottom: 4px;">${count} <span style="font-size: 11px; font-weight: 700; color: #64748b;">Projects</span></div>
-                                    <div style="font-weight: 700; font-size: 11px; color: #64748b;">${percent}% of ${total}</div>
-                                `;
-                                customTooltip.style.display = 'block';
-
-                                const rect = wrapper.getBoundingClientRect();
-                                let left = event.clientX - rect.left + 12;
-                                let top = event.clientY - rect.top - 12;
-
-                                customTooltip.style.left = left + 'px';
-                                customTooltip.style.top = top + 'px';
-                            } else {
-                                customTooltip.style.display = 'none';
-                            }
-                        },
-                        mouseLeave: () => {
-                            customTooltip.style.display = 'none';
                         }
                     },
                     dropShadow: {
@@ -2141,6 +2216,36 @@
                         expandOnClick: false,
                         dataLabels: {
                             offset: -5
+                        },
+                        donut: {
+                            size: '65%',
+                            labels: {
+                                show: true,
+                                name: {
+                                    show: true,
+                                    fontSize: '9px',
+                                    fontWeight: 700,
+                                    color: '#64748b',
+                                    offsetY: 0
+                                },
+                                value: {
+                                    show: true,
+                                    fontSize: '15px',
+                                    fontWeight: 800,
+                                    color: '#0f172a',
+                                    offsetY: 0
+                                },
+                                total: {
+                                    show: true,
+                                    fontSize: '9px',
+                                    fontWeight: 700,
+                                    color: '#94a3b8',
+                                    label: 'Total',
+                                    formatter: function() {
+                                        return total;
+                                    }
+                                }
+                            }
                         }
                     }
                 },
@@ -2150,7 +2255,7 @@
                 legend: { show: false },
                 stroke: {
                     show: true,
-                    width: 2,
+                    width: 3,
                     colors: ['#fff']
                 },
                 dataLabels: {
@@ -2165,10 +2270,45 @@
                         colors: ['#ffffff']
                     },
                     dropShadow: {
-                        enabled: false
+                        enabled: true,
+                        top: 1,
+                        left: 1,
+                        blur: 2,
+                        opacity: 0.4
                     }
                 },
-                tooltip: { enabled: false },
+                tooltip: {
+                    enabled: true,
+                    theme: 'light',
+                    style: {
+                        fontSize: '10px',
+                        fontFamily: 'Inter, sans-serif'
+                    },
+                    y: {
+                        formatter: function(val) {
+                            if (val === null || val === undefined) return '';
+                            return Math.round(val) + '%';
+                        }
+                    },
+                    custom: function({ seriesIndex, dataPointIndex }) {
+                        const cat = config.categories[dataPointIndex];
+                        const count = series[dataPointIndex] || 0;
+                        const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+                        if (!cat) return '';
+                        const color = cat.color || colors[dataPointIndex] || '#6366f1';
+                        return `<div style="padding: 10px 14px; font-family: Inter, sans-serif; min-width: 220px; border-radius: 10px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12);">
+                            <div style="font-weight: 800; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">${cat.label}</div>
+                            <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px;">
+                                <span style="font-weight: 900; font-size: 22px; color: #0f172a; line-height: 1;">${count}</span>
+                                <span style="font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">Projects</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px; padding-top: 5px; border-top: 1px solid #e2e8f0;">
+                                <span style="font-weight: 800; font-size: 11px; color: #0f172a;">${percent}%</span>
+                                <span style="font-size: 9px; font-weight: 600; color: #64748b;">of ${total} total</span>
+                            </div>
+                        </div>`;
+                    }
+                },
                 responsive: [
                     {
                         breakpoint: 768,
@@ -2303,32 +2443,65 @@
             display: inline-block;
         }
 
+        .analytics-container {
+            background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02);
+        }
+        .analytics-container:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.03);
+        }
+
         .analytics-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 300px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 320px;
             position: relative;
             overflow: visible;
+            background: #FFFFFF;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
         }
         .analytics-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
+        }
+        .analytics-card::before {
+            content: none;
+        }
+        .analytics-card:hover::before {
+            content: none;
         }
         #analyticsGrid .apexcharts-canvas {
             margin: 0 auto;
             position: relative;
             z-index: 10;
         }
+        #analyticsGrid .apexcharts-donut,
         #analyticsGrid .apexcharts-pie {
             max-width: 100%;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
             transition: filter 0.3s ease;
         }
+        #analyticsGrid .analytics-card:hover .apexcharts-donut,
         #analyticsGrid .analytics-card:hover .apexcharts-pie {
             filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));
         }
+        #analyticsGrid .apexcharts-donut-label,
         #analyticsGrid .apexcharts-pie-label {
             font-family: 'Inter', sans-serif !important;
             font-size: 10px !important;
+        }
+        #analyticsGrid .apexcharts-donut {
+            position: relative;
+        }
+        #analyticsGrid .apexcharts-donut::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
         }
         #analyticsGrid .analytics-card {
             background: #FFFFFF;
@@ -2346,6 +2519,43 @@
         }
         #analyticsGrid .apexcharts-tooltip {
             z-index: 50 !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        #analyticsGrid .apexcharts-tooltip-title {
+            font-weight: 800 !important;
+            font-size: 10px !important;
+            color: #64748b !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.08em !important;
+            margin-bottom: 6px !important;
+            padding-bottom: 5px !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+        }
+        #analyticsGrid .apexcharts-tooltip-series {
+            font-weight: 900 !important;
+            font-size: 22px !important;
+            color: #0f172a !important;
+            line-height: 1 !important;
+        }
+        #analyticsGrid .apexcharts-tooltip-text {
+            font-size: 9px !important;
+            font-weight: 700 !important;
+            color: #94a3b8 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.06em !important;
+        }
+        #analyticsGrid .apexcharts-tooltip-percent {
+            font-weight: 800 !important;
+            font-size: 11px !important;
+            color: #0f172a !important;
+        }
+        #analyticsGrid .apexcharts-tooltip-y-value {
+            color: #0f172a !important;
         }
         .analytics-card-pie .apexcharts-svg,
         .analytics-card-pie .apexcharts-canvas {
@@ -2359,22 +2569,25 @@
             outline: none !important;
         }
         .analytics-card-pie {
-            border: 1px solid #cbd5e1 !important;
-            box-shadow: none !important;
+            border: 1px solid #cbd5e1;
+            box-shadow: none;
         }
         .analytics-legend-item {
             transition: all 0.15s ease;
             line-height: 1;
             border: 1px solid transparent;
+            backdrop-filter: blur(4px);
         }
         .analytics-legend-item:hover {
-            background: #f8fafc;
+            background: rgba(255,255,255,0.85);
+            border-color: rgba(203, 213, 225, 0.6);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
         }
         .analytics-legend-wrapper {
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
-            gap: 3px;
+            gap: 4px;
             align-items: center;
             justify-content: center;
         }
@@ -2445,16 +2658,14 @@
         }
         #matrixScheduleRow .apexcharts-canvas,
         #matrixBudgetRow .apexcharts-canvas,
-        #matrixCostRow .apexcharts-canvas,
-        #matrixClosingChart .apexcharts-canvas {
+        #matrixCostRow .apexcharts-canvas {
             border: none !important;
             outline: none !important;
             box-shadow: none !important;
         }
         #matrixScheduleRow .apexcharts-svg,
         #matrixBudgetRow .apexcharts-svg,
-        #matrixCostRow .apexcharts-svg,
-        #matrixClosingChart .apexcharts-svg {
+        #matrixCostRow .apexcharts-svg {
             border: none !important;
             outline: none !important;
             box-shadow: none !important;
@@ -2473,8 +2684,28 @@
         #matrixCostRow .apexcharts-bar-area {
             filter: drop-shadow(0 2px 3px rgba(0,0,0,0.08));
         }
-        #matrixClosingChart .apexcharts-bar-area {
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.08));
+        #matrixScheduleRow .apexcharts-xaxis-label,
+        #matrixBudgetRow .apexcharts-xaxis-label,
+        #matrixCostRow .apexcharts-xaxis-label {
+            white-space: normal !important;
+            text-overflow: unset !important;
+            overflow: visible !important;
+            max-height: none !important;
+        }
+        .matrix-sector-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+        }
+        .matrix-sector-legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
         }
         .analytics-card-insight {
             border-top: 1px solid #f1f5f9;
