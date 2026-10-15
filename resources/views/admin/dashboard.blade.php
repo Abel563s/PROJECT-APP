@@ -149,7 +149,9 @@
             <div class="mb-4 flex flex-col gap-2 border-b border-slate-100 pb-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex items-center gap-2.5">
                     <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
-                        <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
+                        <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 5H3M12 19H3M14 3v4M16 17v4M21 12h-9M21 19h-5M21 5h-7M8 10v4M8 12H3"></path>
+                        </svg>
                     </span>
                     <div>
                         <h2 class="text-xs font-extrabold tracking-tight text-slate-800">Project Filters</h2>
@@ -157,7 +159,9 @@
                     </div>
                 </div>
                 <button onclick="clearFilters()" class="inline-flex items-center justify-center gap-1.5 self-start rounded-lg px-2.5 py-1.5 text-[9px] font-bold text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 sm:self-auto" title="Clear Filters">
-                    <i data-lucide="rotate-ccw" class="h-3.5 w-3.5"></i>
+                    <svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8M3 3v5h5"></path>
+                    </svg>
                     Reset filters
                 </button>
             </div>
@@ -165,7 +169,10 @@
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
                 <label class="dashboard-filter-field relative xl:col-span-2">
                     <span class="dashboard-filter-label">Search projects</span>
-                    <i data-lucide="search" class="absolute left-3.5 top-[2.35rem] h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                    <svg aria-hidden="true" class="absolute left-3.5 top-[2.35rem] h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
                     <input type="text" id="searchInput" placeholder="Search by project name or code..."
                         oninput="handleSearch(this.value)"
                         class="dashboard-filter-control w-full pl-10 pr-3">
@@ -177,7 +184,9 @@
                         <select id="filterSector" onchange="applyFilters()" class="dashboard-filter-control w-full appearance-none pl-3 pr-9">
                             <option value="all">All Sectors</option>
                         </select>
-                        <i data-lucide="chevron-down" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"></i>
+                        <svg aria-hidden="true" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
                     </div>
                 </label>
 
@@ -187,7 +196,9 @@
                         <select id="filterDeliveryMethod" onchange="applyFilters()" class="dashboard-filter-control w-full appearance-none pl-3 pr-9">
                             <option value="all">All Delivery Methods</option>
                         </select>
-                        <i data-lucide="chevron-down" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"></i>
+                        <svg aria-hidden="true" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
                     </div>
                 </label>
 
@@ -197,7 +208,9 @@
                         <select id="filterConsultantType" onchange="applyFilters()" class="dashboard-filter-control w-full appearance-none pl-3 pr-9">
                             <option value="all">All Consultant Types</option>
                         </select>
-                        <i data-lucide="chevron-down" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"></i>
+                        <svg aria-hidden="true" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
                     </div>
                 </label>
 
@@ -209,7 +222,9 @@
                             <option value="completed">Completed</option>
                             <option value="in progress">In Progress</option>
                         </select>
-                        <i data-lucide="chevron-down" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"></i>
+                        <svg aria-hidden="true" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
                     </div>
                 </label>
             </div>
@@ -223,7 +238,9 @@
                     <div class="flex items-center justify-between gap-3">
                         <div class="flex min-w-0 items-center gap-2.5">
                             <div class="w-9 h-9 rounded-xl border flex items-center justify-center shadow-sm kpi-icon-total">
-                                <i data-lucide="folder-open" class="w-4 h-4"></i>
+                                <svg aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path>
+                                </svg>
                             </div>
                             <div>
                                 <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Portfolio Overview</p>
@@ -261,7 +278,10 @@
                 <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1">
                         <div class="w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm kpi-icon-completed">
-                            <i data-lucide="wallet" class="w-4 h-4"></i>
+                            <svg aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path>
+                                <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path>
+                            </svg>
                         </div>
                         <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border kpi-badge-completed">Revised Budget</span>
                     </div>
@@ -282,7 +302,11 @@
                 <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1">
                         <div class="w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm kpi-icon-in-progress">
-                            <i data-lucide="banknote" class="w-4 h-4"></i>
+                            <svg aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="20" height="12" x="2" y="6" rx="2"></rect>
+                                <circle cx="12" cy="12" r="2"></circle>
+                                <path d="M6 12h.01M18 12h.01"></path>
+                            </svg>
                         </div>
                         <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border kpi-badge-in-progress">Revised Budget</span>
                     </div>
@@ -303,7 +327,11 @@
                 <div class="relative z-10 p-3.5">
                     <div class="flex items-center justify-between mb-1">
                         <div class="w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm kpi-icon-suspended">
-                            <i data-lucide="hard-hat" class="w-4 h-4"></i>
+                            <svg aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"></path>
+                                <path d="M14 6a6 6 0 0 1 6 6v3M4 15v-3a6 6 0 0 1 6-6"></path>
+                                <rect x="2" y="15" width="20" height="4" rx="1"></rect>
+                            </svg>
                         </div>
                         <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border kpi-badge-suspended">Revised Budget</span>
                     </div>
@@ -1417,13 +1445,14 @@
                 container.appendChild(card);
 
                 const isTimeBySectorChart = config.key === 'time_by_sector';
-                const categories = chartData.xaxis || [];
                 const sourceSeries = chartData.series || [];
+                const sectorNames = ['Private Consultancy', 'Client Engineering Team', 'Government Consultancy'];
+                const categories = isTimeBySectorChart ? [''] : (chartData.xaxis || []);
                 const series = isTimeBySectorChart
-                    ? [{
-                        name: 'Average SPI (%)',
-                        data: sourceSeries[0]?.values || [],
-                    }]
+                    ? sectorNames.map((name, index) => ({
+                        name,
+                        data: [sourceSeries[0]?.values?.[index] || 0],
+                    }))
                     : sourceSeries.map(ds => ({
                         name: ds.name,
                         data: ds.values || [],
@@ -1507,7 +1536,7 @@
                         },
                     },
                     legend: {
-                        show: !isTimeBySectorChart,
+                        show: true,
                         position: 'top',
                         horizontalAlign: 'left',
                         fontSize: '8px',
@@ -1534,7 +1563,9 @@
                     dataLabels: {
                         enabled: true,
                         formatter: function(value, options) {
-                            const count = sourceSeries[options.seriesIndex]?.counts?.[options.dataPointIndex] ?? 0;
+                            const count = isTimeBySectorChart
+                                ? sourceSeries[0]?.counts?.[options.seriesIndex] ?? 0
+                                : sourceSeries[options.seriesIndex]?.counts?.[options.dataPointIndex] ?? 0;
                             return count > 0 ? String(count) : '';
                         },
                         offsetY: -10,
