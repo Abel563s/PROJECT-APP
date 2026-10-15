@@ -18,10 +18,14 @@
     <!-- Floating External Toggle -->
     <button id="sidebarToggle"
         class="absolute -right-4 top-10 w-8 h-8 flex items-center justify-center rounded-full bg-white border border-white/30 text-[#00ADC5] hover:text-[#008C9E] hover:border-white/50 hover:scale-110 active:scale-90 transition-all duration-300 shadow-xl z-[60] group/toggle">
-        <i data-lucide="chevron-left"
-            class="w-4 h-4 sidebar-toggle-icon transition-transform duration-500 group-hover/toggle:translate-x-[-2px]"></i>
-        <i data-lucide="chevron-right"
-            class="w-4 h-4 sidebar-toggle-icon hidden transition-transform duration-500 group-hover/toggle:translate-x-[2px]"></i>
+        <svg viewBox="0 0 24 24" data-sidebar-icon="chevron-left" aria-hidden="true"
+            class="w-4 h-4 sidebar-toggle-icon transition-transform duration-500 group-hover/toggle:translate-x-[-2px]">
+            <use href="{{ asset('images/sidebar-icons.svg') }}#icon-chevron-left"></use>
+        </svg>
+        <svg viewBox="0 0 24 24" data-sidebar-icon="chevron-right" aria-hidden="true"
+            class="w-4 h-4 sidebar-toggle-icon hidden transition-transform duration-500 group-hover/toggle:translate-x-[2px]">
+            <use href="{{ asset('images/sidebar-icons.svg') }}#icon-chevron-right"></use>
+        </svg>
     </button>
 
     <nav class="flex-1 px-4 py-8 space-y-2 overflow-y-auto custom-scrollbar relative z-10 font-inter">
@@ -194,14 +198,18 @@
                     <button @click="open = !open"
                         class="w-full flex items-center gap-3.5 p-3 rounded-xl transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group/item relative {{ $item['active'] ? 'bg-white text-slate-900' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
 
-                        <i data-lucide="{{ $item['icon'] }}"
-                            class="w-5 h-5 shrink-0 transition-all duration-500 {{ $item['active'] ? 'text-[#00ADC5]' : 'opacity-70 group-hover/item:opacity-100' }}"></i>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"
+                            class="w-5 h-5 shrink-0 transition-all duration-500 {{ $item['active'] ? 'text-[#00ADC5]' : 'opacity-70 group-hover/item:opacity-100' }}">
+                            <use href="{{ asset('images/sidebar-icons.svg') }}#icon-{{ $item['icon'] }}"></use>
+                        </svg>
 
                         <span
                             class="sidebar-text font-semibold text-sm whitespace-nowrap tracking-tight transition-all duration-500">{{ $item['label'] }}</span>
 
-                        <i data-lucide="chevron-down" class="w-4 h-4 ml-auto transition-transform duration-300 sidebar-text {{ $item['active'] ? 'text-slate-900' : '' }}"
-                            :class="open ? 'rotate-180' : ''"></i>
+                        <svg viewBox="0 0 24 24" aria-hidden="true" class="w-4 h-4 ml-auto transition-transform duration-300 sidebar-text {{ $item['active'] ? 'text-slate-900' : '' }}"
+                            :class="open ? 'rotate-180' : ''">
+                            <use href="{{ asset('images/sidebar-icons.svg') }}#icon-chevron-down"></use>
+                        </svg>
                     </button>
 
                     <div x-show="open" x-collapse x-cloak class="pl-12 space-y-1 overflow-hidden">
@@ -209,7 +217,9 @@
                             <a href="{{ route($subitem['route']) }}"
                                 class="flex items-center gap-3 p-2 rounded-lg text-sm transition-all duration-200 hover:scale-[1.03] hover:translate-x-0.5 {{ $subitem['active'] ? 'bg-white text-slate-900 font-bold shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/10' }}">
                                 @if(isset($subitem['icon']))
-                                    <i data-lucide="{{ $subitem['icon'] }}" class="w-4 h-4 shrink-0 {{ $subitem['active'] ? 'text-[#00ADC5]' : 'opacity-70' }}"></i>
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" class="w-4 h-4 shrink-0 {{ $subitem['active'] ? 'text-[#00ADC5]' : 'opacity-70' }}">
+                                        <use href="{{ asset('images/sidebar-icons.svg') }}#icon-{{ $subitem['icon'] }}"></use>
+                                    </svg>
                                 @endif
                                 <span class="sidebar-text">{{ $subitem['label'] }}</span>
                             </a>
@@ -228,8 +238,10 @@
                         </div>
                     @endif
 
-                    <i data-lucide="{{ $item['icon'] }}"
-                        class="w-5 h-5 shrink-0 transition-all duration-500 {{ $item['active'] ? 'text-[#00ADC5] scale-110' : 'opacity-70 group-hover/item:opacity-100 group-hover/item:scale-125 group-hover/item:rotate-[5deg]' }}"></i>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"
+                        class="w-5 h-5 shrink-0 transition-all duration-500 {{ $item['active'] ? 'text-[#00ADC5] scale-110' : 'opacity-70 group-hover/item:opacity-100 group-hover/item:scale-125 group-hover/item:rotate-[5deg]' }}">
+                        <use href="{{ asset('images/sidebar-icons.svg') }}#icon-{{ $item['icon'] }}"></use>
+                    </svg>
 
                     <span
                         class="sidebar-text font-bold text-sm whitespace-nowrap tracking-tight transition-all duration-500">{{ $item['label'] }}</span>
@@ -244,7 +256,9 @@
                     @if(isset($item['pop']) && $item['pop'])
                         <div
                             class="absolute right-3 opacity-0 group-hover/item:opacity-100 transition-all duration-500 translate-x-4 group-hover/item:translate-x-0">
-                            <i data-lucide="sparkles" class="w-3 h-3 text-white animate-spin-slow"></i>
+                            <svg viewBox="0 0 24 24" aria-hidden="true" class="w-3 h-3 text-white animate-spin-slow">
+                                <use href="{{ asset('images/sidebar-icons.svg') }}#icon-sparkles"></use>
+                            </svg>
                         </div>
                     @endif
                 </a>
@@ -269,8 +283,10 @@
             <a href="{{ route('admin.settings.index') }}"
                 class="sidebar-text p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-lg transition-all shadow-sm border border-transparent hover:border-white/20 group/settings"
                 title="Security Settings">
-                <i data-lucide="settings"
-                    class="w-4 h-4 group-hover/settings:rotate-90 transition-transform duration-500"></i>
+                <svg viewBox="0 0 24 24" aria-hidden="true"
+                    class="w-4 h-4 group-hover/settings:rotate-90 transition-transform duration-500">
+                    <use href="{{ asset('images/sidebar-icons.svg') }}#icon-settings"></use>
+                </svg>
             </a>
             @endif
         </div>

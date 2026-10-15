@@ -210,8 +210,8 @@
 
                 // Update toggle direction
                 icons.forEach(icon => {
-                    if (icon.getAttribute('data-lucide') === 'chevron-left') icon.classList.add('hidden');
-                    if (icon.getAttribute('data-lucide') === 'chevron-right') icon.classList.remove('hidden');
+                    if (icon.getAttribute('data-sidebar-icon') === 'chevron-left') icon.classList.add('hidden');
+                    if (icon.getAttribute('data-sidebar-icon') === 'chevron-right') icon.classList.remove('hidden');
                 });
             } else {
                 sidebar.classList.remove('w-20');
@@ -221,13 +221,10 @@
 
                 // Update toggle direction
                 icons.forEach(icon => {
-                    if (icon.getAttribute('data-lucide') === 'chevron-left') icon.classList.remove('hidden');
-                    if (icon.getAttribute('data-lucide') === 'chevron-right') icon.classList.add('hidden');
+                    if (icon.getAttribute('data-sidebar-icon') === 'chevron-left') icon.classList.remove('hidden');
+                    if (icon.getAttribute('data-sidebar-icon') === 'chevron-right') icon.classList.add('hidden');
                 });
             }
-
-            // Re-initialize icons because we swapped orientations
-            if (window.lucide) lucide.createIcons();
 
             // Close all open submenus when sidebar is collapsed
             if (collapsed) {
@@ -251,8 +248,12 @@
 
         // Initialize Lucide Icons
         function initLucide() {
-            if (window.lucide) {
-                lucide.createIcons();
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                try {
+                    window.lucide.createIcons();
+                } catch (error) {
+                    console.error('Failed to render Lucide icons from the application bundle.', error);
+                }
             }
         }
 
@@ -261,6 +262,56 @@
         } else {
             initLucide();
         }
+
+        (function ensureProductionIcons() {
+            let fallbackRequested = false;
+
+            function renderIcons() {
+                initLucide();
+
+                if (!document.querySelector('[data-lucide]:not(svg)') || fallbackRequested) return;
+
+                fallbackRequested = true;
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/lucide@1.27.0/dist/umd/lucide.min.js';
+                script.onload = function() {
+                    if (!window.lucide || typeof window.lucide.createIcons !== 'function') {
+                        console.error('Lucide fallback loaded without an icon renderer.');
+                        return;
+                    }
+
+                    const fallbackIcons = {
+                        ...window.lucide.icons,
+                        Blueprint: window.lucide.icons.PanelsTopLeft,
+                        ShieldLock: window.lucide.icons.ShieldCheck,
+                    };
+
+                    window.lucide.createIcons({ icons: fallbackIcons });
+                };
+                script.onerror = function() {
+                    console.error('Failed to load the Lucide icon fallback.');
+                };
+                document.head.appendChild(script);
+            }
+
+            const observer = new MutationObserver(function(mutations) {
+                const addedIcon = mutations.some(function(mutation) {
+                    return Array.from(mutation.addedNodes).some(function(node) {
+                        return node instanceof Element
+                            && (node.matches('[data-lucide]:not(svg)') || node.querySelector('[data-lucide]:not(svg)'));
+                    });
+                });
+
+                if (addedIcon) renderIcons();
+            });
+            observer.observe(document.documentElement, { childList: true, subtree: true });
+
+            if (document.readyState === 'complete') {
+                window.setTimeout(renderIcons, 0);
+            } else {
+                window.addEventListener('load', renderIcons, { once: true });
+            }
+        })();
     </script>
 
     @stack('scripts')
