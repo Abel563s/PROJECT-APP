@@ -17,6 +17,42 @@
             .dashboard-kpi-card h3 {
                 animation: countUp 0.6s ease-out;
             }
+            @keyframes dashboardHeadingEnter {
+                from { opacity: 0; transform: translateY(12px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes dashboardHeadingAccent {
+                from { transform: scaleX(0); opacity: 0.35; }
+                to { transform: scaleX(1); opacity: 1; }
+            }
+            .dashboard-page-heading {
+                animation: dashboardHeadingEnter 650ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+            }
+            .dashboard-page-heading h1 {
+                background: linear-gradient(100deg, #0f172a 0%, #164e63 70%, #0891b2 100%);
+                background-clip: text;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+            .dashboard-page-heading-accent {
+                width: 3.5rem;
+                height: 3px;
+                margin-top: 0.65rem;
+                border-radius: 999px;
+                background: linear-gradient(90deg, #06b6d4, #6366f1);
+                transform-origin: left;
+                animation: dashboardHeadingAccent 800ms 180ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+            }
+            .dashboard-page-heading p {
+                animation: dashboardHeadingEnter 650ms 100ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .dashboard-page-heading,
+                .dashboard-page-heading p,
+                .dashboard-page-heading-accent {
+                    animation: none;
+                }
+            }
             .kpi-card-total { border: 1px solid #cbd5e1 !important; background-color: rgba(224, 242, 254, 0.4) !important; }
             .kpi-card-total > div:last-child { padding: 14px !important; }
             .kpi-card-completed { border: 1px solid #cbd5e1 !important; background-color: rgba(167, 243, 208, 0.35) !important; }
@@ -36,6 +72,23 @@
             .performance-card { border: 1px solid #cbd5e1 !important; }
             .kpi-progress-track { background-color: rgba(255,255,255,0.6) !important; }
             .kpi-insight-text { color: #64748b !important; margin-top: 4px !important; }
+            .kpi-card-total {
+                background:
+                    radial-gradient(circle at 50% 45%, rgba(6, 182, 212, 0.08), transparent 48%),
+                    linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%) !important;
+            }
+            .kpi-total-chart {
+                min-height: 96px;
+                height: 96px;
+            }
+            .kpi-total-status {
+                border-top: 1px solid rgba(203, 213, 225, 0.65);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.25rem;
+                padding-top: 0.4rem;
+            }
             #executiveKpiRow .dashboard-kpi-card {
                 display: flex;
                 flex-direction: column;
@@ -48,71 +101,117 @@
             .analytics-legend-inactive { background-color: rgba(255,255,255,0.55) !important; border: 1px solid #cbd5e1 !important; }
             .analytics-legend-active { background-color: rgba(255,255,255,0.85) !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.06) !important; }
             .analytics-card-hover-overlay { background: rgba(248,250,252,0.5) !important; }
+            .dashboard-filters {
+                border: 1px solid #e2e8f0;
+                background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+                box-shadow: 0 12px 28px -24px rgba(15, 23, 42, 0.45), 0 2px 6px rgba(15, 23, 42, 0.04);
+            }
+            .dashboard-filter-field { display: block; min-width: 0; }
+            .dashboard-filter-label {
+                display: block;
+                margin: 0 0 0.4rem 0.15rem;
+                color: #64748b;
+                font-size: 8px;
+                font-weight: 800;
+                letter-spacing: 0.09em;
+                line-height: 1;
+                text-transform: uppercase;
+            }
+            .dashboard-filter-control {
+                height: 40px;
+                border: 1px solid #e2e8f0;
+                border-radius: 0.75rem;
+                background-color: #ffffff;
+                color: #334155;
+                font-size: 10px;
+                font-weight: 700;
+                transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+            }
+            .dashboard-filter-control:hover { border-color: #cbd5e1; background-color: #ffffff; }
+            .dashboard-filter-control:focus {
+                border-color: rgba(6, 182, 212, 0.6);
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.12);
+            }
         </style>
 
         <!-- Dashboard Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-black text-slate-900 tracking-tight font-outfit">Project Performance Overview</h1>
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Real-time portfolio health metrics</p>
+            <div class="dashboard-page-heading">
+                <h1 class="text-2xl sm:text-[1.75rem] font-black tracking-tight font-outfit">Project Performance Overview</h1>
+                <div class="dashboard-page-heading-accent"></div>
+                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.16em] mt-2">Real-time portfolio health metrics</p>
             </div>
         </div>
 
         <!-- Filters -->
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 w-fit mx-auto">
-            <div class="flex flex-wrap items-end justify-center gap-3">
-                <div class="relative min-w-[220px] max-w-[320px]">
-                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300"></i>
-                    <input type="text" id="searchInput" placeholder="Search project..."
-                        oninput="handleSearch(this.value)"
-                        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+        <div class="dashboard-filters w-full rounded-2xl p-4 sm:p-5">
+            <div class="mb-4 flex flex-col gap-2 border-b border-slate-100 pb-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex items-center gap-2.5">
+                    <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
+                        <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
+                    </span>
+                    <div>
+                        <h2 class="text-xs font-extrabold tracking-tight text-slate-800">Project Filters</h2>
+                        <p class="mt-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-slate-400">Refine your dashboard view</p>
+                    </div>
                 </div>
+                <button onclick="clearFilters()" class="inline-flex items-center justify-center gap-1.5 self-start rounded-lg px-2.5 py-1.5 text-[9px] font-bold text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 sm:self-auto" title="Clear Filters">
+                    <i data-lucide="rotate-ccw" class="h-3.5 w-3.5"></i>
+                    Reset filters
+                </button>
+            </div>
 
-                <div class="flex flex-col gap-1 min-w-[160px]">
-                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Sector</label>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
+                <label class="dashboard-filter-field relative xl:col-span-2">
+                    <span class="dashboard-filter-label">Search projects</span>
+                    <i data-lucide="search" class="absolute left-3.5 top-[2.35rem] h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInput" placeholder="Search by project name or code..."
+                        oninput="handleSearch(this.value)"
+                        class="dashboard-filter-control w-full pl-10 pr-3">
+                </label>
+
+                <label class="dashboard-filter-field relative">
+                    <span class="dashboard-filter-label">Project sector</span>
                     <div class="relative">
-                        <select id="filterSector" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
+                        <select id="filterSector" onchange="applyFilters()" class="dashboard-filter-control w-full appearance-none pl-3 pr-9">
                             <option value="all">All Sectors</option>
                         </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                        <i data-lucide="chevron-down" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"></i>
                     </div>
-                </div>
+                </label>
 
-                <div class="flex flex-col gap-1 min-w-[160px]">
-                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Delivery Method</label>
+                <label class="dashboard-filter-field relative">
+                    <span class="dashboard-filter-label">Delivery method</span>
                     <div class="relative">
-                        <select id="filterDeliveryMethod" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
+                        <select id="filterDeliveryMethod" onchange="applyFilters()" class="dashboard-filter-control w-full appearance-none pl-3 pr-9">
                             <option value="all">All Delivery Methods</option>
                         </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                        <i data-lucide="chevron-down" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"></i>
                     </div>
-                </div>
+                </label>
 
-                <div class="flex flex-col gap-1 min-w-[160px]">
-                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Consultant Type</label>
+                <label class="dashboard-filter-field relative">
+                    <span class="dashboard-filter-label">Consultant type</span>
                     <div class="relative">
-                        <select id="filterConsultantType" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
+                        <select id="filterConsultantType" onchange="applyFilters()" class="dashboard-filter-control w-full appearance-none pl-3 pr-9">
                             <option value="all">All Consultant Types</option>
                         </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                        <i data-lucide="chevron-down" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"></i>
                     </div>
-                </div>
+                </label>
 
-                <div class="flex flex-col gap-1 min-w-[160px]">
-                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Status</label>
+                <label class="dashboard-filter-field relative">
+                    <span class="dashboard-filter-label">Project status</span>
                     <div class="relative">
-                        <select id="filterLifecycleStatus" onchange="applyFilters()" class="appearance-none w-full pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white">
+                        <select id="filterLifecycleStatus" onchange="applyFilters()" class="dashboard-filter-control w-full appearance-none pl-3 pr-9">
                             <option value="all">All Project Statuses</option>
                             <option value="completed">Completed</option>
                             <option value="in progress">In Progress</option>
                         </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
+                        <i data-lucide="chevron-down" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"></i>
                     </div>
-                </div>
-
-                <button onclick="clearFilters()" class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm shrink-0 self-end" title="Clear Filters">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
+                </label>
             </div>
         </div>
 
@@ -120,38 +219,39 @@
         <div id="executiveKpiRow" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
             <!-- Total Projects -->
             <div class="dashboard-kpi-card group relative rounded-2xl border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer kpi-card-total" onclick="filterByStatus('all')">
-                <div class="relative z-10 p-3.5">
-                    <div class="flex items-center justify-between mb-1">
-                        <div class="w-8 h-8 rounded-lg border flex items-center justify-center shadow-sm kpi-icon-total">
-                            <i data-lucide="folder-open" class="w-4 h-4"></i>
-                        </div>
-                        <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md border kpi-badge-total">Active</span>
-                    </div>
-                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Total Projects</p>
-                    <div class="flex items-center gap-3">
-                        <div class="flex-1 min-w-0">
-                            <p class="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">
-                                <span class="counter" data-target="0">0</span>
-                            </p>
-                            <div class="space-y-0.5">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[8px] font-semibold text-slate-500">Completed</span>
-                                    <span class="text-[8px] font-black text-slate-900 kpi-breakdown-count" data-key="completed">0</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[8px] font-semibold text-slate-500">In Progress</span>
-                                    <span class="text-[8px] font-black text-slate-900 kpi-breakdown-count" data-key="in_progress">0</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[8px] font-semibold text-slate-500">Suspended</span>
-                                    <span class="text-[8px] font-black text-slate-900 kpi-breakdown-count" data-key="suspended">0</span>
-                                </div>
+                <div class="relative z-10 flex h-full flex-col p-3.5">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex min-w-0 items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl border flex items-center justify-center shadow-sm kpi-icon-total">
+                                <i data-lucide="folder-open" class="w-4 h-4"></i>
                             </div>
-                            <p class="text-[7px] font-bold text-slate-400 mt-1 kpi-insight-text truncate"></p>
+                            <div>
+                                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Portfolio Overview</p>
+                                <p class="text-xs font-black text-slate-800">Total Projects</p>
+                            </div>
                         </div>
-                        <div class="shrink-0" style="width: 110px; height: 110px;">
-                            <div id="statusPieChartInner" class="w-full h-full"></div>
-                        </div>
+                        <span class="counter text-2xl font-black text-slate-900 tracking-tighter leading-none" data-target="0">0</span>
+                    </div>
+                    <div class="kpi-total-chart relative my-1 w-full">
+                        <div id="statusPieChartInner" class="h-full w-full"></div>
+                        <span id="statusPieTotal" class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-sm font-extrabold text-slate-900"></span>
+                    </div>
+                    <div class="kpi-total-status mt-auto">
+                        <span class="inline-flex min-w-0 items-center gap-1 whitespace-nowrap">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                            <span class="text-[7px] font-bold text-slate-500">Completed</span>
+                            <span class="text-[8px] font-black text-slate-900 kpi-breakdown-count" data-key="completed">0</span>
+                        </span>
+                        <span class="inline-flex min-w-0 items-center gap-1 whitespace-nowrap">
+                            <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                            <span class="text-[7px] font-bold text-slate-500">In Progress</span>
+                            <span class="text-[8px] font-black text-slate-900 kpi-breakdown-count" data-key="in_progress">0</span>
+                        </span>
+                        <span class="inline-flex min-w-0 items-center gap-1 whitespace-nowrap">
+                            <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                            <span class="text-[7px] font-bold text-slate-500">Suspended</span>
+                            <span class="text-[8px] font-black text-slate-900 kpi-breakdown-count" data-key="suspended">0</span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -220,7 +320,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 overflow-hidden">
+        <div id="completedProjectsAnalytics" class="bg-white rounded-2xl shadow-lg">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between">
                 <div>
                     <h3 class="text-sm font-black text-slate-900 tracking-tight">Completed Projects Analytics</h3>
@@ -390,6 +490,7 @@
         let totalPages = 1;
         let chartInstance = null;
         let searchTimeout = null;
+        let dashboardRequestSequence = 0;
         let currentChartMeta = { categories: [], values: [], colors: [], average: 0 };
         window.latestAnalytics = {};
         window.latestExecutiveKpis = {};
@@ -454,6 +555,7 @@
         }
 
         function loadDashboardData() {
+            const requestSequence = ++dashboardRequestSequence;
             const params = new URLSearchParams();
             params.append('page', currentPage);
             params.append('per_page', perPage);
@@ -479,15 +581,20 @@
                 params.append('lifecycle_status', lifecycleDropdown.value);
             }
 
-            if (document.getElementById('searchInput').value) params.append('search', document.getElementById('searchInput').value);
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput && searchInput.value.trim()) params.append('search', searchInput.value.trim());
 
             if (activeChartFilter) {
                 params.append(activeChartFilter.chart, activeChartFilter.value);
             }
 
             fetch(`{{ route('admin.dashboard.data') }}?${params.toString()}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error(`Dashboard request failed with status ${response.status}`);
+                    return response.json();
+                })
                 .then(data => {
+                    if (requestSequence !== dashboardRequestSequence) return;
                     if (data.error) {
                         console.error('Dashboard server error:', data.message);
                         const existing = document.getElementById('dashboardError');
@@ -517,6 +624,7 @@
                     updateSubtitle();
                 })
                 .catch(err => {
+                    if (requestSequence !== dashboardRequestSequence) return;
                     console.error('Dashboard data load error:', err);
                     const existing = document.getElementById('dashboardError');
                     if (existing) existing.remove();
@@ -529,6 +637,7 @@
         }
 
         function applyFilters() {
+            currentPage = 1;
             loadDashboardData();
         }
 
@@ -541,11 +650,21 @@
         }
 
         function clearFilters() {
+            clearTimeout(searchTimeout);
             document.getElementById('filterSector').value = 'all';
             document.getElementById('filterDeliveryMethod').value = 'all';
             document.getElementById('filterConsultantType').value = 'all';
             document.getElementById('filterLifecycleStatus').value = 'all';
             document.getElementById('searchInput').value = '';
+            const categorySelect = document.getElementById('sectionFilterCategory');
+            const valueSelect = document.getElementById('sectionFilterValue');
+            if (categorySelect) categorySelect.value = '';
+            if (valueSelect) {
+                valueSelect.innerHTML = '<option value="">All</option>';
+                valueSelect.value = '';
+                valueSelect.disabled = true;
+            }
+            sectionFilter = { category: null, value: null };
             activeChartFilter = null;
             updateClearFilterButton();
             applyFilters();
@@ -1174,6 +1293,11 @@
             const series = [completed, inProgress, suspended];
             const labels = ['Completed', 'In Progress', 'Suspended'];
             const colors = ['#10b981', '#f59e0b', '#f43f5e'];
+            const totalEl = document.getElementById('statusPieTotal');
+
+            if (totalEl) {
+                totalEl.textContent = String(series.reduce((total, value) => total + Number(value || 0), 0));
+            }
 
             if (window.statusPieInstance) {
                 window.statusPieInstance.destroy();
@@ -1182,7 +1306,7 @@
             window.statusPieInstance = new ApexCharts(existingChart, {
                 chart: {
                     type: 'donut',
-                    height: '100%',
+                    height: 96,
                     animations: { enabled: true, easing: 'easeinout', speed: 500 }
                 },
                 series: series,
@@ -1198,22 +1322,12 @@
                             offset: -2
                         },
                         donut: {
-                            size: '60%',
-                            labels: {
-                                show: true,
-                                value: {
-                                    show: true,
-                                    fontSize: '14px',
-                                    fontWeight: 800,
-                                    color: '#0f172a',
-                                    offsetY: 0
-                                }
-                            }
+                            size: '58%'
                         }
                     }
                 },
                 dataLabels: {
-                    enabled: true,
+                    enabled: false,
                     formatter: function(val) {
                         if (val < 15) return '';
                         return Math.round(val) + '%';
@@ -1290,22 +1404,31 @@
                 const chartId = `matrix-${config.key}`;
                 const isSectorChart = chartId.includes('time_by_sector') || chartId.includes('budget_by_sector') || chartId.includes('cost_by_sector');
                 const card = document.createElement('div');
-                card.className = 'bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300';
+                card.className = 'matrix-chart-card bg-white rounded-xl border border-slate-200 shadow-sm transition-all duration-300';
                 card.innerHTML = `
-                    <div class="p-3 border-b border-slate-50">
-                        <p class="text-[8px] font-black text-slate-900 uppercase tracking-widest leading-tight">${config.title}</p>
+                    <div class="matrix-chart-heading px-3.5 pt-3.5 pb-2">
+                        <span class="matrix-chart-heading-mark"></span>
+                        <p class="text-[8px] font-extrabold text-slate-700 uppercase tracking-wider leading-snug">${config.title}</p>
                     </div>
-                    <div class="p-3">
-                        <div id="${chartId}" style="height: 180px;"></div>
+                    <div class="px-2 pb-3">
+                        <div id="${chartId}" style="height: 205px;"></div>
                     </div>
                 `;
                 container.appendChild(card);
 
+                const isTimeBySectorChart = config.key === 'time_by_sector';
                 const categories = chartData.xaxis || [];
-                const series = (chartData.series || []).map(ds => ({
-                    name: ds.name,
-                    data: ds.values || [],
-                }));
+                const sourceSeries = chartData.series || [];
+                const series = isTimeBySectorChart
+                    ? [{
+                        name: 'Average SPI (%)',
+                        data: sourceSeries[0]?.values || [],
+                    }]
+                    : sourceSeries.map(ds => ({
+                        name: ds.name,
+                        data: ds.values || [],
+                    }));
+                const sectorColors = ['#06b6d4', '#6366f1', '#10b981'];
 
                 const getColorForDataset = (name) => {
                     const normalized = (name || '').toLowerCase();
@@ -1315,7 +1438,9 @@
                     return '#00ADC5';
                 };
 
-                const colors = chartData.series?.map(ds => getColorForDataset(ds.name)) || ['#10b981', '#00ADC5', '#f59e0b'];
+                const colors = isTimeBySectorChart
+                    ? sectorColors
+                    : sourceSeries.map(ds => getColorForDataset(ds.name));
 
                 if (categories.length === 0 || series.length === 0) {
                     document.getElementById(chartId).innerHTML = `
@@ -1327,38 +1452,43 @@
                 new ApexCharts(document.getElementById(chartId), {
                     chart: {
                         type: 'bar',
-                        height: 180,
-                        animations: { enabled: true, easing: 'easeinout', speed: 400 },
+                        height: 205,
+                        parentHeightOffset: 0,
+                        animations: { enabled: true, easing: 'easeinout', speed: 550 },
                         toolbar: { show: false },
                         background: 'transparent',
-                        dropShadow: { enabled: true, top: 2, left: 0, blur: 4, opacity: 0.15 },
+                        foreColor: '#64748b',
                     },
                     plotOptions: {
                         bar: {
                             horizontal: false,
-                            columnWidth: '55%',
-                            borderRadius: 3,
+                            columnWidth: '48%',
+                            borderRadius: 6,
                             borderRadiusApplication: 'end',
-                            distributed: false,
+                            distributed: isTimeBySectorChart,
+                            dataLabels: { position: 'top' },
+                            backgroundBarColors: ['#f1f5f9'],
+                            backgroundBarOpacity: 0.45,
+                            backgroundBarRadius: 6,
                         },
                     },
                     series: series,
                     xaxis: {
                         categories: categories,
                         labels: {
-                            style: { fontSize: '8px', fontWeight: 700, colors: '#475569' },
+                            style: { fontSize: '8px', fontWeight: 600, colors: '#64748b' },
                             rotate: 0,
                             rotateAlways: false,
                             hideOverlappingLabels: true,
                             trim: false,
-                            maxHeight: 40,
+                            maxHeight: 44,
                         },
                         axisBorder: { show: false },
                         axisTicks: { show: false },
                     },
                     yaxis: {
                         labels: {
-                            style: { fontSize: '8px', fontWeight: 700, colors: '#00ADC5' },
+                            style: { fontSize: '8px', fontWeight: 600, colors: '#94a3b8' },
                             formatter: (val) => `${Math.round(val)}%`,
                         },
                     },
@@ -1366,22 +1496,25 @@
                     fill: {
                         type: 'gradient',
                         gradient: {
-                            shade: 'light',
-                            type: 'horizontal',
-                            shadeIntensity: 0.2,
-                            gradientToColors: colors,
+                            shade: 'dark',
+                            type: 'vertical',
+                            shadeIntensity: 0.12,
+                            gradientToColors: colors.map(color => color),
                             inverseColors: false,
                             opacityFrom: 1,
-                            opacityTo: 0.85,
+                            opacityTo: 0.78,
+                            stops: [0, 90, 100],
                         },
                     },
                     legend: {
-                        show: true,
+                        show: !isTimeBySectorChart,
                         position: 'top',
+                        horizontalAlign: 'left',
                         fontSize: '8px',
-                        fontWeight: 700,
-                        markers: { width: 8, height: 8, radius: 2 },
-                        itemMargin: { horizontal: 6, vertical: 0 },
+                        fontWeight: 600,
+                        labels: { colors: '#64748b' },
+                        markers: { width: 7, height: 7, radius: 3 },
+                        itemMargin: { horizontal: 7, vertical: 2 },
                     },
                     tooltip: {
                         theme: 'light',
@@ -1392,13 +1525,32 @@
                         y: { formatter: (val) => `${Math.round(val)}%` },
                     },
                     grid: {
-                        borderColor: '#f1f5f9',
-                        strokeDashArray: 3,
+                        borderColor: '#e9eef5',
+                        strokeDashArray: 4,
                         xaxis: { lines: { show: false } },
                         yaxis: { lines: { show: true } },
-                        padding: { top: 0, right: 8, bottom: 0, left: 0 },
+                        padding: { top: 16, right: 8, bottom: 0, left: 4 },
                     },
-                    dataLabels: { enabled: false },
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function(value, options) {
+                            const count = sourceSeries[options.seriesIndex]?.counts?.[options.dataPointIndex] ?? 0;
+                            return count > 0 ? String(count) : '';
+                        },
+                        offsetY: -10,
+                        style: {
+                            fontSize: '9px',
+                            fontWeight: 800,
+                            colors: ['#475569'],
+                        },
+                        textAnchor: 'middle',
+                        background: { enabled: false },
+                        dropShadow: { enabled: false },
+                    },
+                    states: {
+                        hover: { filter: { type: 'lighten', value: 0.08 } },
+                        active: { filter: { type: 'darken', value: 0.04 } },
+                    },
                     theme: { mode: 'light' },
                 }).render();
             });
@@ -2178,8 +2330,6 @@
             }
 
             if (analyticsCharts[chartId]) {
-                const oldTooltip = chartEl.parentElement.querySelector('.pie-custom-tooltip');
-                if (oldTooltip) oldTooltip.remove();
                 analyticsCharts[chartId].destroy();
             }
 
@@ -2218,7 +2368,7 @@
                             offset: -5
                         },
                         donut: {
-                            size: '65%',
+                            size: '70%',
                             labels: {
                                 show: true,
                                 name: {
@@ -2226,21 +2376,21 @@
                                     fontSize: '9px',
                                     fontWeight: 700,
                                     color: '#64748b',
-                                    offsetY: 0
+                                    offsetY: -2
                                 },
                                 value: {
                                     show: true,
-                                    fontSize: '15px',
+                                    fontSize: '16px',
                                     fontWeight: 800,
                                     color: '#0f172a',
-                                    offsetY: 0
+                                    offsetY: 3
                                 },
                                 total: {
                                     show: true,
-                                    fontSize: '9px',
-                                    fontWeight: 700,
-                                    color: '#94a3b8',
-                                    label: 'Total',
+                                    fontSize: '10px',
+                                    fontWeight: 800,
+                                    color: '#64748b',
+                                    label: 'PROJECTS',
                                     formatter: function() {
                                         return total;
                                     }
@@ -2254,28 +2404,12 @@
                 colors: colors,
                 legend: { show: false },
                 stroke: {
-                    show: true,
-                    width: 3,
-                    colors: ['#fff']
+                    show: false,
+                    width: 0,
+                    colors: ['transparent']
                 },
                 dataLabels: {
-                    enabled: true,
-                    formatter: function(val) {
-                        if (val < 8) return '';
-                        return Math.round(val) + '%';
-                    },
-                    style: {
-                        fontSize: '10px',
-                        fontWeight: 700,
-                        colors: ['#ffffff']
-                    },
-                    dropShadow: {
-                        enabled: true,
-                        top: 1,
-                        left: 1,
-                        blur: 2,
-                        opacity: 0.4
-                    }
+                    enabled: false
                 },
                 tooltip: {
                     enabled: true,
@@ -2287,26 +2421,8 @@
                     y: {
                         formatter: function(val) {
                             if (val === null || val === undefined) return '';
-                            return Math.round(val) + '%';
+                            return `${Math.round(val)} projects`;
                         }
-                    },
-                    custom: function({ seriesIndex, dataPointIndex }) {
-                        const cat = config.categories[dataPointIndex];
-                        const count = series[dataPointIndex] || 0;
-                        const percent = total > 0 ? Math.round((count / total) * 100) : 0;
-                        if (!cat) return '';
-                        const color = cat.color || colors[dataPointIndex] || '#6366f1';
-                        return `<div style="padding: 10px 14px; font-family: Inter, sans-serif; min-width: 220px; border-radius: 10px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12);">
-                            <div style="font-weight: 800; font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">${cat.label}</div>
-                            <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px;">
-                                <span style="font-weight: 900; font-size: 22px; color: #0f172a; line-height: 1;">${count}</span>
-                                <span style="font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;">Projects</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 6px; padding-top: 5px; border-top: 1px solid #e2e8f0;">
-                                <span style="font-weight: 800; font-size: 11px; color: #0f172a;">${percent}%</span>
-                                <span style="font-size: 9px; font-weight: 600; color: #64748b;">of ${total} total</span>
-                            </div>
-                        </div>`;
                     }
                 },
                 responsive: [
@@ -2451,6 +2567,10 @@
         .analytics-container:hover {
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.03);
         }
+        #completedProjectsAnalytics {
+            border: none !important;
+            outline: none !important;
+        }
 
         .analytics-card {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2506,10 +2626,12 @@
         #analyticsGrid .analytics-card {
             background: #FFFFFF;
         }
-        #analyticsGrid .analytics-card-pie,
-        #analyticsGrid .analytics-card-pie * {
-            border: none !important;
-            outline: none !important;
+        #analyticsGrid {
+            position: relative;
+            isolation: isolate;
+        }
+        #analyticsGrid .analytics-card-pie:hover {
+            z-index: 30;
         }
         #analyticsGrid .apexcharts-canvas,
         #analyticsGrid .apexcharts-canvas > *,
@@ -2518,44 +2640,45 @@
             overflow: visible !important;
         }
         #analyticsGrid .apexcharts-tooltip {
-            z-index: 50 !important;
+            z-index: 1000 !important;
             background: transparent !important;
             border: none !important;
-            border-radius: 0 !important;
+            border-radius: 10px !important;
             box-shadow: none !important;
-            padding: 0 !important;
+            padding: 6px 9px !important;
             font-family: 'Inter', sans-serif !important;
+            pointer-events: none !important;
         }
         #analyticsGrid .apexcharts-tooltip-title {
             font-weight: 800 !important;
             font-size: 10px !important;
-            color: #64748b !important;
+            color: #ffffff !important;
             text-transform: uppercase !important;
             letter-spacing: 0.08em !important;
             margin-bottom: 6px !important;
             padding-bottom: 5px !important;
-            border-bottom: 1px solid #e2e8f0 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
         }
         #analyticsGrid .apexcharts-tooltip-series {
             font-weight: 900 !important;
             font-size: 22px !important;
-            color: #0f172a !important;
+            color: #ffffff !important;
             line-height: 1 !important;
         }
         #analyticsGrid .apexcharts-tooltip-text {
             font-size: 9px !important;
             font-weight: 700 !important;
-            color: #94a3b8 !important;
+            color: rgba(255, 255, 255, 0.72) !important;
             text-transform: uppercase !important;
             letter-spacing: 0.06em !important;
         }
         #analyticsGrid .apexcharts-tooltip-percent {
             font-weight: 800 !important;
             font-size: 11px !important;
-            color: #0f172a !important;
+            color: #ffffff !important;
         }
         #analyticsGrid .apexcharts-tooltip-y-value {
-            color: #0f172a !important;
+            color: #ffffff !important;
         }
         .analytics-card-pie .apexcharts-svg,
         .analytics-card-pie .apexcharts-canvas {
@@ -2569,8 +2692,13 @@
             outline: none !important;
         }
         .analytics-card-pie {
-            border: 1px solid #cbd5e1;
-            box-shadow: none;
+            border: 1px solid #e2e8f0;
+            background: linear-gradient(155deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 8px 22px -18px rgba(15, 23, 42, 0.55);
+        }
+        .analytics-card-pie:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 18px 32px -22px rgba(15, 23, 42, 0.55);
         }
         .analytics-legend-item {
             transition: all 0.15s ease;
@@ -2663,6 +2791,41 @@
             outline: none !important;
             box-shadow: none !important;
         }
+        .matrix-chart-card {
+            position: relative;
+            overflow: visible;
+            background: linear-gradient(155deg, #ffffff 0%, #f8fafc 100%) !important;
+            border-color: #e5eaf1 !important;
+        }
+        .matrix-chart-card::before {
+            content: '';
+            position: absolute;
+            inset: 0 0 auto;
+            height: 2px;
+            background: linear-gradient(90deg, #00adc5, #38bdf8, #818cf8);
+            opacity: 0.72;
+            pointer-events: none;
+        }
+        .matrix-chart-card:hover {
+            transform: translateY(-3px);
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 12px 24px -16px rgba(15, 23, 42, 0.35);
+        }
+        .matrix-chart-heading {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            min-height: 39px;
+        }
+        .matrix-chart-heading-mark {
+            width: 7px;
+            height: 7px;
+            margin-top: 2px;
+            flex: none;
+            border-radius: 999px;
+            background: #06b6d4;
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.12);
+        }
         #matrixScheduleRow .apexcharts-svg,
         #matrixBudgetRow .apexcharts-svg,
         #matrixCostRow .apexcharts-svg {
@@ -2682,7 +2845,13 @@
         #matrixScheduleRow .apexcharts-bar-area,
         #matrixBudgetRow .apexcharts-bar-area,
         #matrixCostRow .apexcharts-bar-area {
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.08));
+            filter: drop-shadow(0 2px 2px rgba(15, 23, 42, 0.1));
+            transition: filter 0.18s ease;
+        }
+        #matrixScheduleRow .apexcharts-bar-area:hover,
+        #matrixBudgetRow .apexcharts-bar-area:hover,
+        #matrixCostRow .apexcharts-bar-area:hover {
+            filter: drop-shadow(0 4px 4px rgba(15, 23, 42, 0.18));
         }
         #matrixScheduleRow .apexcharts-xaxis-label,
         #matrixBudgetRow .apexcharts-xaxis-label,

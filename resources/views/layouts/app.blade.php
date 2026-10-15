@@ -114,10 +114,32 @@
         .text-label {
             font-weight: 500;
         }
+
+        :is(body.management-readonly, body.project-coordinator-readonly) form[method="POST"]:not([action="/logout"]):not([action*="notifications"]) button,
+        :is(body.management-readonly, body.project-coordinator-readonly) a[href*="/create"],
+        :is(body.management-readonly, body.project-coordinator-readonly) a[href*="/edit"],
+        :is(body.management-readonly, body.project-coordinator-readonly) button[onclick*="create" i],
+        :is(body.management-readonly, body.project-coordinator-readonly) button[onclick*="edit" i],
+        :is(body.management-readonly, body.project-coordinator-readonly) button[onclick*="delete" i],
+        :is(body.management-readonly, body.project-coordinator-readonly) button[onclick*="toggleStatus" i] {
+            display: none !important;
+        }
     </style>
 </head>
 
-<body class="bg-[#f7fbfc] text-slate-900 antialiased h-full font-inter">
+<body @class([
+    'bg-[#f7fbfc] text-slate-900 antialiased h-full font-inter',
+    'management-readonly' => auth()->check() && auth()->user()->isManager(),
+    'project-coordinator-readonly' => auth()->check()
+        && auth()->user()->isUser()
+        && !request()->routeIs(
+            'admin.projects.index',
+            'admin.projects.edit',
+            'admin.progress-updates.index',
+            'admin.progress-updates.create',
+            'admin.progress-updates.edit'
+        ),
+])>
 
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->

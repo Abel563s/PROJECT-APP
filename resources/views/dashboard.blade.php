@@ -9,7 +9,7 @@
                         Welcome, <span class="text-[#00ADC5]">{{ Auth::user()->name }}</span>
                     </h2>
                     <p class="text-slate-500 font-medium">
-                        You are logged in as {{ ucfirst(Auth::user()->role) }}. This is your starter dashboard.
+                        You are logged in as {{ Auth::user()->role_label }}. This is your starter dashboard.
                     </p>
                 </div>
                 <div class="flex items-center gap-4">

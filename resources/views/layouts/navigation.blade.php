@@ -22,7 +22,7 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    @if(Auth::check() && Auth::user()->isAdmin())
+                    @if(Auth::check())
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
@@ -34,17 +34,11 @@
                             :active="request()->routeIs('admin.projects.analytics')">
                             {{ __('Reports') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*') || request()->routeIs('admin.users.*')">
-                            {{ __('Access Control') }}
-                        </x-nav-link>
-                    @elseif(Auth::check() && Auth::user()->isManager())
-                        <x-nav-link :href="route('manager.approvals.index')" :active="request()->routeIs('manager.*')">
-                            {{ __('Approvals') }}
-                        </x-nav-link>
-                    @elseif(Auth::check())
-                        <x-nav-link :href="route('attendance.index')" :active="request()->routeIs('attendance.*')">
-                            {{ __('Attendance') }}
-                        </x-nav-link>
+                        @if(Auth::user()->isAdmin())
+                            <x-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*') || request()->routeIs('admin.users.*')">
+                                {{ __('Access Control') }}
+                            </x-nav-link>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -107,7 +101,7 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            @if(Auth::check() && Auth::user()->isAdmin())
+            @if(Auth::check())
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
@@ -119,17 +113,11 @@
                     :active="request()->routeIs('admin.projects.analytics')">
                     {{ __('Reports') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*') || request()->routeIs('admin.users.*')">
-                    {{ __('Access Control') }}
-                </x-responsive-nav-link>
-            @elseif(Auth::check() && Auth::user()->isManager())
-                <x-responsive-nav-link :href="route('manager.approvals.index')" :active="request()->routeIs('manager.*')">
-                    {{ __('Approvals') }}
-                </x-responsive-nav-link>
-            @elseif(Auth::check())
-                <x-responsive-nav-link :href="route('attendance.index')" :active="request()->routeIs('attendance.*')">
-                    {{ __('Attendance') }}
-                </x-responsive-nav-link>
+                @if(Auth::user()->isAdmin())
+                    <x-responsive-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*') || request()->routeIs('admin.users.*')">
+                        {{ __('Access Control') }}
+                    </x-responsive-nav-link>
+                @endif
             @endif
         </div>
 

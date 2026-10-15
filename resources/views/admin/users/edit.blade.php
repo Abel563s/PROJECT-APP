@@ -60,10 +60,10 @@
                                 <label
                                     class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Access
                                     Protocol (Role)</label>
-                                <select name="role" required
+                                <select name="role" id="editUserRole" required
                                     class="w-full rounded-2xl border-none bg-slate-50 p-4 font-bold text-slate-700 focus:ring-4 focus:ring-[#00ADC5]/10 transition-all text-sm appearance-none cursor-pointer">
-                                    <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>User</option>
-                                    <option value="manager" {{ $user->role === 'manager' ? 'selected' : '' }}>Manager
+                                    <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Project Coordinator</option>
+                                    <option value="manager" {{ $user->role === 'manager' ? 'selected' : '' }}>Management
                                     </option>
                                     <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
                                 </select>
@@ -83,6 +83,27 @@
                                 </select>
                                 <x-input-error :messages="$errors->get('is_active')" />
                             </div>
+                        </div>
+
+                        <div id="editAssignedProjects" @class([
+                            'space-y-3 rounded-2xl border border-cyan-100 bg-cyan-50/40 p-6',
+                            'hidden' => old('role', $user->role) !== 'user',
+                        ])>
+                            <div>
+                                <h3 class="text-sm font-black text-slate-900">Assigned Projects</h3>
+                                <p class="mt-1 text-xs font-medium text-slate-500">Select one or more project codes this coordinator can edit. Use Ctrl-click (Windows) or Command-click (Mac) for multiple selections. Changes take effect when you save.</p>
+                            </div>
+                            <select name="assigned_project_ids[]" multiple size="7"
+                                class="w-full rounded-xl border-slate-200 bg-white p-4 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-cyan-100">
+                                @foreach($projects as $project)
+                                    <option value="{{ $project->id }}"
+                                        @selected(in_array($project->id, old('assigned_project_ids', $user->assignedProjects->modelKeys())))>
+                                        {{ $project->project_code ?: $project->project_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="text-[10px] font-medium text-slate-500">Project assignments apply only to the Project Coordinator role. Changing this user to Admin or Management removes their project assignments.</p>
+                            <x-input-error :messages="$errors->get('assigned_project_ids')" />
                         </div>
 
                         <!-- Security Override -->
@@ -170,4 +191,9 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('editUserRole')?.addEventListener('change', function () {
+            document.getElementById('editAssignedProjects')?.classList.toggle('hidden', this.value !== 'user');
+        });
+    </script>
 </x-app-layout>

@@ -34,7 +34,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Admin Routes
-    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['role:admin|manager|user', 'role.write'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/data', [AdminDashboardController::class, 'data'])->name('dashboard.data');
 
@@ -88,9 +88,14 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/settings/password', [SystemSettingController::class, 'updatePassword'])->name('settings.password.update');
 
         // User Management / Access Control
-        Route::resource('users', AdminUserController::class);
-        Route::get('/users/{user}/password-modal', [AdminUserController::class, 'passwordModal'])->name('users.password.modal');
-        Route::get('/roles', [AdminUserController::class, 'roles'])->name('roles.index');
+        Route::middleware('role:admin|manager')->group(function () {
+            Route::resource('users', AdminUserController::class)->only(['index']);
+        });
+        Route::middleware('role:admin')->group(function () {
+            Route::resource('users', AdminUserController::class)->except(['index', 'show']);
+            Route::get('/users/{user}/password-modal', [AdminUserController::class, 'passwordModal'])->name('users.password.modal');
+            Route::get('/roles', [AdminUserController::class, 'roles'])->name('roles.index');
+        });
 
     });
 

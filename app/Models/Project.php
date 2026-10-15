@@ -147,6 +147,11 @@ class Project extends Model
         return $this->hasMany(ProjectProgressUpdate::class);
     }
 
+    public function coordinators()
+    {
+        return $this->belongsToMany(User::class)->where('role', 'user');
+    }
+
     public function weeklyUpdates()
     {
         return $this->hasMany(ProjectWeeklyUpdate::class);

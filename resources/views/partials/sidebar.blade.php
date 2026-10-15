@@ -29,7 +29,7 @@
             $menu = [];
 
             if (Auth::check()) {
-                if (Auth::user()->isAdmin()) {
+                if (Auth::check()) {
                     // 1. Dashboard
                     $menu[] = [
                         'label' => 'Dashboard',
@@ -161,12 +161,21 @@
                     ];
 
                     // 7. Roles (User Management)
-                    $menu[] = [
-                        'label' => 'Access Control',
-                        'icon' => 'users-2',
-                        'route' => 'admin.roles.index',
-                        'active' => request()->routeIs('admin.roles.*') || request()->routeIs('admin.users.*')
-                    ];
+                    if (Auth::user()->isAdmin()) {
+                        $menu[] = [
+                            'label' => 'Access Control',
+                            'icon' => 'users-2',
+                            'route' => 'admin.roles.index',
+                            'active' => request()->routeIs('admin.roles.*') || request()->routeIs('admin.users.*')
+                        ];
+                    } elseif (Auth::user()->isManager()) {
+                        $menu[] = [
+                            'label' => 'User Directory',
+                            'icon' => 'users',
+                            'route' => 'admin.users.index',
+                            'active' => request()->routeIs('admin.users.*')
+                        ];
+                    }
                 } else {
                     $menu[] = ['label' => 'Dashboard', 'icon' => 'layout-dashboard', 'route' => 'dashboard', 'active' => request()->routeIs('dashboard')];
                 }
@@ -256,12 +265,14 @@
                 </div>
             </div>
 
+            @if(Auth::user()->isAdmin())
             <a href="{{ route('admin.settings.index') }}"
                 class="sidebar-text p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-lg transition-all shadow-sm border border-transparent hover:border-white/20 group/settings"
                 title="Security Settings">
                 <i data-lucide="settings"
                     class="w-4 h-4 group-hover/settings:rotate-90 transition-transform duration-500"></i>
             </a>
+            @endif
         </div>
     </div>
 </aside>

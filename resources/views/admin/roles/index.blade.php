@@ -29,22 +29,22 @@
             @php
                 $roleConfig = [
                     'admin' => [
-                        'label' => 'Root Admin',
+                        'label' => 'Admin',
                         'icon' => 'crown',
                         'color' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                        'desc' => 'Full system access and configuration'
+                        'desc' => 'Full system control, including roles and permissions'
                     ],
                     'manager' => [
-                        'label' => 'Lead Manager',
+                        'label' => 'Management',
                         'icon' => 'user-cog',
                         'color' => 'bg-indigo-50 text-indigo-600 border-indigo-100',
-                        'desc' => 'Project oversight and team coordination'
+                        'desc' => 'View-only access to all pages and records'
                     ],
                     'user' => [
-                        'label' => 'Standard User',
+                        'label' => 'Project Coordinator',
                         'icon' => 'user',
                         'color' => 'bg-slate-50 text-slate-600 border-slate-100',
-                        'desc' => 'Basic operational access'
+                        'desc' => 'Edit assigned projects and their progress updates'
                     ],
                 ];
             @endphp
@@ -64,12 +64,58 @@
                     </div>
                     <div class="pt-2 border-t border-slate-50">
                         <span class="inline-flex px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider {{ $config['color'] }} border">
-                            {{ ucfirst($role) }}
+                            {{ $config['label'] }}
                         </span>
                     </div>
                 </div>
             @endforeach
         </div>
+
+        <details class="group bg-white rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-50 overflow-hidden">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 marker:hidden">
+                <div>
+                    <h3 class="text-sm font-black text-slate-900">Access tiers at a glance</h3>
+                    <p class="text-xs font-medium text-slate-500 mt-1">Compare permissions for Admin, Management, and Project Coordinators.</p>
+                </div>
+                <i data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-slate-400 transition-transform group-open:rotate-180"></i>
+            </summary>
+            <div class="overflow-x-auto border-t border-slate-100">
+                <table class="w-full min-w-[720px] text-left">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-5 py-3 text-[9px] font-black text-slate-500 uppercase tracking-widest">Feature</th>
+                            <th class="px-5 py-3 text-[9px] font-black text-emerald-700 uppercase tracking-widest">Admin</th>
+                            <th class="px-5 py-3 text-[9px] font-black text-indigo-700 uppercase tracking-widest">Management</th>
+                            <th class="px-5 py-3 text-[9px] font-black text-slate-700 uppercase tracking-widest">Project Coordinator</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-xs font-semibold text-slate-600">
+                        @foreach([
+                            ['Access Control', 'Full access', 'No access', 'No access'],
+                            ['User management', 'Full access', 'View only', 'No access'],
+                            ['View all projects', 'Yes', 'Yes', 'Yes'],
+                            ['Edit assigned projects', 'Yes', 'No', 'Yes'],
+                            ['Edit unassigned projects', 'Yes', 'No', 'No'],
+                            ['View all progress updates', 'Yes', 'Yes', 'Yes'],
+                            ['Edit assigned project updates', 'Yes', 'No', 'Yes'],
+                            ['Edit unassigned project updates', 'Yes', 'No', 'No'],
+                            ['Create projects', 'Yes', 'No', 'No'],
+                            ['Delete projects', 'Yes', 'No', 'No'],
+                            ['Create progress updates', 'Yes', 'No', 'Assigned projects only'],
+                            ['Delete progress updates', 'Yes', 'No', 'No'],
+                            ['View dashboards and reports', 'Yes', 'Yes', 'As permitted'],
+                        ] as [$feature, $adminAccess, $managementAccess, $coordinatorAccess])
+                            <tr>
+                                <td class="px-5 py-3 text-slate-800">{{ $feature }}</td>
+                                <td class="px-5 py-3">{{ $adminAccess }}</td>
+                                <td class="px-5 py-3">{{ $managementAccess }}</td>
+                                <td class="px-5 py-3">{{ $coordinatorAccess }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </details>
 
         <!-- Users Table -->
         <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-50 overflow-hidden">
@@ -81,6 +127,7 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Identity</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Department</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Role</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Assigned Projects</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Status</th>
                             <th class="px-6 py-3 text-right border-b border-[#00515f]/30"></th>
                         </tr>
@@ -117,8 +164,23 @@
                                         };
                                     @endphp
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $roleStyles }} border">
-                                        {{ ucfirst($user->role) }}
+                                        {{ $user->role_label }}
                                     </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($user->isUser() && $user->assignedProjects->isNotEmpty())
+                                        <div class="flex max-w-xs flex-wrap gap-1">
+                                            @foreach($user->assignedProjects as $project)
+                                                <span class="rounded-md bg-cyan-50 px-2 py-1 text-[9px] font-bold text-cyan-800">
+                                                    {{ $project->project_code ?: $project->project_name }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <span class="text-[9px] font-medium text-slate-400">
+                                            {{ $user->isUser() ? 'No projects assigned' : 'Not applicable' }}
+                                        </span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $user->is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100' }}">
@@ -128,11 +190,11 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <a href="{{ route('admin.users.edit', $user) }}"
+                                        <button type="button" onclick="openEditIdentityModal({{ $user->id }})"
                                             class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-200"
                                             title="Edit">
                                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-                                        </a>
+                                        </button>
                                         @if($user->id !== auth()->id())
                                             <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline"
                                                 onsubmit="return confirm('Initiate user node decommission?')">
@@ -150,7 +212,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-16 text-center">
+                                <td colspan="7" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="user-x" class="w-8 h-8"></i>
@@ -171,6 +233,25 @@
                 {{ $users->links() }}
             </div>
         @endif
+    </div>
+
+    <div id="editIdentityModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex min-h-screen items-center justify-center px-4 py-8">
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeEditIdentityModal()"></div>
+            <div class="relative flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-slate-50 shadow-2xl">
+                <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-6 py-3">
+                    <h3 class="text-base font-black text-slate-900">Edit Identity</h3>
+                    <button type="button" onclick="closeEditIdentityModal()" class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-400 transition hover:bg-slate-100" aria-label="Close edit identity">
+                        <i data-lucide="x" class="h-4 w-4"></i>
+                    </button>
+                </div>
+                <div id="editIdentityModalContent" class="overflow-y-auto p-5 sm:p-6">
+                    <div class="flex justify-center py-12">
+                        <div class="h-8 w-8 animate-spin rounded-full border-2 border-[#00ADC5] border-t-transparent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Create Identity Modal -->
@@ -200,17 +281,75 @@
                 .then(html => {
                     document.getElementById('createModalContent').innerHTML = html;
                     document.getElementById('createModal').classList.remove('hidden');
+                    bindAssignedProjectVisibility('createUserRole', 'createAssignedProjects');
+                    bindProjectPicker('createProjectPicker');
                     if (window.lucide) lucide.createIcons();
                 });
+        }
+
+        function openEditIdentityModal(userId) {
+            const content = document.getElementById('editIdentityModalContent');
+            content.innerHTML = '<div class="flex justify-center py-12"><div class="h-8 w-8 animate-spin rounded-full border-2 border-[#00ADC5] border-t-transparent"></div></div>';
+            document.getElementById('editIdentityModal').classList.remove('hidden');
+
+            fetch(`/admin/users/${userId}/edit?partial=1`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Unable to load this identity for editing.');
+                    return response.text();
+                })
+                .then(html => {
+                    content.innerHTML = html;
+                    bindAssignedProjectVisibility('editIdentityRole', 'editIdentityAssignedProjects');
+                    bindProjectPicker('editIdentityProjectPicker');
+                    if (window.lucide) lucide.createIcons();
+                })
+                .catch(error => {
+                    content.innerHTML = `<p class="rounded-xl bg-rose-50 p-4 text-sm font-semibold text-rose-700">${error.message}</p>`;
+                });
+        }
+
+        function bindAssignedProjectVisibility(roleId, assignmentsId) {
+            const roleSelect = document.getElementById(roleId);
+            const assignments = document.getElementById(assignmentsId);
+            if (!roleSelect || !assignments) return;
+
+            const updateVisibility = () => {
+                assignments.classList.toggle('hidden', roleSelect.value !== 'user');
+            };
+
+            roleSelect.addEventListener('change', updateVisibility);
+            updateVisibility();
+        }
+
+        function bindProjectPicker(pickerId) {
+            const picker = document.getElementById(pickerId);
+            if (!picker) return;
+
+            const checkboxes = picker.querySelectorAll('input[name="assigned_project_ids[]"]');
+            const countLabel = picker.querySelector('[data-project-selection-count]');
+            const updateCount = () => {
+                const selectedCount = [...checkboxes].filter(checkbox => checkbox.checked).length;
+                countLabel.textContent = selectedCount
+                    ? `${selectedCount} project${selectedCount === 1 ? '' : 's'} selected`
+                    : 'Select projects';
+            };
+
+            checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateCount));
+            updateCount();
         }
 
         function closeCreateModal() {
             document.getElementById('createModal').classList.add('hidden');
         }
 
+        function closeEditIdentityModal() {
+            document.getElementById('editIdentityModal').classList.add('hidden');
+        }
+
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeCreateModal();
+                closeEditIdentityModal();
             }
         });
     </script>

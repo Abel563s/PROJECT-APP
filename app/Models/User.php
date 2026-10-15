@@ -78,6 +78,38 @@ class User extends Authenticatable
         return $this->role === 'user';
     }
 
+    public function getRoleLabelAttribute(): string
+    {
+        return match ($this->role) {
+            'admin' => 'Admin',
+            'manager' => 'Management',
+            'user' => 'Project Coordinator',
+            'department_attendance_user' => 'Department Attendance User',
+            'dceo' => 'DCEO',
+            default => ucfirst(str_replace('_', ' ', (string) $this->role)),
+        };
+    }
+
+    public function assignedProjects()
+    {
+        return $this->belongsToMany(Project::class);
+    }
+
+    public function canManageProject(Project $project): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        if (!$this->isUser()) {
+            return false;
+        }
+
+        return $project->relationLoaded('coordinators')
+            ? $project->coordinators->contains('id', $this->id)
+            : $project->coordinators()->whereKey($this->id)->exists();
+    }
+
     /**
      * Check if user is DCEO.
      */

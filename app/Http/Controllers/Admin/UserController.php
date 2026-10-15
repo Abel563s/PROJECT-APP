@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -17,8 +19,10 @@ class UserController extends Controller
             'manager' => User::where('role', 'manager')->count(),
             'user' => User::where('role', 'user')->count(),
         ];
-        $users = User::latest()->paginate(15);
-        return view('admin.roles.index', compact('roles', 'users'));
+        $users = User::with('assignedProjects')->latest()->paginate(15);
+        $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+
+        return view('admin.roles.index', compact('roles', 'users', 'projects'));
     }
 
     public function index(Request $request)
@@ -48,7 +52,13 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+
+        if (request()->has('partial')) {
+            return view('admin.users.edit-modal', compact('user', 'projects'));
+        }
+
+        return view('admin.users.edit', compact('user', 'projects'));
     }
 
     public function passwordModal(User $user)
@@ -62,7 +72,9 @@ class UserController extends Controller
     public function create()
     {
         if (request()->has('partial')) {
-            return view('admin.users.create-modal');
+            $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+
+            return view('admin.users.create-modal', compact('projects'));
         }
         return redirect()->route('admin.users.index');
     }
@@ -75,20 +87,28 @@ class UserController extends Controller
             'role' => ['required', Rule::in(['admin', 'manager', 'user'])],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'is_active' => ['nullable', 'boolean'],
+            'assigned_project_ids' => ['sometimes', 'array'],
+            'assigned_project_ids.*' => ['integer', Rule::exists('projects', 'id')],
         ]);
 
         $prefix = \App\Models\SystemSetting::where('key', 'employee_id_prefix')->first()?->value ?? 'EMP';
         $nextId = User::count() + 1;
         $employeeId = $prefix . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
 
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'role' => $validated['role'],
-            'password' => Hash::make($validated['password']),
-            'is_active' => $validated['is_active'] ?? true,
-            'employee_id' => $employeeId,
-        ]);
+        DB::transaction(function () use ($validated, $employeeId) {
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'role' => $validated['role'],
+                'password' => Hash::make($validated['password']),
+                'is_active' => $validated['is_active'] ?? true,
+                'employee_id' => $employeeId,
+            ]);
+
+            $user->assignedProjects()->sync(
+                $user->isUser() ? ($validated['assigned_project_ids'] ?? []) : []
+            );
+        });
 
         return redirect()->route('admin.users.index')->with('success', 'User node created successfully.');
     }
@@ -101,20 +121,31 @@ class UserController extends Controller
             'role' => ['required', Rule::in(['admin', 'manager', 'user'])],
             'is_active' => ['required', 'boolean'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'assigned_project_ids' => ['sometimes', 'array'],
+            'assigned_project_ids.*' => ['integer', Rule::exists('projects', 'id')],
         ]);
 
-        $user->fill([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'role' => $validated['role'],
-            'is_active' => $validated['is_active'],
-        ]);
+        DB::transaction(function () use ($validated, $user, $request) {
+            $previousRole = $user->role;
+            $user->fill([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'role' => $validated['role'],
+                'is_active' => $validated['is_active'],
+            ]);
 
-        if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
-        }
+            if (!empty($validated['password'])) {
+                $user->password = Hash::make($validated['password']);
+            }
 
-        $user->save();
+            $user->save();
+
+            if (!$user->isUser()) {
+                $user->assignedProjects()->sync([]);
+            } elseif ($request->exists('assigned_project_ids') || $previousRole !== 'user') {
+                $user->assignedProjects()->sync($validated['assigned_project_ids'] ?? []);
+            }
+        });
 
         return redirect()->route('admin.users.index')->with('success', 'User profile updated successfully.');
     }

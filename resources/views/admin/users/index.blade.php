@@ -9,11 +9,12 @@
                 </div>
                 <div>
                     <h2 class="text-xl font-bold text-slate-900 tracking-tight font-outfit leading-none">
-                        Access <span class="font-black text-slate-900">Control</span>
+                        User <span class="font-black text-slate-900">Management</span>
                     </h2>
-                    <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Identity Matrix & Node Permissions</p>
+                    <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">User directory and account status</p>
                 </div>
             </div>
+            @if(auth()->user()->isAdmin())
             <button onclick="openCreateModal()"
                 class="group/btn relative px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20">
                 <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
@@ -22,6 +23,7 @@
                     New Identity
                 </span>
             </button>
+            @endif
         </div>
 
         <!-- Search & Filter -->
@@ -39,9 +41,9 @@
                         <select name="role" onchange="this.form.submit()"
                             class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
                             <option value="">All Tiers</option>
-                            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Root (Admin)</option>
-                            <option value="manager" {{ request('role') == 'manager' ? 'selected' : '' }}>Lead (Manager)</option>
-                            <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>Standard (User)</option>
+                            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="manager" {{ request('role') == 'manager' ? 'selected' : '' }}>Management</option>
+                            <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>Project Coordinator</option>
                         </select>
                         <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
                     </div>
@@ -110,10 +112,11 @@
                                         };
                                     @endphp
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $roleStyles }} border">
-                                        {{ ucfirst($user->role) }}
+                                        {{ $user->role_label }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
+                                    @if(auth()->user()->isAdmin())
                                     <form action="{{ route('admin.users.update', $user) }}" method="POST">
                                         @csrf
                                         @method('PUT')
@@ -127,8 +130,14 @@
                                             {{ $user->is_active ? 'Active' : 'Offline' }}
                                         </button>
                                     </form>
+                                    @else
+                                        <span class="text-[9px] font-black uppercase tracking-wider {{ $user->is_active ? 'text-emerald-600' : 'text-rose-600' }}">
+                                            {{ $user->is_active ? 'Active' : 'Offline' }}
+                                        </span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-right">
+                                    @if(auth()->user()->isAdmin())
                                     <div class="flex items-center justify-end gap-1.5">
                                         <button onclick="openPwModal({{ $user->id }})"
                                             class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-200"
@@ -153,6 +162,7 @@
                                             </form>
                                         @endif
                                     </div>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

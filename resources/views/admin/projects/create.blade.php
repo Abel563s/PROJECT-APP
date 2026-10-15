@@ -103,6 +103,21 @@
                 </div>
             </div>
 
+            <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-50 space-y-5">
+                <div>
+                    <h3 class="text-lg font-black text-slate-900">Project Coordinators</h3>
+                    <p class="text-xs font-medium text-slate-500">Select one or more coordinators. Only assigned coordinators can edit this project and its progress updates.</p>
+                </div>
+                <select name="coordinator_ids[]" multiple size="5"
+                    class="w-full rounded-xl border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-cyan-100">
+                    @foreach($coordinators as $coordinator)
+                        <option value="{{ $coordinator->id }}" @selected(in_array($coordinator->id, old('coordinator_ids', [])))>
+                            {{ $coordinator->name }} ({{ $coordinator->email }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <!-- Section 2: Stakeholders -->
             <div
                 class="bg-white p-10 rounded-[3rem] shadow-xl shadow-slate-200/60 border border-slate-50 space-y-10 group/section hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 relative overflow-hidden">

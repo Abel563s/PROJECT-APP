@@ -93,6 +93,24 @@
                 </div>
             </div>
 
+            @if(auth()->user()->isAdmin())
+                <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-50 space-y-5">
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">Project Coordinators</h3>
+                        <p class="text-xs font-medium text-slate-500">Select one or more coordinators. Only assigned coordinators can edit this project and its progress updates.</p>
+                    </div>
+                    @php($assignedCoordinatorIds = old('coordinator_ids', $project->coordinators->pluck('id')->all()))
+                    <select name="coordinator_ids[]" multiple size="5"
+                        class="w-full rounded-xl border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-cyan-100">
+                        @foreach($coordinators as $coordinator)
+                            <option value="{{ $coordinator->id }}" @selected(in_array($coordinator->id, $assignedCoordinatorIds))>
+                                {{ $coordinator->name }} ({{ $coordinator->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
+
             <!-- Section 2: Stakeholders -->
             <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-50 space-y-10 group">
                 <div class="flex items-center gap-4">

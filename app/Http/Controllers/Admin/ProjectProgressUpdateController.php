@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\ProjectProgressUpdate;
+use Illuminate\Validation\Rule;
 
 class ProjectProgressUpdateController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ProjectProgressUpdate::with('project');
+        $query = ProjectProgressUpdate::with('project.coordinators');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -43,7 +44,10 @@ class ProjectProgressUpdateController extends Controller
 
     public function create()
     {
-        $projects = Project::all();
+        $user = request()->user();
+        abort_unless($user->isAdmin() || $user->isUser(), 403);
+        $projects = $this->availableProjects($user);
+
         if (request()->has('partial')) {
             return view('admin.progress-updates.create-modal', compact('projects'));
         }
@@ -53,7 +57,7 @@ class ProjectProgressUpdateController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'project_id' => 'required|exists:projects,id',
+            'project_id' => ['required', Rule::exists('projects', 'id')],
             'progress_planned' => 'required|numeric|min:0',
             'progress_actual' => 'required|numeric|min:0',
             'revenue_planned' => 'nullable|numeric|min:0',
@@ -78,6 +82,9 @@ class ProjectProgressUpdateController extends Controller
             'operation_constraint' => 'nullable|string',
         ]);
 
+        $project = Project::findOrFail($validated['project_id']);
+        $this->authorize('create', [ProjectProgressUpdate::class, $project]);
+
         ProjectProgressUpdate::create($validated);
 
         return redirect()->route('admin.progress-updates.index')->with('success', 'Progress update created successfully.');
@@ -93,7 +100,9 @@ class ProjectProgressUpdateController extends Controller
 
     public function edit(ProjectProgressUpdate $progress_update)
     {
-        $projects = Project::all();
+        $this->authorize('update', $progress_update);
+        $projects = $this->availableProjects(request()->user());
+
         if (request()->has('partial')) {
             return view('admin.progress-updates.edit-modal', [
                 'update' => $progress_update,
@@ -108,8 +117,10 @@ class ProjectProgressUpdateController extends Controller
 
     public function update(Request $request, ProjectProgressUpdate $progress_update)
     {
+        $this->authorize('update', $progress_update);
+
         $validated = $request->validate([
-            'project_id' => 'required|exists:projects,id',
+            'project_id' => ['required', Rule::exists('projects', 'id')],
             'progress_planned' => 'required|numeric|min:0',
             'progress_actual' => 'required|numeric|min:0',
             'revenue_planned' => 'nullable|numeric|min:0',
@@ -134,6 +145,8 @@ class ProjectProgressUpdateController extends Controller
             'operation_constraint' => 'nullable|string',
         ]);
 
+        $project = Project::findOrFail($validated['project_id']);
+        $this->authorize('update', $project);
         $progress_update->update($validated);
 
         return redirect()->route('admin.progress-updates.index')->with('success', 'Progress update updated successfully.');
@@ -141,7 +154,16 @@ class ProjectProgressUpdateController extends Controller
 
     public function destroy(ProjectProgressUpdate $progress_update)
     {
+        $this->authorize('delete', $progress_update);
+
         $progress_update->delete();
         return redirect()->route('admin.progress-updates.index')->with('success', 'Progress update deleted successfully.');
+    }
+
+    private function availableProjects(\App\Models\User $user)
+    {
+        return $user->isAdmin()
+            ? Project::orderBy('project_name')->get()
+            : $user->assignedProjects()->orderBy('project_name')->get();
     }
 }

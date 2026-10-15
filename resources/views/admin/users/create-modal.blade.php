@@ -40,11 +40,11 @@
         <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Role</label>
-                <select name="role" required
+                <select name="role" id="createUserRole" required
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                    <option value="user">Standard User</option>
-                    <option value="manager">Lead Manager</option>
-                    <option value="admin">Root Admin</option>
+                    <option value="user">Project Coordinator</option>
+                    <option value="manager">Management</option>
+                    <option value="admin">Admin</option>
                 </select>
             </div>
             <div class="space-y-1">
@@ -56,6 +56,35 @@
                 </select>
             </div>
         </div>
+    </div>
+
+    <div id="createAssignedProjects" @class([
+        'bg-white border border-slate-100 rounded-xl p-4 space-y-3',
+        'hidden' => old('role', 'user') !== 'user',
+    ])>
+        <div>
+            <h4 class="text-sm font-black text-slate-900">Assigned Projects</h4>
+            <p class="text-[9px] font-bold text-slate-400">Choose project codes this coordinator can edit.</p>
+        </div>
+        <details id="createProjectPicker" class="group relative">
+            <summary class="flex cursor-pointer list-none items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-700 transition hover:border-[#00ADC5]/40 hover:bg-white">
+                <span data-project-selection-count>Select projects</span>
+                <i data-lucide="chevron-down" class="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180"></i>
+            </summary>
+            <div class="mt-1 max-h-40 overflow-y-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
+            @foreach($projects as $project)
+                <label class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-cyan-50">
+                    <input type="checkbox" name="assigned_project_ids[]" value="{{ $project->id }}"
+                        @checked(in_array($project->id, old('assigned_project_ids', [])))
+                        class="rounded border-slate-300 text-[#00ADC5] focus:ring-[#00ADC5]">
+                    <span>{{ $project->project_code ?: $project->project_name }}</span>
+                </label>
+            @endforeach
+            @if($projects->isEmpty())
+                <p class="px-2 py-2 text-xs font-medium text-slate-400">No projects available.</p>
+            @endif
+            </div>
+        </details>
     </div>
 
     <!-- Section 3: Security Key -->

@@ -6,12 +6,14 @@ use App\Models\Issue;
 use App\Models\Project;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Project::query();
+        $query = Project::with('coordinators');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -87,14 +89,19 @@ class ProjectController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Project::class);
+        $coordinators = \App\Models\User::where('role', 'user')->orderBy('name')->get(['id', 'name', 'email']);
+
         if (request()->has('partial')) {
-            return view('admin.projects.create-modal');
+            return view('admin.projects.create-modal', compact('coordinators'));
         }
-        return view('admin.projects.create');
+        return view('admin.projects.create', compact('coordinators'));
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Project::class);
+
         $validated = $request->validate([
             'project_code' => 'nullable|string',
             'project_name' => 'required|string',
@@ -122,6 +129,8 @@ class ProjectController extends Controller
             'ppa_received_at' => 'nullable|date',
             'pa_received_at' => 'nullable|date',
             'fa_received_at' => 'nullable|date',
+            'coordinator_ids' => ['sometimes', 'array'],
+            'coordinator_ids.*' => ['integer', Rule::exists('users', 'id')->where(fn ($query) => $query->where('role', 'user'))],
         ]);
 
         $validated['status'] = $validated['status'] ?? 'in progress';
@@ -130,7 +139,13 @@ class ProjectController extends Controller
             $validated['status'] = 'completed';
         }
 
-        Project::create($validated);
+        DB::transaction(function () use ($validated) {
+            $coordinatorIds = $validated['coordinator_ids'] ?? [];
+            unset($validated['coordinator_ids']);
+
+            $project = Project::create($validated);
+            $project->coordinators()->sync($coordinatorIds);
+        });
 
         return redirect()->route('admin.projects.index')->with('success', 'Project created successfully.');
     }
@@ -435,14 +450,23 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
     {
+        $this->authorize('update', $project);
+        $coordinators = \App\Models\User::where('role', 'user')->orderBy('name')->get(['id', 'name', 'email']);
+
         if (request()->has('partial')) {
-            return view('admin.projects.edit-modal', compact('project'));
+            return view('admin.projects.edit-modal', compact('project', 'coordinators'));
         }
-        return view('admin.projects.edit', compact('project'));
+        return view('admin.projects.edit', compact('project', 'coordinators'));
     }
 
     public function update(Request $request, Project $project)
     {
+        $this->authorize('update', $project);
+
+        if ($request->exists('coordinator_ids') && !$request->user()->isAdmin()) {
+            abort(403, 'Only Admin can change project assignments.');
+        }
+
         $validated = $request->validate([
             'project_code' => 'nullable|string',
             'project_name' => 'required|string',
@@ -470,13 +494,23 @@ class ProjectController extends Controller
             'ppa_received_at' => 'nullable|date',
             'pa_received_at' => 'nullable|date',
             'fa_received_at' => 'nullable|date',
+            'coordinator_ids' => ['sometimes', 'array'],
+            'coordinator_ids.*' => ['integer', Rule::exists('users', 'id')->where(fn ($query) => $query->where('role', 'user'))],
         ]);
 
         if (!empty($validated['actual_finish_date'])) {
             $validated['status'] = 'completed';
         }
 
-        $project->update($validated);
+        $coordinatorIds = $validated['coordinator_ids'] ?? null;
+        unset($validated['coordinator_ids']);
+
+        DB::transaction(function () use ($project, $validated, $coordinatorIds, $request) {
+            $project->update($validated);
+            if ($request->user()->isAdmin()) {
+                $project->coordinators()->sync($coordinatorIds ?? []);
+            }
+        });
 
         return redirect()->route('admin.projects.index')->with('success', 'Project updated successfully.');
     }
@@ -516,13 +550,19 @@ class ProjectController extends Controller
     public function search(Request $request)
     {
         $search = $request->get('q', '');
-        $projects = Project::where('status', 'active')
+        $query = Project::query()
+            ->where('status', 'active')
             ->where(function ($query) use ($search) {
                 $query->where('project_name', 'like', "%{$search}%")
                     ->orWhere('project_code', 'like', "%{$search}%")
                     ->orWhere('custom_id', 'like', "%{$search}%");
-            })
-            ->orderBy('project_name')
+            });
+
+        if ($request->user()->isUser()) {
+            $query->whereHas('coordinators', fn ($coordinators) => $coordinators->whereKey($request->user()->id));
+        }
+
+        $projects = $query->orderBy('project_name')
             ->limit(20)
             ->get(['id', 'project_code', 'project_name']);
 
@@ -538,6 +578,8 @@ class ProjectController extends Controller
 
     public function toggleStatus(Project $project)
     {
+        $this->authorize('update', $project);
+
         $statuses = ['in progress', 'completed', 'suspended'];
         $currentIndex = array_search($project->status, $statuses);
         $nextIndex = ($currentIndex + 1) % count($statuses);
@@ -549,6 +591,8 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        $this->authorize('delete', $project);
+
         $project->delete();
         return redirect()->route('admin.projects.index')->with('success', 'Project deleted successfully.');
     }

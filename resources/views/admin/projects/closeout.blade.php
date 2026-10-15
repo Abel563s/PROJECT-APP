@@ -112,7 +112,7 @@
                         <p class="text-xs font-black text-slate-900">{{ $project->location ?: 'Not Listed' }}</p>
                     </div>
                     <div class="space-y-0.5">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Lead Manager</p>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Project Manager</p>
                         <p class="text-xs font-black text-slate-900">{{ $project->project_manager ?: 'Pending Assignment' }}</p>
                     </div>
                     <div class="space-y-0.5">
