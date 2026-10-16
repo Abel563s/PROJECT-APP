@@ -1,0 +1,175 @@
+[33mcommit c3a4db3dbb26d614191e53f75702e4038a58b577[m[33m ([m[1;32mmaster[m[33m)[m
+Author: Abel563s <ringelden92@gmail.com>
+Date:   Fri Oct 16 11:34:21 2026 +0300
+
+    Roles Update v4
+
+[1mdiff --git a/app/Http/Controllers/Admin/UserController.php b/app/Http/Controllers/Admin/UserController.php[m
+[1mindex 12cc6fc..1e881c4 100644[m
+[1m--- a/app/Http/Controllers/Admin/UserController.php[m
+[1m+++ b/app/Http/Controllers/Admin/UserController.php[m
+[36m@@ -85,7 +85,9 @@[m [mpublic function store(Request $request)[m
+             'name' => ['required', 'string', 'max:255'],[m
+             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')],[m
+             'role' => ['required', Rule::in(['admin', 'manager', 'user'])],[m
+[31m-            'password' => ['required', 'string', 'min:8', 'confirmed'],[m
+[32m+[m[32m            'password' => $request->input('role') === 'admin'[m
+[32m+[m[32m                ? ['required', 'string', 'min:8', 'confirmed'][m
+[32m+[m[32m                : ['prohibited'],[m
+             'is_active' => ['nullable', 'boolean'],[m
+             'assigned_project_ids' => ['sometimes', 'array'],[m
+             'assigned_project_ids.*' => ['integer', Rule::exists('projects', 'id')],[m
+[36m@@ -94,13 +96,15 @@[m [mpublic function store(Request $request)[m
+         $prefix = \App\Models\SystemSetting::where('key', 'employee_id_prefix')->first()?->value ?? 'EMP';[m
+         $nextId = User::count() + 1;[m
+         $employeeId = $prefix . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);[m
+[32m+[m[32m        $mustChangePassword = in_array($validated['role'], ['manager', 'user'], true);[m
+ [m
+[31m-        DB::transaction(function () use ($validated, $employeeId) {[m
+[32m+[m[32m        DB::transaction(function () use ($validated, $employeeId, $mustChangePassword) {[m
+             $user = User::create([[m
+                 'name' => $validated['name'],[m
+                 'email' => $validated['email'],[m
+                 'role' => $validated['role'],[m
+[31m-                'password' => Hash::make($validated['password']),[m
+[32m+[m[32m                'password' => Hash::make($validated['password'] ?? 'pass1234'),[m
+[32m+[m[32m                'must_change_password' => $mustChangePassword,[m
+                 'is_active' => $validated['is_active'] ?? true,[m
+                 'employee_id' => $employeeId,[m
+             ]);[m
+[36m@@ -110,6 +114,10 @@[m [mpublic function store(Request $request)[m
+             );[m
+         });[m
+ [m
+[32m+[m[32m        if ($request->expectsJson()) {[m
+[32m+[m[32m            return response()->json(['message' => 'User node created successfully.'], 201);[m
+[32m+[m[32m        }[m
+[32m+[m
+         return redirect()->route('admin.users.index')->with('success', 'User node created successfully.');[m
+     }[m
+ [m
+[1mdiff --git a/app/Http/Controllers/Auth/FirstLoginPasswordController.php b/app/Http/Controllers/Auth/FirstLoginPasswordController.php[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a740787[m
+[1m--- /dev/null[m
+[1m+++ b/app/Http/Controllers/Auth/FirstLoginPasswordController.php[m
+[36m@@ -0,0 +1,35 @@[m
+[32m+[m[32m<?php[m
+[32m+[m
+[32m+[m[32mnamespace App\Http\Controllers\Auth;[m
+[32m+[m
+[32m+[m[32muse App\Http\Controllers\Controller;[m
+[32m+[m[32muse Illuminate\Http\RedirectResponse;[m
+[32m+[m[32muse Illuminate\Http\Request;[m
+[32m+[m[32muse Illuminate\Validation\Rule;[m
+[32m+[m[32muse Illuminate\View\View;[m
+[32m+[m
+[32m+[m[32mclass FirstLoginPasswordController extends Controller[m
+[32m+[m[32m{[m
+[32m+[m[32m    public function edit(): View|RedirectResponse[m
+[32m+[m[32m    {[m
+[32m+[m[32m        if (!auth()->user()->must_change_password) {[m
+[32m+[m[32m            return redirect()->route('dashboard');[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return view('auth.first-login-password');[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public function update(Request $request): RedirectResponse[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $validated = $request->validate([[m
+[32m+[m[32m            'password' => ['required', 'string', 'min:8', 'confirmed', Rule::notIn(['pass1234'])],[m
+[32m+[m[32m        ]);[m
+[32m+[m
+[32m+[m[32m        $request->user()->update([[m
+[32m+[m[32m            'password' => $validated['password'],[m
+[32m+[m[32m            'must_change_password' => false,[m
+[32m+[m[32m        ]);[m
+[32m+[m
+[32m+[m[32m        return redirect()->intended(route('dashboard'));[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/app/Http/Middleware/RequirePasswordChange.php b/app/Http/Middleware/RequirePasswordChange.php[m
+[1mnew file mode 100644[m
+[1mindex 0000000..2c668a2[m
+[1m--- /dev/null[m
+[1m+++ b/app/Http/Middleware/RequirePasswordChange.php[m
+[36m@@ -0,0 +1,24 @@[m
+[32m+[m[32m<?php[m
+[32m+[m
+[32m+[m[32mnamespace App\Http\Middleware;[m
+[32m+[m
+[32m+[m[32muse Closure;[m
+[32m+[m[32muse Illuminate\Http\Request;[m
+[32m+[m[32muse Symfony\Component\HttpFoundation\Response;[m
+[32m+[m
+[32m+[m[32mclass RequirePasswordChange[m
+[32m+[m[32m{[m
+[32m+[m[32m    public function handle(Request $request, Closure $next): Response[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $routeName = $request->route()?->getName();[m
+[32m+[m
+[32m+[m[32m        if ([m
+[32m+[m[32m            $request->user()?->must_change_password[m
+[32m+[m[32m            && !in_array($routeName, ['password.first-login.edit', 'password.first-login.update'], true)[m
+[32m+[m[32m        ) {[m
+[32m+[m[32m            return redirect()->route('password.first-login.edit');[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return $next($request);[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/app/Models/User.php b/app/Models/User.php[m
+[1mindex 74b038a..88cc6b9 100644[m
+[1m--- a/app/Models/User.php[m
+[1m+++ b/app/Models/User.php[m
+[36m@@ -21,6 +21,7 @@[m [mclass User extends Authenticatable[m
+         'name',[m
+         'email',[m
+         'password',[m
+[32m+[m[32m        'must_change_password',[m
+         'role',[m
+         'phone',[m
+         'is_active',[m
+[36m@@ -50,6 +51,7 @@[m [mprotected function casts(): array[m
+             'email_verified_at' => 'datetime',[m
+             'password' => 'hashed',[m
+             'is_active' => 'boolean',[m
+[32m+[m[32m            'must_change_password' => 'boolean',[m
+         ];[m
+     }[m
+ [m
+[1mdiff --git a/bootstrap/app.php b/bootstrap/app.php[m
+[1mindex d98a971..7d9eda6 100644[m
+[1m--- a/bootstrap/app.php[m
+[1m+++ b/bootstrap/app.php[m
+[36m@@ -14,6 +14,7 @@[m
+         $middleware->alias([[m
+             'role' => \App\Http\Middleware\RoleMiddleware::class,[m
+             'role.write' => \App\Http\Middleware\RoleWriteMiddleware::class,[m
+[32m+[m[32m            'password.change.required' => \App\Http\Middleware\RequirePasswordChange::class,[m
+         ]);[m
+     })[m
+     ->withExceptions(function (Exceptions $exceptions): void {[m
+[1mdiff --git a/database/migrations/2026_10_16_000001_add_must_change_password_to_users_table.php b/database/migrations/2026_10_16_000001_add_must_change_password_to_users_table.php[m
+[1mnew file mode 100644[m
+[1mindex 0000000..797dce0[m
+[1m--- /dev/null[m
+[1m+++ b/database/migrations/2026_10_16_000001_add_must_change_password_to_users_table.php[m
+[36m@@ -0,0 +1,22 @@[m
+[32m+[m[32m<?php[m
+[32m+[m
+[32m+[m[32muse Illuminate\Database\Migrations\Migration;[m
+[32m+[m[32muse Illuminate\Database\Schema\Blueprint;[m
+[32m+[m[32muse Illuminate\Support\Facades\Schema;[m
+[32m+[m
+[32m+[m[32mreturn new class extends Migration[m
+[32m+[m[32m{[m
+[32m+[m[32m    public function up(): void[m
+[32m+[m[32m    {[m
+[32m+[m[32m        Schema::table('users', function (Blueprint $table) {[m
+[32m+[m[32m            $table->boolean('must_change_password')->default(false)->after('password');[m
+[32m+[m[32m        });[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m 
