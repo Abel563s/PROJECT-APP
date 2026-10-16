@@ -283,8 +283,48 @@
                     document.getElementById('createModal').classList.remove('hidden');
                     bindAssignedProjectVisibility('createUserRole', 'createAssignedProjects');
                     bindProjectPicker('createProjectPicker');
+                    bindCreateIdentityForm();
                     if (window.lucide) lucide.createIcons();
                 });
+        }
+
+        function bindCreateIdentityForm() {
+            const form = document.getElementById('createModalForm');
+            if (!form) return;
+
+            form.addEventListener('submit', async event => {
+                event.preventDefault();
+
+                const submitButton = form.querySelector('button[type="submit"]');
+                const errors = document.getElementById('createModalErrors');
+                errors.classList.add('hidden');
+                errors.textContent = '';
+                submitButton.disabled = true;
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: new FormData(form),
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                    });
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        const messages = Object.values(result.errors || {}).flat();
+                        throw new Error(messages.join(' ') || result.message || 'Unable to create this identity.');
+                    }
+
+                    window.location.reload();
+                } catch (error) {
+                    errors.textContent = error.message;
+                    errors.classList.remove('hidden');
+                } finally {
+                    submitButton.disabled = false;
+                }
+            });
         }
 
         function openEditIdentityModal(userId) {

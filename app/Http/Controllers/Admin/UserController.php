@@ -110,6 +110,10 @@ class UserController extends Controller
             );
         });
 
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'User node created successfully.'], 201);
+        }
+
         return redirect()->route('admin.users.index')->with('success', 'User node created successfully.');
     }
 

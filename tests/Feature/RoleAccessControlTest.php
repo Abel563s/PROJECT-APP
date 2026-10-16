@@ -210,3 +210,27 @@ it('allows admins to assign projects while creating or editing coordinators', fu
     ])->assertRedirect(route('admin.users.index'));
     expect($coordinator->fresh()->assignedProjects)->toBeEmpty();
 });
+
+it('allows admins to create Management and Admin identities from the Access Control flow', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $this->actingAs($admin)->get(route('admin.users.create', ['partial' => 1]))
+        ->assertOk()
+        ->assertSee('value="manager">Management</option>', false)
+        ->assertSee('value="admin">Admin</option>', false);
+
+    foreach ([
+        ['name' => 'Management Identity', 'email' => 'management-identity@example.com', 'role' => 'manager'],
+        ['name' => 'Admin Identity', 'email' => 'admin-identity@example.com', 'role' => 'admin'],
+    ] as $identity) {
+        $this->postJson(route('admin.users.store'), [
+            ...$identity,
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'is_active' => 1,
+        ])->assertCreated()
+            ->assertJson(['message' => 'User node created successfully.']);
+
+        $this->assertDatabaseHas('users', $identity);
+    }
+});

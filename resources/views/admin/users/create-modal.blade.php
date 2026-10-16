@@ -1,5 +1,6 @@
 <form action="{{ route('admin.users.store') }}" method="POST" id="createModalForm" class="space-y-4">
     @csrf
+    <div id="createModalErrors" class="hidden rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700" role="alert"></div>
 
     <!-- Section 1: Identity -->
     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
