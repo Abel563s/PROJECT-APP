@@ -25,31 +25,6 @@ class UserController extends Controller
         return view('admin.roles.index', compact('roles', 'users', 'projects'));
     }
 
-    public function index(Request $request)
-    {
-        $query = User::query();
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('role')) {
-            $query->where('role', $request->role);
-        }
-
-        if ($request->has('status') && $request->status !== null && $request->status !== '') {
-            $query->where('is_active', $request->status);
-        }
-
-        $users = $query->latest()->paginate(15)->withQueryString();
-
-        return view('admin.users.index', compact('users'));
-    }
-
     public function edit(User $user)
     {
         $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
@@ -58,7 +33,7 @@ class UserController extends Controller
             return view('admin.users.edit-modal', compact('user', 'projects'));
         }
 
-        return view('admin.users.edit', compact('user', 'projects'));
+        return redirect()->route('admin.roles.index');
     }
 
     public function passwordModal(User $user)
@@ -66,7 +41,7 @@ class UserController extends Controller
         if (request()->has('partial')) {
             return view('admin.users.password-modal', compact('user'));
         }
-        return view('admin.users.edit', compact('user'));
+        return redirect()->route('admin.roles.index');
     }
 
     public function create()
@@ -76,7 +51,7 @@ class UserController extends Controller
 
             return view('admin.users.create-modal', compact('projects'));
         }
-        return redirect()->route('admin.users.index');
+        return redirect()->route('admin.roles.index');
     }
 
     public function store(Request $request)
@@ -120,7 +95,7 @@ class UserController extends Controller
             return response()->json(['message' => 'User node created successfully.'], 201);
         }
 
-        return redirect()->route('admin.users.index')->with('success', 'User node created successfully.');
+        return redirect()->route('admin.roles.index')->with('success', 'User node created successfully.');
     }
 
     public function update(Request $request, User $user)
@@ -157,7 +132,7 @@ class UserController extends Controller
             }
         });
 
-        return redirect()->route('admin.users.index')->with('success', 'User profile updated successfully.');
+        return redirect()->route('admin.roles.index')->with('success', 'User profile updated successfully.');
     }
 
     public function destroy(User $user)
@@ -167,6 +142,6 @@ class UserController extends Controller
         }
 
         $user->delete();
-        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
+        return redirect()->route('admin.roles.index')->with('success', 'User deleted successfully.');
     }
 }

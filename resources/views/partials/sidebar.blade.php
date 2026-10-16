@@ -172,13 +172,6 @@
                             'route' => 'admin.roles.index',
                             'active' => request()->routeIs('admin.roles.*') || request()->routeIs('admin.users.*')
                         ];
-                    } elseif (Auth::user()->isManager()) {
-                        $menu[] = [
-                            'label' => 'User Directory',
-                            'icon' => 'users',
-                            'route' => 'admin.users.index',
-                            'active' => request()->routeIs('admin.users.*')
-                        ];
                     }
                 } else {
                     $menu[] = ['label' => 'Dashboard', 'icon' => 'layout-dashboard', 'route' => 'dashboard', 'active' => request()->routeIs('dashboard')];

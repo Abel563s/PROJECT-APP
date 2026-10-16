@@ -92,9 +92,6 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::put('/settings/password', [SystemSettingController::class, 'updatePassword'])->name('settings.password.update');
 
         // User Management / Access Control
-        Route::middleware('role:admin|manager')->group(function () {
-            Route::resource('users', AdminUserController::class)->only(['index']);
-        });
         Route::middleware('role:admin')->group(function () {
             Route::resource('users', AdminUserController::class)->except(['index', 'show']);
             Route::get('/users/{user}/password-modal', [AdminUserController::class, 'passwordModal'])->name('users.password.modal');

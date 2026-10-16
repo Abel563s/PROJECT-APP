@@ -32,7 +32,7 @@ it('allows management to view records but rejects all management writes and acce
 
     $this->actingAs($management)->get(route('admin.projects.index'))->assertOk();
     $this->actingAs($management)->get(route('admin.progress-updates.index'))->assertOk();
-    $this->actingAs($management)->get(route('admin.users.index'))->assertOk();
+    $this->actingAs($management)->get('/admin/users')->assertMethodNotAllowed();
     $this->actingAs($management)->get(route('admin.roles.index'))->assertForbidden();
     $this->actingAs($management)->get(route('admin.projects.edit', $project))->assertForbidden();
     $this->actingAs($management)->put(route('admin.projects.update', $project), [
@@ -93,7 +93,7 @@ it('limits coordinators to editing assigned projects and their progress updates'
     ])->assertForbidden();
 
     $this->actingAs($coordinator)->get(route('admin.roles.index'))->assertForbidden();
-    $this->actingAs($coordinator)->get(route('admin.users.index'))->assertForbidden();
+    $this->actingAs($coordinator)->get('/admin/users')->assertMethodNotAllowed();
     $this->actingAs($coordinator)->delete(route('admin.progress-updates.destroy', $assignedUpdate))->assertForbidden();
     expect($otherCoordinator->assignedProjects)->toBeEmpty();
 });
@@ -102,6 +102,8 @@ it('allows admins to create and update multiple coordinator assignments', functi
     $admin = User::factory()->create(['role' => 'admin']);
     $firstCoordinator = User::factory()->create(['role' => 'user']);
     $secondCoordinator = User::factory()->create(['role' => 'user']);
+
+    $this->actingAs($admin)->get('/admin/users')->assertMethodNotAllowed();
 
     $this->actingAs($admin)->post(route('admin.projects.store'), [
         'project_name' => 'Multi Coordinator Project',
@@ -169,7 +171,7 @@ it('allows admins to assign projects while creating or editing coordinators', fu
         'role' => 'user',
         'is_active' => 1,
         'assigned_project_ids' => [$firstProject->id, $secondProject->id],
-    ])->assertRedirect(route('admin.users.index'));
+    ])->assertRedirect(route('admin.roles.index'));
 
     $coordinator = User::where('email', 'new-coordinator@example.com')->firstOrFail();
     expect($coordinator->assignedProjects->modelKeys())->toEqualCanonicalizing([
@@ -189,7 +191,7 @@ it('allows admins to assign projects while creating or editing coordinators', fu
         'role' => 'user',
         'is_active' => 1,
         'assigned_project_ids' => [$secondProject->id],
-    ])->assertRedirect(route('admin.users.index'));
+    ])->assertRedirect(route('admin.roles.index'));
     expect($coordinator->fresh()->assignedProjects->modelKeys())->toBe([$secondProject->id]);
 
     $this->actingAs($admin)->put(route('admin.users.update', $coordinator), [
@@ -197,7 +199,7 @@ it('allows admins to assign projects while creating or editing coordinators', fu
         'email' => $coordinator->email,
         'role' => 'user',
         'is_active' => 0,
-    ])->assertRedirect(route('admin.users.index'));
+    ])->assertRedirect(route('admin.roles.index'));
     expect($coordinator->fresh()->assignedProjects->modelKeys())->toBe([$secondProject->id]);
 
     $this->actingAs($admin)->put(route('admin.users.update', $coordinator), [
@@ -205,7 +207,7 @@ it('allows admins to assign projects while creating or editing coordinators', fu
         'email' => $coordinator->email,
         'role' => 'manager',
         'is_active' => 1,
-    ])->assertRedirect(route('admin.users.index'));
+    ])->assertRedirect(route('admin.roles.index'));
     expect($coordinator->fresh()->assignedProjects)->toBeEmpty();
 });
 
@@ -258,7 +260,7 @@ it('requires Management and Project Coordinators to replace the temporary passwo
         $this->actingAs($admin)->post(route('admin.users.store'), [
             ...$identity,
             'is_active' => 1,
-        ])->assertRedirect(route('admin.users.index'));
+        ])->assertRedirect(route('admin.roles.index'));
 
         $user = User::where('email', $identity['email'])->firstOrFail();
         expect($user->must_change_password)->toBeTrue();
