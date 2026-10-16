@@ -986,6 +986,10 @@
         function getChartData() {
             const projects = getSectionFilteredProjects(getStatusFilteredProjects());
             const sorted = [...projects].sort((a, b) => {
+                if (currentTab === 'budget') {
+                    return b.budget_index_percent - a.budget_index_percent;
+                }
+
                 const statusOrder = { 'Ahead of Schedule': 1, 'On Schedule': 2, 'Behind Schedule': 3, 'Not Started': 4 };
                 const statusA = statusOrder[a.schedule_status] ?? 5;
                 const statusB = statusOrder[b.schedule_status] ?? 5;
