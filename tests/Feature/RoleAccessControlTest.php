@@ -30,6 +30,10 @@ it('allows management to view records but rejects all management writes and acce
     $project = makeAccessProject('Visible Project');
     $update = makeAccessProgressUpdate($project);
 
+    $this->actingAs($management)->get(route('admin.dashboard'))
+        ->assertOk()
+        ->assertSee('Sign Out')
+        ->assertSee('data-logout-form', false);
     $this->actingAs($management)->get(route('admin.projects.index'))->assertOk();
     $this->actingAs($management)->get(route('admin.progress-updates.index'))->assertOk();
     $this->actingAs($management)->get('/admin/users')->assertMethodNotAllowed();
@@ -55,6 +59,10 @@ it('limits coordinators to editing assigned projects and their progress updates'
     $assignedUpdate = makeAccessProgressUpdate($assignedProject);
     $unassignedUpdate = makeAccessProgressUpdate($unassignedProject);
 
+    $this->actingAs($coordinator)->get(route('admin.dashboard'))
+        ->assertOk()
+        ->assertSee('Sign Out')
+        ->assertSee('data-logout-form', false);
     $this->actingAs($coordinator)->get(route('admin.projects.index'))->assertOk();
     $this->actingAs($coordinator)->put(route('admin.projects.update', $assignedProject), [
         'project_name' => 'Updated Assigned Project',

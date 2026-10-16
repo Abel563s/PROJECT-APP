@@ -115,7 +115,7 @@
             font-weight: 500;
         }
 
-        :is(body.management-readonly, body.project-coordinator-readonly) form[method="POST"]:not([action="/logout"]):not([action*="notifications"]) button,
+        :is(body.management-readonly, body.project-coordinator-readonly) form[method="POST"]:not([data-logout-form]):not([action*="notifications"]) button,
         :is(body.management-readonly, body.project-coordinator-readonly) a[href*="/create"],
         :is(body.management-readonly, body.project-coordinator-readonly) a[href*="/edit"],
         :is(body.management-readonly, body.project-coordinator-readonly) button[onclick*="create" i],

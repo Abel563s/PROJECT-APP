@@ -42,7 +42,7 @@
                     Settings
                 </a>
                 <div class="border-t border-slate-100"></div>
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" data-logout-form>
                     @csrf
                     <button type="submit"
                         class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-rose-500 hover:bg-rose-50 transition-all duration-200 font-inter">
