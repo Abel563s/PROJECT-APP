@@ -32,7 +32,8 @@
                     class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base font-medium text-slate-900 placeholder:text-slate-400 focus:border-cyan-600 focus:outline-none focus:ring-4 focus:ring-cyan-100">
             </div>
 
-            <button type="submit" class="w-full rounded-xl bg-cyan-700 px-4 py-3.5 text-sm font-extrabold tracking-wide text-white shadow-lg shadow-cyan-900/15 transition hover:bg-cyan-800 focus:outline-none focus:ring-4 focus:ring-cyan-200">
+            <button type="submit" style="background-color: #0e7490 !important; color: #ffffff !important;"
+                class="w-full rounded-xl border-0 px-4 py-3.5 text-sm font-extrabold tracking-wide text-white shadow-lg shadow-cyan-900/15 transition hover:bg-cyan-800 focus:outline-none focus:ring-4 focus:ring-cyan-200">
                 Save password and continue
             </button>
         </form>

@@ -272,7 +272,10 @@ it('requires Management and Project Coordinators to replace the temporary passwo
         ])->assertRedirect(route('dashboard'));
         $this->assertAuthenticatedAs($user);
         $this->get(route('admin.dashboard'))->assertRedirect(route('password.first-login.edit'));
-        $this->get(route('password.first-login.edit'))->assertOk()->assertSee('Create your new password');
+        $this->get(route('password.first-login.edit'))
+            ->assertOk()
+            ->assertSee('Create your new password')
+            ->assertSee('background-color: #0e7490 !important; color: #ffffff !important;', false);
 
         $this->put(route('password.first-login.update'), [
             'password' => 'pass1234',
