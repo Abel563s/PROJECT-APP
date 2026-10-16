@@ -95,5 +95,9 @@ it('applies the dashboard top filters consistently to returned dashboard data', 
         ->and($payload['all_projects'][0]['project_code'])->toBe('DASH-ALPHA')
         ->and($payload['executive_kpis']['total_projects']['total'])->toBe(1)
         ->and($payload['analytics']['project_status']['total'])->toBe(1)
-        ->and($payload['comparative_analytics']['time_by_sector']['series'][0]['counts'][0])->toBe(1);
+        ->and($payload['comparative_analytics']['time_by_sector']['series'][0]['counts'])->toBe([1, 0, 0])
+        ->and(array_sum(array_map(
+            fn ($series) => array_sum($series['counts']),
+            $payload['comparative_analytics']['time_by_delivery']['series']
+        )))->toBe(1);
 });

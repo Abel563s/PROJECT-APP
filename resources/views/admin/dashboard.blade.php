@@ -517,6 +517,7 @@
         let perPage = 15;
         let totalPages = 1;
         let chartInstance = null;
+        const matrixChartInstances = {};
         let searchTimeout = null;
         let dashboardRequestSequence = 0;
         let currentChartMeta = { categories: [], values: [], colors: [], average: 0 };
@@ -1335,7 +1336,19 @@
                 chart: {
                     type: 'donut',
                     height: 96,
-                    animations: { enabled: true, easing: 'easeinout', speed: 500 }
+                    animations: { enabled: true, easing: 'easeinout', speed: 500 },
+                    events: {
+                        dataPointMouseEnter: (event, chartContext, { seriesIndex }) => {
+                            if (totalEl && series[seriesIndex] !== undefined) {
+                                totalEl.textContent = String(series[seriesIndex]);
+                            }
+                        },
+                        dataPointMouseLeave: () => {
+                            if (totalEl) {
+                                totalEl.textContent = String(series.reduce((total, value) => total + Number(value || 0), 0));
+                            }
+                        },
+                    },
                 },
                 series: series,
                 labels: labels,
@@ -1401,6 +1414,13 @@
 
         function renderProjectPerformanceMatrix() {
             const matrix = window.latestComparativeAnalytics || {};
+            const containers = ['matrixScheduleRow', 'matrixBudgetRow', 'matrixCostRow'];
+
+            Object.values(matrixChartInstances).forEach(chart => chart.destroy());
+            Object.keys(matrixChartInstances).forEach(chartId => delete matrixChartInstances[chartId]);
+            containers.forEach(containerId => {
+                document.getElementById(containerId)?.replaceChildren();
+            });
 
             const scheduleConfigs = [
                 { key: 'time_by_delivery', container: 'matrixScheduleRow', title: 'Schedule Performance by Delivery Method' },
@@ -1478,7 +1498,7 @@
                     return;
                 }
 
-                new ApexCharts(document.getElementById(chartId), {
+                matrixChartInstances[chartId] = new ApexCharts(document.getElementById(chartId), {
                     chart: {
                         type: 'bar',
                         height: 205,
@@ -1494,7 +1514,7 @@
                             columnWidth: '48%',
                             borderRadius: 6,
                             borderRadiusApplication: 'end',
-                            distributed: isTimeBySectorChart,
+                            distributed: false,
                             dataLabels: { position: 'top' },
                             backgroundBarColors: ['#f1f5f9'],
                             backgroundBarOpacity: 0.45,
@@ -1583,7 +1603,8 @@
                         active: { filter: { type: 'darken', value: 0.04 } },
                     },
                     theme: { mode: 'light' },
-                }).render();
+                });
+                matrixChartInstances[chartId].render();
             });
         }
 
