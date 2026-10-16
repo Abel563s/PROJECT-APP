@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\SystemSettingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\FirstLoginPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Admin\MaterialController;
@@ -28,7 +29,10 @@ Route::middleware('auth')->group(function () {
 });
 
 // Protected Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'password.change.required'])->group(function () {
+    Route::get('password/first-login', [FirstLoginPasswordController::class, 'edit'])->name('password.first-login.edit');
+    Route::put('password/first-login', [FirstLoginPasswordController::class, 'update'])->name('password.first-login.update');
+
 
     // Dashboard - accessible by all authenticated users
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

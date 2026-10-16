@@ -81,11 +81,15 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        $isAdmin = $request->input('role') === 'admin';
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')],
             'role' => ['required', Rule::in(['admin', 'manager', 'user'])],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => $isAdmin
+                ? ['required', 'string', 'min:8', 'confirmed']
+                : ['prohibited'],
+            'password_confirmation' => $isAdmin ? ['required'] : ['prohibited'],
             'is_active' => ['nullable', 'boolean'],
             'assigned_project_ids' => ['sometimes', 'array'],
             'assigned_project_ids.*' => ['integer', Rule::exists('projects', 'id')],
@@ -94,13 +98,15 @@ class UserController extends Controller
         $prefix = \App\Models\SystemSetting::where('key', 'employee_id_prefix')->first()?->value ?? 'EMP';
         $nextId = User::count() + 1;
         $employeeId = $prefix . '-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+        $mustChangePassword = in_array($validated['role'], ['manager', 'user'], true);
 
-        DB::transaction(function () use ($validated, $employeeId) {
+        DB::transaction(function () use ($validated, $employeeId, $mustChangePassword) {
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'role' => $validated['role'],
-                'password' => Hash::make($validated['password']),
+                'password' => Hash::make($validated['password'] ?? 'pass1234'),
+                'must_change_password' => $mustChangePassword,
                 'is_active' => $validated['is_active'] ?? true,
                 'employee_id' => $employeeId,
             ]);

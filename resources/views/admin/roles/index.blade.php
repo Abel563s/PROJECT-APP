@@ -282,6 +282,7 @@
                     document.getElementById('createModalContent').innerHTML = html;
                     document.getElementById('createModal').classList.remove('hidden');
                     bindAssignedProjectVisibility('createUserRole', 'createAssignedProjects');
+                    updateCreateIdentityFields();
                     bindProjectPicker('createProjectPicker');
                     bindCreateIdentityForm();
                     if (window.lucide) lucide.createIcons();
@@ -359,6 +360,23 @@
 
             roleSelect.addEventListener('change', updateVisibility);
             updateVisibility();
+        }
+
+        function updateCreateIdentityFields() {
+            const roleSelect = document.getElementById('createUserRole');
+            const assignments = document.getElementById('createAssignedProjects');
+            const passwordFields = document.getElementById('createInitialPasswordFields');
+            const defaultPasswordNotice = document.getElementById('createDefaultPasswordNotice');
+            if (!roleSelect || !assignments || !passwordFields || !defaultPasswordNotice) return;
+
+            const isAdmin = roleSelect.value === 'admin';
+            assignments.classList.toggle('hidden', roleSelect.value !== 'user');
+            passwordFields.classList.toggle('hidden', !isAdmin);
+            defaultPasswordNotice.classList.toggle('hidden', isAdmin);
+            passwordFields.querySelectorAll('input').forEach(input => {
+                input.disabled = !isAdmin;
+                input.required = isAdmin;
+            });
         }
 
         function bindProjectPicker(pickerId) {

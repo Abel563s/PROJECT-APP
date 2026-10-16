@@ -167,8 +167,6 @@ it('allows admins to assign projects while creating or editing coordinators', fu
         'name' => 'New Coordinator',
         'email' => 'new-coordinator@example.com',
         'role' => 'user',
-        'password' => 'password123',
-        'password_confirmation' => 'password123',
         'is_active' => 1,
         'assigned_project_ids' => [$firstProject->id, $secondProject->id],
     ])->assertRedirect(route('admin.users.index'));
@@ -220,17 +218,72 @@ it('allows admins to create Management and Admin identities from the Access Cont
         ->assertSee('value="admin">Admin</option>', false);
 
     foreach ([
-        ['name' => 'Management Identity', 'email' => 'management-identity@example.com', 'role' => 'manager'],
-        ['name' => 'Admin Identity', 'email' => 'admin-identity@example.com', 'role' => 'admin'],
-    ] as $identity) {
+        [
+            'identity' => ['name' => 'Management Identity', 'email' => 'management-identity@example.com', 'role' => 'manager'],
+            'credentials' => [],
+        ],
+        [
+            'identity' => ['name' => 'Admin Identity', 'email' => 'admin-identity@example.com', 'role' => 'admin'],
+            'credentials' => ['password' => 'adminpassword123', 'password_confirmation' => 'adminpassword123'],
+        ],
+    ] as $scenario) {
+        $identity = $scenario['identity'];
         $this->postJson(route('admin.users.store'), [
             ...$identity,
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            ...$scenario['credentials'],
             'is_active' => 1,
         ])->assertCreated()
             ->assertJson(['message' => 'User node created successfully.']);
 
         $this->assertDatabaseHas('users', $identity);
+
+        $createdUser = User::where('email', $identity['email'])->firstOrFail();
+        if ($identity['role'] === 'manager') {
+            expect($createdUser->must_change_password)->toBeTrue()
+                ->and(\Illuminate\Support\Facades\Hash::check('pass1234', $createdUser->password))->toBeTrue();
+        } else {
+            expect($createdUser->must_change_password)->toBeFalse()
+                ->and(\Illuminate\Support\Facades\Hash::check('adminpassword123', $createdUser->password))->toBeTrue();
+        }
+    }
+});
+
+it('requires Management and Project Coordinators to replace the temporary password after login', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    foreach ([
+        ['name' => 'First Login Management', 'email' => 'first-login-management@example.com', 'role' => 'manager'],
+        ['name' => 'First Login Coordinator', 'email' => 'first-login-coordinator@example.com', 'role' => 'user'],
+    ] as $identity) {
+        $this->actingAs($admin)->post(route('admin.users.store'), [
+            ...$identity,
+            'is_active' => 1,
+        ])->assertRedirect(route('admin.users.index'));
+
+        $user = User::where('email', $identity['email'])->firstOrFail();
+        expect($user->must_change_password)->toBeTrue();
+
+        $this->post(route('logout'));
+        $this->post(route('login'), [
+            'email' => $identity['email'],
+            'password' => 'pass1234',
+        ])->assertRedirect(route('dashboard'));
+        $this->assertAuthenticatedAs($user);
+        $this->get(route('admin.dashboard'))->assertRedirect(route('password.first-login.edit'));
+        $this->get(route('password.first-login.edit'))->assertOk()->assertSee('Create your new password');
+
+        $this->put(route('password.first-login.update'), [
+            'password' => 'pass1234',
+            'password_confirmation' => 'pass1234',
+        ])->assertSessionHasErrors('password');
+
+        $this->put(route('password.first-login.update'), [
+            'password' => 'a-new-secure-password',
+            'password_confirmation' => 'a-new-secure-password',
+        ])->assertRedirect(route('dashboard'));
+
+        expect($user->fresh()->must_change_password)->toBeFalse()
+            ->and(\Illuminate\Support\Facades\Hash::check('a-new-secure-password', $user->fresh()->password))->toBeTrue();
+        $this->get(route('admin.dashboard'))->assertOk();
     }
 });

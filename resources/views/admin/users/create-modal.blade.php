@@ -41,7 +41,7 @@
         <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Role</label>
-                <select name="role" id="createUserRole" required
+                <select name="role" id="createUserRole" onchange="updateCreateIdentityFields()" required
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
                     <option value="user">Project Coordinator</option>
                     <option value="manager">Management</option>
@@ -88,26 +88,36 @@
         </details>
     </div>
 
-    <!-- Section 3: Security Key -->
-    <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
+    <!-- Section 3: Initial Password -->
+    <div id="createDefaultPasswordNotice" @class([
+        'rounded-xl border border-cyan-100 bg-cyan-50/70 p-4 text-xs font-semibold text-cyan-900',
+        'hidden' => old('role', 'user') === 'admin',
+    ])>
+        This identity will use the temporary password <span class="font-black">pass1234</span> for first login and must change it before accessing the system.
+    </div>
+
+    <div id="createInitialPasswordFields" @class([
+        'bg-white border border-slate-100 rounded-xl p-4 space-y-3',
+        'hidden' => old('role', 'user') !== 'admin',
+    ])>
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
                 <i data-lucide="key-round" class="w-4 h-4"></i>
             </div>
             <div>
-                <h4 class="text-sm font-black text-slate-900">Security Key</h4>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Authentication credentials</p>
+                <h4 class="text-sm font-black text-slate-900">Admin Password</h4>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Set this Admin's sign-in password</p>
             </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Password</label>
-                <input type="password" name="password" required placeholder="Minimum 8 characters"
+                <input type="password" name="password" @disabled(old('role', 'user') !== 'admin') @required(old('role', 'user') === 'admin') placeholder="Minimum 8 characters"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Confirm</label>
-                <input type="password" name="password_confirmation" required placeholder="Re-enter key"
+                <input type="password" name="password_confirmation" @disabled(old('role', 'user') !== 'admin') @required(old('role', 'user') === 'admin') placeholder="Re-enter key"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
         </div>
