@@ -24,7 +24,7 @@
                 button.setAttribute('aria-pressed', String(isDark));
                 button.setAttribute('aria-label', `Switch to ${nextTheme} mode (currently ${activeTheme} mode)`);
                 button.title = `Switch to ${nextTheme} mode`;
-                button.querySelector('[data-theme-label]')?.replaceChildren(`${activeTheme === 'dark' ? 'Dark' : 'Light'} mode`);
+                button.querySelector('[data-theme-label]')?.replaceChildren(`Switch to ${nextTheme} mode`);
                 button.querySelectorAll('[data-theme-icon]').forEach((icon) => {
                     icon.classList.toggle('hidden', icon.dataset.themeIcon !== (isDark ? 'moon' : 'sun'));
                 });
