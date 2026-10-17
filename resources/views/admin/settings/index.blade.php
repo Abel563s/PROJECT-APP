@@ -1,6 +1,6 @@
 <x-app-layout>
-    <div class="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 font-inter lg:px-6">
-        <header class="flex flex-col justify-between gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-center">
+    <div class="mx-auto w-full max-w-7xl space-y-5 px-4 py-5 font-inter sm:px-6 lg:px-8">
+        <header class="flex flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:p-6">
             <div class="flex items-center gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
                     <i data-lucide="sliders-horizontal" aria-hidden="true" class="h-5 w-5"></i>
@@ -39,12 +39,12 @@
         @endif
 
         <form action="{{ route('admin.settings.account.update') }}" method="POST"
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            class="space-y-5">
             @csrf
             @method('PATCH')
 
-            <div class="grid grid-cols-1 divide-y divide-slate-100 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:divide-x lg:divide-y-0">
-                <section aria-labelledby="profileSectionHeading" class="space-y-5 p-5 sm:p-7">
+            <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                <section aria-labelledby="profileSectionHeading" class="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
                     <div class="flex items-start gap-3">
                         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-700">
                             <i data-lucide="user-round" aria-hidden="true" class="h-5 w-5"></i>
@@ -74,7 +74,7 @@
                     </div>
                 </section>
 
-                <section aria-labelledby="securitySectionHeading" class="space-y-5 p-5 sm:p-7">
+                <section aria-labelledby="securitySectionHeading" class="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
                     <div class="flex items-start gap-3">
                         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
                             <i data-lucide="key-round" aria-hidden="true" class="h-5 w-5"></i>
@@ -117,7 +117,7 @@
                 </section>
             </div>
 
-            <footer class="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <footer class="flex flex-col-reverse gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-7">
                 <p class="text-xs text-slate-500">Profile and password changes are saved together.</p>
                 <button type="submit"
                     class="inline-flex items-center justify-center gap-2 rounded-lg bg-cyan-700 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2">

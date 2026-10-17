@@ -169,13 +169,15 @@
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
                 <label class="dashboard-filter-field relative xl:col-span-2">
                     <span class="dashboard-filter-label">Search projects</span>
-                    <svg aria-hidden="true" class="absolute left-3.5 top-[2.35rem] h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                    <input type="text" id="searchInput" placeholder="Search by project name or code..."
-                        oninput="handleSearch(this.value)"
-                        class="dashboard-filter-control w-full pl-10 pr-3">
+                    <div class="relative">
+                        <svg aria-hidden="true" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Search by project name or code..."
+                            oninput="handleSearch(this.value)"
+                            class="dashboard-filter-control w-full pl-10 pr-3">
+                    </div>
                 </label>
 
                 <label class="dashboard-filter-field relative">
