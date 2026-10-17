@@ -95,6 +95,12 @@ button,
 }
 
 .theme-toggle {
+    box-sizing: border-box;
+    width: 2.5rem;
+    min-width: 2.5rem;
+    max-width: 2.5rem;
+    flex: 0 0 2.5rem;
+    padding: 0;
     border: 1px solid var(--border-color);
     background: var(--surface-raised);
     color: var(--text-secondary);
