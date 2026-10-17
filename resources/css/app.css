@@ -95,6 +95,7 @@ button,
 }
 
 .theme-toggle {
+    min-width: 6.5rem;
     border: 1px solid var(--border-color);
     background: var(--surface-raised);
     color: var(--text-secondary);
@@ -111,9 +112,26 @@ button,
     outline-offset: 2px;
 }
 
+html.dark .theme-toggle {
+    border-color: var(--border-color) !important;
+    background-color: var(--surface-raised) !important;
+    color: var(--text-primary) !important;
+}
+
+html.dark .theme-toggle:hover {
+    border-color: var(--accent-blue) !important;
+    background-color: var(--accent-blue-light) !important;
+    color: var(--accent-blue) !important;
+}
+
 html.dark body {
     background-color: var(--app-background);
     color: var(--text-primary);
+}
+
+html.dark body.animated-bg {
+    background: linear-gradient(145deg, #0F172A 0%, #111827 55%, #0B2630 100%) !important;
+    animation: none;
 }
 
 html.dark main {
@@ -191,6 +209,14 @@ html.dark textarea {
     background-color: var(--surface-raised);
     color: var(--text-primary);
     color-scheme: dark;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--accent-blue) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-blue) 18%, transparent) !important;
 }
 
 html.dark input::placeholder,

@@ -11,7 +11,8 @@ it('renders the saved-theme bootstrap and accessible toggle on the login page', 
         ->assertSee('projects-app-theme', false)
         ->assertSee('data-theme-toggle', false)
         ->assertSee('aria-pressed="false"', false)
-        ->assertSee('Switch to dark mode', false);
+        ->assertSee('Switch to dark mode', false)
+        ->assertSee('data-theme-label class="whitespace-nowrap text-xs font-semibold">Light mode', false);
 });
 
 it('renders the shared theme toggle in the authenticated application shell', function () {
@@ -20,5 +21,6 @@ it('renders the shared theme toggle in the authenticated application shell', fun
     $this->actingAs($admin)->get(route('admin.dashboard'))
         ->assertOk()
         ->assertSee('data-theme-toggle', false)
+        ->assertSee('data-theme-label class="whitespace-nowrap text-xs font-semibold">Light mode', false)
         ->assertSee('projects-app-theme', false);
 });

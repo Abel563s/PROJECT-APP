@@ -1,6 +1,6 @@
 <button type="button" data-theme-toggle aria-pressed="false" aria-label="Switch to dark mode (currently light mode)"
     title="Switch to dark mode"
-    class="theme-toggle inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors">
+    class="theme-toggle inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl px-3 transition-colors">
     <svg data-theme-icon="sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
         <circle cx="12" cy="12" r="4"></circle>
@@ -10,5 +10,5 @@
         stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 hidden">
         <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"></path>
     </svg>
-    <span class="sr-only" data-theme-label>Switch to dark mode</span>
+    <span data-theme-label class="whitespace-nowrap text-xs font-semibold">Light mode</span>
 </button>
