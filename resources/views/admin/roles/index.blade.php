@@ -25,48 +25,35 @@
         </div>
 
         <!-- Role Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             @php
                 $roleConfig = [
                     'admin' => [
                         'label' => 'Admin',
                         'icon' => 'crown',
                         'color' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                        'desc' => 'Full system control, including roles and permissions'
                     ],
                     'manager' => [
                         'label' => 'Management',
                         'icon' => 'user-cog',
                         'color' => 'bg-indigo-50 text-indigo-600 border-indigo-100',
-                        'desc' => 'View-only access to all pages and records'
                     ],
                     'user' => [
                         'label' => 'Project Coordinator',
                         'icon' => 'user',
                         'color' => 'bg-slate-50 text-slate-600 border-slate-100',
-                        'desc' => 'Edit assigned projects and their progress updates'
                     ],
                 ];
             @endphp
 
             @foreach($roles as $role => $count)
                 @php $config = $roleConfig[$role] ?? $roleConfig['user']; @endphp
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3 hover:shadow-lg hover:shadow-cyan-100 transition-all duration-300">
-                    <div class="flex items-center justify-between">
-                        <div class="w-10 h-10 rounded-xl {{ $config['color'] }} flex items-center justify-center border">
-                            <i data-lucide="{{ $config['icon'] }}" class="w-5 h-5"></i>
-                        </div>
-                        <span class="text-2xl font-black text-slate-900">{{ $count }}</span>
+                <div class="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-white px-3 py-2 shadow-sm transition-all duration-300 hover:shadow-md hover:shadow-cyan-100">
+                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border {{ $config['color'] }}">
+                        <i data-lucide="{{ $config['icon'] }}" class="h-3.5 w-3.5"></i>
                     </div>
-                    <div>
-                        <h3 class="text-sm font-black text-slate-900">{{ $config['label'] }}</h3>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{{ $config['desc'] }}</p>
-                    </div>
-                    <div class="pt-2 border-t border-slate-50">
-                        <span class="inline-flex px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider {{ $config['color'] }} border">
-                            {{ $config['label'] }}
-                        </span>
-                    </div>
+                    <h3 class="min-w-0 flex-1 text-xs font-bold text-slate-700">{{ $config['label'] }}</h3>
+                    <span class="text-lg font-black tabular-nums text-slate-900">{{ $count }}</span>
                 </div>
             @endforeach
         </div>
@@ -116,6 +103,48 @@
                 </table>
             </div>
         </details>
+
+        <section aria-label="Search and filter identities" class="bg-white rounded-2xl border border-slate-100 p-3 shadow-sm">
+            <form method="GET" action="{{ route('admin.roles.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[minmax(14rem,1fr)_12rem_12rem_auto_auto] gap-3 items-end">
+                <div>
+                    <label for="identitySearch" class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">Search identities</label>
+                    <div class="relative">
+                        <i data-lucide="search" aria-hidden="true" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                        <input id="identitySearch" type="search" name="search" value="{{ request('search') }}"
+                            placeholder="Name, email, or employee ID"
+                            class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                    </div>
+                </div>
+                <div>
+                    <label for="identityRoleFilter" class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">Role</label>
+                    <select id="identityRoleFilter" name="role"
+                        class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                        <option value="">All roles</option>
+                        <option value="admin" @selected(request('role') === 'admin')>Admin</option>
+                        <option value="manager" @selected(request('role') === 'manager')>Management</option>
+                        <option value="user" @selected(request('role') === 'user')>Project Coordinator</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="identityStatusFilter" class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">Status</label>
+                    <select id="identityStatusFilter" name="status"
+                        class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                        <option value="">All statuses</option>
+                        <option value="active" @selected(request('status') === 'active')>Active</option>
+                        <option value="inactive" @selected(request('status') === 'inactive')>Offline</option>
+                    </select>
+                </div>
+                <button type="submit"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
+                    <i data-lucide="filter" aria-hidden="true" class="h-4 w-4"></i>
+                    Apply
+                </button>
+                <a href="{{ route('admin.roles.index') }}"
+                    class="inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
+                    Clear
+                </a>
+            </form>
+        </section>
 
         <!-- Users Table -->
         <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-50 overflow-hidden">
@@ -218,7 +247,9 @@
                                             <i data-lucide="user-x" class="w-8 h-8"></i>
                                         </div>
                                         <h3 class="text-base font-black text-slate-900">No Identities Found</h3>
-                                        <p class="text-[9px] uppercase font-black tracking-widest text-slate-400">Initialize a new identity node to begin.</p>
+                                        <p class="text-[9px] uppercase font-black tracking-widest text-slate-400">
+                                            {{ request()->hasAny(['search', 'role', 'status']) ? 'Try changing or clearing your filters.' : 'Initialize a new identity node to begin.' }}
+                                        </p>
                                     </div>
                                 </td>
                             </tr>
@@ -384,13 +415,29 @@
             if (!picker) return;
 
             const checkboxes = picker.querySelectorAll('input[name="assigned_project_ids[]"]');
+            const options = [...picker.querySelectorAll('[data-project-option]')];
             const countLabel = picker.querySelector('[data-project-selection-count]');
+            const searchInput = picker.querySelector('[data-project-search]');
+            const emptyMessage = picker.querySelector('[data-project-empty]');
             const updateCount = () => {
                 const selectedCount = [...checkboxes].filter(checkbox => checkbox.checked).length;
                 countLabel.textContent = selectedCount
                     ? `${selectedCount} project${selectedCount === 1 ? '' : 's'} selected`
                     : 'Select projects';
             };
+
+            searchInput?.addEventListener('input', () => {
+                const search = searchInput.value.trim().toLocaleLowerCase();
+                let visibleCount = 0;
+
+                options.forEach(option => {
+                    const matches = option.textContent.toLocaleLowerCase().includes(search);
+                    option.classList.toggle('hidden', !matches);
+                    if (matches) visibleCount++;
+                });
+
+                emptyMessage?.classList.toggle('hidden', options.length === 0 || visibleCount > 0);
+            });
 
             checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateCount));
             updateCount();

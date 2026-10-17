@@ -1,149 +1,130 @@
 <x-app-layout>
-    <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
-
-        <!-- Compact Header -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-900/20">
-                    <i data-lucide="shield-lock" class="w-4 h-4"></i>
+    <div class="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 font-inter lg:px-6">
+        <header class="flex flex-col justify-between gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-center">
+            <div class="flex items-center gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
+                    <i data-lucide="sliders-horizontal" aria-hidden="true" class="h-5 w-5"></i>
                 </div>
                 <div>
-                    <h2 class="text-xl font-bold text-slate-900 tracking-tight font-outfit leading-none">
-                        Security <span class="font-black text-slate-900">Protocols</span>
-                    </h2>
-                    <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Personal Identity Authentication</p>
+                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-cyan-700">Account</p>
+                    <h2 class="mt-0.5 text-2xl font-bold tracking-tight text-slate-900 font-outfit">Account settings</h2>
+                    <p class="mt-1 text-sm text-slate-500">Manage your profile details and sign-in security in one place.</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <div class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-100 rounded-xl shadow-sm">
-                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span class="text-[9px] font-black text-slate-900 tracking-widest uppercase leading-tight">Active Session</span>
-                </div>
+            <div class="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800">
+                <span class="h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true"></span>
+                Signed in as {{ $user->role_label }}
             </div>
-        </div>
+        </header>
 
         @if(session('success'))
-            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i>
-                </div>
-                <p class="text-xs font-black text-emerald-700">{{ session('success') }}</p>
+            <div role="status" class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800">
+                <i data-lucide="circle-check" aria-hidden="true" class="h-5 w-5 shrink-0"></i>
+                <p class="text-sm font-semibold">{{ session('success') }}</p>
             </div>
         @endif
 
         @if ($errors->any())
-            <div class="bg-rose-50 border border-rose-100 rounded-xl p-4">
-                <div class="flex items-center gap-3 text-rose-600 mb-3">
-                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
-                    <span class="text-[9px] font-black uppercase tracking-widest">Authentication Errors</span>
+            <div role="alert" class="rounded-xl border border-rose-200 bg-rose-50 p-4">
+                <div class="mb-2 flex items-center gap-2 text-rose-700">
+                    <i data-lucide="triangle-alert" aria-hidden="true" class="h-4 w-4"></i>
+                    <span class="text-sm font-bold">Please review the fields below.</span>
                 </div>
-                <ul class="space-y-1.5">
+                <ul class="space-y-1 text-sm font-medium text-rose-700">
                     @foreach ($errors->all() as $error)
-                        <li class="text-xs font-bold text-rose-500 flex items-center gap-2">
-                            <span class="w-1 h-1 rounded-full bg-rose-400"></span>
-                            {{ $error }}
-                        </li>
+                        <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             </div>
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <!-- Profile Section -->
-            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                        <i data-lucide="user" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-black text-slate-900 tracking-tight">Profile Identity</h3>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Personal credentials</p>
-                    </div>
-                </div>
+        <form action="{{ route('admin.settings.account.update') }}" method="POST"
+            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            @csrf
+            @method('PATCH')
 
-                <form action="{{ route('admin.settings.profile.update') }}" method="POST" class="space-y-3">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="space-y-1">
-                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Full Name</label>
-                        <input type="text" name="name" value="{{ old('name', $user->name) }}" required
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Email</label>
-                        <input type="email" name="email" value="{{ old('email', $user->email) }}" required
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
-                    </div>
-
-                    <button type="submit"
-                        class="w-full py-2 bg-indigo-500 text-white rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20">
-                        Update Profile
-                    </button>
-                </form>
-            </div>
-
-            <!-- Password Section -->
-            <div class="lg:col-span-2 space-y-4">
-                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
-                            <i data-lucide="key-round" class="w-5 h-5"></i>
+            <div class="grid grid-cols-1 divide-y divide-slate-100 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:divide-x lg:divide-y-0">
+                <section aria-labelledby="profileSectionHeading" class="space-y-5 p-5 sm:p-7">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-700">
+                            <i data-lucide="user-round" aria-hidden="true" class="h-5 w-5"></i>
                         </div>
                         <div>
-                            <h3 class="text-sm font-black text-slate-900 tracking-tight">Security Key</h3>
-                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Update authentication credentials</p>
+                            <h3 id="profileSectionHeading" class="text-base font-bold text-slate-900">Personal details</h3>
+                            <p class="mt-1 text-sm text-slate-500">Update the name and email associated with your account.</p>
                         </div>
                     </div>
 
-                    <form action="{{ route('admin.settings.password.update') }}" method="POST" class="space-y-3">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <div class="space-y-1">
-                                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Current Key</label>
-                                <input type="password" name="current_password" required placeholder="Verify current"
-                                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">New Key</label>
-                                <input type="password" name="password" required placeholder="New passphrase"
-                                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Confirm Key</label>
-                                <input type="password" name="password_confirmation" required placeholder="Confirm new"
-                                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
-                            </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="accountName" class="mb-1.5 block text-sm font-semibold text-slate-700">Full name</label>
+                            <input id="accountName" type="text" name="name" value="{{ old('name', $user->name) }}" required
+                                autocomplete="name"
+                                class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                            @error('name') <p class="mt-1 text-xs font-medium text-rose-700">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="flex justify-end">
-                            <button type="submit"
-                                class="px-6 py-2 bg-[#00ADC5] text-white rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-[#00ADC5]/90 transition-all shadow-lg shadow-cyan-500/20">
-                                Synchronize Keys
-                            </button>
+                        <div>
+                            <label for="accountEmail" class="mb-1.5 block text-sm font-semibold text-slate-700">Email address</label>
+                            <input id="accountEmail" type="email" name="email" value="{{ old('email', $user->email) }}" required
+                                autocomplete="email"
+                                class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                            @error('email') <p class="mt-1 text-xs font-medium text-rose-700">{{ $message }}</p> @enderror
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </section>
 
-                <!-- Security Note -->
-                <div class="bg-slate-900 rounded-2xl p-4 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-20 h-20 bg-[#00ADC5]/10 rounded-full blur-2xl"></div>
-                    <div class="flex items-start gap-3 relative z-10">
-                        <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0">
-                            <i data-lucide="info" class="w-4 h-4"></i>
+                <section aria-labelledby="securitySectionHeading" class="space-y-5 p-5 sm:p-7">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
+                            <i data-lucide="key-round" aria-hidden="true" class="h-5 w-5"></i>
                         </div>
                         <div>
-                            <p class="text-[8px] font-black text-white/40 uppercase tracking-widest">Protocol Note</p>
-                            <p class="text-xs font-bold text-white/80 mt-1 leading-relaxed">
-                                Updating your identity key will terminate all other active sessions immediately. Verify your connection stability before proceeding.
-                            </p>
+                            <h3 id="securitySectionHeading" class="text-base font-bold text-slate-900">Change password</h3>
+                            <p class="mt-1 text-sm text-slate-500">Optional. Leave these fields blank to keep your current password.</p>
                         </div>
                     </div>
-                </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label for="currentPassword" class="mb-1.5 block text-sm font-semibold text-slate-700">Current password</label>
+                            <input id="currentPassword" type="password" name="current_password" autocomplete="current-password"
+                                placeholder="Required to set a new password"
+                                class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                            @error('current_password') <p class="mt-1 text-xs font-medium text-rose-700">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="newPassword" class="mb-1.5 block text-sm font-semibold text-slate-700">New password</label>
+                                <input id="newPassword" type="password" name="password" autocomplete="new-password"
+                                    placeholder="At least 8 characters"
+                                    class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                                @error('password') <p class="mt-1 text-xs font-medium text-rose-700">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label for="confirmPassword" class="mb-1.5 block text-sm font-semibold text-slate-700">Confirm new password</label>
+                                <input id="confirmPassword" type="password" name="password_confirmation" autocomplete="new-password"
+                                    placeholder="Re-enter new password"
+                                    class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                            </div>
+                        </div>
+                        <p class="flex items-start gap-2 text-xs leading-relaxed text-slate-500">
+                            <i data-lucide="info" aria-hidden="true" class="mt-0.5 h-3.5 w-3.5 shrink-0"></i>
+                            Your current password is verified before a new one is saved.
+                        </p>
+                    </div>
+                </section>
             </div>
-        </div>
+
+            <footer class="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+                <p class="text-xs text-slate-500">Profile and password changes are saved together.</p>
+                <button type="submit"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-cyan-700 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2">
+                    <i data-lucide="save" aria-hidden="true" class="h-4 w-4"></i>
+                    Save account settings
+                </button>
+            </footer>
+        </form>
     </div>
 </x-app-layout>

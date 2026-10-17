@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -12,8 +14,12 @@
 
 /* Professional White Design System - Enterprise HR Theme */
 :root {
+    color-scheme: light;
+    --app-background: #F8FAFC;
     --primary-bg: #FFFFFF;
     --secondary-bg: #F8FAFC;
+    --surface-raised: #FFFFFF;
+    --surface-header: rgba(255, 255, 255, 0.88);
     --text-primary: #0F172A;
     --text-secondary: #64748B;
     --border-color: #E2E8F0;
@@ -27,6 +33,381 @@
     --error-color: #EF4444;
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.3);
+}
+
+html.dark {
+    color-scheme: dark;
+    --app-background: #0F172A;
+    --primary-bg: #111827;
+    --secondary-bg: #0F172A;
+    --surface-raised: #1E293B;
+    --surface-header: rgba(17, 24, 39, 0.94);
+    --text-primary: #F1F5F9;
+    --text-secondary: #94A3B8;
+    --border-color: #334155;
+    --shadow-light: 0 1px 2px 0 rgb(0 0 0 / 0.22);
+    --shadow-medium: 0 4px 12px -2px rgb(0 0 0 / 0.28);
+    --shadow-large: 0 12px 24px -6px rgb(0 0 0 / 0.34);
+    --accent-blue: #00ADC5;
+    --accent-blue-light: #12333D;
+    --glass-bg: rgba(30, 41, 59, 0.92);
+    --glass-border: rgba(71, 85, 105, 0.55);
+}
+
+html,
+body {
+    background-color: var(--app-background);
+    color: var(--text-primary);
+}
+
+body,
+header,
+main,
+input,
+select,
+textarea,
+button,
+[class~="bg-white"],
+[class~="bg-slate-50"],
+[class~="bg-slate-100"],
+[class~="bg-gray-50"],
+[class~="bg-gray-100"] {
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: 180ms;
+    transition-timing-function: ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body,
+    header,
+    main,
+    input,
+    select,
+    textarea,
+    button,
+    [class~="bg-white"],
+    [class~="bg-slate-50"],
+    [class~="bg-slate-100"],
+    [class~="bg-gray-50"],
+    [class~="bg-gray-100"] {
+        transition-duration: 0.01ms;
+    }
+}
+
+.theme-toggle {
+    border: 1px solid var(--border-color);
+    background: var(--surface-raised);
+    color: var(--text-secondary);
+}
+
+.theme-toggle:hover {
+    border-color: var(--accent-blue);
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
+html.dark body {
+    background-color: var(--app-background);
+    color: var(--text-primary);
+}
+
+html.dark main {
+    background-color: var(--app-background) !important;
+    color: var(--text-primary);
+}
+
+html.dark header {
+    background-color: var(--surface-header) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark [class~="bg-white"],
+html.dark [class*="bg-white/"],
+html.dark [class~="bg-[#f7fbfc]"] {
+    background-color: var(--surface-raised) !important;
+}
+
+html.dark [class~="bg-slate-50"],
+html.dark [class~="bg-gray-50"],
+html.dark [class~="bg-[#f8fafc]"] {
+    background-color: var(--app-background) !important;
+}
+
+html.dark [class~="bg-slate-100"],
+html.dark [class~="bg-gray-100"],
+html.dark [class~="bg-slate-200"],
+html.dark [class~="bg-gray-200"] {
+    background-color: #273449 !important;
+}
+
+html.dark [class~="bg-gray-800"],
+html.dark [class~="bg-slate-800"],
+html.dark [class~="bg-gray-900"],
+html.dark [class~="bg-slate-900"] {
+    background-color: var(--primary-bg) !important;
+}
+
+html.dark [class~="text-slate-900"],
+html.dark [class~="text-gray-900"],
+html.dark [class~="text-slate-800"],
+html.dark [class~="text-gray-800"],
+html.dark [class~="text-slate-700"],
+html.dark [class~="text-gray-700"],
+html.dark [class~="text-black"] {
+    color: var(--text-primary) !important;
+}
+
+html.dark [class~="text-slate-600"],
+html.dark [class~="text-gray-600"],
+html.dark [class~="text-slate-500"],
+html.dark [class~="text-gray-500"],
+html.dark [class~="text-slate-400"],
+html.dark [class~="text-gray-400"] {
+    color: var(--text-secondary) !important;
+}
+
+html.dark [class~="border-slate-100"],
+html.dark [class~="border-slate-200"],
+html.dark [class~="border-slate-300"],
+html.dark [class~="border-gray-100"],
+html.dark [class~="border-gray-200"],
+html.dark [class~="border-gray-300"],
+html.dark [class~="divide-slate-100"],
+html.dark [class~="divide-slate-200"],
+html.dark [class~="divide-gray-100"],
+html.dark [class~="divide-gray-200"] {
+    border-color: var(--border-color) !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+    border-color: var(--border-color);
+    background-color: var(--surface-raised);
+    color: var(--text-primary);
+    color-scheme: dark;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+    color: #94A3B8;
+}
+
+html.dark option {
+    background-color: var(--surface-raised);
+    color: var(--text-primary);
+}
+
+html.dark [class~="hover:bg-white"]:hover,
+html.dark [class~="hover:bg-slate-50"]:hover,
+html.dark [class~="hover:bg-gray-50"]:hover {
+    background-color: #273449 !important;
+}
+
+html.dark [class~="hover:bg-slate-100"]:hover,
+html.dark [class~="hover:bg-gray-100"]:hover {
+    background-color: #334155 !important;
+}
+
+html.dark :is(
+    [class*="bg-emerald-50"], [class*="bg-green-50"], [class*="bg-teal-50"],
+    [class*="bg-rose-50"], [class*="bg-red-50"], [class*="bg-orange-50"],
+    [class*="bg-amber-50"], [class*="bg-yellow-50"],
+    [class*="bg-blue-50"], [class*="bg-sky-50"], [class*="bg-cyan-50"],
+    [class*="bg-indigo-50"], [class*="bg-purple-50"]
+) {
+    background-color: color-mix(in srgb, currentColor 12%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, currentColor 35%, var(--border-color)) !important;
+}
+
+html.dark :is(
+    [class*="text-emerald-"], [class*="text-green-"], [class*="text-teal-"],
+    [class*="text-rose-"], [class*="text-red-"], [class*="text-orange-"],
+    [class*="text-amber-"], [class*="text-yellow-"],
+    [class*="text-blue-"], [class*="text-sky-"], [class*="text-cyan-"],
+    [class*="text-indigo-"], [class*="text-purple-"]
+) {
+    color: color-mix(in srgb, currentColor 78%, white) !important;
+}
+
+html.dark .animated-bg {
+    background: linear-gradient(145deg, #0F172A 0%, #111827 55%, #0B2630 100%);
+    animation: none;
+}
+
+html.dark .blob {
+    background: linear-gradient(135deg, rgba(0, 173, 197, 0.12), rgba(0, 81, 95, 0.06));
+}
+
+html.dark .glass-morphism {
+    background: rgba(30, 41, 59, 0.92);
+    border-color: var(--border-color);
+}
+
+html.dark .premium-card,
+html.dark .prof-card,
+html.dark .prof-modal {
+    border-color: var(--border-color) !important;
+    background: var(--surface-raised) !important;
+    box-shadow: var(--shadow-medium);
+}
+
+html.dark .prof-card-header,
+html.dark .prof-card-footer,
+html.dark .prof-sidebar-header,
+html.dark .prof-table-sticky-col {
+    border-color: var(--border-color) !important;
+    background: #172437 !important;
+}
+
+html.dark .prof-nav-item {
+    border-color: transparent;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(23, 36, 55, 0.9));
+    color: var(--text-secondary);
+}
+
+html.dark .prof-nav-item:hover,
+html.dark .prof-nav-active {
+    border-color: rgba(0, 173, 197, 0.42);
+    background: #1E293B;
+    color: #A5F3FC;
+    box-shadow: var(--shadow-light);
+}
+
+html.dark .prof-btn-secondary,
+html.dark .prof-input,
+html.dark .prof-select {
+    border-color: var(--border-color);
+    background: var(--surface-raised);
+    color: var(--text-primary);
+}
+
+html.dark .prof-table th {
+    border-color: var(--border-color);
+    background: #172437;
+    color: var(--text-secondary);
+}
+
+html.dark .prof-table td {
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+html.dark .prof-table tbody tr:hover {
+    background: #273449;
+}
+
+html.dark .prof-loading {
+    background: #334155;
+}
+
+html.dark .custom-scrollbar::-webkit-scrollbar-track {
+    background: #111827;
+}
+
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #64748B;
+}
+
+html.dark .dashboard-page-heading h1 {
+    background-image: linear-gradient(100deg, #F1F5F9 0%, #A5F3FC 70%, #22D3EE 100%);
+}
+
+html.dark .dashboard-filters,
+html.dark .performance-card {
+    border-color: var(--border-color) !important;
+    background: linear-gradient(145deg, #1E293B 0%, #172437 100%) !important;
+    box-shadow: var(--shadow-light) !important;
+}
+
+html.dark .dashboard-filter-label,
+html.dark .kpi-insight-text {
+    color: var(--text-secondary) !important;
+}
+
+html.dark .dashboard-filter-control {
+    border-color: var(--border-color);
+    background-color: #172437;
+    color: var(--text-primary);
+}
+
+html.dark .kpi-card-total,
+html.dark .kpi-card-completed,
+html.dark .kpi-card-in-progress,
+html.dark .kpi-card-suspended {
+    border-color: var(--border-color) !important;
+    background: var(--surface-raised) !important;
+}
+
+html.dark .kpi-badge-total,
+html.dark .kpi-badge-completed,
+html.dark .kpi-badge-in-progress,
+html.dark .kpi-badge-suspended,
+html.dark .kpi-icon-total,
+html.dark .kpi-icon-completed,
+html.dark .kpi-icon-in-progress,
+html.dark .kpi-icon-suspended,
+html.dark .analytics-legend-inactive,
+html.dark .analytics-legend-active {
+    background-color: #273449 !important;
+    border-color: var(--border-color) !important;
+}
+
+html.dark .kpi-progress-track,
+html.dark .analytics-card-hover-overlay {
+    background-color: rgba(15, 23, 42, 0.72) !important;
+}
+
+html.dark .apexcharts-text,
+html.dark .apexcharts-legend-text,
+html.dark .apexcharts-xaxis-label,
+html.dark .apexcharts-yaxis-label {
+    fill: var(--text-secondary) !important;
+    color: var(--text-secondary) !important;
+}
+
+html.dark .apexcharts-gridline,
+html.dark .apexcharts-xaxis line,
+html.dark .apexcharts-yaxis line {
+    stroke: var(--border-color) !important;
+}
+
+html.dark .apexcharts-tooltip,
+html.dark .apexcharts-xaxistooltip,
+html.dark .apexcharts-yaxistooltip {
+    border-color: var(--border-color) !important;
+    background: var(--surface-raised) !important;
+    color: var(--text-primary) !important;
+    box-shadow: var(--shadow-medium) !important;
+}
+
+html.dark .apexcharts-tooltip-title {
+    border-color: var(--border-color) !important;
+    background: #172437 !important;
+    color: var(--text-primary) !important;
+}
+
+html.dark .apexcharts-tooltip [style*="color: #0f172a"],
+html.dark .apexcharts-tooltip [style*="color: #334155"] {
+    color: var(--text-primary) !important;
+}
+
+html.dark .apexcharts-tooltip [style*="color: #475569"],
+html.dark .apexcharts-tooltip [style*="color: #64748b"] {
+    color: var(--text-secondary) !important;
+}
+
+html.dark .apexcharts-tooltip [style*="border-top: 1px solid #e2e8f0"] {
+    border-color: var(--border-color) !important;
 }
 
 /* Professional White Theme Components */

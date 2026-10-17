@@ -72,18 +72,25 @@
                 <span data-project-selection-count>Select projects</span>
                 <i data-lucide="chevron-down" class="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180"></i>
             </summary>
-            <div class="mt-1 max-h-40 overflow-y-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
+            <div class="mt-1 rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
+                <label class="sr-only" for="createProjectSearch">Search assigned projects</label>
+                <input id="createProjectSearch" type="search" data-project-search
+                    placeholder="Search projects..."
+                    class="mb-2 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 placeholder:text-slate-400 focus:border-[#00ADC5] focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                <div class="max-h-40 overflow-y-auto">
             @foreach($projects as $project)
-                <label class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-cyan-50">
+                <label data-project-option class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-cyan-50">
                     <input type="checkbox" name="assigned_project_ids[]" value="{{ $project->id }}"
                         @checked(in_array($project->id, old('assigned_project_ids', [])))
                         class="rounded border-slate-300 text-[#00ADC5] focus:ring-[#00ADC5]">
                     <span>{{ $project->project_code ?: $project->project_name }}</span>
                 </label>
             @endforeach
+                <p data-project-empty class="hidden px-2 py-2 text-xs font-medium text-slate-400">No matching projects.</p>
             @if($projects->isEmpty())
                 <p class="px-2 py-2 text-xs font-medium text-slate-400">No projects available.</p>
             @endif
+                </div>
             </div>
         </details>
     </div>

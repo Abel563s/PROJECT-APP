@@ -87,6 +87,7 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
 
         // System Settings
         Route::get('/settings', [SystemSettingController::class, 'index'])->name('settings.index');
+        Route::patch('/settings/account', [SystemSettingController::class, 'updateAccount'])->name('settings.account.update');
         Route::post('/settings', [SystemSettingController::class, 'updateSetting'])->name('settings.update');
         Route::patch('/settings/profile', [SystemSettingController::class, 'updateProfile'])->name('settings.profile.update');
         Route::put('/settings/password', [SystemSettingController::class, 'updatePassword'])->name('settings.password.update');

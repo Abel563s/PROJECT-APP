@@ -4,6 +4,51 @@ Chart.register(...registerables);
 
 window.Chart = globalThis.Chart = Chart;
 
+function syncChartTheme(theme = document.documentElement.dataset.theme) {
+    const isDark = theme === 'dark';
+    const textColor = isDark ? '#CBD5E1' : '#475569';
+    const mutedColor = isDark ? '#94A3B8' : '#64748B';
+    const borderColor = isDark ? '#334155' : '#E2E8F0';
+
+    Chart.defaults.color = textColor;
+    Chart.defaults.borderColor = borderColor;
+    Chart.defaults.plugins.legend.labels.color = textColor;
+    Chart.defaults.plugins.tooltip.backgroundColor = isDark ? '#1E293B' : 'rgba(255, 255, 255, 0.95)';
+    Chart.defaults.plugins.tooltip.titleColor = isDark ? '#F1F5F9' : '#0F172A';
+    Chart.defaults.plugins.tooltip.bodyColor = isDark ? '#CBD5E1' : '#475569';
+    Chart.defaults.plugins.tooltip.borderColor = borderColor;
+
+    Object.values(Chart.instances).forEach((chart) => {
+        chart.options.color = textColor;
+        chart.options.plugins.legend = {
+            ...chart.options.plugins.legend,
+            labels: {
+                ...chart.options.plugins.legend?.labels,
+                color: textColor,
+            },
+        };
+        chart.options.plugins.tooltip = {
+            ...chart.options.plugins.tooltip,
+            backgroundColor: isDark ? '#1E293B' : 'rgba(255, 255, 255, 0.95)',
+            titleColor: isDark ? '#F1F5F9' : '#0F172A',
+            bodyColor: isDark ? '#CBD5E1' : '#475569',
+            borderColor,
+        };
+
+        Object.values(chart.options.scales || {}).forEach((scale) => {
+            scale.ticks = { ...scale.ticks, color: mutedColor };
+            scale.grid = { ...scale.grid, color: isDark ? '#334155' : '#E2E8F0' };
+        });
+
+        chart.update('none');
+    });
+}
+
+window.addEventListener('app:theme-change', (event) => {
+    syncChartTheme(event.detail?.theme);
+});
+syncChartTheme();
+
 function summarizeChartSeries(items, formatter) {
     const maxVisibleChartItems = 12;
     const visibleItems = items.slice(0, maxVisibleChartItems);

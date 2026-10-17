@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', config('app.name', 'Attendance System'))</title>
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
+    @include('partials.theme-init')
 
     <!-- Modern Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

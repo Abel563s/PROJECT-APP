@@ -12,22 +12,47 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function roles()
+    public function roles(Request $request)
     {
         $roles = [
             'admin' => User::where('role', 'admin')->count(),
             'manager' => User::where('role', 'manager')->count(),
             'user' => User::where('role', 'user')->count(),
         ];
-        $users = User::with('assignedProjects')->latest()->paginate(15);
-        $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+        $filters = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'role' => ['nullable', Rule::in(['admin', 'manager', 'user'])],
+            'status' => ['nullable', Rule::in(['active', 'inactive'])],
+        ]);
+
+        $userQuery = User::with('assignedProjects');
+
+        if (!empty($filters['search'])) {
+            $search = trim($filters['search']);
+            $userQuery->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('employee_id', 'like', "%{$search}%");
+            });
+        }
+
+        if (!empty($filters['role'])) {
+            $userQuery->where('role', $filters['role']);
+        }
+
+        if (!empty($filters['status'])) {
+            $userQuery->where('is_active', $filters['status'] === 'active');
+        }
+
+        $users = $userQuery->latest()->paginate(15)->withQueryString();
+        $projects = $this->assignmentProjects();
 
         return view('admin.roles.index', compact('roles', 'users', 'projects'));
     }
 
     public function edit(User $user)
     {
-        $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+        $projects = $this->assignmentProjects();
 
         if (request()->has('partial')) {
             return view('admin.users.edit-modal', compact('user', 'projects'));
@@ -47,11 +72,22 @@ class UserController extends Controller
     public function create()
     {
         if (request()->has('partial')) {
-            $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+            $projects = $this->assignmentProjects();
 
             return view('admin.users.create-modal', compact('projects'));
         }
         return redirect()->route('admin.roles.index');
+    }
+
+    private function assignmentProjects()
+    {
+        return Project::query()
+            ->get(['id', 'project_code', 'project_name'])
+            ->sortBy(
+                fn (Project $project) => $project->project_code ?: $project->project_name,
+                SORT_NATURAL | SORT_FLAG_CASE
+            )
+            ->values();
     }
 
     public function store(Request $request)

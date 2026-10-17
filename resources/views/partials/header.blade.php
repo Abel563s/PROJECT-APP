@@ -1,5 +1,5 @@
 <header
-    class="h-16 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 flex items-center justify-between px-10 sticky top-0 z-30 shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300">
+    class="h-16 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 flex items-center justify-between px-4 sm:px-6 lg:px-10 sticky top-0 z-30 shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300">
     <div class="flex flex-col">
         <h1 class="text-lg font-black text-slate-900 tracking-tight leading-none font-outfit">
             @if(isset($header))
@@ -15,6 +15,8 @@
     </div>
 
     <div class="flex items-center gap-3">
+        @include('partials.theme-toggle')
+
         <!-- Notifications Dropdown -->
         @include('partials.notifications-dropdown')
 

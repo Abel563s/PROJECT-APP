@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Attendance Management System') }}</title>
+    @include('partials.theme-init')
 
     <!-- Fonts: Outfit for titles, Inter for body -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -95,6 +96,10 @@
 </head>
 
 <body class="h-full text-slate-900 antialiased animated-bg overflow-hidden relative">
+    <div class="fixed right-4 top-4 z-50">
+        @include('partials.theme-toggle')
+    </div>
+
     <!-- Abstract Background Elements -->
     <div class="blob top-[-10%] left-[-10%]"></div>
     <div class="blob bottom-[-10%] right-[-10%]"

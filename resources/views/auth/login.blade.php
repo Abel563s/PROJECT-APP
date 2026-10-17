@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - {{ config('app.name', 'Projects App') }}</title>
+    @include('partials.theme-init')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -27,6 +27,9 @@
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-4 bg-grid">
+    <div class="fixed right-4 top-4 z-50">
+        @include('partials.theme-toggle')
+    </div>
 
     <div class="w-full max-w-md animate-fade-in">
         <!-- Logo & Header -->
@@ -135,9 +138,5 @@
             {{ config('app.name', 'Projects App') }} v1.0
         </p>
     </div>
-
-    <script>
-        if (window.lucide) lucide.createIcons();
-    </script>
 </body>
 </html>
