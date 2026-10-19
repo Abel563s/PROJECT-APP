@@ -58,27 +58,9 @@
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $project->scope }}</textarea>
             </div>
         </div>
-    </div>
+     </div>
 
-    @if(auth()->user()->isAdmin())
-        <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
-            <div>
-                <h4 class="text-sm font-black text-slate-900">Project Coordinators</h4>
-                <p class="text-[9px] font-bold text-slate-400">Select one or more coordinators. Only assigned coordinators can edit this project and its progress updates.</p>
-            </div>
-            @php($assignedCoordinatorIds = old('coordinator_ids', $project->coordinators->pluck('id')->all()))
-            <select name="coordinator_ids[]" multiple size="4"
-                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50">
-                @foreach($coordinators as $coordinator)
-                    <option value="{{ $coordinator->id }}" @selected(in_array($coordinator->id, $assignedCoordinatorIds))>
-                        {{ $coordinator->name }} ({{ $coordinator->email }})
-                    </option>
-                @endforeach
-            </select>
-        </div>
-    @endif
-
-    <!-- Section 2: Stakeholders -->
+     <!-- Section 2: Stakeholders -->
     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">

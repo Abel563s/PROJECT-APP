@@ -1008,29 +1008,29 @@
             const colors = [];
             const sortedProjects = [];
 
-            visibleProjects.forEach((p, idx) => {
-                categories.push(`${formatChartLabel(p, idx)}`);
-                const val = currentTab === 'schedule' ? p.schedule_performance_percent : currentTab === 'budget' ? p.budget_index_percent : p.cost_performance_percent;
-                values.push(val);
-                if (currentTab === 'schedule') {
-                    if (p.schedule_performance_percent >= 100) colors.push('#10b981');
-                    else if (p.schedule_performance_percent >= 70) colors.push('#f59e0b');
-                    else colors.push('#ef4444');
-                } else if (currentTab === 'budget' || currentTab === 'cost') {
-                    if (currentTab === 'budget') {
-                        if (val < 100) colors.push('#10b981');
-                        else if (val === 100) colors.push('#f59e0b');
-                        else colors.push('#ef4444');
-                    } else {
-                        if (val < 100) colors.push('#ef4444');
-                        else if (val === 100) colors.push('#f59e0b');
-                        else colors.push('#10b981');
-                    }
-                } else {
-                    colors.push('#00ADC5');
-                }
-                sortedProjects.push(p);
-            });
+             visibleProjects.forEach((p, idx) => {
+                 categories.push(`${formatChartLabel(p, idx)}`);
+                 const val = currentTab === 'schedule' ? p.schedule_performance_percent : currentTab === 'budget' ? p.budget_index_percent : p.cost_performance_percent;
+                 values.push(val);
+                 if (currentTab === 'schedule') {
+                     if (p.schedule_performance_percent > 100) colors.push('#10b981');
+                     else if (p.schedule_performance_percent === 100) colors.push('#f59e0b');
+                     else colors.push('#ef4444');
+                 } else if (currentTab === 'budget' || currentTab === 'cost') {
+                     if (currentTab === 'budget') {
+                         if (val > 100) colors.push('#10b981');
+                         else if (val === 100) colors.push('#f59e0b');
+                         else colors.push('#ef4444');
+                     } else {
+                         if (val < 100) colors.push('#ef4444');
+                         else if (val === 100) colors.push('#f59e0b');
+                         else colors.push('#10b981');
+                     }
+                 } else {
+                     colors.push('#00ADC5');
+                 }
+                 sortedProjects.push(p);
+             });
 
             return { categories, values, colors, sortedProjects };
         }
@@ -1243,13 +1243,13 @@
                         let content = `<div style="padding: 10px 14px; font-family: 'Inter', sans-serif; min-width: 260px; border-radius: 10px;">`;
                         content += `<div style="font-weight: 800; font-size: 12px; color: #0f172a; margin-bottom: 6px;">${project.project_code}</div>`;
 
-                        if (currentTab === 'schedule') {
-                            const statusColor = project.schedule_status === 'Behind Schedule' ? '#ef4444' : project.schedule_status === 'Ahead of Schedule' ? '#10b981' : '#3b82f6';
-                            const schedulePercent = Math.round(project.schedule_performance_percent);
-                            let schedulePercentColor = '#ef4444';
-                            if (schedulePercent >= 100) schedulePercentColor = '#10b981';
-                            else if (schedulePercent >= 70) schedulePercentColor = '#f59e0b';
-                            content += `<div style="font-weight: 800; font-size: 20px; color: ${schedulePercentColor}; margin-bottom: 8px;">${schedulePercent}%</div>`;
+                         if (currentTab === 'schedule') {
+                             const statusColor = project.schedule_status === 'Behind Schedule' ? '#ef4444' : project.schedule_status === 'Ahead of Schedule' ? '#10b981' : '#f59e0b';
+                             const schedulePercent = Math.round(project.schedule_performance_percent);
+                             let schedulePercentColor = '#ef4444';
+                             if (schedulePercent > 100) schedulePercentColor = '#10b981';
+                             else if (schedulePercent === 100) schedulePercentColor = '#f59e0b';
+                             content += `<div style="font-weight: 800; font-size: 20px; color: ${schedulePercentColor}; margin-bottom: 8px;">${schedulePercent}%</div>`;
                             if (project.status === 'completed') {
                                 content += `<div style="display: grid; gap: 3px; font-size: 10px; color: #475569; margin-bottom: 8px;">`;
                                 content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Status</span><span style="font-weight: 700; color: ${statusColor};">${project.schedule_status}</span></div>`;
@@ -1279,11 +1279,11 @@
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Actual Start</span><span style="font-weight: 700;">${project.actual_start_date || '---'}</span></div>`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Actual Finish</span><span style="font-weight: 700;">${project.actual_finish_date || '---'}</span></div>`;
                             content += `</div>`;
-                        } else if (currentTab === 'budget') {
-                            const perfColor = project.budget_performance === 'Above Budget' ? '#ef4444' : project.budget_performance === 'Under Budget' ? '#10b981' : '#f59e0b';
-                            const bpi = Math.round(project.budget_index_percent);
-                            const bpiColor = bpi < 100 ? '#10b981' : bpi > 100 ? '#ef4444' : '#f59e0b';
-                            content += `<div style="font-weight: 800; font-size: 20px; color: ${bpiColor}; margin-bottom: 8px;">${bpi}%</div>`;
+                         } else if (currentTab === 'budget') {
+                             const perfColor = project.budget_performance === 'Above Budget' ? '#ef4444' : project.budget_performance === 'Under Budget' ? '#10b981' : '#f59e0b';
+                             const bpi = Math.round(project.budget_index_percent);
+                             const bpiColor = bpi > 100 ? '#10b981' : bpi < 100 ? '#ef4444' : '#f59e0b';
+                             content += `<div style="font-weight: 800; font-size: 20px; color: ${bpiColor}; margin-bottom: 8px;">${bpi}%</div>`;
                             content += `<div style="display: grid; gap: 3px; font-size: 10px; color: #475569;">`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Performance</span><span style="font-weight: 700; color: ${perfColor};">${project.budget_performance}</span></div>`;
                             content += `<div style="display: flex; justify-content: space-between;"><span style="font-weight: 600; color: #94a3b8;">Budget at Completion</span><span style="font-weight: 700;">ETB ${Math.round(project.budget_at_completion).toLocaleString()}</span></div>`;
@@ -1658,9 +1658,9 @@
             document.getElementById('drawerProjectName').textContent = project.project_name;
             document.getElementById('drawerProjectCode').textContent = project.project_code;
 
-            const scheduleColor = project.schedule_status === 'Behind Schedule' ? 'text-rose-600' : project.schedule_status === 'Ahead of Schedule' ? 'text-emerald-600' : 'text-amber-600';
-            const budgetColor = project.budget_performance === 'Above Budget' ? 'text-rose-600' : project.budget_performance === 'Under Budget' ? 'text-emerald-600' : 'text-rose-600';
-            const costColor = project.cost_performance === 'Above Allowable Cost' ? 'text-rose-600' : project.cost_performance === 'Below Allowable Cost' ? 'text-emerald-600' : 'text-rose-600';
+             const scheduleColor = project.schedule_status === 'Behind Schedule' ? 'text-rose-600' : project.schedule_status === 'Ahead of Schedule' ? 'text-emerald-600' : 'text-amber-600';
+             const budgetColor = project.budget_performance === 'Above Budget' ? 'text-rose-600' : project.budget_performance === 'Under Budget' ? 'text-emerald-600' : 'text-amber-600';
+             const costColor = project.cost_performance === 'Above Allowable Cost' ? 'text-rose-600' : project.cost_performance === 'Below Allowable Cost' ? 'text-emerald-600' : 'text-amber-600';
             const overallColor = project.overall_performance === 'Good' ? 'text-emerald-600' : 'text-rose-600';
 
             document.getElementById('drawerContent').innerHTML = `
@@ -1715,7 +1715,7 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Variance</p>
-                                <p class="text-sm font-black ${project.budget_variance > 0 ? 'text-rose-600' : project.budget_variance < 0 ? 'text-emerald-600' : 'text-slate-900'}">ETB ${number_format(Math.abs(project.budget_variance))}</p>
+                                <p class="text-sm font-black text-slate-900">ETB ${number_format(Math.abs(project.budget_variance))}</p>
                             </div>
                             <div>
                                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Contract Budget</p>

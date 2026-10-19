@@ -98,13 +98,19 @@
             $signedBudgetVariance = $revisedBudget - $budgetAtCompletion;
             $budgetVariance = $revisedBudget - $budgetAtCompletion;
             $budgetIndex = $budgetAtCompletion > 0 ? ($revisedBudget / $budgetAtCompletion) * 100 : 0;
-            $budgetPerformance = $budgetIndex < 100 ? 'Under Budget' : ($budgetIndex > 100 ? 'Above Budget' : 'On Budget');
-            $allowable = $project->total_allowable_cost ?? 0;
-            $cac = $project->cost_at_completion ?? 0;
-            $cpi = $cac > 0 ? ($allowable / $cac) * 100 : 0;
-            $costPerformance = $cpi < 100 ? 'Above Allowable Cost' : ($cpi > 100 ? 'Below Allowable Cost' : 'Within Allowable Cost');
+            $budgetPerformance = $budgetIndex > 100 ? 'Under Budget' : ($budgetIndex < 100 ? 'Above Budget' : 'On Budget');
+$allowable = $project->total_allowable_cost ?? 0;
+$cac = $project->cost_at_completion ?? 0;
+$cpi = $cac > 0 ? ($allowable / $cac) : 0;
+if ($cpi == 0) {
+    $costPerformance = 'Within Allowable Cost';
+} elseif ($cpi >= 1) {
+    $costPerformance = $cpi > 1 ? 'Below Allowable Cost' : 'Within Allowable Cost';
+} else {
+    $costPerformance = 'Above Allowable Cost';
+}
 
-            $scheduleStatus = 'On Schedule';
+$scheduleStatus = 'On Schedule';
             if (!$project->actual_start_date) {
                 $scheduleStatus = 'Not Started';
             } elseif ($project->baseline_start_date && $project->baseline_finish_date) {
@@ -173,11 +179,11 @@
                     </div>
                     <div>
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">BPI</p>
-                        <p class="text-xs font-black {{ $budgetIndex < 100 ? 'text-emerald-600' : ($budgetIndex > 100 ? 'text-rose-600' : 'text-amber-600') }}">{{ number_format($budgetIndex, 2) }}%</p>
+                        <p class="text-xs font-black {{ $budgetIndex > 100 ? 'text-emerald-600' : ($budgetIndex < 100 ? 'text-rose-600' : 'text-amber-600') }}">{{ number_format($budgetIndex, 2) }}%</p>
                     </div>
                     <div>
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Budget Performance</p>
-                        <p class="text-xs font-black {{ $budgetIndex < 100 ? 'text-emerald-600' : ($budgetIndex > 100 ? 'text-rose-600' : 'text-amber-600') }}">{{ $budgetPerformance }}</p>
+                        <p class="text-xs font-black {{ $budgetIndex > 100 ? 'text-emerald-600' : ($budgetIndex < 100 ? 'text-rose-600' : 'text-amber-600') }}">{{ $budgetPerformance }}</p>
                     </div>
                 </div>
                 @endif
@@ -199,13 +205,13 @@
                             <p class="text-xs font-black text-slate-900">ETB {{ number_format($costVariance) }}</p>
                         </div>
                         <div>
-                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">CPI</p>
-                            <p class="text-xs font-black {{ $cpi < 100 ? 'text-rose-600' : ($cpi > 100 ? 'text-emerald-600' : 'text-amber-600') }}">{{ number_format($cpi, 2) }}%</p>
+                             <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">CPI</p>
+                             <p class="text-xs font-black {{ $cpi == 0 || $cpi == 1 ? 'text-amber-600' : ($cpi < 1 ? 'text-rose-600' : 'text-emerald-600') }}">{{ number_format($cpi, 2) }}</p>
                         </div>
-                        <div>
-                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Performance</p>
-                            <p class="text-xs font-black {{ $cpi < 100 ? 'text-rose-600' : ($cpi > 100 ? 'text-emerald-600' : 'text-amber-600') }}">{{ $costPerformance }}</p>
-                        </div>
+                         <div>
+                             <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Performance</p>
+                             <p class="text-xs font-black {{ $cpi == 0 || $cpi == 1 ? 'text-amber-600' : ($cpi < 1 ? 'text-rose-600' : 'text-emerald-600') }}">{{ $costPerformance }}</p>
+                         </div>
                         @endif
                 </div>
             </div>
@@ -328,32 +334,30 @@
                 <p class="text-xs font-black text-slate-900">
                     @php
                         $spi = null;
-                        if ($project->baseline_start_date && $project->baseline_finish_date) {
-                            $baselineDuration = $project->baseline_finish_date->diffInDays($project->baseline_start_date);
+                        if ($project->baseline_start_date && $project->baseline_finish_date && $project->actual_start_date) {
+                            $baselineDuration = abs($project->baseline_finish_date->diffInDays($project->baseline_start_date));
                             if ($baselineDuration == 0) {
                                 $spi = 0;
                             } else {
-                                if ($project->actual_finish_date) {
-                                    $remainingDays = $project->baseline_finish_date->diffInDays($project->actual_finish_date);
-                                } else {
-                                    $remainingDays = $project->baseline_finish_date->diffInDays(\Carbon\Carbon::today());
-                                }
-                                $spi = round(($remainingDays / $baselineDuration) * 100, 1);
-                                if ($spi == 0) {
+                                $actualFinish = $project->actual_finish_date ?: \Carbon\Carbon::today();
+                                $actualDuration = abs($actualFinish->diffInDays($project->actual_start_date));
+                                if ($actualDuration == 0) {
                                     $spi = 0;
+                                } else {
+                                    $spi = round(($baselineDuration / $actualDuration) * 100, 1);
                                 }
                             }
                         }
                     @endphp
                     @if($spi !== null)
-                        <span class="{{ $spi >= 100 ? 'text-emerald-600' : 'text-amber-600' }}">{{ $spi }}%</span>
+                        <span class="{{ $spi == 100 ? 'text-[#00ADC5]' : ($spi > 100 ? 'text-emerald-600' : 'text-rose-600') }}">{{ $spi }}%</span>
                     @else
                         ---
                     @endif
                 </p>
             </div>
             @endif
-            @if($project->status === 'completed')
+@if($project->status === 'completed')
             <div class="col-span-3 flex justify-center">
                 <div class="text-center">
                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Schedule Performance</p>
@@ -364,24 +368,24 @@
                         if (!$project->actual_start_date) {
                             $scheduleStatus = 'Not Started';
                             $scheduleStatusColor = 'text-slate-500';
-                        } elseif (isset($sv2)) {
-                            if ($sv2 > 0) {
-                                $scheduleStatus = 'Behind Schedule';
-                                $scheduleStatusColor = 'text-rose-600';
-                            } elseif ($sv2 < 0) {
-                                $scheduleStatus = 'Ahead of Schedule';
-                                $scheduleStatusColor = 'text-emerald-600';
-                            } else {
+                        } elseif (isset($spi)) {
+                            if ($spi == 100) {
                                 $scheduleStatus = 'On Schedule';
                                 $scheduleStatusColor = 'text-[#00ADC5]';
+                            } elseif ($spi > 100) {
+                                $scheduleStatus = 'Ahead of Schedule';
+                                $scheduleStatusColor = 'text-emerald-600';
+                            } elseif ($spi < 100) {
+                                $scheduleStatus = 'Behind Schedule';
+                                $scheduleStatusColor = 'text-rose-600';
                             }
                         }
                     @endphp
-                        @if($scheduleStatus)
-                            <span class="{{ $scheduleStatusColor }}">{{ $scheduleStatus }}</span>
-                        @else
-                            <span class="text-slate-400">---</span>
-                        @endif
+                    @if($scheduleStatus)
+                        <span class="{{ $scheduleStatusColor }}">{{ $scheduleStatus }}</span>
+                    @else
+                        <span class="text-slate-400">---</span>
+                    @endif
                     </p>
                 </div>
             </div>

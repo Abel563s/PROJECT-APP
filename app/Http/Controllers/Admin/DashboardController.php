@@ -153,13 +153,19 @@ class DashboardController extends Controller
             $signedBudgetVariance = $revisedBudget - $budgetAtCompletion;
             $budgetVariance = $revisedBudget - $budgetAtCompletion;
             $budgetIndexPercent = $budgetAtCompletion > 0 ? round(($revisedBudget / $budgetAtCompletion) * 100, 1) : 0;
-            $budgetPerformance = $budgetIndexPercent < 100 ? 'Under Budget' : ($budgetIndexPercent > 100 ? 'Above Budget' : 'On Budget');
+            $budgetPerformance = $budgetIndexPercent > 100 ? 'Under Budget' : ($budgetIndexPercent < 100 ? 'Above Budget' : 'On Budget');
 
             $allowableCost = (float) ($project->total_allowable_cost ?? 0);
             $costAtCompletion = (float) ($project->cost_at_completion ?? 0);
             $costVariance = $allowableCost - $costAtCompletion;
             $costEacIndexPercent = $costAtCompletion > 0 ? round(($allowableCost / $costAtCompletion) * 100, 1) : 0;
-            $costPerformance = $costEacIndexPercent < 100 ? 'Above Allowable Cost' : ($costEacIndexPercent > 100 ? 'Below Allowable Cost' : 'Within Allowable Cost');
+            if ($costEacIndexPercent == 0) {
+                $costPerformance = 'Within Allowable Cost';
+            } elseif ($costEacIndexPercent >= 100) {
+                $costPerformance = $costEacIndexPercent > 100 ? 'Below Allowable Cost' : 'Within Allowable Cost';
+            } else {
+                $costPerformance = 'Above Allowable Cost';
+            }
 
             if ($scheduleStatus !== 'Behind Schedule' && $budgetPerformance !== 'Above Budget' && $scheduleStatus !== 'Not Started') {
                 $overallPerformance = 'Good';
