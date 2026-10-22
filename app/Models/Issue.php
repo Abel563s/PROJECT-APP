@@ -9,6 +9,7 @@ class Issue extends Model
 {
     protected $fillable = [
         'project_id',
+        'created_by',
         'sector',
         'project_code',
         'issue_type',
@@ -39,5 +40,10 @@ class Issue extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

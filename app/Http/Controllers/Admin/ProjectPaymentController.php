@@ -64,6 +64,8 @@ class ProjectPaymentController extends Controller
      */
     public function create(Project $project)
     {
+        abort_unless(auth()->user()->canManageProject($project), 403);
+
         if (request()->has('partial')) {
             return view('admin.projects.payments.create-modal', compact('project'));
         }
@@ -76,6 +78,8 @@ class ProjectPaymentController extends Controller
      */
     public function store(Request $request, Project $project)
     {
+        abort_unless($request->user()->canManageProject($project), 403);
+
         $validated = $request->validate([
             'certificate_number' => 'nullable|string',
             'submitted_amount' => 'nullable|numeric|min:0',
@@ -99,6 +103,7 @@ class ProjectPaymentController extends Controller
         try {
             $payment = new ProjectPayment($validated);
             $payment->project_id = $project->id;
+            $payment->created_by = $request->user()->id;
             $payment->save();
 
             // Update project totals
@@ -127,6 +132,8 @@ class ProjectPaymentController extends Controller
      */
     public function edit(ProjectPayment $payment)
     {
+        $this->authorizePaymentMutation($payment);
+
         if (request()->has('partial')) {
             return view('admin.projects.payments.edit-modal', compact('payment'));
         }
@@ -139,6 +146,8 @@ class ProjectPaymentController extends Controller
      */
     public function update(Request $request, ProjectPayment $payment)
     {
+        $this->authorizePaymentMutation($payment);
+
         $validated = $request->validate([
             'certificate_number' => 'nullable|string',
             'submitted_amount' => 'nullable|numeric|min:0',
@@ -172,6 +181,8 @@ class ProjectPaymentController extends Controller
      */
     public function destroy(ProjectPayment $payment)
     {
+        $this->authorizePaymentMutation($payment);
+
         DB::beginTransaction();
         try {
             $project = $payment->project;
@@ -187,5 +198,18 @@ class ProjectPaymentController extends Controller
             DB::rollBack();
             return back()->with('error', 'Failed to delete payment: ' . $e->getMessage());
         }
+    }
+
+    private function authorizePaymentMutation(ProjectPayment $payment): void
+    {
+        $user = auth()->user();
+
+        abort_unless(
+            $user->isAdmin()
+            || ($user->isUser()
+                && $user->canManageProject($payment->project)
+                && (int) $payment->created_by === (int) $user->id),
+            403
+        );
     }
 }

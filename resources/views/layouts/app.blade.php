@@ -138,7 +138,9 @@
             'admin.projects.edit',
             'admin.progress-updates.index',
             'admin.progress-updates.create',
-            'admin.progress-updates.edit'
+            'admin.progress-updates.edit',
+            'admin.projects.issues.manage',
+            'admin.projects.payments.manage'
         ),
 ])>
 

@@ -47,6 +47,7 @@ class IssueController extends Controller
      */
     public function manage(Project $project)
     {
+        $canManageProject = auth()->user()->canManageProject($project);
         $issues = Issue::where('project_id', $project->id)
             ->orderByDesc('raised_date')
             ->paginate(15)
@@ -60,7 +61,7 @@ class IssueController extends Controller
             'cancelled' => Issue::where('project_id', $project->id)->where('status', 'Cancelled')->count(),
         ];
 
-        return view('admin.projects.issues.manage', compact('project', 'issues', 'stats'));
+        return view('admin.projects.issues.manage', compact('project', 'issues', 'stats', 'canManageProject'));
     }
 
     /**
@@ -68,6 +69,8 @@ class IssueController extends Controller
      */
     public function create(Project $project)
     {
+        abort_unless(auth()->user()->canManageProject($project), 403);
+
         return view('admin.projects.issues.create-modal', compact('project'))->render();
     }
 
@@ -76,6 +79,8 @@ class IssueController extends Controller
      */
     public function store(Request $request, Project $project)
     {
+        abort_unless(auth()->user()->canManageProject($project), 403);
+
         $validated = $request->validate([
             'issue_type' => 'nullable|string|max:255',
             'issue' => 'required|string|max:255',
@@ -97,6 +102,7 @@ class IssueController extends Controller
         $validated['project_code'] = $project->project_code;
         $validated['sector'] = $project->consultancy_sector;
         $validated['last_updated_date'] = now();
+        $validated['created_by'] = $request->user()->id;
 
         Issue::create($validated);
 
@@ -120,8 +126,14 @@ class IssueController extends Controller
      */
     public function edit(Issue $issue)
     {
+        $this->authorizeIssueMutation($issue);
+
         if (request()->has('partial')) {
-            $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name', 'project_type', 'consultancy_sector']);
+            $projectsQuery = Project::orderBy('project_name');
+            if (auth()->user()->isUser()) {
+                $projectsQuery->whereKey($issue->project_id);
+            }
+            $projects = $projectsQuery->get(['id', 'project_code', 'project_name', 'project_type', 'consultancy_sector']);
             return view('admin.projects.issues.edit-modal', compact('issue', 'projects'))->render();
         }
 
@@ -133,6 +145,8 @@ class IssueController extends Controller
      */
     public function update(Request $request, Issue $issue)
     {
+        $this->authorizeIssueMutation($issue);
+
         $validated = $request->validate([
             'project_id' => 'nullable|exists:projects,id',
             'sector' => 'nullable|string|max:255',
@@ -151,6 +165,10 @@ class IssueController extends Controller
             'issue_closed_date' => 'nullable|date',
             'remark' => 'nullable|string',
         ]);
+
+        if ($request->user()->isUser()) {
+            unset($validated['project_id'], $validated['sector'], $validated['project_code']);
+        }
 
         $validated['last_updated_date'] = now();
 
@@ -215,8 +233,24 @@ class IssueController extends Controller
      */
     public function destroy(Issue $issue)
     {
+        $this->authorizeIssueMutation($issue);
+
         $issue->delete();
 
         return back()->with('success', 'Issue deleted successfully.');
+    }
+
+    private function authorizeIssueMutation(Issue $issue): void
+    {
+        $user = auth()->user();
+
+        abort_unless(
+            $user->isAdmin()
+            || ($user->isUser()
+                && $issue->project
+                && $user->canManageProject($issue->project)
+                && (int) $issue->created_by === (int) $user->id),
+            403
+        );
     }
 }

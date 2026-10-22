@@ -34,6 +34,7 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
     Route::put('password/first-login', [FirstLoginPasswordController::class, 'update'])->name('password.first-login.update');
 
 
+
     // Dashboard - accessible by all authenticated users
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -42,11 +43,14 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/data', [AdminDashboardController::class, 'data'])->name('dashboard.data');
 
-        // Project Management
+        // Project Risk
+        Route::get('/projects/risk', [\App\Http\Controllers\ProjectController::class, 'riskIndex'])->name('projects.risk.index');
+        Route::get('/projects/risk/manage/{project}', [\App\Http\Controllers\ProjectController::class, 'riskManage'])->name('projects.risk.manage');
+        Route::get('/projects/risk/create-modal', [\App\Http\Controllers\ProjectController::class, 'riskCreateModal'])->name('projects.risk.create-modal');
+
         Route::get('/projects/closeout', [\App\Http\Controllers\ProjectController::class, 'closeoutIndex'])->name('projects.closeout.index');
         Route::get('/projects/{project}/closeout', [\App\Http\Controllers\ProjectController::class, 'closeoutShow'])->name('projects.closeout.show');
         Route::get('/projects/analytics', [\App\Http\Controllers\ProjectController::class, 'analytics'])->name('projects.analytics');
-        Route::get('/projects/issues', [\App\Http\Controllers\ProjectController::class, 'issuesIndex'])->name('projects.issues.index');
         Route::get('/projects/ror', [\App\Http\Controllers\ProjectController::class, 'rorIndex'])->name('projects.ror.index');
         Route::get('/projects/sep', [\App\Http\Controllers\ProjectController::class, 'sepIndex'])->name('projects.sep.index');
 
@@ -90,7 +94,7 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::patch('/settings/account', [SystemSettingController::class, 'updateAccount'])->name('settings.account.update');
         Route::post('/settings', [SystemSettingController::class, 'updateSetting'])->name('settings.update');
         Route::patch('/settings/profile', [SystemSettingController::class, 'updateProfile'])->name('settings.profile.update');
-        Route::put('/settings/password', [SystemSettingController::class, 'updatePassword'])->name('settings.password.update');
+        Route::put('/settings/password', [SystemController::class, 'updatePassword'])->name('settings.password.update');
 
         // User Management / Access Control
         Route::middleware('role:admin')->group(function () {

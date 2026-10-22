@@ -26,8 +26,17 @@ class RoleWriteMiddleware
         }
 
         if ($user->isUser() && (
-            (str_contains($routeName, '.create') && $routeName !== 'admin.progress-updates.create')
-            || (str_contains($routeName, '.edit') && !in_array($routeName, ['admin.projects.edit', 'admin.progress-updates.edit'], true))
+            (str_contains($routeName, '.create') && !in_array($routeName, [
+                'admin.progress-updates.create',
+                'admin.projects.issues.create-modal',
+                'admin.projects.payments.create-modal',
+            ], true))
+            || (str_contains($routeName, '.edit') && !in_array($routeName, [
+                'admin.projects.edit',
+                'admin.progress-updates.edit',
+                'admin.projects.issues.edit',
+                'admin.projects.payments.edit-modal',
+            ], true))
         )) {
             abort(403, 'Project Coordinators cannot access administrative edit forms.');
         }
@@ -41,6 +50,12 @@ class RoleWriteMiddleware
             'admin.projects.toggle-status',
             'admin.progress-updates.store',
             'admin.progress-updates.update',
+            'admin.projects.issues.store',
+            'admin.projects.issues.update',
+            'admin.projects.issues.destroy',
+            'admin.projects.payments.store',
+            'admin.projects.payments.update',
+            'admin.projects.payments.destroy',
         ];
 
         if ($user->isUser() && in_array($routeName, $coordinatorRoutes, true)) {

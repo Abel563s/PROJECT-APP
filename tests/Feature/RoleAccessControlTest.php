@@ -2,6 +2,8 @@
 
 use App\Models\Project;
 use App\Models\ProjectProgressUpdate;
+use App\Models\Issue;
+use App\Models\ProjectPayment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -104,6 +106,102 @@ it('limits coordinators to editing assigned projects and their progress updates'
     $this->actingAs($coordinator)->get('/admin/users')->assertMethodNotAllowed();
     $this->actingAs($coordinator)->delete(route('admin.progress-updates.destroy', $assignedUpdate))->assertForbidden();
     expect($otherCoordinator->assignedProjects)->toBeEmpty();
+});
+
+it('lets coordinators manage issues and payments they created on assigned projects only', function () {
+    $coordinator = User::factory()->create(['role' => 'user']);
+    $otherCoordinator = User::factory()->create(['role' => 'user']);
+    $management = User::factory()->create(['role' => 'manager']);
+    $project = makeAccessProject('Assigned Issue Payment Project');
+    $unassignedProject = makeAccessProject('Unassigned Issue Payment Project');
+    $project->coordinators()->attach($coordinator);
+
+    $otherIssue = Issue::create([
+        'project_id' => $project->id,
+        'created_by' => $otherCoordinator->id,
+        'issue' => 'Created by another coordinator',
+        'date' => '2026-10-15',
+    ]);
+    $otherPayment = ProjectPayment::create([
+        'project_id' => $project->id,
+        'created_by' => $otherCoordinator->id,
+        'certificate_number' => 'OTHER-001',
+        'certificate_date' => '2026-10-15',
+    ]);
+
+    $this->actingAs($coordinator)->get(route('admin.projects.issues.manage', $project))
+        ->assertOk()
+        ->assertSee('New Issue')
+        ->assertDontSee('onclick="openEditModal(', false);
+    $this->actingAs($coordinator)->get(route('admin.projects.payments.manage', $project))
+        ->assertOk()
+        ->assertSee('Record Payment')
+        ->assertDontSee('onclick="openEditModal(', false);
+    $this->actingAs($coordinator)->get(route('admin.projects.issues.create-modal', $project).'?partial=1')->assertOk();
+    $this->actingAs($coordinator)->get(route('admin.projects.payments.create-modal', $project).'?partial=1')->assertOk();
+    $this->actingAs($coordinator)->get(route('admin.projects.issues.manage', $unassignedProject))
+        ->assertOk()
+        ->assertDontSee('onclick="openCreateModal()"', false);
+    $this->actingAs($coordinator)->get(route('admin.projects.payments.manage', $unassignedProject))
+        ->assertOk()
+        ->assertDontSee('onclick="openPaymentModal()"', false);
+
+    $this->actingAs($coordinator)->post(route('admin.projects.issues.store', $project), [
+        'issue' => 'Coordinator-owned issue',
+        'date' => '2026-10-15',
+    ])->assertSessionHasNoErrors();
+    $issue = Issue::where('issue', 'Coordinator-owned issue')->firstOrFail();
+    expect($issue->created_by)->toBe($coordinator->id);
+    $this->actingAs($coordinator)->post(route('admin.projects.issues.store', $unassignedProject), [
+        'issue' => 'Unassigned issue',
+        'date' => '2026-10-15',
+    ])->assertForbidden();
+
+    $this->actingAs($coordinator)->post(route('admin.projects.payments.store', $project), [
+        'certificate_number' => 'COORD-001',
+        'certificate_date' => '2026-10-15',
+    ])->assertSessionHasNoErrors();
+    $payment = ProjectPayment::where('certificate_number', 'COORD-001')->firstOrFail();
+    expect($payment->created_by)->toBe($coordinator->id);
+    $this->actingAs($coordinator)->post(route('admin.projects.payments.store', $unassignedProject), [
+        'certificate_number' => 'UNASSIGNED-001',
+        'certificate_date' => '2026-10-15',
+    ])->assertForbidden();
+
+    $this->actingAs($coordinator)->get(route('admin.projects.issues.edit', $otherIssue).'?partial=1')->assertForbidden();
+    $this->actingAs($coordinator)->put(route('admin.projects.issues.update', $otherIssue), [
+        'issue' => 'Unauthorized edit',
+    ])->assertForbidden();
+    $this->actingAs($coordinator)->delete(route('admin.projects.issues.destroy', $otherIssue))->assertForbidden();
+    $this->actingAs($coordinator)->get(route('admin.projects.payments.edit-modal', $otherPayment).'?partial=1')->assertForbidden();
+    $this->actingAs($coordinator)->put(route('admin.projects.payments.update', $otherPayment), [
+        'certificate_number' => 'UNAUTHORIZED',
+    ])->assertForbidden();
+    $this->actingAs($coordinator)->delete(route('admin.projects.payments.destroy', $otherPayment))->assertForbidden();
+
+    $this->actingAs($coordinator)->get(route('admin.projects.issues.manage', $project))
+        ->assertSee('onclick="openEditModal(', false);
+    $this->actingAs($coordinator)->get(route('admin.projects.payments.manage', $project))
+        ->assertSee('onclick="openEditModal(', false);
+    $this->actingAs($coordinator)->put(route('admin.projects.issues.update', $issue), [
+        'issue' => 'Updated coordinator-owned issue',
+    ])->assertSessionHasNoErrors();
+    $this->actingAs($coordinator)->delete(route('admin.projects.payments.destroy', $payment))
+        ->assertSessionHas('success');
+
+    $this->actingAs($management)->post(route('admin.projects.issues.store', $project), [
+        'issue' => 'Management issue',
+        'date' => '2026-10-15',
+    ])->assertForbidden();
+    $this->actingAs($management)->post(route('admin.projects.payments.store', $project), [
+        'certificate_number' => 'MANAGEMENT-001',
+    ])->assertForbidden();
+
+    $admin = User::factory()->create(['role' => 'admin']);
+    $this->actingAs($admin)->delete(route('admin.projects.issues.destroy', $otherIssue))
+        ->assertSessionHas('success');
+    $this->actingAs($admin)->delete(route('admin.projects.payments.destroy', $otherPayment))
+        ->assertSessionHas('success');
 });
 
 it('allows admins to create and update multiple coordinator assignments', function () {

@@ -547,6 +547,69 @@ class ProjectController extends Controller
         return view('admin.projects.sep');
     }
 
+    public function riskIndex(Request $request)
+    {
+        $query = Project::query()->where('status', 'in progress');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('project_name', 'like', "%{$search}%")
+                    ->orWhere('project_code', 'like', "%{$search}%")
+                    ->orWhere('project_client', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('project_id') && $request->project_id !== 'all') {
+            $query->where('id', $request->project_id);
+        }
+
+        $projects = $query->orderBy('project_code');
+
+        $risks = $projects->get()->map(function ($project) {
+            return [
+                'id' => $project->id,
+                'project_code' => $project->project_code,
+                'project_name' => $project->project_name,
+                'project_type' => $project->project_type,
+                'total_risk' => rand(0, 50),
+                'open_risk' => rand(0, 20),
+                'in_progress_risk' => rand(0, 15),
+                'closed_risk' => rand(0, 15),
+                'status' => $project->status,
+            ];
+        });
+
+        // Convert both to arrays for the view
+        $risks = $risks->toArray();
+        $projects = $projects->get()->toArray();
+
+        $riskTypes = ['Technical', 'Financial', 'Schedule', 'Quality', 'External', 'Compliance'];
+
+        return view('admin.projects.risk', compact('risks', 'projects', 'riskTypes'));
+    }
+
+    public function riskManage($id)
+    {
+        $project = Project::findOrFail($id);
+        
+        if ($project->status !== 'in progress') {
+            return redirect()->route('admin.projects.risk.index')->with('error', 'Risk management is only available for projects with "In Progress" status.');
+        }
+
+        return view('admin.projects.risk.manage', compact('project'));
+    }
+
+    public function riskCreateModal(Request $request)
+    {
+        if ($request->has('partial') && $request->get('action') === 'create') {
+            $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+            return view('admin.projects.risk.create-modal', compact('projects'))->render();
+        }
+
+        return redirect()->route('admin.projects.risk.index');
+    }
+
     public function search(Request $request)
     {
         $search = $request->get('q', '');

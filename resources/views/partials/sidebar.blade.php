@@ -50,46 +50,55 @@
                         'active' => request()->routeIs('admin.projects.index') && !request()->routeIs('admin.projects.create')
                     ];
 
-                    // 3. Monitor & Control
-                    $menu[] = [
-                        'label' => 'Monitor & Control',
-                        'icon' => 'briefcase',
-                        'active' => request()->routeIs('admin.progress-updates.*') || request()->routeIs('admin.projects.analytics') || request()->routeIs('admin.projects.payments.*') || request()->routeIs('admin.projects.ror.*') || request()->routeIs('admin.projects.sep.*'),
-                        'submenu' => [
-                            [
-                                'label' => 'Progress Update',
-                                'icon' => 'trending-up',
-                                'route' => 'admin.progress-updates.index',
-                                'active' => request()->routeIs('admin.progress-updates.*')
-                            ],
-                            [
-                                'label' => 'Report Analysis',
-                                'icon' => 'bar-chart-3',
-                                'route' => 'admin.projects.analytics',
-                                'active' => request()->routeIs('admin.projects.analytics')
-                            ],
-                            [
-                                'label' => 'Payment Status',
-                                'icon' => 'banknote',
-                                'route' => 'admin.projects.payments.index',
-                                'active' => request()->routeIs('admin.projects.payments.*')
-                            ],
-                            [
-                                'label' => 'Risk Management',
-                                'icon' => 'file-text',
-                                'route' => 'admin.projects.ror.index',
-                                'active' => request()->routeIs('admin.projects.ror.*')
-                            ],
-                            [
-                                'label' => 'Stakeholder',
-                                'icon' => 'file-check',
-                                'route' => 'admin.projects.sep.index',
-                                'active' => request()->routeIs('admin.projects.sep.*')
-                            ],
-                        ]
-                    ];
+                     // 3. Monitor & Control
+                     $menu[] = [
+                         'label' => 'Monitor & Control',
+                         'icon' => 'briefcase',
+                         'active' => request()->routeIs('admin.progress-updates.*') || request()->routeIs('admin.projects.analytics') || request()->routeIs('admin.projects.payments.*') || request()->routeIs('admin.projects.sep.*'),
+                         'submenu' => [
+                             [
+                                 'label' => 'Progress Update',
+                                 'icon' => 'trending-up',
+                                 'route' => 'admin.progress-updates.index',
+                                 'active' => request()->routeIs('admin.progress-updates.*')
+                             ],
+                             [
+                                 'label' => 'Report Analysis',
+                                 'icon' => 'bar-chart-3',
+                                 'route' => 'admin.projects.analytics',
+                                 'active' => request()->routeIs('admin.projects.analytics')
+                             ],
+                             [
+                                 'label' => 'Payment Status',
+                                 'icon' => 'banknote',
+                                 'route' => 'admin.projects.payments.index',
+                                 'active' => request()->routeIs('admin.projects.payments.*')
+                             ],
+                             [
+                                 'label' => 'Stakeholder',
+                                 'icon' => 'file-check',
+                                 'route' => 'admin.projects.sep.index',
+                                 'active' => request()->routeIs('admin.projects.sep.*')
+                             ],
+                         ]
+                     ];
 
-                    // 4. Material Tracker
+                     // 3.5. Risk Management
+                     $menu[] = [
+                         'label' => 'Risk Management',
+                         'icon' => 'file-text',
+                         'active' => request()->routeIs('admin.projects.risk.*'),
+                         'submenu' => [
+                             [
+                                 'label' => 'Risk Registry',
+                                 'icon' => 'list',
+                                 'route' => 'admin.projects.risk.index',
+                                 'active' => request()->routeIs('admin.projects.risk.index')
+                             ],
+                         ]
+                     ];
+
+                     // 4. Material Tracker
                     $menu[] = [
                         'label' => 'Material Tracker',
                         'icon' => 'package',
