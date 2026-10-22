@@ -332,8 +332,12 @@
         }
 
         function openViewModal(id) {
-            fetch(`/admin/projects/issues/${id}?partial=1&action=view`)
-                .then(response => response.text())
+            const url = `{{ route('admin.projects.issues.show', ['issue' => '__ISSUE__']) }}`.replace('__ISSUE__', encodeURIComponent(id));
+            fetch(`${url}?partial=1&action=view`)
+                .then(response => {
+                    if (!response.ok) throw new Error(`Unable to load issue (${response.status}).`);
+                    return response.text();
+                })
                 .then(html => {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
@@ -348,6 +352,10 @@
                     document.getElementById('viewModalContent').innerHTML = html;
                     document.getElementById('viewModal').classList.remove('hidden');
                     if (window.lucide) lucide.createIcons();
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert(error.message || 'Unable to load the issue.');
                 });
         }
 
@@ -357,13 +365,20 @@
 
         function openCreateModal() {
             fetch(`{{ route('admin.projects.issues.create-modal', $project) }}?partial=1&action=create`)
-                .then(response => response.text())
+                .then(response => {
+                    if (!response.ok) throw new Error(`Unable to load the issue form (${response.status}).`);
+                    return response.text();
+                })
                 .then(html => {
                     document.getElementById('createModalContent').innerHTML = html;
                     document.getElementById('createModal').classList.remove('hidden');
                     document.body.style.overflow = 'hidden';
                     if (window.lucide) lucide.createIcons();
                     initIssueForm();
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert(error.message || 'Unable to load the issue form.');
                 });
         }
 
@@ -377,14 +392,22 @@
         });
 
         function openEditModal(id) {
-            fetch(`/admin/projects/issues/${id}/edit?partial=1`)
-                .then(response => response.text())
+            const url = `{{ route('admin.projects.issues.edit', ['issue' => '__ISSUE__']) }}`.replace('__ISSUE__', encodeURIComponent(id));
+            fetch(`${url}?partial=1`)
+                .then(response => {
+                    if (!response.ok) throw new Error(`Unable to load the issue form (${response.status}).`);
+                    return response.text();
+                })
                 .then(html => {
                     document.getElementById('editModalContent').innerHTML = html;
                     document.getElementById('editModal').classList.remove('hidden');
                     document.body.style.overflow = 'hidden';
                     if (window.lucide) lucide.createIcons();
                     initIssueForm();
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert(error.message || 'Unable to load the issue form.');
                 });
         }
 

@@ -54,6 +54,9 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::get('/projects/ror', [\App\Http\Controllers\ProjectController::class, 'rorIndex'])->name('projects.ror.index');
         Route::get('/projects/sep', [\App\Http\Controllers\ProjectController::class, 'sepIndex'])->name('projects.sep.index');
 
+        Route::get('/projects/issues', [\App\Http\Controllers\Admin\IssueController::class, 'index'])->name('projects.issues.index');
+        Route::get('/projects/issues/history', [\App\Http\Controllers\Admin\IssueController::class, 'history'])->name('projects.issues.history');
+
         // Project Payments
         Route::get('/projects/payments', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'index'])->name('projects.payments.index');
         Route::get('/projects/{project}/payments', [\App\Http\Controllers\Admin\ProjectPaymentController::class, 'manage'])->name('projects.payments.manage');
@@ -67,8 +70,6 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::resource('projects', \App\Http\Controllers\ProjectController::class);
         Route::patch('/projects/{project}/toggle-status', [\App\Http\Controllers\ProjectController::class, 'toggleStatus'])->name('projects.toggle-status');
         Route::get('/projects/next-code', [\App\Http\Controllers\ProjectController::class, 'nextCode'])->name('projects.next-code');
-        Route::get('/projects/issues', [\App\Http\Controllers\Admin\IssueController::class, 'index'])->name('projects.issues.index');
-        Route::get('/projects/issues/history', [\App\Http\Controllers\Admin\IssueController::class, 'history'])->name('projects.issues.history');
         Route::get('/projects/{project}/issues', [\App\Http\Controllers\Admin\IssueController::class, 'manage'])->name('projects.issues.manage');
         Route::get('/projects/{project}/issues/create-modal', [\App\Http\Controllers\Admin\IssueController::class, 'create'])->name('projects.issues.create-modal');
         Route::post('/projects/{project}/issues', [\App\Http\Controllers\Admin\IssueController::class, 'store'])->name('projects.issues.store');

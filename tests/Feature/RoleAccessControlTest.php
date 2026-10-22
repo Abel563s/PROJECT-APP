@@ -133,12 +133,15 @@ it('lets coordinators manage issues and payments they created on assigned projec
         ->assertOk()
         ->assertSee('New Issue')
         ->assertDontSee('onclick="openEditModal(', false);
+    $this->actingAs($coordinator)->get(route('admin.projects.issues.index'))->assertOk();
     $this->actingAs($coordinator)->get(route('admin.projects.payments.manage', $project))
         ->assertOk()
         ->assertSee('Record Payment')
         ->assertDontSee('onclick="openEditModal(', false);
     $this->actingAs($coordinator)->get(route('admin.projects.issues.create-modal', $project).'?partial=1')->assertOk();
     $this->actingAs($coordinator)->get(route('admin.projects.payments.create-modal', $project).'?partial=1')->assertOk();
+    $this->actingAs($coordinator)->get(route('admin.projects.issues.create-modal', $unassignedProject).'?partial=1')->assertForbidden();
+    $this->actingAs($coordinator)->get(route('admin.projects.payments.create-modal', $unassignedProject).'?partial=1')->assertForbidden();
     $this->actingAs($coordinator)->get(route('admin.projects.issues.manage', $unassignedProject))
         ->assertOk()
         ->assertDontSee('onclick="openCreateModal()"', false);
@@ -152,6 +155,7 @@ it('lets coordinators manage issues and payments they created on assigned projec
     ])->assertSessionHasNoErrors();
     $issue = Issue::where('issue', 'Coordinator-owned issue')->firstOrFail();
     expect($issue->created_by)->toBe($coordinator->id);
+    $this->actingAs($coordinator)->get(route('admin.projects.issues.show', $issue).'?partial=1')->assertOk();
     $this->actingAs($coordinator)->post(route('admin.projects.issues.store', $unassignedProject), [
         'issue' => 'Unassigned issue',
         'date' => '2026-10-15',
@@ -163,6 +167,7 @@ it('lets coordinators manage issues and payments they created on assigned projec
     ])->assertSessionHasNoErrors();
     $payment = ProjectPayment::where('certificate_number', 'COORD-001')->firstOrFail();
     expect($payment->created_by)->toBe($coordinator->id);
+    $this->actingAs($coordinator)->get(route('admin.projects.payments.show', $payment))->assertOk();
     $this->actingAs($coordinator)->post(route('admin.projects.payments.store', $unassignedProject), [
         'certificate_number' => 'UNASSIGNED-001',
         'certificate_date' => '2026-10-15',

@@ -316,24 +316,38 @@
             }
 
             function openPaymentModal() {
-                fetch(`/admin/projects/{{ $project->id }}/payments/create-modal?partial=1`)
-                    .then(response => response.text())
+                fetch(`{{ route('admin.projects.payments.create-modal', $project) }}?partial=1`)
+                    .then(response => {
+                        if (!response.ok) throw new Error(`Unable to load the payment form (${response.status}).`);
+                        return response.text();
+                    })
                     .then(html => {
                         document.getElementById('paymentModalContent').innerHTML = html;
                         document.getElementById('paymentModal').classList.remove('hidden');
                         document.body.style.overflow = 'hidden';
                         if (window.lucide) lucide.createIcons();
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert(error.message || 'Unable to load the payment form.');
                     });
             }
 
             function openEditModal(paymentId) {
                 fetch(`{{ route('admin.projects.payments.edit-modal', ['payment' => '__ID__']) }}`.replace('__ID__', paymentId) + '?partial=1')
-                    .then(response => response.text())
+                    .then(response => {
+                        if (!response.ok) throw new Error(`Unable to load the payment form (${response.status}).`);
+                        return response.text();
+                    })
                     .then(html => {
                         document.getElementById('editPaymentModalContent').innerHTML = html;
                         document.getElementById('editPaymentModal').classList.remove('hidden');
                         document.body.style.overflow = 'hidden';
                         if (window.lucide) lucide.createIcons();
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert(error.message || 'Unable to load the payment form.');
                     });
             }
 
@@ -356,8 +370,12 @@
             });
 
             function showPaymentDetail(paymentId) {
-                fetch(`/admin/payments/${paymentId}`)
-                    .then(response => response.json())
+                const url = `{{ route('admin.projects.payments.show', ['payment' => '__ID__']) }}`.replace('__ID__', encodeURIComponent(paymentId));
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) throw new Error(`Unable to load payment details (${response.status}).`);
+                        return response.json();
+                    })
                     .then(data => {
                         const modal = document.getElementById('paymentDetailModal');
 
@@ -399,6 +417,10 @@
                         modal.classList.remove('hidden');
                         document.body.style.overflow = 'hidden';
                         if (window.lucide) lucide.createIcons();
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert(error.message || 'Unable to load payment details.');
                     });
             }
 
