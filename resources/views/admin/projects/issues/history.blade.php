@@ -24,67 +24,72 @@
         </div>
 
         <!-- Search & Filter -->
-        <form action="{{ route('admin.projects.issues.history') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
-                <div class="min-w-[220px] max-w-[320px] relative group shrink-0">
-                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search issues by type, issue, or raised by..." class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
-                </div>
-
-                <div class="relative group shrink-0">
-                    <select name="project_id" onchange="this.form.submit()" class="appearance-none pl-4 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                        <option value="">All Projects</option>
-                        @foreach($projects as $project)
-                            <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->project_code }} - {{ $project->project_name }}</option>
-                        @endforeach
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
-                </div>
-
-                <div class="relative group shrink-0">
-                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="px-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                </div>
-
-                <div class="relative group shrink-0">
-                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="px-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                </div>
-
-                <div class="relative group shrink-0">
-                    <select name="status" onchange="this.form.submit()" class="appearance-none pl-4 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                        <option value="">All Status</option>
-                        <option value="Open" {{ request('status') === 'Open' ? 'selected' : '' }}>Open</option>
-                        <option value="In Progress" {{ request('status') === 'In Progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="Closed" {{ request('status') === 'Closed' ? 'selected' : '' }}>Closed</option>
-                        <option value="Cancelled" {{ request('status') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
-                </div>
-
-                <div class="relative group shrink-0">
-                    <select name="impact" onchange="this.form.submit()" class="appearance-none pl-4 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                        <option value="">All Impact</option>
-                        <option value="Low" {{ request('impact') === 'Low' ? 'selected' : '' }}>Low</option>
-                        <option value="Medium" {{ request('impact') === 'Medium' ? 'selected' : '' }}>Medium</option>
-                        <option value="High" {{ request('impact') === 'High' ? 'selected' : '' }}>High</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
-                </div>
-
-                <div class="relative group shrink-0">
-                    <select name="issue_type" onchange="this.form.submit()" class="appearance-none pl-4 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                        <option value="">All Issue Type</option>
-                        <option value="Constraint" {{ request('issue_type') === 'Constraint' ? 'selected' : '' }}>Constraint</option>
-                        <option value="Risk" {{ request('issue_type') === 'Risk' ? 'selected' : '' }}>Risk</option>
-                        <option value="Dependency" {{ request('issue_type') === 'Dependency' ? 'selected' : '' }}>Dependency</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
-                </div>
-
+        <form action="{{ route('admin.projects.issues.history') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+            <div class="mb-3 flex justify-end">
                 @if(request()->anyFilled(['search', 'project_id', 'status', 'impact', 'issue_type', 'date_from', 'date_to']))
-                    <a href="{{ route('admin.projects.issues.history') }}" class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm" title="Clear Filters">
-                        <i data-lucide="x" class="w-4 h-4"></i>
+                    <a href="{{ route('admin.projects.issues.history') }}" class="inline-flex items-center gap-1.5 self-start rounded-lg border border-rose-100 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition-colors hover:bg-rose-500 hover:text-white sm:self-auto">
+                        <i data-lucide="x" class="h-3 w-3"></i>Clear Filters
                     </a>
                 @endif
+            </div>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-8">
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Issues</span>
+                    <span class="relative block">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                        <input type="search" name="search" value="{{ request('search') }}" placeholder="Search issues..."
+                            class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    </span>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project</span>
+                    <select name="project_id" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Projects</option>
+                        @foreach($projects as $project)
+                            <option value="{{ $project->id }}" @selected(request('project_id') == $project->id)>{{ $project->project_code }} - {{ $project->project_name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Date From</span>
+                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Date To</span>
+                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
+                    <select name="status" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Statuses</option>
+                        @foreach(['Open', 'In Progress', 'Closed', 'Cancelled'] as $status)
+                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ $status }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact</span>
+                    <select name="impact" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Impacts</option>
+                        @foreach(['Low', 'Medium', 'High'] as $impact)
+                            <option value="{{ $impact }}" @selected(request('impact') === $impact)>{{ $impact }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Issue Type</span>
+                    <select name="issue_type" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Issue Types</option>
+                        @foreach(['Constraint', 'Risk', 'Dependency'] as $type)
+                            <option value="{{ $type }}" @selected(request('issue_type') === $type)>{{ $type }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <div class="flex items-end gap-2">
+                    <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-white transition-colors hover:bg-cyan-700">
+                        <i data-lucide="filter" class="h-3.5 w-3.5"></i>Apply Filters
+                    </button>
+                </div>
             </div>
         </form>
 

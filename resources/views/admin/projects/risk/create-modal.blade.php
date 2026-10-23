@@ -216,7 +216,7 @@
             <div>
                 <label class="{{ $labelClass }}" for="action_status">Risk Action Status</label>
                 <select id="action_status" name="action_status" required class="{{ $fieldClass }}">
-                    @foreach(['Open', 'Inprogress', 'Closed'] as $status)
+                        @foreach(['Open', 'Closed'] as $status)
                         <option value="{{ $status }}" @selected(old('action_status', 'Open') === $status)>{{ $status }}</option>
                     @endforeach
                 </select>

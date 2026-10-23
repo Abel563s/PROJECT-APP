@@ -1,0 +1,255 @@
+<form action="{{ route('admin.projects.risk.update', $risk->id) }}" method="POST" id="editRiskForm" class="space-y-4">
+    @csrf
+    @method('PUT')
+    <div class="rounded-xl border border-cyan-100 bg-cyan-50/60 p-4">
+        <p class="text-[9px] font-black uppercase tracking-widest text-cyan-700">Project Name</p>
+        <p class="mt-1 text-sm font-black text-slate-900">{{ $risk->project?->project_name ?? '---' }}</p>
+        <p class="text-[10px] font-bold text-slate-500">{{ $risk->project?->project_code ?? '---' }}</p>
+    </div>
+
+    @if($errors->any())
+        <div class="rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs font-bold text-rose-700" role="alert">
+            <p class="mb-2">Please correct the following before saving:</p>
+            <ul class="list-inside list-disc space-y-1">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    @php
+        $fieldClass = 'w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100 focus:bg-white focus:border-[#00ADC5]/30';
+        $labelClass = 'mb-1 block text-[9px] font-black uppercase tracking-widest text-slate-500';
+        $areaClass = $fieldClass . ' min-h-24 resize-y';
+        $riskCategories = ['Contractual', 'Design', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality'];
+    @endphp
+
+    <section class="rounded-xl border border-slate-100 p-4">
+        <h4 class="mb-3 text-sm font-black text-slate-900">Risk Details</h4>
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+                <label class="{{ $labelClass }}" for="risk_category">Risk Category</label>
+                <select id="risk_category" name="risk_category" required class="{{ $fieldClass }}">
+                    <option value="">Select category</option>
+                    @foreach($riskCategories as $category)
+                        <option value="{{ $category }}" @selected($risk->risk_category === $category)>{{ $category }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="risk_type">Risk Type</label>
+                <select id="risk_type" name="risk_type" required class="{{ $fieldClass }}">
+                    <option value="">Select opportunity or threat</option>
+                    @foreach(['Opportunity', 'Threat'] as $type)
+                        <option value="{{ $type }}" @selected($risk->risk_type === $type)>{{ $type }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="{{ $labelClass }}" for="activity">Activity Related to the Risk</label>
+                <textarea id="activity" name="activity" rows="3" required class="{{ $areaClass }}">{{ old('activity', $risk->activity) }}</textarea>
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="risk_name">Risk Name</label>
+                <input id="risk_name" name="risk_name" type="text" required value="{{ old('risk_name', $risk->risk_name) }}" class="{{ $fieldClass }}">
+            </div>
+            <div class="md:col-span-2">
+                <label class="{{ $labelClass }}" for="risk_description">Risk Description</label>
+                <textarea id="risk_description" name="risk_description" rows="3" required class="{{ $areaClass }}">{{ old('risk_description', $risk->risk_description) }}</textarea>
+            </div>
+        </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-100 p-4">
+        <h4 class="mb-3 text-sm font-black text-slate-900">Risk Assessment</h4>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+                <label class="{{ $labelClass }}" for="likelihood">Likelihood of Occurrence (P)</label>
+                <div class="flex items-center gap-3">
+                    <span class="text-[9px] font-bold text-slate-400">Low</span>
+                    <input id="likelihood" name="likelihood" type="range" min="1" max="5" step="1" value="{{ old('likelihood', $risk->likelihood) }}" class="w-full accent-cyan-600" oninput="updateRiskRating()">
+                    <span class="text-[9px] font-bold text-slate-400">High</span>
+                    <output id="likelihoodValue" class="w-7 text-center text-sm font-black text-slate-900">{{ old('likelihood', $risk->likelihood) }}</output>
+                </div>
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="severity">Severity of the Impact (I)</label>
+                <div class="flex items-center gap-3">
+                    <span class="text-[9px] font-bold text-slate-400">Low</span>
+                    <input id="severity" name="severity" type="range" min="1" max="5" step="1" value="{{ old('severity', $risk->severity) }}" class="w-full accent-cyan-600" oninput="updateRiskRating()">
+                    <span class="text-[9px] font-bold text-slate-400">High</span>
+                    <output id="severityValue" class="w-7 text-center text-sm font-black text-slate-900">{{ old('severity', $risk->severity) }}</output>
+                </div>
+            </div>
+            <div class="flex items-center justify-between rounded-xl bg-slate-50 p-3 md:col-span-2">
+                <div>
+                    <p class="{{ $labelClass }}">Risk Rating (P × I)</p>
+                    <p class="text-[10px] text-slate-500">Low: 1–4 · Medium: 5–9 · High: 10–16 · Extreme: 17–25</p>
+                </div>
+                <div class="text-right">
+                    <p id="riskRatingScore" class="text-xl font-black text-slate-900">{{ old('likelihood', $risk->likelihood) * old('severity', $risk->severity) }}</p>
+                    <p id="riskRatingLevel" class="text-[9px] font-black uppercase tracking-widest text-amber-600">Medium</p>
+                </div>
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="project_impact">Project Impact</label>
+                <select id="project_impact" name="project_impact" class="{{ $fieldClass }}">
+                    <option value="">Select impact</option>
+                    @foreach(['Time', 'Cost', 'Time & Cost'] as $impact)
+                        <option value="{{ $impact }}" @selected(old('project_impact', $risk->project_impact) === $impact)>{{ $impact }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <fieldset>
+                <legend class="{{ $labelClass }}">Intent to Claim</legend>
+                <div class="flex gap-2">
+                    <label class="flex-1 cursor-pointer">
+                        <input type="radio" name="intent_to_claim" value="1" required @checked(old('intent_to_claim', $risk->intent_to_claim) == '1') class="peer sr-only">
+                        <span class="flex justify-center rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black text-slate-600 transition-colors peer-checked:border-cyan-500 peer-checked:bg-cyan-50 peer-checked:text-cyan-700">Yes</span>
+                    </label>
+                    <label class="flex-1 cursor-pointer">
+                        <input type="radio" name="intent_to_claim" value="0" required @checked(old('intent_to_claim', $risk->intent_to_claim) == '0') class="peer sr-only">
+                        <span class="flex justify-center rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black text-slate-600 transition-colors peer-checked:border-cyan-500 peer-checked:bg-cyan-50 peer-checked:text-cyan-700">No</span>
+                    </label>
+                </div>
+            </fieldset>
+        </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-100 p-4">
+        <h4 class="mb-3 text-sm font-black text-slate-900">Impacts & Tracking</h4>
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+                <label class="{{ $labelClass }}" for="most_likely_cost_impact">Most Likely Cost Impact (METB)</label>
+                <input id="most_likely_cost_impact" name="most_likely_cost_impact" type="number" min="0" step="0.01" value="{{ old('most_likely_cost_impact', $risk->most_likely_cost_impact) }}" class="{{ $fieldClass }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="most_likely_time_impact">Most Likely Time Impact (Days)</label>
+                <div class="flex gap-2">
+                    <input id="most_likely_time_impact" name="most_likely_time_impact" type="number" min="0" step="1" value="{{ old('most_likely_time_impact', $risk->most_likely_time_impact) }}" class="{{ $fieldClass }}">
+                    <select name="time_impact_unit" aria-label="Time impact unit" class="{{ $fieldClass }} max-w-28">
+                        @foreach(['Day', 'Week', 'Month'] as $unit)
+                            <option value="{{ $unit }}" @selected(old('time_impact_unit', $risk->time_impact_unit) === $unit)>{{ $unit }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="stakeholder">Stakeholder</label>
+                <input id="stakeholder" name="stakeholder" type="text" value="{{ old('stakeholder', $risk->stakeholder) }}" class="{{ $fieldClass }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="risk_frequency">Risk Frequency</label>
+                <select id="risk_frequency" name="risk_frequency" class="{{ $fieldClass }}">
+                    <option value="">Select frequency</option>
+                    @foreach(['One Time', 'Fixed Duration', 'Recurring'] as $frequency)
+                        <option value="{{ $frequency }}" @selected(old('risk_frequency', $risk->risk_frequency) === $frequency)>{{ $frequency }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="impact_date">Impact Date</label>
+                <input id="impact_date" name="impact_date" type="date" value="{{ old('impact_date', $risk->impact_date ? $risk->impact_date->format('Y-m-d') : '') }}" class="{{ $fieldClass }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="risk_urgency">Risk Urgency</label>
+                <select id="risk_urgency" name="risk_urgency" class="{{ $fieldClass }}">
+                    <option value="">Select urgency</option>
+                    @foreach(['Very Urgent', 'Urgent', 'Moderate', 'Low'] as $urgency)
+                        <option value="{{ $urgency }}" @selected(old('risk_urgency', $risk->risk_urgency) === $urgency)>{{ $urgency }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-100 p-4">
+        <h4 class="mb-3 text-sm font-black text-slate-900">Controls & Response</h4>
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+                <label class="{{ $labelClass }}" for="existing_control">Existing Control, If the Risk is Materialized</label>
+                <textarea id="existing_control" name="existing_control" rows="3" class="{{ $areaClass }}">{{ old('existing_control', $risk->existing_control) }}</textarea>
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="residual_risk">Residual Risk, If Risk is Materialized</label>
+                <textarea id="residual_risk" name="residual_risk" rows="3" class="{{ $areaClass }}">{{ old('residual_risk', $risk->residual_risk) }}</textarea>
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="response_strategy">Risk Response Strategy</label>
+                <select id="response_strategy" name="response_strategy" class="{{ $fieldClass }}">
+                    <option value="">Select strategy</option>
+                    @foreach(['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate', 'Enhance', 'Eliminate'] as $strategy)
+                        <option value="{{ $strategy }}" @selected(old('response_strategy', $risk->response_strategy) === $strategy)>{{ $strategy }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="{{ $labelClass }}" for="mitigation_plan">Response / Mitigation Plan / Risk Treatment (Additional if Residual Risk Remains)</label>
+                <textarea id="mitigation_plan" name="mitigation_plan" rows="3" class="{{ $areaClass }}">{{ old('mitigation_plan', $risk->mitigation_plan) }}</textarea>
+            </div>
+            <div class="md:col-span-2">
+                <label class="{{ $labelClass }}" for="contingency_plan">Risk Contingency Plan</label>
+                <textarea id="contingency_plan" name="contingency_plan" rows="3" class="{{ $areaClass }}">{{ old('contingency_plan', $risk->contingency_plan) }}</textarea>
+            </div>
+        </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-100 p-4">
+        <h4 class="mb-3 text-sm font-black text-slate-900">Ownership & Actions</h4>
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div>
+                <label class="{{ $labelClass }}" for="risk_owner">Risk Owner</label>
+                <input id="risk_owner" name="risk_owner" type="text" value="{{ old('risk_owner', $risk->risk_owner) }}" class="{{ $fieldClass }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="owner_name">Name of Owner</label>
+                <input id="owner_name" name="owner_name" type="text" value="{{ old('owner_name', $risk->owner_name) }}" class="{{ $fieldClass }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="planned_action_date">Planned Action Date</label>
+                <input id="planned_action_date" name="planned_action_date" type="date" value="{{ old('planned_action_date', $risk->planned_action_date ? $risk->planned_action_date->format('Y-m-d') : '') }}" class="{{ $fieldClass }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="date_last_updated">Date Last Updated</label>
+                <input id="date_last_updated" name="date_last_updated" type="date" value="{{ old('date_last_updated', $risk->date_last_updated ? $risk->date_last_updated->format('Y-m-d') : '') }}" class="{{ $fieldClass }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="action_status">Risk Action Status</label>
+                <select id="action_status" name="action_status" required class="{{ $fieldClass }}">
+                        @foreach(['Open', 'Closed'] as $status)
+                        <option value="{{ $status }}" @selected(old('action_status', $risk->action_status) === $status)>{{ $status }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="actual_action_date">Actual Action Date</label>
+                <input id="actual_action_date" name="actual_action_date" type="date" value="{{ old('actual_action_date', $risk->actual_action_date ? $risk->actual_action_date->format('Y-m-d') : '') }}" class="{{ $fieldClass }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="exposure">Exposure (Estimated Delay in Days)</label>
+                <div class="flex gap-2">
+                    <input id="exposure" name="exposure" type="number" min="0" step="1" value="{{ old('exposure', $risk->exposure) }}" class="{{ $fieldClass }}">
+                    <select name="exposure_unit" aria-label="Exposure unit" class="{{ $fieldClass }} max-w-28">
+                        @foreach(['Day', 'Week', 'Month'] as $unit)
+                            <option value="{{ $unit }}" @selected(old('exposure_unit', $risk->exposure_unit) === $unit)>{{ $unit }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="md:col-span-2">
+                <label class="{{ $labelClass }}" for="tracking_comments">Tracking Comments</label>
+                <textarea id="tracking_comments" name="tracking_comments" rows="3" class="{{ $areaClass }}">{{ old('tracking_comments', $risk->tracking_comments) }}</textarea>
+            </div>
+            <div class="md:col-span-2">
+                <label class="{{ $labelClass }}" for="recommendation">Recommendation / Lesson Learned</label>
+                <textarea id="recommendation" name="recommendation" rows="3" class="{{ $areaClass }}">{{ old('recommendation', $risk->recommendation) }}</textarea>
+            </div>
+        </div>
+    </section>
+
+    <div class="flex justify-end gap-2">
+        <button type="button" onclick="closeEditModal()" class="rounded-lg border border-slate-200 px-4 py-2 text-xs font-black text-slate-600 hover:bg-slate-50">Cancel</button>
+        <button type="submit" class="rounded-lg bg-slate-900 px-5 py-2 text-xs font-black text-white hover:bg-cyan-700">Update Risk</button>
+    </div>
+</form>

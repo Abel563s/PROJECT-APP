@@ -31,13 +31,12 @@
 
         <!-- Summary Cards -->
         <div class="-mx-4 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
-            <div class="grid grid-cols-8 gap-3 min-w-[1120px]" style="grid-template-columns: repeat(8, minmax(0, 1fr)); min-width: 1120px;">
+            <div class="grid grid-cols-7 gap-3 min-w-[992px]" style="grid-template-columns: repeat(7, minmax(0, 1fr)); min-width: 992px;">
                 @php
-                    $kpis = [
+                $kpis = [
                         ['label' => 'Total Issues', 'key' => 'total', 'icon' => 'layers-3', 'tone' => 'slate'],
                         ['label' => 'Open', 'key' => 'open', 'icon' => 'circle-dot', 'tone' => 'sky'],
                         ['label' => 'Closed', 'key' => 'closed', 'icon' => 'check-check', 'tone' => 'emerald'],
-                        ['label' => 'Done', 'key' => 'done', 'icon' => 'badge-check', 'tone' => 'emerald'],
                         ['label' => 'Overdue', 'key' => 'overdue', 'icon' => 'alarm-clock', 'tone' => 'rose'],
                         ['label' => 'High', 'key' => 'high', 'icon' => 'triangle-alert', 'tone' => 'orange'],
                         ['label' => 'Medium', 'key' => 'medium', 'icon' => 'minus', 'tone' => 'amber'],

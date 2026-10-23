@@ -52,6 +52,61 @@ it('creates a project risk with a calculated rating', function () {
         ->assertSee('Extreme');
 });
 
+it('filters the risk registry by risk status', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $openProject = Project::create([
+        'project_code' => 'OPEN-RISK',
+        'project_name' => 'Open Risk Project',
+        'status' => 'in progress',
+    ]);
+    ProjectRisk::create([
+        'project_id' => $openProject->id,
+        'risk_category' => 'Operational',
+        'risk_type' => 'Threat',
+        'activity' => 'Test activity',
+        'risk_name' => 'Open risk',
+        'risk_description' => 'An open risk item',
+        'likelihood' => 2,
+        'severity' => 2,
+        'action_status' => 'Open',
+    ]);
+
+    $closedProject = Project::create([
+        'project_code' => 'CLOSED-RISK',
+        'project_name' => 'Closed Risk Project',
+        'status' => 'in progress',
+    ]);
+    ProjectRisk::create([
+        'project_id' => $closedProject->id,
+        'risk_category' => 'Operational',
+        'risk_type' => 'Threat',
+        'activity' => 'Test activity',
+        'risk_name' => 'Closed risk',
+        'risk_description' => 'A closed risk item',
+        'likelihood' => 2,
+        'severity' => 2,
+        'action_status' => 'Closed',
+    ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.projects.risk.index'))
+            ->assertOk()
+            ->assertSee('Risk Status')
+            ->assertSee('OPEN-RISK')
+            ->assertSee('CLOSED-RISK');
+
+        $this->get(route('admin.projects.risk.index', ['risk_status' => 'Open']))
+            ->assertOk()
+            ->assertViewHas('risks', fn ($risks) => count($risks) === 1)
+            ->assertViewHas('risks', fn ($risks) => $risks[0]['project_code'] === 'OPEN-RISK');
+
+        $this->get(route('admin.projects.risk.index', ['risk_status' => 'Closed']))
+            ->assertOk()
+            ->assertViewHas('risks', fn ($risks) => count($risks) === 1)
+            ->assertViewHas('risks', fn ($risks) => $risks[0]['project_code'] === 'CLOSED-RISK');
+});
+
 it('renders the project risk dashboard and create modal', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $project = Project::create([
@@ -65,11 +120,72 @@ it('renders the project risk dashboard and create modal', function () {
         ->get(route('admin.projects.risk.manage', $project))
         ->assertOk()
         ->assertSee('Total Risks')
-        ->assertSee('Extreme Rating')
+        ->assertSee('Extreme')
+        ->assertSee('Low')
         ->assertSee('New Risk');
 
     $this->get(route('admin.projects.risk.create-modal', $project))
         ->assertOk()
         ->assertSee('Risk Category')
         ->assertSee('Project Name');
+});
+
+it('filters risks on the manage page by status, category, type, and level', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $project = Project::create([
+        'custom_id' => 'PRJ-0101',
+        'project_code' => 'RISK-FILTER',
+        'project_name' => 'Risk Filter Project',
+        'status' => 'in progress',
+    ]);
+
+    ProjectRisk::create([
+        'project_id' => $project->id,
+        'risk_category' => 'Operational',
+        'risk_type' => 'Threat',
+        'activity' => 'Activity 1',
+        'risk_name' => 'Open Operational Threat',
+        'risk_description' => 'Open risk',
+        'likelihood' => 4,
+        'severity' => 5,
+        'risk_urgency' => 'High',
+        'owner_name' => 'John Doe',
+        'action_status' => 'Open',
+    ]);
+
+    ProjectRisk::create([
+        'project_id' => $project->id,
+        'risk_category' => 'Financial',
+        'risk_type' => 'Opportunity',
+        'activity' => 'Activity 2',
+        'risk_name' => 'Closed Financial Opportunity',
+        'risk_description' => 'Closed risk',
+        'likelihood' => 1,
+        'severity' => 1,
+        'risk_urgency' => 'Low',
+        'owner_name' => 'Jane Smith',
+        'action_status' => 'Closed',
+    ]);
+
+    $this->actingAs($admin)
+        ->get(route('admin.projects.risk.manage', $project))
+        ->assertOk()
+        ->assertSee('Search Risks')
+        ->assertSee('Apply Filters')
+        ->assertViewHas('riskCategories');
+
+    $this->get(route('admin.projects.risk.manage', [$project, 'action_status' => 'Open']))
+        ->assertOk()
+        ->assertViewHas('risks', fn ($risks) => $risks->count() === 1)
+        ->assertViewHas('risks', fn ($risks) => $risks[0]->risk_name === 'Open Operational Threat');
+
+    $this->get(route('admin.projects.risk.manage', [$project, 'risk_category' => 'Financial']))
+        ->assertOk()
+        ->assertViewHas('risks', fn ($risks) => $risks->count() === 1)
+        ->assertViewHas('risks', fn ($risks) => $risks[0]->risk_name === 'Closed Financial Opportunity');
+
+    $this->get(route('admin.projects.risk.manage', [$project, 'risk_level' => 'Extreme']))
+        ->assertOk()
+        ->assertViewHas('risks', fn ($risks) => $risks->count() === 1)
+        ->assertViewHas('risks', fn ($risks) => $risks[0]->risk_name === 'Open Operational Threat');
 });

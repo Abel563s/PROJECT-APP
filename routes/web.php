@@ -48,6 +48,10 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::get('/projects/risk/manage/{project}', [\App\Http\Controllers\ProjectController::class, 'riskManage'])->name('projects.risk.manage');
         Route::get('/projects/risk/manage/{project}/create-modal', [\App\Http\Controllers\ProjectController::class, 'riskCreateModal'])->name('projects.risk.create-modal');
         Route::post('/projects/risk/manage/{project}', [\App\Http\Controllers\ProjectController::class, 'riskStore'])->name('projects.risk.store');
+        Route::get('/projects/risk/{risk}/view-modal', [\App\Http\Controllers\ProjectController::class, 'riskViewModal'])->name('projects.risk.view-modal');
+        Route::get('/projects/risk/{risk}/edit-modal', [\App\Http\Controllers\ProjectController::class, 'riskEditModal'])->name('projects.risk.edit-modal');
+        Route::put('/projects/risk/{risk}', [\App\Http\Controllers\ProjectController::class, 'riskUpdate'])->name('projects.risk.update');
+        Route::delete('/projects/risk/{risk}', [\App\Http\Controllers\ProjectController::class, 'riskDestroy'])->name('projects.risk.destroy');
 
         Route::get('/projects/closeout', [\App\Http\Controllers\ProjectController::class, 'closeoutIndex'])->name('projects.closeout.index');
         Route::get('/projects/{project}/closeout', [\App\Http\Controllers\ProjectController::class, 'closeoutShow'])->name('projects.closeout.show');

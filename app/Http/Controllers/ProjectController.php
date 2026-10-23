@@ -586,6 +586,10 @@ class ProjectController extends Controller
             $query->whereHas('risks', fn ($q) => $q->where('risk_category', $request->risk_type));
         }
 
+        if ($request->filled('risk_status') && $request->risk_status !== 'all') {
+            $query->whereHas('risks', fn ($q) => $q->where('action_status', $request->risk_status));
+        }
+
         $risks = $query->orderBy('project_code')->get()->toArray();
         $projects = Project::query()->where('status', 'in progress')->orderBy('project_code')->get()->toArray();
         $riskTypes = ['Contractual', 'Design', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality'];
@@ -600,16 +604,59 @@ class ProjectController extends Controller
         }
 
         $canManageProject = request()->user()->canManageProject($project);
-        $risks = ProjectRisk::where('project_id', $project->id)->latest()->paginate(15)->withQueryString();
+        $risks = ProjectRisk::where('project_id', $project->id);
+
+        if (request()->filled('search')) {
+            $search = request('search');
+            $risks->where(function ($q) use ($search) {
+                $q->where('risk_name', 'like', "%{$search}%")
+                    ->orWhere('risk_description', 'like', "%{$search}%")
+                    ->orWhere('owner_name', 'like', "%{$search}%")
+                    ->orWhere('risk_owner', 'like', "%{$search}%");
+            });
+        }
+
+        if (request()->filled('risk_category') && request('risk_category') !== '') {
+            $risks->where('risk_category', request('risk_category'));
+        }
+
+        if (request()->filled('risk_type') && request('risk_type') !== '') {
+            $risks->where('risk_type', request('risk_type'));
+        }
+
+        if (request()->filled('risk_level') && request('risk_level') !== '') {
+            $level = request('risk_level');
+            match ($level) {
+                'Extreme' => $risks->whereRaw('likelihood * severity >= 17'),
+                'High' => $risks->whereRaw('likelihood * severity >= 10 AND likelihood * severity < 17'),
+                'Medium' => $risks->whereRaw('likelihood * severity >= 5 AND likelihood * severity < 10'),
+                'Low' => $risks->whereRaw('likelihood * severity < 5'),
+                default => null,
+            };
+        }
+
+        if (request()->filled('risk_urgency') && request('risk_urgency') !== '') {
+            $risks->where('risk_urgency', request('risk_urgency'));
+        }
+
+        if (request()->filled('action_status') && request('action_status') !== '') {
+            $risks->where('action_status', request('action_status'));
+        }
+
+        $risks = $risks->latest()->paginate(15)->withQueryString();
         $stats = [
             'total' => ProjectRisk::where('project_id', $project->id)->count(),
             'open' => ProjectRisk::where('project_id', $project->id)->where('action_status', 'Open')->count(),
-            'in_progress' => ProjectRisk::where('project_id', $project->id)->where('action_status', 'Inprogress')->count(),
             'closed' => ProjectRisk::where('project_id', $project->id)->where('action_status', 'Closed')->count(),
             'extreme' => ProjectRisk::where('project_id', $project->id)->whereRaw('likelihood * severity >= 17')->count(),
+            'high' => ProjectRisk::where('project_id', $project->id)->whereRaw('likelihood * severity >= 10 AND likelihood * severity < 17')->count(),
+            'medium' => ProjectRisk::where('project_id', $project->id)->whereRaw('likelihood * severity >= 5 AND likelihood * severity < 10')->count(),
+            'low' => ProjectRisk::where('project_id', $project->id)->whereRaw('likelihood * severity < 5')->count(),
         ];
 
-        return view('admin.projects.risk.manage', compact('project', 'risks', 'stats', 'canManageProject'));
+        $riskCategories = ['Contractual', 'Design', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality'];
+
+        return view('admin.projects.risk.manage', compact('project', 'risks', 'stats', 'canManageProject', 'riskCategories'));
     }
 
     public function riskCreateModal(Project $project)
@@ -663,6 +710,82 @@ class ProjectController extends Controller
         ProjectRisk::create($validated);
 
         return redirect()->route('admin.projects.risk.manage', $project)->with('success', 'Risk created successfully.');
+    }
+
+    public function riskViewModal(ProjectRisk $risk)
+    {
+        return view('admin.projects.risk.view-modal', compact('risk'))->render();
+    }
+
+    public function riskEditModal(ProjectRisk $risk)
+    {
+        $this->authorizeRiskMutation($risk);
+        return view('admin.projects.risk.edit-modal', compact('risk'))->render();
+    }
+
+    public function riskUpdate(Request $request, ProjectRisk $risk)
+    {
+        $this->authorizeRiskMutation($risk);
+
+        $validated = $request->validate([
+            'risk_category' => ['required', Rule::in(['Contractual', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality', 'Design'])],
+            'activity' => 'required|string',
+            'risk_type' => ['required', Rule::in(['Opportunity', 'Threat'])],
+            'risk_name' => 'required|string|max:255',
+            'risk_description' => 'required|string',
+            'likelihood' => 'required|integer|between:1,5',
+            'severity' => 'required|integer|between:1,5',
+            'project_impact' => ['nullable', Rule::in(['Time', 'Cost', 'Time & Cost'])],
+            'intent_to_claim' => 'required|boolean',
+            'most_likely_cost_impact' => 'nullable|numeric|min:0',
+            'most_likely_time_impact' => 'nullable|integer|min:0',
+            'time_impact_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
+            'stakeholder' => 'nullable|string|max:255',
+            'risk_frequency' => ['nullable', Rule::in(['One Time', 'Fixed Duration', 'Recurring'])],
+            'impact_date' => 'nullable|date',
+            'risk_urgency' => ['nullable', Rule::in(['Very Urgent', 'Urgent', 'Moderate', 'Low'])],
+            'existing_control' => 'nullable|string',
+            'residual_risk' => 'nullable|string',
+            'response_strategy' => ['nullable', Rule::in(['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate', 'Enhance', 'Eliminate'])],
+            'mitigation_plan' => 'nullable|string',
+            'contingency_plan' => 'nullable|string',
+            'risk_owner' => 'nullable|string|max:255',
+            'owner_name' => 'nullable|string|max:255',
+            'planned_action_date' => 'nullable|date',
+            'date_last_updated' => 'nullable|date',
+            'tracking_comments' => 'nullable|string',
+            'action_status' => ['required', Rule::in(['Open', 'Inprogress', 'Closed'])],
+            'actual_action_date' => 'nullable|date',
+            'exposure' => 'nullable|integer|min:0',
+            'exposure_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
+            'recommendation' => 'nullable|string',
+        ]);
+
+        $risk->update($validated);
+
+        return redirect()->route('admin.projects.risk.manage', $risk->project)->with('success', 'Risk updated successfully.');
+    }
+
+    public function riskDestroy(ProjectRisk $risk)
+    {
+        abort_unless(auth()->user()->isAdmin(), 403);
+        $project = $risk->project;
+        $risk->delete();
+        return redirect()->route('admin.projects.risk.manage', $project)->with('success', 'Risk deleted successfully.');
+    }
+
+    private function authorizeRiskMutation(ProjectRisk $risk): void
+    {
+        $user = auth()->user();
+
+        abort_unless(
+            $user->isAdmin()
+            || ($user->isUser()
+                && $risk->project
+                && $user->canManageProject($risk->project)
+                && (int) $risk->created_by === (int) $user->id),
+            403
+        );
     }
 
     public function search(Request $request)

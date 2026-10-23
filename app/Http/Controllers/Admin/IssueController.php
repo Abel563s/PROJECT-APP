@@ -50,7 +50,10 @@ class IssueController extends Controller
             ->withCount(['issues as low_priority_issues' => function ($issues) use ($today, $priorityScope) {
                 $priorityScope($issues);
                 $issues->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(14));
-            }]);
+            }])
+            ->withCount(['issues as high_impact_issues' => fn ($issues) => $issues->where('impact', 'High')])
+            ->withCount(['issues as medium_impact_issues' => fn ($issues) => $issues->where('impact', 'Medium')])
+            ->withCount(['issues as low_impact_issues' => fn ($issues) => $issues->where('impact', 'Low')]);
 
         $projectStatus = $request->input('status', 'in progress');
         if ($projectStatus !== 'all') {
@@ -84,6 +87,13 @@ class IssueController extends Controller
                         ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(14)),
                     'Low' => $issues->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(14)),
                 };
+            });
+        }
+
+        if ($request->filled('impact')) {
+            $impact = $request->impact;
+            $query->whereHas('issues', function ($issues) use ($impact) {
+                $issues->where('impact', $impact);
             });
         }
 

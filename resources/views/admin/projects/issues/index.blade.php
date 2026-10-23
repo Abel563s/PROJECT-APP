@@ -26,7 +26,14 @@
 
         <!-- Search & Filter -->
         <form action="{{ route('admin.projects.issues.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="grid grid-cols-1 items-end gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <div class="mb-3 flex justify-end">
+                @if(request()->anyFilled(['search', 'status', 'issue_status', 'priority', 'impact']))
+                    <a href="{{ route('admin.projects.issues.index') }}" class="inline-flex items-center gap-1.5 self-start rounded-lg border border-rose-100 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition-colors hover:bg-rose-500 hover:text-white sm:self-auto">
+                        <i data-lucide="x" class="h-3 w-3"></i>Clear Filters
+                    </a>
+                @endif
+            </div>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">
@@ -60,15 +67,19 @@
                         @endforeach
                     </select>
                 </label>
-                <div class="flex gap-2">
-                    <button type="submit" class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-white transition-colors hover:bg-cyan-700">
-                        <i data-lucide="filter" class="h-3.5 w-3.5"></i>Apply
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact</span>
+                    <select name="impact" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Impacts</option>
+                        @foreach(['High', 'Medium', 'Low'] as $impact)
+                            <option value="{{ $impact }}" @selected(request('impact') === $impact)>{{ $impact }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <div class="flex items-end gap-2">
+                    <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-white transition-colors hover:bg-cyan-700">
+                        <i data-lucide="filter" class="h-3.5 w-3.5"></i>Apply Filters
                     </button>
-                    @if(request()->anyFilled(['search', 'status', 'issue_status', 'priority']))
-                        <a href="{{ route('admin.projects.issues.index') }}" class="inline-flex items-center justify-center rounded-lg border border-rose-100 bg-rose-50 px-3 text-rose-600 transition-colors hover:bg-rose-500 hover:text-white" title="Clear filters">
-                            <i data-lucide="x" class="h-4 w-4"></i>
-                        </a>
-                    @endif
                 </div>
             </div>
         </form>
@@ -84,6 +95,7 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Total Issues</th>
                             <th colspan="2" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Status</th>
                             <th colspan="4" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Priority</th>
+                            <th colspan="3" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Impact</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Actions</th>
                         </tr>
                         <tr class="bg-slate-900 text-[8px] font-black uppercase tracking-widest text-white/80">
@@ -93,6 +105,9 @@
                             <th class="px-3 py-2 text-center">Open</th>
                             <th class="px-3 py-2 text-center">Closed</th>
                             <th class="px-3 py-2 text-center">Overdue</th>
+                            <th class="px-3 py-2 text-center">High</th>
+                            <th class="px-3 py-2 text-center">Medium</th>
+                            <th class="px-3 py-2 text-center">Low</th>
                             <th class="px-3 py-2 text-center">High</th>
                             <th class="px-3 py-2 text-center">Medium</th>
                             <th class="px-3 py-2 text-center">Low</th>
@@ -109,25 +124,54 @@
                                     <span class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">{{ $project->project_code }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-xs font-black text-slate-900">{{ $project->total_issues }}</span>
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-slate-100 text-slate-900 border border-slate-200 shadow-sm">
+                                        {{ $project->total_issues }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-xs font-black text-sky-600">{{ $project->open_issues }}</span>
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-sky-50 text-sky-600 border-sky-200 border shadow-sm">
+                                        {{ $project->open_issues }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-xs font-black text-emerald-600">{{ $project->closed_issues }}</span>
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 border-emerald-200 border shadow-sm">
+                                        {{ $project->closed_issues }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-xs font-black text-rose-600">{{ $project->overdue_issues }}</span>
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border-rose-200 border shadow-sm">
+                                        {{ $project->overdue_issues }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-xs font-black text-orange-600">{{ $project->high_priority_issues }}</span>
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-orange-50 text-orange-600 border-orange-200 border shadow-sm">
+                                        {{ $project->high_priority_issues }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-xs font-black text-amber-600">{{ $project->medium_priority_issues }}</span>
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-amber-50 text-amber-600 border-amber-200 border shadow-sm">
+                                        {{ $project->medium_priority_issues }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-xs font-black text-cyan-600">{{ $project->low_priority_issues }}</span>
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-cyan-50 text-cyan-600 border-cyan-200 border shadow-sm">
+                                        {{ $project->low_priority_issues }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border-rose-200 border shadow-sm">
+                                        {{ $project->high_impact_issues }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-orange-50 text-orange-600 border-orange-200 border shadow-sm">
+                                        {{ $project->medium_impact_issues }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-sky-50 text-sky-600 border-sky-200 border shadow-sm">
+                                        {{ $project->low_impact_issues }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <a href="{{ route('admin.projects.issues.manage', $project) }}"
@@ -139,7 +183,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="px-6 py-16 text-center">
+                                <td colspan="13" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center gap-4">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="database" class="w-8 h-8"></i>

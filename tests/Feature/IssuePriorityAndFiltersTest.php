@@ -71,7 +71,7 @@ it('filters the project issue table by priority and displays the requested colum
             ->assertSee('High')
             ->assertSee('Medium')
             ->assertSee('Low')
-            ->assertSee('grid-cols-8', false)
+            ->assertSee('grid-cols-7', false)
             ->assertDontSee('Filter Issues')
             ->assertDontSee('Narrow the list by issue details, status, and priority')
             ->assertDontSee('Data Date')
@@ -196,6 +196,65 @@ it('shows status and priority issue counts in the project registry and filters b
             ->assertOk()
             ->assertSee('REG-PRIORITY');
         $priorityResponse->assertViewHas('projects', fn ($projects) => $projects->count() === 1);
+    } finally {
+        Carbon::setTestNow();
+    }
+});
+
+it('shows impact counts in the project registry and filters by impact', function () {
+    Carbon::setTestNow('2026-10-23 12:00:00');
+
+    try {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $project = Project::create([
+            'project_name' => 'Impact Project',
+            'project_code' => 'IMPACT-TEST',
+            'status' => 'in progress',
+        ]);
+        Issue::create([
+            'project_id' => $project->id,
+            'issue' => 'High impact item',
+            'status' => 'Open',
+            'impact' => 'High',
+            'planned_resolution_date' => '2026-10-29',
+        ]);
+        Issue::create([
+            'project_id' => $project->id,
+            'issue' => 'Low impact item',
+            'status' => 'Open',
+            'impact' => 'Low',
+            'planned_resolution_date' => '2026-11-10',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.projects.issues.index'))
+            ->assertOk()
+            ->assertSee('Impact')
+            ->assertViewHas('projects', function ($projects) {
+                $listed = $projects->first();
+                return $listed
+                    && $listed->high_impact_issues === 1
+                    && $listed->medium_impact_issues === 0
+                    && $listed->low_impact_issues === 1;
+            });
+
+        Project::create([
+            'project_name' => 'Other Impact Project',
+            'project_code' => 'IMPACT-TEST-2',
+            'status' => 'in progress',
+        ])->issues()->create([
+            'issue' => 'Medium impact item',
+            'status' => 'Open',
+            'impact' => 'Medium',
+            'planned_resolution_date' => '2026-11-05',
+        ]);
+
+        $this->get(route('admin.projects.issues.index', ['impact' => 'High']))
+            ->assertOk()
+            ->assertSee('IMPACT-TEST')
+            ->assertDontSee('IMPACT-TEST-2')
+            ->assertViewHas('projects', fn ($projects) => $projects->count() === 1);
     } finally {
         Carbon::setTestNow();
     }

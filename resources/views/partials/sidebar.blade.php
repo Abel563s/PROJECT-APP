@@ -83,7 +83,34 @@
                          ]
                      ];
 
-                     // 3.5. Risk Management
+                     // 3.5. Issue Log
+                    $menu[] = [
+                        'label' => 'Issue Log',
+                        'icon' => 'alert-circle',
+                        'active' => request()->routeIs('admin.projects.issues.*') || request()->routeIs('admin.projects.issues.report'),
+                        'submenu' => [
+                            [
+                                'label' => 'Issue Registry',
+                                'icon' => 'list',
+                                'route' => 'admin.projects.issues.index',
+                                'active' => request()->routeIs('admin.projects.issues.*') && !request()->routeIs('admin.projects.issues.report') && !request()->routeIs('admin.projects.issues.history')
+                            ],
+                            [
+                                'label' => 'Issue History',
+                                'icon' => 'clock',
+                                'route' => 'admin.projects.issues.history',
+                                'active' => request()->routeIs('admin.projects.issues.history')
+                            ],
+                            [
+                                'label' => 'Issue Report',
+                                'icon' => 'file-bar-chart',
+                                'route' => 'admin.projects.issues.report',
+                                'active' => request()->routeIs('admin.projects.issues.report')
+                            ],
+                        ]
+                    ];
+
+                     // 3.75. Risk Management
                      $menu[] = [
                          'label' => 'Risk Management',
                          'icon' => 'file-text',
@@ -125,34 +152,7 @@
                         ]
                     ];
 
-                    // 5. Issue Log
-                    $menu[] = [
-                        'label' => 'Issue Log',
-                        'icon' => 'alert-circle',
-                        'active' => request()->routeIs('admin.projects.issues.*') || request()->routeIs('admin.projects.issues.report'),
-                        'submenu' => [
-                            [
-                                'label' => 'Issue Registry',
-                                'icon' => 'list',
-                                'route' => 'admin.projects.issues.index',
-                                'active' => request()->routeIs('admin.projects.issues.*') && !request()->routeIs('admin.projects.issues.report') && !request()->routeIs('admin.projects.issues.history')
-                            ],
-                            [
-                                'label' => 'Issue History',
-                                'icon' => 'clock',
-                                'route' => 'admin.projects.issues.history',
-                                'active' => request()->routeIs('admin.projects.issues.history')
-                            ],
-                            [
-                                'label' => 'Issue Report',
-                                'icon' => 'file-bar-chart',
-                                'route' => 'admin.projects.issues.report',
-                                'active' => request()->routeIs('admin.projects.issues.report')
-                            ],
-                        ]
-                    ];
-
-                    // 6. Project Closeout
+                    // 5. Project Closeout
                     $menu[] = [
                         'label' => 'Project Closeout',
                         'icon' => 'clipboard-check',

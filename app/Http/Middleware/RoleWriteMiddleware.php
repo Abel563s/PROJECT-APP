@@ -37,6 +37,7 @@ class RoleWriteMiddleware
                 'admin.progress-updates.edit',
                 'admin.projects.issues.edit',
                 'admin.projects.payments.edit-modal',
+                'admin.projects.risk.edit-modal',
             ], true))
         )) {
             abort(403, 'Project Coordinators cannot access administrative edit forms.');
@@ -58,6 +59,7 @@ class RoleWriteMiddleware
             'admin.projects.payments.update',
             'admin.projects.payments.destroy',
             'admin.projects.risk.store',
+            'admin.projects.risk.update',
         ];
 
         if ($user->isUser() && in_array($routeName, $coordinatorRoutes, true)) {
