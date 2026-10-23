@@ -75,8 +75,8 @@
                     </a>
                 @endif
             </div>
-            <div class="overflow-x-auto -mx-4 sm:mx-0">
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-7 min-w-[840px]">
+            <div class="overflow-x-auto -mx-4 sm:mx-0" style="overflow-x:auto; margin-left:-1rem; margin-right:-1rem;">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-7 min-w-[840px]" style="display:grid; gap:0.75rem; grid-template-columns:repeat(7,minmax(0,1fr)); min-width:840px;">
                     <label class="space-y-1">
                         <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Risks</span>
                     <span class="relative block">
@@ -166,7 +166,6 @@
                                 ];
                                 $statusClasses = [
                                     'Open' => 'bg-sky-50 text-sky-700 border-sky-200',
-                                    'Inprogress' => 'bg-amber-50 text-amber-700 border-amber-200',
                                     'Closed' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
                                 ];
                             @endphp
@@ -187,7 +186,7 @@
                                 <td class="px-4 py-3 text-center text-[10px] font-bold text-slate-600">{{ $risk->risk_urgency ?: '---' }}</td>
                                 <td class="px-4 py-3 text-center">
                                     <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $statusClasses[$risk->action_status] ?? 'border-slate-200 bg-slate-100 text-slate-500' }}">
-                                        {{ $risk->action_status === 'Inprogress' ? 'In Progress' : $risk->action_status }}
+                                        {{ $risk->action_status }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-[10px] font-bold text-slate-700">{{ $risk->owner_name ?: $risk->risk_owner ?: '---' }}</td>
@@ -243,8 +242,8 @@
         </div>
     </div>
 
-    <div id="createModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-        <div class="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+    <div id="createModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm" style="position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:1rem; background-color:rgba(15,23,42,0.4);">
+        <div class="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl" style="display:flex; flex-direction:column; max-height:92vh; width:100%; max-width:56rem; overflow:hidden; border-radius:1rem; background-color:white;">
             <div class="flex flex-shrink-0 items-center justify-between border-b border-[#00515f] bg-gradient-to-b from-[#00515f] to-black px-6 py-3">
                 <div>
                     <h3 class="text-base font-black text-white">New Risk</h3>
@@ -263,8 +262,8 @@
 
     <!-- View Modal -->
     <div id="viewModal"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm hidden">
-        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm hidden" style="position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:1rem; background-color:rgba(15,23,42,0.4);">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" style="width:100%; max-width:48rem; overflow:hidden; display:flex; flex-direction:column; max-height:90vh; background-color:white; border-radius:1rem;">
             <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
@@ -290,8 +289,8 @@
 
     <!-- Edit Modal -->
     <div id="editModal"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm hidden">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm hidden" style="position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:1rem; background-color:rgba(15,23,42,0.4);">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" style="width:100%; max-width:56rem; overflow:hidden; display:flex; flex-direction:column; max-height:90vh; background-color:white; border-radius:1rem;">
             <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
@@ -320,6 +319,7 @@
             const modal = document.getElementById('createModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
 
             fetch(@json(route('admin.projects.risk.create-modal', $project)))
@@ -342,6 +342,7 @@
             const modal = document.getElementById('createModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+            modal.style.display = 'none';
             document.body.style.overflow = '';
         }
 
@@ -376,7 +377,9 @@
                 })
                 .then(html => {
                     document.getElementById('viewModalContent').innerHTML = html;
-                    document.getElementById('viewModal').classList.remove('hidden');
+                    const modal = document.getElementById('viewModal');
+                    modal.classList.remove('hidden');
+                    modal.style.display = 'flex';
                     if (window.lucide) lucide.createIcons();
                 })
                 .catch(error => {
@@ -386,7 +389,9 @@
         }
 
         function closeViewModal() {
-            document.getElementById('viewModal').classList.add('hidden');
+            const modal = document.getElementById('viewModal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
         }
 
         function openEditModal(id) {
@@ -398,7 +403,9 @@
                 })
                 .then(html => {
                     document.getElementById('editModalContent').innerHTML = html;
-                    document.getElementById('editModal').classList.remove('hidden');
+                    const modal = document.getElementById('editModal');
+                    modal.classList.remove('hidden');
+                    modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
                     if (window.lucide) lucide.createIcons();
                     updateRiskRating();
@@ -410,7 +417,9 @@
         }
 
         function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
+            const modal = document.getElementById('editModal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
             document.body.style.overflow = '';
         }
 

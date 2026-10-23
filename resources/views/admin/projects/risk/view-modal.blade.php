@@ -7,7 +7,6 @@
     ];
     $statusClasses = [
         'Open'       => 'bg-sky-50 text-sky-700 border-sky-200',
-        'Inprogress' => 'bg-amber-50 text-amber-700 border-amber-200',
         'Closed'     => 'bg-emerald-50 text-emerald-700 border-emerald-200',
     ];
     $typeClasses = [
@@ -28,7 +27,7 @@
                     {{ $risk->risk_type }}
                 </span>
                 <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $statusClasses[$risk->action_status] ?? 'bg-slate-100 text-slate-500 border-slate-200' }}">
-                    {{ $risk->action_status === 'Inprogress' ? 'In Progress' : $risk->action_status }}
+                    {{ $risk->action_status }}
                 </span>
             </div>
         </div>
@@ -219,7 +218,7 @@
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Action Status</p>
                 <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $statusClasses[$risk->action_status] ?? 'border-slate-200 bg-slate-100 text-slate-500' }}">
-                    {{ $risk->action_status === 'Inprogress' ? 'In Progress' : $risk->action_status }}
+                    {{ $risk->action_status }}
                 </span>
             </div>
         </div>
