@@ -25,42 +25,51 @@
         </div>
 
         <!-- Search & Filter -->
-        <form action="{{ route('admin.projects.issues.index') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
-                <div class="min-w-[220px] max-w-[320px] relative group shrink-0">
-                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
-                    <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Search by name, code or ID..."
-                        class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
-                </div>
-
-                <div class="relative group/select">
-                    <select name="status" onchange="this.form.submit()"
-                        class="appearance-none pl-4 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
-                        <option value="in progress" {{ request('status', 'in progress') == 'in progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+        <form action="{{ route('admin.projects.issues.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+            <div class="grid grid-cols-1 items-end gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
+                    <span class="relative block">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                        <input type="search" name="search" value="{{ request('search') }}" placeholder="Name, code, or ID"
+                            class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    </span>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Status</span>
+                    <select name="status" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="all" @selected(request('status', 'in progress') === 'all')>All Projects</option>
+                        <option value="in progress" @selected(request('status', 'in progress') === 'in progress')>In Progress</option>
+                        <option value="completed" @selected(request('status') === 'completed')>Completed</option>
                     </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
-                </div>
-
-                <div class="relative group/select">
-                    <select name="issue_status" onchange="this.form.submit()"
-                        class="appearance-none pl-4 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
-                        <option value="">All Issue Statuses</option>
-                        <option value="Open" {{ request('issue_status') == 'Open' ? 'selected' : '' }}>Open</option>
-                        <option value="In Progress" {{ request('issue_status') == 'In Progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="Closed" {{ request('issue_status') == 'Closed' ? 'selected' : '' }}>Closed</option>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Issue Status</span>
+                    <select name="issue_status" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Statuses</option>
+                        <option value="Open" @selected(request('issue_status') === 'Open')>Open</option>
+                        <option value="Closed" @selected(request('issue_status') === 'Closed')>Closed</option>
                     </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Priority</span>
+                    <select name="priority" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Priorities</option>
+                        @foreach(['Overdue', 'High', 'Medium', 'Low'] as $priority)
+                            <option value="{{ $priority }}" @selected(request('priority') === $priority)>{{ $priority }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <div class="flex gap-2">
+                    <button type="submit" class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-white transition-colors hover:bg-cyan-700">
+                        <i data-lucide="filter" class="h-3.5 w-3.5"></i>Apply
+                    </button>
+                    @if(request()->anyFilled(['search', 'status', 'issue_status', 'priority']))
+                        <a href="{{ route('admin.projects.issues.index') }}" class="inline-flex items-center justify-center rounded-lg border border-rose-100 bg-rose-50 px-3 text-rose-600 transition-colors hover:bg-rose-500 hover:text-white" title="Clear filters">
+                            <i data-lucide="x" class="h-4 w-4"></i>
+                        </a>
+                    @endif
                 </div>
-
-                @if(request()->anyFilled(['search', 'status', 'issue_status']))
-                    <a href="{{ route('admin.projects.issues.index') }}"
-                        class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
-                        title="Clear Filters">
-                        <i data-lucide="x" class="w-4 h-4"></i>
-                    </a>
-                @endif
             </div>
         </form>
 
@@ -73,40 +82,52 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">#</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Total Issues</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Open</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">In Progress</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Closed</th>
+                            <th colspan="2" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Status</th>
+                            <th colspan="4" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Priority</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Actions</th>
+                        </tr>
+                        <tr class="bg-slate-900 text-[8px] font-black uppercase tracking-widest text-white/80">
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th class="px-3 py-2 text-center">Open</th>
+                            <th class="px-3 py-2 text-center">Closed</th>
+                            <th class="px-3 py-2 text-center">Overdue</th>
+                            <th class="px-3 py-2 text-center">High</th>
+                            <th class="px-3 py-2 text-center">Medium</th>
+                            <th class="px-3 py-2 text-center">Low</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50/50">
                         @forelse($projects as $project)
-                            @php
-                                $stats = [
-                                    'total' => \App\Models\Issue::where('project_id', $project->id)->count(),
-                                    'open' => \App\Models\Issue::where('project_id', $project->id)->where('status', 'Open')->count(),
-                                    'in_progress' => \App\Models\Issue::where('project_id', $project->id)->where('status', 'In Progress')->count(),
-                                    'closed' => \App\Models\Issue::where('project_id', $project->id)->where('status', 'Closed')->count(),
-                                ];
-                            @endphp
                             <tr class="group hover:bg-slate-50/80 transition-all duration-300 odd:bg-white even:bg-slate-50/20">
                                 <td class="px-6 py-4 text-center">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $projects->firstItem() + $loop->index }}</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">{{ $project->project_code }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-xs font-black text-slate-900">{{ $stats['total'] }}</span>
+                                    <span class="text-xs font-black text-slate-900">{{ $project->total_issues }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-xs font-black text-sky-600">{{ $stats['open'] }}</span>
+                                    <span class="text-xs font-black text-sky-600">{{ $project->open_issues }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-xs font-black text-amber-600">{{ $stats['in_progress'] }}</span>
+                                    <span class="text-xs font-black text-emerald-600">{{ $project->closed_issues }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-xs font-black text-emerald-600">{{ $stats['closed'] }}</span>
+                                    <span class="text-xs font-black text-rose-600">{{ $project->overdue_issues }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-xs font-black text-orange-600">{{ $project->high_priority_issues }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-xs font-black text-amber-600">{{ $project->medium_priority_issues }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-xs font-black text-cyan-600">{{ $project->low_priority_issues }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <a href="{{ route('admin.projects.issues.manage', $project) }}"
@@ -118,7 +139,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-16 text-center">
+                                <td colspan="10" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center gap-4">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="database" class="w-8 h-8"></i>

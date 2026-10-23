@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -36,6 +37,33 @@ class Issue extends Model
         'issue_closed_date' => 'date',
         'date' => 'date',
     ];
+
+    public function getDaysLeftAttribute(): ?int
+    {
+        if (!$this->planned_resolution_date) {
+            return null;
+        }
+
+        return (int) Carbon::today()->diffInDays($this->planned_resolution_date->copy()->startOfDay(), false);
+    }
+
+    public function getPriorityAttribute(): string
+    {
+        if ($this->status === 'Closed') {
+            return 'Done';
+        }
+
+        if ($this->days_left === null) {
+            return 'Unscheduled';
+        }
+
+        return match (true) {
+            $this->days_left < 0 => 'Overdue',
+            $this->days_left < 7 => 'High',
+            $this->days_left < 14 => 'Medium',
+            default => 'Low',
+        };
+    }
 
     public function project(): BelongsTo
     {

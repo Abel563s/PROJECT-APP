@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Issue;
 use App\Models\Project;
+use App\Models\ProjectRisk;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -549,7 +550,11 @@ class ProjectController extends Controller
 
     public function riskIndex(Request $request)
     {
-        $query = Project::query()->where('status', 'in progress');
+        $query = Project::query()->where('status', 'in progress')
+            ->withCount('risks as total_risk')
+            ->withCount(['risks as open_risk' => fn ($q) => $q->where('action_status', 'Open')])
+            ->withCount(['risks as in_progress_risk' => fn ($q) => $q->where('action_status', 'Inprogress')])
+            ->withCount(['risks as closed_risk' => fn ($q) => $q->where('action_status', 'Closed')]);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -564,50 +569,100 @@ class ProjectController extends Controller
             $query->where('id', $request->project_id);
         }
 
-        $projects = $query->orderBy('project_code');
-
-        $risks = $projects->get()->map(function ($project) {
-            return [
-                'id' => $project->id,
-                'project_code' => $project->project_code,
-                'project_name' => $project->project_name,
-                'project_type' => $project->project_type,
-                'total_risk' => rand(0, 50),
-                'open_risk' => rand(0, 20),
-                'in_progress_risk' => rand(0, 15),
-                'closed_risk' => rand(0, 15),
-                'status' => $project->status,
+        if ($request->filled('impact') && $request->impact !== 'all') {
+            $scoreRanges = [
+                'Low' => [1, 4],
+                'Medium' => [5, 9],
+                'High' => [10, 16],
+                'Extreme' => [17, 25],
             ];
-        });
+            if (isset($scoreRanges[$request->impact])) {
+                [$minimum, $maximum] = $scoreRanges[$request->impact];
+                $query->whereHas('risks', fn ($q) => $q->whereRaw('likelihood * severity between ? and ?', [$minimum, $maximum]));
+            }
+        }
 
-        // Convert both to arrays for the view
-        $risks = $risks->toArray();
-        $projects = $projects->get()->toArray();
+        if ($request->filled('risk_type') && $request->risk_type !== 'all') {
+            $query->whereHas('risks', fn ($q) => $q->where('risk_category', $request->risk_type));
+        }
 
-        $riskTypes = ['Technical', 'Financial', 'Schedule', 'Quality', 'External', 'Compliance'];
+        $risks = $query->orderBy('project_code')->get()->toArray();
+        $projects = Project::query()->where('status', 'in progress')->orderBy('project_code')->get()->toArray();
+        $riskTypes = ['Contractual', 'Design', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality'];
 
         return view('admin.projects.risk', compact('risks', 'projects', 'riskTypes'));
     }
 
-    public function riskManage($id)
+    public function riskManage(Project $project)
     {
-        $project = Project::findOrFail($id);
-        
         if ($project->status !== 'in progress') {
             return redirect()->route('admin.projects.risk.index')->with('error', 'Risk management is only available for projects with "In Progress" status.');
         }
 
-        return view('admin.projects.risk.manage', compact('project'));
+        $canManageProject = request()->user()->canManageProject($project);
+        $risks = ProjectRisk::where('project_id', $project->id)->latest()->paginate(15)->withQueryString();
+        $stats = [
+            'total' => ProjectRisk::where('project_id', $project->id)->count(),
+            'open' => ProjectRisk::where('project_id', $project->id)->where('action_status', 'Open')->count(),
+            'in_progress' => ProjectRisk::where('project_id', $project->id)->where('action_status', 'Inprogress')->count(),
+            'closed' => ProjectRisk::where('project_id', $project->id)->where('action_status', 'Closed')->count(),
+            'extreme' => ProjectRisk::where('project_id', $project->id)->whereRaw('likelihood * severity >= 17')->count(),
+        ];
+
+        return view('admin.projects.risk.manage', compact('project', 'risks', 'stats', 'canManageProject'));
     }
 
-    public function riskCreateModal(Request $request)
+    public function riskCreateModal(Project $project)
     {
-        if ($request->has('partial') && $request->get('action') === 'create') {
-            $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
-            return view('admin.projects.risk.create-modal', compact('projects'))->render();
-        }
+        abort_unless(auth()->user()->canManageProject($project), 403);
 
-        return redirect()->route('admin.projects.risk.index');
+        return view('admin.projects.risk.create-modal', compact('project'))->render();
+    }
+
+    public function riskStore(Request $request, Project $project)
+    {
+        abort_unless($request->user()->canManageProject($project), 403);
+        abort_unless($project->status === 'in progress', 403);
+
+        $validated = $request->validate([
+            'risk_category' => ['required', Rule::in(['Contractual', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality', 'Design'])],
+            'activity' => 'required|string',
+            'risk_type' => ['required', Rule::in(['Opportunity', 'Threat'])],
+            'risk_name' => 'required|string|max:255',
+            'risk_description' => 'required|string',
+            'likelihood' => 'required|integer|between:1,5',
+            'severity' => 'required|integer|between:1,5',
+            'project_impact' => ['nullable', Rule::in(['Time', 'Cost', 'Time & Cost'])],
+            'intent_to_claim' => 'required|boolean',
+            'most_likely_cost_impact' => 'nullable|numeric|min:0',
+            'most_likely_time_impact' => 'nullable|integer|min:0',
+            'time_impact_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
+            'stakeholder' => 'nullable|string|max:255',
+            'risk_frequency' => ['nullable', Rule::in(['One Time', 'Fixed Duration', 'Recurring'])],
+            'impact_date' => 'nullable|date',
+            'risk_urgency' => ['nullable', Rule::in(['Very Urgent', 'Urgent', 'Moderate', 'Low'])],
+            'existing_control' => 'nullable|string',
+            'residual_risk' => 'nullable|string',
+            'response_strategy' => ['nullable', Rule::in(['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate', 'Enhance', 'Eliminate'])],
+            'mitigation_plan' => 'nullable|string',
+            'contingency_plan' => 'nullable|string',
+            'risk_owner' => 'nullable|string|max:255',
+            'owner_name' => 'nullable|string|max:255',
+            'planned_action_date' => 'nullable|date',
+            'date_last_updated' => 'nullable|date',
+            'tracking_comments' => 'nullable|string',
+            'action_status' => ['required', Rule::in(['Open', 'Inprogress', 'Closed'])],
+            'actual_action_date' => 'nullable|date',
+            'exposure' => 'nullable|integer|min:0',
+            'exposure_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
+            'recommendation' => 'nullable|string',
+        ]);
+
+        $validated['project_id'] = $project->id;
+        $validated['created_by'] = $request->user()->id;
+        ProjectRisk::create($validated);
+
+        return redirect()->route('admin.projects.risk.manage', $project)->with('success', 'Risk created successfully.');
     }
 
     public function search(Request $request)

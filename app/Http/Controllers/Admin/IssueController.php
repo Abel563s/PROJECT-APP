@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Issue;
 use App\Models\Project;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class IssueController extends Controller
@@ -14,13 +15,46 @@ class IssueController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Project::query();
+        $request->validate([
+            'search' => 'nullable|string|max:255',
+            'status' => 'nullable|in:all,in progress,completed',
+            'issue_status' => 'nullable|in:Open,Closed',
+            'priority' => 'nullable|in:Overdue,High,Medium,Low',
+        ]);
 
-        $status = $request->filled('status') ? $request->status : 'in progress';
-        if ($status === 'in progress') {
-            $query->where('status', 'in progress');
-        } elseif ($status === 'completed') {
-            $query->where('status', 'completed');
+        $today = Carbon::today();
+        $priorityScope = function ($query) {
+            $query->where(function ($statusQuery) {
+                $statusQuery->whereNull('status')->orWhere('status', '!=', 'Closed');
+            })->whereNotNull('planned_resolution_date');
+        };
+
+        $query = Project::query()
+            ->withCount('issues as total_issues')
+            ->withCount(['issues as open_issues' => fn ($issues) => $issues->where('status', 'Open')])
+            ->withCount(['issues as closed_issues' => fn ($issues) => $issues->where('status', 'Closed')])
+            ->withCount(['issues as overdue_issues' => function ($issues) use ($today, $priorityScope) {
+                $priorityScope($issues);
+                $issues->whereDate('planned_resolution_date', '<', $today);
+            }])
+            ->withCount(['issues as high_priority_issues' => function ($issues) use ($today, $priorityScope) {
+                $priorityScope($issues);
+                $issues->whereDate('planned_resolution_date', '>=', $today)
+                    ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(7));
+            }])
+            ->withCount(['issues as medium_priority_issues' => function ($issues) use ($today, $priorityScope) {
+                $priorityScope($issues);
+                $issues->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(7))
+                    ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(14));
+            }])
+            ->withCount(['issues as low_priority_issues' => function ($issues) use ($today, $priorityScope) {
+                $priorityScope($issues);
+                $issues->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(14));
+            }]);
+
+        $projectStatus = $request->input('status', 'in progress');
+        if ($projectStatus !== 'all') {
+            $query->where('status', $projectStatus);
         }
 
         if ($request->filled('search')) {
@@ -38,6 +72,21 @@ class IssueController extends Controller
             });
         }
 
+        if ($request->filled('priority')) {
+            $priority = $request->priority;
+            $query->whereHas('issues', function ($issues) use ($priority, $today, $priorityScope) {
+                $priorityScope($issues);
+                match ($priority) {
+                    'Overdue' => $issues->whereDate('planned_resolution_date', '<', $today),
+                    'High' => $issues->whereDate('planned_resolution_date', '>=', $today)
+                        ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(7)),
+                    'Medium' => $issues->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(7))
+                        ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(14)),
+                    'Low' => $issues->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(14)),
+                };
+            });
+        }
+
         $projects = $query->orderByDesc('baseline_start_date')->paginate(15)->withQueryString();
         return view('admin.projects.issues.index', compact('projects'));
     }
@@ -45,23 +94,94 @@ class IssueController extends Controller
     /**
      * Manage issues for a specific project.
      */
-    public function manage(Project $project)
+    public function manage(Request $request, Project $project)
     {
+        $request->validate([
+            'issue_owner' => 'nullable|string|max:255',
+            'issue_search' => 'nullable|string|max:255',
+            'impact' => 'nullable|in:Low,Medium,High',
+            'status' => 'nullable|in:Open,Closed',
+            'priority' => 'nullable|in:Done,Overdue,High,Medium,Low,Unscheduled',
+        ]);
+
         $canManageProject = auth()->user()->canManageProject($project);
-        $issues = Issue::where('project_id', $project->id)
+        $issueQuery = Issue::where('project_id', $project->id);
+
+        if ($request->filled('issue_owner')) {
+            $issueQuery->where('issue_type', $request->query('issue_owner'));
+        }
+
+        if ($request->filled('issue_search')) {
+            $issueQuery->where('issue', 'like', '%' . $request->query('issue_search') . '%');
+        }
+
+        if ($request->filled('impact')) {
+            $issueQuery->where('impact', $request->query('impact'));
+        }
+
+        if ($request->filled('status')) {
+            $issueQuery->where('status', $request->query('status'));
+        }
+
+        if ($request->filled('priority')) {
+            $priority = $request->query('priority');
+            $today = Carbon::today();
+            $notClosed = fn ($query) => $query->where(function ($statusQuery) {
+                $statusQuery->whereNull('status')->orWhere('status', '!=', 'Closed');
+            });
+
+            if ($priority === 'Done') {
+                $issueQuery->where('status', 'Closed');
+            } elseif ($priority === 'Unscheduled') {
+                $issueQuery->whereNull('planned_resolution_date')->where($notClosed);
+            } else {
+                $issueQuery->where($notClosed)->whereNotNull('planned_resolution_date');
+                match ($priority) {
+                    'Overdue' => $issueQuery->whereDate('planned_resolution_date', '<', $today),
+                    'High' => $issueQuery->whereDate('planned_resolution_date', '>=', $today)
+                        ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(7)),
+                    'Medium' => $issueQuery->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(7))
+                        ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(14)),
+                    'Low' => $issueQuery->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(14)),
+                    default => null,
+                };
+            }
+        }
+
+        $issues = $issueQuery
             ->orderByDesc('raised_date')
             ->paginate(15)
             ->withQueryString();
+        $issueOwners = Issue::where('project_id', $project->id)
+            ->whereNotNull('issue_type')
+            ->where('issue_type', '!=', '')
+            ->distinct()
+            ->orderBy('issue_type')
+            ->pluck('issue_type');
 
+        $projectIssues = Issue::where('project_id', $project->id);
+        $today = Carbon::today();
+        $notClosed = fn ($query) => $query->where(function ($statusQuery) {
+            $statusQuery->whereNull('status')->orWhere('status', '!=', 'Closed');
+        });
         $stats = [
-            'total' => Issue::where('project_id', $project->id)->count(),
-            'open' => Issue::where('project_id', $project->id)->where('status', 'Open')->count(),
-            'in_progress' => Issue::where('project_id', $project->id)->where('status', 'In Progress')->count(),
-            'closed' => Issue::where('project_id', $project->id)->where('status', 'Closed')->count(),
-            'cancelled' => Issue::where('project_id', $project->id)->where('status', 'Cancelled')->count(),
+            'total' => (clone $projectIssues)->count(),
+            'open' => (clone $projectIssues)->where('status', 'Open')->count(),
+            'closed' => (clone $projectIssues)->where('status', 'Closed')->count(),
+            'done' => (clone $projectIssues)->where('status', 'Closed')->count(),
+            'overdue' => (clone $projectIssues)->where($notClosed)->whereNotNull('planned_resolution_date')
+                ->whereDate('planned_resolution_date', '<', $today)->count(),
+            'high' => (clone $projectIssues)->where($notClosed)->whereNotNull('planned_resolution_date')
+                ->whereDate('planned_resolution_date', '>=', $today)
+                ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(7))->count(),
+            'medium' => (clone $projectIssues)->where($notClosed)->whereNotNull('planned_resolution_date')
+                ->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(7))
+                ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(14))->count(),
+            'low' => (clone $projectIssues)->where($notClosed)->whereNotNull('planned_resolution_date')
+                ->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(14))->count(),
         ];
 
-        return view('admin.projects.issues.manage', compact('project', 'issues', 'stats', 'canManageProject'));
+        return view('admin.projects.issues.manage', compact('project', 'issues', 'stats', 'canManageProject', 'issueOwners'));
     }
 
     /**
@@ -233,7 +353,7 @@ class IssueController extends Controller
      */
     public function destroy(Issue $issue)
     {
-        $this->authorizeIssueMutation($issue);
+        abort_unless(auth()->user()->isAdmin(), 403);
 
         $issue->delete();
 

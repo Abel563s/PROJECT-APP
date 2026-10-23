@@ -74,13 +74,18 @@
             </div>
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Status</label>
-                <select name="status" required
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-rose-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                    <option value="Open" {{ $issue->status === 'Open' ? 'selected' : '' }}>Open</option>
-                    <option value="In Progress" {{ $issue->status === 'In Progress' ? 'selected' : '' }}>In Progress</option>
-                    <option value="Closed" {{ $issue->status === 'Closed' ? 'selected' : '' }}>Closed</option>
-                    <option value="Cancelled" {{ $issue->status === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
-                </select>
+                @if(in_array($issue->status, ['Open', 'Closed'], true))
+                    <select name="status" required
+                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-rose-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
+                        <option value="Open" {{ $issue->status === 'Open' ? 'selected' : '' }}>Open</option>
+                        <option value="Closed" {{ $issue->status === 'Closed' ? 'selected' : '' }}>Closed</option>
+                    </select>
+                @else
+                    <input type="hidden" name="status" value="{{ $issue->status }}">
+                    <p class="rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-[10px] font-bold text-slate-500">
+                        {{ $issue->status }} <span class="font-normal">(existing status retained)</span>
+                    </p>
+                @endif
             </div>
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Issue</label>
@@ -128,7 +133,7 @@
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $issue->action_plan }}</textarea>
             </div>
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Planned Resolution Date</label>
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Planned Action Date</label>
                 <input type="date" name="planned_resolution_date" value="{{ $issue->planned_resolution_date ? $issue->planned_resolution_date->format('Y-m-d') : '' }}"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>

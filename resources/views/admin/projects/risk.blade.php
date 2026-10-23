@@ -2,37 +2,22 @@
     <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
 
         <!-- Compact Header -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-3 border-b border-slate-100 items-center">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-900/20">
                     <i data-lucide="alert-triangle" class="w-4 h-4"></i>
                 </div>
                 <div>
                     <h2 class="text-xl font-bold text-slate-900 tracking-tight font-outfit leading-none">
-                        Risk <span class="font-black text-slate-900">Register</span>
+                        Risk <span class="font-black text-slate-900">Registry</span>
                     </h2>
                     <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Project Risk Assessment</p>
                 </div>
             </div>
-
-            <div class="flex justify-center">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-b from-[#00515f] to-black rounded-lg shadow-sm border border-white/10">
-                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-white/90"></i>
-                    <span class="text-base font-black text-white tracking-tight">{{ count($risks) }}</span>
-                    <span class="text-[9px] font-black text-white/80 uppercase tracking-wider">Risk Items</span>
-                </div>
-            </div>
-            </div>
-
-            <div class="flex justify-end">
-                <button onclick="openCreateModal()"
-                    class="group/btn relative px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20">
-                    <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
-                    <span class="relative flex items-center gap-1.5">
-                        <i data-lucide="plus" class="w-3 h-3"></i>
-                        New Risk
-                    </span>
-                </button>
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-b from-[#00515f] to-black rounded-lg shadow-sm border border-white/10">
+                <i data-lucide="folder-kanban" class="w-3.5 h-3.5 text-white/90"></i>
+                <span class="text-base font-black text-white tracking-tight">{{ count($risks) }}</span>
+                <span class="text-[9px] font-black text-white/80 uppercase tracking-wider">Projects</span>
             </div>
         </div>
 
@@ -67,6 +52,7 @@
                             <option value="High" {{ request('impact') == 'High' ? 'selected' : '' }}>High</option>
                             <option value="Medium" {{ request('impact') == 'Medium' ? 'selected' : '' }}>Medium</option>
                             <option value="Low" {{ request('impact') == 'Low' ? 'selected' : '' }}>Low</option>
+                            <option value="Extreme" {{ request('impact') == 'Extreme' ? 'selected' : '' }}>Extreme</option>
                         </select>
                         <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
                     </div>
@@ -194,48 +180,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Create Modal -->
-    <div id="createModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeCreateModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
-                <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
-                    <h3 class="text-base font-black text-white">New Risk</h3>
-                    <button onclick="closeCreateModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
-                        <i data-lucide="x" class="w-4 h-4"></i>
-                    </button>
-                </div>
-                <div id="createModalContent" class="p-6 overflow-y-auto flex-1">
-                    <div class="flex items-center justify-center py-12">
-                        <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function openCreateModal() {
-            fetch(`{{ route('admin.projects.risk.create-modal') }}?partial=1&action=create`)
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('createModalContent').innerHTML = html;
-                    document.getElementById('createModal').classList.remove('hidden');
-                    if (window.lucide) lucide.createIcons();
-                });
-        }
-
-        function closeCreateModal() {
-            document.getElementById('createModal').classList.add('hidden');
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeCreateModal();
-            }
-        });
-    </script>
 
     <style>
         .animate-fade-in {
