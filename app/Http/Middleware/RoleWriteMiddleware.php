@@ -30,6 +30,7 @@ class RoleWriteMiddleware
                 'admin.progress-updates.create',
                 'admin.projects.issues.create-modal',
                 'admin.projects.payments.create-modal',
+                'admin.projects.risk.create-modal',
             ], true))
             || (str_contains($routeName, '.edit') && !in_array($routeName, [
                 'admin.projects.edit',
@@ -56,6 +57,7 @@ class RoleWriteMiddleware
             'admin.projects.payments.store',
             'admin.projects.payments.update',
             'admin.projects.payments.destroy',
+            'admin.projects.risk.store',
         ];
 
         if ($user->isUser() && in_array($routeName, $coordinatorRoutes, true)) {

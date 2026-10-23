@@ -403,3 +403,52 @@ it('requires Management and Project Coordinators to replace the temporary passwo
         $this->get(route('admin.dashboard'))->assertOk();
     }
 });
+
+it('allows admin role to view and edit data_date in progress update edit modal while non-admin cannot change it', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $coordinator = User::factory()->create(['role' => 'user']);
+    $project = makeAccessProject('Data Date Project');
+    $project->coordinators()->attach($coordinator);
+    $update = ProjectProgressUpdate::create([
+        'project_id' => $project->id,
+        'progress_planned' => 20,
+        'progress_actual' => 15,
+        'data_date' => '2026-10-15',
+    ]);
+
+    // Admin view edit modal has editable input
+    $this->actingAs($admin)
+        ->get(route('admin.progress-updates.edit', $update) . '?partial=1')
+        ->assertOk()
+        ->assertSee('name="data_date"', false)
+        ->assertSee('value="2026-10-15"', false)
+        ->assertDontSee('disabled readonly', false);
+
+    // Coordinator view edit modal has disabled input
+    $this->actingAs($coordinator)
+        ->get(route('admin.progress-updates.edit', $update) . '?partial=1')
+        ->assertOk()
+        ->assertSee('disabled readonly', false);
+
+    // Admin updates data_date
+    $this->actingAs($admin)->put(route('admin.progress-updates.update', $update), [
+        'project_id' => $project->id,
+        'progress_planned' => 25,
+        'progress_actual' => 20,
+        'data_date' => '2026-10-25',
+    ])->assertRedirect(route('admin.progress-updates.index'));
+
+    expect($update->fresh()->data_date->format('Y-m-d'))->toBe('2026-10-25');
+
+    // Coordinator attempts to update data_date, it should be ignored
+    $this->actingAs($coordinator)->put(route('admin.progress-updates.update', $update), [
+        'project_id' => $project->id,
+        'progress_planned' => 30,
+        'progress_actual' => 25,
+        'data_date' => '2026-11-01',
+    ])->assertRedirect(route('admin.progress-updates.index'));
+
+    expect($update->fresh()->data_date->format('Y-m-d'))->toBe('2026-10-25')
+        ->and($update->fresh()->progress_planned)->toBe(30.0);
+});
+
