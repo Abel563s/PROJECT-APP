@@ -30,7 +30,7 @@
 
         <!-- Summary Cards -->
         <div class="-mx-4 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
-            <div class="grid grid-cols-7 gap-3 min-w-[992px]">
+            <div class="grid grid-cols-7 gap-3 min-w-[992px]" style="grid-template-columns: repeat(7, minmax(0, 1fr)); min-width: 992px;">
                 @php
                     $kpis = [
                         ['label' => 'Total Risks', 'key' => 'total', 'icon' => 'alert-triangle', 'tone' => 'slate'],
@@ -75,9 +75,10 @@
                     </a>
                 @endif
             </div>
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-7">
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Risks</span>
+            <div class="overflow-x-auto -mx-4 sm:mx-0">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-7 min-w-[840px]">
+                    <label class="space-y-1">
+                        <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Risks</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
                         <input type="search" name="search" value="{{ request('search') }}" placeholder="Search risks..."
@@ -133,6 +134,7 @@
                     <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-white transition-colors hover:bg-cyan-700">
                         <i data-lucide="filter" class="h-3.5 w-3.5"></i>Apply Filters
                     </button>
+                </div>
                 </div>
             </div>
         </form>
