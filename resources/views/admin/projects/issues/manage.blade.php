@@ -31,7 +31,7 @@
 
         <!-- Summary Cards -->
         <div class="-mx-4 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 min-w-full">
+            <div class="grid grid-cols-8 gap-3 min-w-max">
                 @php
                     $kpis = [
                         ['label' => 'Total Issues', 'key' => 'total', 'icon' => 'layers-3', 'tone' => 'slate'],
