@@ -95,7 +95,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Revenue Planned (PV)</label>
                         <input type="number" step="0.01" name="revenue_planned" value="{{ $update->revenue_planned }}"
@@ -108,9 +108,22 @@
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Latest Completion Date</label>
-                        <input type="date" name="completion_date" value="{{ $update->completion_date ? $update->completion_date : '' }}"
+                        <input type="date" name="completion_date" value="{{ $update->completion_date ? \Carbon\Carbon::parse($update->completion_date)->format('Y-m-d') : '' }}"
                             class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-white focus:ring-4 focus:ring-emerald-500/20 focus:bg-white/10 transition-all">
                     </div>
+                    @if(auth()->user() && auth()->user()->isAdmin())
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Data Date *</label>
+                            <input type="date" name="data_date" value="{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('Y-m-d') : '' }}" required
+                                class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-white focus:ring-4 focus:ring-cyan-500/20 focus:bg-white/10 transition-all">
+                        </div>
+                    @else
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Data Date</label>
+                            <input type="date" value="{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('Y-m-d') : '' }}" disabled readonly
+                                class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-white/40 cursor-not-allowed">
+                        </div>
+                    @endif
                 </div>
             </div>
 

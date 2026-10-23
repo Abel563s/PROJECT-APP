@@ -120,9 +120,22 @@
         <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Latest Completion Date</label>
-                <input type="date" name="completion_date" value="{{ $update->completion_date ? $update->completion_date : '' }}"
+                <input type="date" name="completion_date" value="{{ $update->completion_date ? \Carbon\Carbon::parse($update->completion_date)->format('Y-m-d') : '' }}"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
+            @if(auth()->user() && auth()->user()->isAdmin())
+                <div class="space-y-1">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Data Date *</label>
+                    <input type="date" name="data_date" value="{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('Y-m-d') : '' }}" required
+                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                </div>
+            @else
+                <div class="space-y-1">
+                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Data Date</label>
+                    <input type="date" value="{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('Y-m-d') : '' }}" disabled readonly
+                        class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-400 cursor-not-allowed">
+                </div>
+            @endif
         </div>
     </div>
 

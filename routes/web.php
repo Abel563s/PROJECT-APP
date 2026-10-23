@@ -96,7 +96,7 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::patch('/settings/account', [SystemSettingController::class, 'updateAccount'])->name('settings.account.update');
         Route::post('/settings', [SystemSettingController::class, 'updateSetting'])->name('settings.update');
         Route::patch('/settings/profile', [SystemSettingController::class, 'updateProfile'])->name('settings.profile.update');
-        Route::put('/settings/password', [SystemController::class, 'updatePassword'])->name('settings.password.update');
+        Route::put('/settings/password', [SystemSettingController::class, 'updatePassword'])->name('settings.password.update');
 
         // User Management / Access Control
         Route::middleware('role:admin')->group(function () {

@@ -147,6 +147,11 @@ class ProjectProgressUpdateController extends Controller
 
         $project = Project::findOrFail($validated['project_id']);
         $this->authorize('update', $project);
+
+        if (!$request->user()->isAdmin()) {
+            unset($validated['data_date']);
+        }
+
         $progress_update->update($validated);
 
         return redirect()->route('admin.progress-updates.index')->with('success', 'Progress update updated successfully.');
