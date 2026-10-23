@@ -31,7 +31,7 @@
 
         <!-- Summary Cards -->
         <div class="-mx-4 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
-            <div class="grid grid-cols-8 gap-3 min-w-max">
+            <div class="grid grid-cols-8 gap-3 min-w-[1120px]" style="grid-template-columns: repeat(8, minmax(0, 1fr)); min-width: 1120px;">
                 @php
                     $kpis = [
                         ['label' => 'Total Issues', 'key' => 'total', 'icon' => 'layers-3', 'tone' => 'slate'],
@@ -54,7 +54,7 @@
                     ];
                 @endphp
                 @foreach($kpis as $kpi)
-                    <div class="min-w-0 group rounded-2xl border border-slate-100 bg-gradient-to-br from-white to-slate-50/80 p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ $kpiTones[$kpi['tone']]['border'] }}">
+                    <div class="group rounded-2xl border border-slate-100 bg-gradient-to-br from-white to-slate-50/80 p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ $kpiTones[$kpi['tone']]['border'] }}">
                         <div class="flex items-center justify-between gap-2">
                             <div class="flex h-9 w-9 items-center justify-center rounded-xl {{ $kpiTones[$kpi['tone']]['icon'] }} transition-transform group-hover:scale-105">
                                 <i data-lucide="{{ $kpi['icon'] }}" class="h-4 w-4"></i>
