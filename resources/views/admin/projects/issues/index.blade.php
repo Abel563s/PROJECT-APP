@@ -25,15 +25,11 @@
         </div>
 
         <!-- Search & Filter -->
+        @php
+            $issuesFiltersActive = request()->anyFilled(['search', 'status', 'issue_status', 'priority', 'impact']);
+        @endphp
         <form action="{{ route('admin.projects.issues.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="mb-3 flex justify-end">
-                @if(request()->anyFilled(['search', 'status', 'issue_status', 'priority', 'impact']))
-                    <a href="{{ route('admin.projects.issues.index') }}" class="inline-flex items-center gap-1.5 self-start rounded-lg border border-rose-100 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition-colors hover:bg-rose-500 hover:text-white sm:self-auto">
-                        <i data-lucide="x" class="h-3 w-3"></i>Clear Filters
-                    </a>
-                @endif
-            </div>
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $issuesFiltersActive ? '6' : '5' }}">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">
@@ -44,7 +40,7 @@
                 </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Status</span>
-                    <select name="status" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    <select name="status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="all" @selected(request('status', 'in progress') === 'all')>All Projects</option>
                         <option value="in progress" @selected(request('status', 'in progress') === 'in progress')>In Progress</option>
                         <option value="completed" @selected(request('status') === 'completed')>Completed</option>
@@ -52,7 +48,7 @@
                 </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Issue Status</span>
-                    <select name="issue_status" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    <select name="issue_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Statuses</option>
                         <option value="Open" @selected(request('issue_status') === 'Open')>Open</option>
                         <option value="Closed" @selected(request('issue_status') === 'Closed')>Closed</option>
@@ -60,7 +56,7 @@
                 </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Priority</span>
-                    <select name="priority" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    <select name="priority" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Priorities</option>
                         @foreach(['Overdue', 'High', 'Medium', 'Low'] as $priority)
                             <option value="{{ $priority }}" @selected(request('priority') === $priority)>{{ $priority }}</option>
@@ -69,18 +65,20 @@
                 </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact</span>
-                    <select name="impact" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    <select name="impact" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Impacts</option>
                         @foreach(['High', 'Medium', 'Low'] as $impact)
                             <option value="{{ $impact }}" @selected(request('impact') === $impact)>{{ $impact }}</option>
                         @endforeach
                     </select>
                 </label>
-                <div class="flex items-end gap-2">
-                    <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-white transition-colors hover:bg-cyan-700">
-                        <i data-lucide="filter" class="h-3.5 w-3.5"></i>Apply Filters
-                    </button>
-                </div>
+                @if($issuesFiltersActive)
+                    <div class="flex items-end justify-end">
+                        <a href="{{ route('admin.projects.issues.index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-sm text-[9px] font-black uppercase tracking-widest">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>Clear Filters
+                        </a>
+                    </div>
+                @endif
             </div>
         </form>
 

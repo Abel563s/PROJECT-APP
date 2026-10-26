@@ -36,70 +36,62 @@
         </div>
 
         <!-- Search & Filter -->
-        <form action="{{ route('admin.material.index') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
-                <div class="min-w-[220px] max-w-[320px] relative group shrink-0">
-                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
-                    <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Search by name, code or supplier..."
-                        class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
-                </div>
-
-                <div class="flex items-center gap-3 shrink-0">
-                    <div class="relative group/select">
-                        <select name="project_id" onchange="this.form.submit()"
-                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
-                            <option value="">All Projects</option>
-                            @foreach($projects as $project)
-                                <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
-                                    {{ $project->project_code }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
-                    </div>
-
-                    <div class="relative group/select">
-                        <select name="project_client" onchange="this.form.submit()"
-                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
-                            <option value="">All Suppliers</option>
-                            @foreach($departments as $dept)
-                                <option value="{{ $dept }}" {{ request('project_client') == $dept ? 'selected' : '' }}>{{ $dept }}</option>
-                            @endforeach
-                        </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
-                    </div>
-
-                    <div class="relative group/select">
-                        <select name="project_type" onchange="this.form.submit()"
-                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
-                            <option value="">All Disciplines</option>
-                            @foreach(['Civil','MEP'] as $type)
-                                <option value="{{ $type }}" {{ request('project_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
-                            @endforeach
-                        </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
-                    </div>
-
-                    <div class="relative group/select">
-                        <select name="consultancy_sector" onchange="this.form.submit()"
-                            class="appearance-none pl-6 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
-                            <option value="">All Procurement Types</option>
-                            @foreach(['LVA','RFQ-Local','RFQ-Import-Birr','RFQ-Import-USD','IFB-ICB','IFB-NCB','RFP','LTA'] as $t)
-                                <option value="{{ $t }}" {{ request('consultancy_sector') == $t ? 'selected' : '' }}>{{ $t }}</option>
-                            @endforeach
-                        </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
-                    </div>
-
-                    @if(request()->anyFilled(['search', 'project_id', 'project_client', 'project_type', 'consultancy_sector']))
-                        <a href="{{ route('admin.material.index') }}"
-                            class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
-                            title="Clear Filters">
-                            <i data-lucide="x" class="w-4 h-4"></i>
+        @php
+            $materialFiltersActive = request()->anyFilled(['search', 'project_id', 'project_client', 'project_type', 'consultancy_sector']);
+        @endphp
+        <form action="{{ route('admin.material.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $materialFiltersActive ? '6' : '5' }}">
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Materials</span>
+                    <span class="relative block">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                        <input type="search" name="search" value="{{ request('search') }}" placeholder="Search by name, code or supplier..."
+                            class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    </span>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project</span>
+                    <select name="project_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Projects</option>
+                        @foreach($projects as $project)
+                            <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->project_code }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Supplier</span>
+                    <select name="project_client" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Suppliers</option>
+                        @foreach($departments as $dept)
+                            <option value="{{ $dept }}" {{ request('project_client') == $dept ? 'selected' : '' }}>{{ $dept }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Discipline</span>
+                    <select name="project_type" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Disciplines</option>
+                        @foreach(['Civil','MEP'] as $type)
+                            <option value="{{ $type }}" {{ request('project_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Procurement Type</span>
+                    <select name="consultancy_sector" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Procurement Types</option>
+                        @foreach(['LVA','RFQ-Local','RFQ-Import-Birr','RFQ-Import-USD','IFB-ICB','IFB-NCB','RFP','LTA'] as $t)
+                            <option value="{{ $t }}" {{ request('consultancy_sector') == $t ? 'selected' : '' }}>{{ $t }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                @if($materialFiltersActive)
+                    <div class="flex items-end justify-end">
+                        <a href="{{ route('admin.material.index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-sm text-[9px] font-black uppercase tracking-widest">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>Clear Filters
                         </a>
-                    @endif
-                </div>
+                    </div>
+                @endif
             </div>
         </form>
 

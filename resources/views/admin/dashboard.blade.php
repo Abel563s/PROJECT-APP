@@ -106,33 +106,6 @@
                 background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
                 box-shadow: 0 12px 28px -24px rgba(15, 23, 42, 0.45), 0 2px 6px rgba(15, 23, 42, 0.04);
             }
-            .dashboard-filter-field { display: block; min-width: 0; }
-            .dashboard-filter-label {
-                display: block;
-                margin: 0 0 0.4rem 0.15rem;
-                color: #64748b;
-                font-size: 8px;
-                font-weight: 800;
-                letter-spacing: 0.09em;
-                line-height: 1;
-                text-transform: uppercase;
-            }
-            .dashboard-filter-control {
-                height: 40px;
-                border: 1px solid #e2e8f0;
-                border-radius: 0.75rem;
-                background-color: #ffffff;
-                color: #334155;
-                font-size: 10px;
-                font-weight: 700;
-                transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
-            }
-            .dashboard-filter-control:hover { border-color: #cbd5e1; background-color: #ffffff; }
-            .dashboard-filter-control:focus {
-                border-color: rgba(6, 182, 212, 0.6);
-                outline: none;
-                box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.12);
-            }
         </style>
 
         <!-- Dashboard Header -->
@@ -145,92 +118,56 @@
         </div>
 
         <!-- Filters -->
-        <div class="dashboard-filters w-full rounded-2xl p-4 sm:p-5">
-            <div class="mb-4 flex flex-col gap-2 border-b border-slate-100 pb-3 sm:flex-row sm:items-center sm:justify-between">
-                <div class="flex items-center gap-2.5">
-                    <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
-                        <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M10 5H3M12 19H3M14 3v4M16 17v4M21 12h-9M21 19h-5M21 5h-7M8 10v4M8 12H3"></path>
-                        </svg>
-                    </span>
-                    <div>
-                        <h2 class="text-xs font-extrabold tracking-tight text-slate-800">Project Filters</h2>
-                        <p class="mt-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-slate-400">Refine your dashboard view</p>
-                    </div>
-                </div>
-                <button onclick="clearFilters()" class="inline-flex items-center justify-center gap-1.5 self-start rounded-lg px-2.5 py-1.5 text-[9px] font-bold text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 sm:self-auto" title="Clear Filters">
-                    <svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8M3 3v5h5"></path>
-                    </svg>
-                    Reset filters
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
-                <label class="dashboard-filter-field relative xl:col-span-2">
-                    <span class="dashboard-filter-label">Search projects</span>
-                    <div class="relative">
-                        <svg aria-hidden="true" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        <input type="text" id="searchInput" placeholder="Search by project name or code..."
+        <form id="dashboardFilterForm" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+            <div id="dashboardFilterGrid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5" style="display:grid; gap:0.75rem;">
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
+                    <span class="relative block">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                        <input type="search" id="searchInput" placeholder="Search by project name or code..."
                             oninput="handleSearch(this.value)"
-                            class="dashboard-filter-control w-full pl-10 pr-3">
-                    </div>
+                            class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    </span>
                 </label>
 
-                <label class="dashboard-filter-field relative">
-                    <span class="dashboard-filter-label">Project sector</span>
-                    <div class="relative">
-                        <select id="filterSector" onchange="applyFilters()" class="dashboard-filter-control w-full appearance-none pl-3 pr-9">
-                            <option value="all">All Sectors</option>
-                        </select>
-                        <svg aria-hidden="true" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m6 9 6 6 6-6"></path>
-                        </svg>
-                    </div>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Sector</span>
+                    <select id="filterSector" onchange="applyFilters()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="all">All Sectors</option>
+                    </select>
                 </label>
 
-                <label class="dashboard-filter-field relative">
-                    <span class="dashboard-filter-label">Delivery method</span>
-                    <div class="relative">
-                        <select id="filterDeliveryMethod" onchange="applyFilters()" class="dashboard-filter-control w-full appearance-none pl-3 pr-9">
-                            <option value="all">All Delivery Methods</option>
-                        </select>
-                        <svg aria-hidden="true" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m6 9 6 6 6-6"></path>
-                        </svg>
-                    </div>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Delivery Method</span>
+                    <select id="filterDeliveryMethod" onchange="applyFilters()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="all">All Delivery Methods</option>
+                    </select>
                 </label>
 
-                <label class="dashboard-filter-field relative">
-                    <span class="dashboard-filter-label">Consultant type</span>
-                    <div class="relative">
-                        <select id="filterConsultantType" onchange="applyFilters()" class="dashboard-filter-control w-full appearance-none pl-3 pr-9">
-                            <option value="all">All Consultant Types</option>
-                        </select>
-                        <svg aria-hidden="true" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m6 9 6 6 6-6"></path>
-                        </svg>
-                    </div>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Consultant Type</span>
+                    <select id="filterConsultantType" onchange="applyFilters()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="all">All Consultant Types</option>
+                    </select>
                 </label>
 
-                <label class="dashboard-filter-field relative">
-                    <span class="dashboard-filter-label">Project status</span>
-                    <div class="relative">
-                        <select id="filterLifecycleStatus" onchange="applyFilters()" class="dashboard-filter-control w-full appearance-none pl-3 pr-9">
-                            <option value="all">All Project Statuses</option>
-                            <option value="completed">Completed</option>
-                            <option value="in progress">In Progress</option>
-                        </select>
-                        <svg aria-hidden="true" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m6 9 6 6 6-6"></path>
-                        </svg>
-                    </div>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Status</span>
+                    <select id="filterLifecycleStatus" onchange="applyFilters()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="all">All Project Statuses</option>
+                    </select>
                 </label>
+
+                <div class="flex items-end">
+                    <a href="{{ route('admin.dashboard') }}"
+                        class="clear-filters-btn inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-sm text-[9px] font-black uppercase tracking-widest"
+                        title="Clear Filters" onclick="clearFilters()"
+                        hidden>
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>Clear Filter
+                    </a>
+                </div>
             </div>
-        </div>
+        </form>
 
         <!-- Executive KPI Summary Cards -->
         <div id="executiveKpiRow" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
@@ -537,6 +474,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadFilters();
             loadDashboardData();
+            updateClearFiltersVisibility();
         });
 
         function loadFilters() {
@@ -669,13 +607,35 @@
 
         function applyFilters() {
             currentPage = 1;
+            updateClearFiltersVisibility();
             loadDashboardData();
+        }
+
+        function updateClearFiltersVisibility() {
+            const btn = document.querySelector('.clear-filters-btn');
+            const grid = document.getElementById('dashboardFilterGrid');
+            if (!btn || !grid) return;
+            const hasSearch = document.getElementById('searchInput').value.trim() !== '';
+            const hasSector = document.getElementById('filterSector').value !== 'all';
+            const hasDelivery = document.getElementById('filterDeliveryMethod').value !== 'all';
+            const hasConsultant = document.getElementById('filterConsultantType').value !== 'all';
+            const hasStatus = document.getElementById('filterLifecycleStatus').value !== 'all';
+            if (hasSearch || hasSector || hasDelivery || hasConsultant || hasStatus) {
+                btn.hidden = false;
+                grid.classList.remove('lg:grid-cols-5');
+                grid.classList.add('lg:grid-cols-6');
+            } else {
+                btn.hidden = true;
+                grid.classList.remove('lg:grid-cols-6');
+                grid.classList.add('lg:grid-cols-5');
+            }
         }
 
         function handleSearch(value) {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 document.getElementById('searchInput').value = value;
+                updateClearFiltersVisibility();
                 applyFilters();
             }, 300);
         }
@@ -698,6 +658,7 @@
             sectionFilter = { category: null, value: null };
             activeChartFilter = null;
             updateClearFilterButton();
+            updateClearFiltersVisibility();
             applyFilters();
         }
 

@@ -171,7 +171,6 @@ it('filters risks on the manage page by status, category, type, and level', func
         ->get(route('admin.projects.risk.manage', $project))
         ->assertOk()
         ->assertSee('Search Risks')
-        ->assertSee('Apply Filters')
         ->assertViewHas('riskCategories');
 
     $this->get(route('admin.projects.risk.manage', [$project, 'action_status' => 'Open']))
@@ -188,4 +187,71 @@ it('filters risks on the manage page by status, category, type, and level', func
         ->assertOk()
         ->assertViewHas('risks', fn ($risks) => $risks->count() === 1)
         ->assertViewHas('risks', fn ($risks) => $risks[0]->risk_name === 'Open Operational Threat');
+});
+
+it('allows Project Coordinator to see New Risk button and create, view, edit risks', function () {
+    $coordinator = User::factory()->create(['role' => 'user']);
+    $project = Project::create([
+        'custom_id' => 'PRJ-0102',
+        'project_code' => 'RISK-COORD',
+        'project_name' => 'Risk Coordinator Project',
+        'status' => 'in progress',
+    ]);
+    $project->coordinators()->attach($coordinator->id);
+
+    $this->actingAs($coordinator)
+        ->get(route('admin.projects.risk.manage', $project))
+        ->assertOk()
+        ->assertSee('New Risk')
+        ->assertSee('Total Risks');
+
+    $this->get(route('admin.projects.risk.create-modal', $project))
+        ->assertOk()
+        ->assertSee('Risk Category');
+
+    $this->post(route('admin.projects.risk.store', $project), [
+        'risk_category' => 'Operational',
+        'activity' => 'Coordination task',
+        'risk_type' => 'Threat',
+        'risk_name' => 'Coordinator Created Risk',
+        'risk_description' => 'A risk created by coordinator',
+        'likelihood' => 3,
+        'severity' => 3,
+        'project_impact' => 'Time',
+        'intent_to_claim' => '1',
+        'action_status' => 'Open',
+    ])
+        ->assertRedirect(route('admin.projects.risk.manage', $project));
+
+    $risk = ProjectRisk::where('risk_name', 'Coordinator Created Risk')->firstOrFail();
+    expect($risk->created_by)->toBe($coordinator->id)
+        ->and($risk->risk_score)->toBe(9)
+        ->and($risk->risk_level)->toBe('Medium');
+
+    $this->get(route('admin.projects.risk.view-modal', $risk))
+        ->assertOk()
+        ->assertSee('Coordinator Created Risk');
+
+    $this->get(route('admin.projects.risk.edit-modal', $risk))
+        ->assertOk()
+        ->assertSee('Coordinator Created Risk');
+
+    $this->put(route('admin.projects.risk.update', $risk), [
+        'risk_category' => 'Operational',
+        'activity' => 'Updated task',
+        'risk_type' => 'Threat',
+        'risk_name' => 'Updated Risk Name',
+        'risk_description' => 'Updated description',
+        'likelihood' => 4,
+        'severity' => 4,
+        'project_impact' => 'Time',
+        'intent_to_claim' => '1',
+        'action_status' => 'Inprogress',
+        'most_likely_cost_impact' => 0,
+    ])
+        ->assertRedirect(route('admin.projects.risk.manage', $risk->project));
+
+    $risk->refresh();
+    expect($risk->risk_name)->toBe('Updated Risk Name')
+        ->and($risk->risk_score)->toBe(16);
 });

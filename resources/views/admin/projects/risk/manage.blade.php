@@ -66,19 +66,14 @@
             </div>
         </div>
 
-        <!-- Search & Filter -->
+         <!-- Search & Filter -->
+         @php
+            $riskManageFiltersActive = request()->anyFilled(['search', 'risk_category', 'risk_type', 'risk_level', 'risk_urgency', 'action_status']);
+        @endphp
         <form action="{{ route('admin.projects.risk.manage', $project) }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="mb-3 flex justify-end">
-                @if(request()->anyFilled(['search', 'risk_category', 'risk_type', 'risk_level', 'risk_urgency', 'action_status']))
-                    <a href="{{ route('admin.projects.risk.manage', $project) }}" class="inline-flex items-center gap-1.5 self-start rounded-lg border border-rose-100 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition-colors hover:bg-rose-500 hover:text-white sm:self-auto">
-                        <i data-lucide="x" class="h-3 w-3"></i>Clear Filters
-                    </a>
-                @endif
-            </div>
-            <div class="overflow-x-auto -mx-4 sm:mx-0" style="overflow-x:auto; margin-left:-1rem; margin-right:-1rem;">
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-7 min-w-[840px]" style="display:grid; gap:0.75rem; grid-template-columns:repeat(7,minmax(0,1fr)); min-width:840px;">
-                    <label class="space-y-1">
-                        <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Risks</span>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $riskManageFiltersActive ? '7' : '6' }}">
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Risks</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
                         <input type="search" name="search" value="{{ request('search') }}" placeholder="Search risks..."
@@ -87,7 +82,7 @@
                 </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Category</span>
-                    <select name="risk_category" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    <select name="risk_category" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Categories</option>
                         @foreach($riskCategories as $category)
                             <option value="{{ $category }}" @selected(request('risk_category') === $category)>{{ $category }}</option>
@@ -96,7 +91,7 @@
                 </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Type</span>
-                    <select name="risk_type" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    <select name="risk_type" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Types</option>
                         @foreach(['Opportunity', 'Threat'] as $type)
                             <option value="{{ $type }}" @selected(request('risk_type') === $type)>{{ $type }}</option>
@@ -105,7 +100,7 @@
                 </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Rating</span>
-                    <select name="risk_level" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    <select name="risk_level" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Ratings</option>
                         @foreach(['Low', 'Medium', 'High', 'Extreme'] as $level)
                             <option value="{{ $level }}" @selected(request('risk_level') === $level)>{{ $level }}</option>
@@ -114,7 +109,7 @@
                 </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Urgency</span>
-                    <select name="risk_urgency" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    <select name="risk_urgency" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Urgencies</option>
                         @foreach(['Very Urgent', 'Urgent', 'Moderate', 'Low'] as $urgency)
                             <option value="{{ $urgency }}" @selected(request('risk_urgency') === $urgency)>{{ $urgency }}</option>
@@ -123,19 +118,20 @@
                 </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
-                    <select name="action_status" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    <select name="action_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Statuses</option>
                         @foreach(['Open', 'Closed'] as $status)
                             <option value="{{ $status }}" @selected(request('action_status') === $status)>{{ $status }}</option>
                         @endforeach
                     </select>
                 </label>
-                <div class="flex items-end gap-2">
-                    <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-white transition-colors hover:bg-cyan-700">
-                        <i data-lucide="filter" class="h-3.5 w-3.5"></i>Apply Filters
-                    </button>
-                </div>
-                </div>
+                @if($riskManageFiltersActive)
+                    <div class="flex items-end justify-end">
+                        <a href="{{ route('admin.projects.risk.manage', $project) }}" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-sm text-[9px] font-black uppercase tracking-widest">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>Clear Filters
+                        </a>
+                    </div>
+                @endif
             </div>
         </form>
 
