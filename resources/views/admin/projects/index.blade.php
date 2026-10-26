@@ -42,7 +42,7 @@
             @php
                 $hasActiveFilters = request()->anyFilled(['search', 'project_sector', 'delivery_method', 'consultant_type', 'budget_performance', 'cost_performance', 'schedule_performance', 'project_status']);
             @endphp
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $hasActiveFilters ? '9' : '8' }}">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $hasActiveFilters ? '9' : '8' }}" style="grid-template-columns: repeat({{ $hasActiveFilters ? 9 : 8 }}, minmax(0, 1fr));">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">

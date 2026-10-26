@@ -26,7 +26,7 @@
             $riskFiltersActive = request()->anyFilled(['search', 'project_id', 'impact', 'risk_type', 'risk_status']);
         @endphp
         <form action="{{ route('admin.projects.risk.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $riskFiltersActive ? '6' : '5' }}">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $riskFiltersActive ? '6' : '5' }}" style="grid-template-columns: repeat({{ $riskFiltersActive ? 6 : 5 }}, minmax(0, 1fr));">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">

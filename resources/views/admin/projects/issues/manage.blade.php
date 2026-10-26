@@ -71,7 +71,7 @@
             @php
                 $projectIssueFiltersActive = request()->anyFilled(['issue_owner', 'issue_search', 'impact', 'status', 'priority']);
             @endphp
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $projectIssueFiltersActive ? '6' : '5' }}">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $projectIssueFiltersActive ? '6' : '5' }}" style="grid-template-columns: repeat({{ $projectIssueFiltersActive ? 6 : 5 }}, minmax(0, 1fr));">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Issue Owner</span>
                     <select name="issue_owner" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">

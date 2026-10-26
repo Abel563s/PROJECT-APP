@@ -28,7 +28,7 @@
             $historyFiltersActive = request()->anyFilled(['search', 'project_id', 'status', 'impact', 'issue_type', 'date_from', 'date_to']);
         @endphp
         <form action="{{ route('admin.projects.issues.history') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $historyFiltersActive ? '8' : '7' }}">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $historyFiltersActive ? '8' : '7' }}" style="grid-template-columns: repeat({{ $historyFiltersActive ? 8 : 7 }}, minmax(0, 1fr));">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Issues</span>
                     <span class="relative block">
