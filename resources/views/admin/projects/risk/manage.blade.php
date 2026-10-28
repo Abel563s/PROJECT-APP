@@ -323,10 +323,12 @@
                     if (!response.ok) throw new Error(`Unable to load the risk form (${response.status}).`);
                     return response.text();
                 })
-                .then(html => {
+                 .then(html => {
                     document.getElementById('createModalContent').innerHTML = html;
                     if (window.lucide) lucide.createIcons();
                     updateRiskRating();
+                    initPoolRiskPicker(document.getElementById('createModalContent'));
+                    initRiskStepper(document.getElementById('createModalContent'));
                 })
                 .catch(error => {
                     console.error(error);
@@ -358,6 +360,74 @@
             document.getElementById('riskRatingScore').textContent = score;
             document.getElementById('riskRatingLevel').textContent = level;
             document.getElementById('riskRatingLevel').className = `text-[9px] font-black uppercase tracking-widest ${colors[level]}`;
+        }
+
+        function initPoolRiskPicker(container) {
+            const url = @json(route('admin.projects.risk.pool-risks', $project));
+            const cat = container.querySelector('#pool_risk_category');
+            const idSelect = container.querySelector('#pool_risk_id');
+            const riskName = container.querySelector('#risk_name');
+            const riskDesc = container.querySelector('#risk_description');
+            if (!cat || !idSelect) return;
+
+            cat.addEventListener('change', async () => {
+                const category = cat.value;
+                idSelect.innerHTML = '<option value="">Select risk</option>';
+                idSelect.disabled = !category;
+                if (!category) return;
+                try {
+                    const res = await fetch(url + '?category=' + encodeURIComponent(category));
+                    const json = await res.json();
+                    json.forEach(r => {
+                        const o = document.createElement('option');
+                        o.value = r.risk_id;
+                        o.textContent = (r.risk_id || '') + ' — ' + (r.specific_risk || '');
+                        o.dataset.specific = r.specific_risk || '';
+                        o.dataset.detail = r.detailed_risk_explanation || '';
+                        idSelect.appendChild(o);
+                    });
+                } catch (e) { console.error(e); }
+            });
+
+            idSelect.addEventListener('change', () => {
+                const opt = idSelect.options[idSelect.selectedIndex];
+                if (!opt || !opt.value) return;
+                if (riskName) riskName.value = opt.dataset.specific || '';
+                if (riskDesc) riskDesc.value = opt.dataset.detail || '';
+            });
+        }
+
+        function initRiskStepper(container) {
+            const panels = container.querySelectorAll('.step-panel');
+            if (!panels.length) return;
+            const indicator = container.querySelectorAll('.step-indicator');
+            const backBtn = container.querySelector('#riskStepBack');
+            const nextBtn = container.querySelector('#riskStepNext');
+            let step = 1;
+
+            function render() {
+                panels.forEach(p => {
+                    const s = Number(p.dataset.step);
+                    p.classList.toggle('hidden', s !== step);
+                });
+                if (indicator.length) {
+                    indicator.forEach((ind, i) => {
+                        ind.classList.toggle('text-cyan-700', i === step - 1);
+                        ind.classList.toggle('text-slate-400', i !== step - 1);
+                    });
+                }
+                if (backBtn) backBtn.style.display = step <= 1 ? 'none' : 'inline-flex';
+                if (nextBtn) {
+                    const isLast = step >= panels.length;
+                    nextBtn.type = isLast ? 'submit' : 'button';
+                    nextBtn.textContent = isLast ? (nextBtn.dataset.submitLabel || 'Save Risk') : 'Next';
+                }
+                if (step === 2) updateRiskRating();
+            }
+
+            if (backBtn) backBtn.addEventListener('click', () => { if (step > 1) { step--; render(); } });
+            if (nextBtn) nextBtn.addEventListener('click', () => { if (step < panels.length) { step++; render(); } });
+            render();
         }
 
         document.getElementById('createModal').addEventListener('click', function (event) {
@@ -397,7 +467,7 @@
                     if (!response.ok) throw new Error(`Unable to load the risk form (${response.status}).`);
                     return response.text();
                 })
-                .then(html => {
+                 .then(html => {
                     document.getElementById('editModalContent').innerHTML = html;
                     const modal = document.getElementById('editModal');
                     modal.classList.remove('hidden');
@@ -405,6 +475,8 @@
                     document.body.style.overflow = 'hidden';
                     if (window.lucide) lucide.createIcons();
                     updateRiskRating();
+                    initPoolRiskPicker(document.getElementById('editModalContent'));
+                    initRiskStepper(document.getElementById('editModalContent'));
                 })
                 .catch(error => {
                     console.error(error);

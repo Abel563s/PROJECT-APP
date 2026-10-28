@@ -149,9 +149,15 @@ html.dark header {
     border-color: var(--border-color) !important;
 }
 
-html.dark [class~="bg-white"],
-html.dark [class*="bg-white/"],
 html.dark [class~="bg-[#f7fbfc]"] {
+    background-color: var(--app-background) !important;
+}
+
+html.dark [class~="bg-white"] {
+    background-color: var(--surface-raised) !important;
+}
+
+html.dark [class*="bg-white/"] {
     background-color: var(--surface-raised) !important;
 }
 
@@ -200,6 +206,7 @@ html.dark [class~="border-slate-300"],
 html.dark [class~="border-gray-100"],
 html.dark [class~="border-gray-200"],
 html.dark [class~="border-gray-300"],
+html.dark :is([class~="border-white"], [class*="border-white/"]),
 html.dark [class~="divide-slate-100"],
 html.dark [class~="divide-slate-200"],
 html.dark [class~="divide-gray-100"],
@@ -245,26 +252,143 @@ html.dark [class~="hover:bg-gray-100"]:hover {
     background-color: #334155 !important;
 }
 
-html.dark :is(
-    [class*="bg-emerald-50"], [class*="bg-green-50"], [class*="bg-teal-50"],
-    [class*="bg-rose-50"], [class*="bg-red-50"], [class*="bg-orange-50"],
-    [class*="bg-amber-50"], [class*="bg-yellow-50"],
-    [class*="bg-blue-50"], [class*="bg-sky-50"], [class*="bg-cyan-50"],
-    [class*="bg-indigo-50"], [class*="bg-purple-50"]
-) {
-    background-color: color-mix(in srgb, currentColor 12%, var(--surface-raised)) !important;
-    border-color: color-mix(in srgb, currentColor 35%, var(--border-color)) !important;
+/* ===== Dark Mode: Colored Backgrounds (Badge & Tint Support) =====
+   Uses specific Tailwind 500/600 color values instead of currentColor
+   for proper tints. Word-match (~=) avoids bg-{color}-500 matching bg-{color}-50.
+   Substring match for / catches opacity variants like bg-emerald-50/20. */
+
+html.dark :is([class~="bg-rose-50"], [class*="bg-rose-50/"]) {
+    background-color: color-mix(in srgb, #dc2626 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #dc2626 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-red-50"], [class*="bg-red-50/"]) {
+    background-color: color-mix(in srgb, #ef4444 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #ef4444 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-emerald-50"], [class*="bg-emerald-50/"]) {
+    background-color: color-mix(in srgb, #10b981 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #10b981 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-green-50"], [class*="bg-green-50/"]) {
+    background-color: color-mix(in srgb, #22c55e 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #22c55e 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-teal-50"], [class*="bg-teal-50/"]) {
+    background-color: color-mix(in srgb, #14b8a3 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #14b8a3 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-cyan-50"], [class*="bg-cyan-50/"]) {
+    background-color: color-mix(in srgb, #0891b2 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #0891b2 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-sky-50"], [class*="bg-sky-50/"]) {
+    background-color: color-mix(in srgb, #0284c7 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #0284c7 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-blue-50"], [class*="bg-blue-50/"]) {
+    background-color: color-mix(in srgb, #2563eb 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #2563eb 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-indigo-50"], [class*="bg-indigo-50/"]) {
+    background-color: color-mix(in srgb, #4f46e5 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #4f46e5 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-violet-50"], [class*="bg-violet-50/"]) {
+    background-color: color-mix(in srgb, #7c3aed 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #7c3aed 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-purple-50"], [class*="bg-purple-50/"]) {
+    background-color: color-mix(in srgb, #a855f7 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #a855f7 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-fuchsia-50"], [class*="bg-fuchsia-50/"]) {
+    background-color: color-mix(in srgb, #d946ef 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #d946ef 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-pink-50"], [class*="bg-pink-50/"]) {
+    background-color: color-mix(in srgb, #db27b0 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #db27b0 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-orange-50"], [class*="bg-orange-50/"]) {
+    background-color: color-mix(in srgb, #f97316 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #f97316 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-amber-50"], [class*="bg-amber-50/"]) {
+    background-color: color-mix(in srgb, #f59e0b 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #f59e0b 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-yellow-50"], [class*="bg-yellow-50/"]) {
+    background-color: color-mix(in srgb, #eab308 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #eab308 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-lime-50"], [class*="bg-lime-50/"]) {
+    background-color: color-mix(in srgb, #65a30d 20%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #65a30d 40%, var(--border-color)) !important;
 }
 
+/* Colored text - brighten 600/700/800 for dark-mode contrast, preserve hue.
+   400/500 shades left as-is (already visible on dark). */
 html.dark :is(
-    [class*="text-emerald-"], [class*="text-green-"], [class*="text-teal-"],
-    [class*="text-rose-"], [class*="text-red-"], [class*="text-orange-"],
-    [class*="text-amber-"], [class*="text-yellow-"],
-    [class*="text-blue-"], [class*="text-sky-"], [class*="text-cyan-"],
-    [class*="text-indigo-"], [class*="text-purple-"]
-) {
-    color: color-mix(in srgb, currentColor 78%, white) !important;
-}
+    [class~="text-rose-600"], [class~="text-rose-700"], [class~="text-rose-800"], [class~="text-rose-900"],
+    [class~="text-red-600"], [class~="text-red-700"], [class~="text-red-800"], [class~="text-red-900"]
+) { color: #fb7185 !important; }
+
+html.dark :is(
+    [class~="text-emerald-600"], [class~="text-emerald-700"], [class~="text-emerald-800"], [class~="text-emerald-900"],
+    [class~="text-green-600"], [class~="text-green-700"], [class~="text-green-800"], [class~="text-green-900"]
+) { color: #34d399 !important; }
+
+html.dark :is(
+    [class~="text-teal-600"], [class~="text-teal-700"], [class~="text-teal-800"], [class~="text-teal-900"]
+) { color: #2dd3ee !important; }
+
+html.dark :is(
+    [class~="text-cyan-600"], [class~="text-cyan-700"], [class~="text-cyan-800"], [class~="text-cyan-900"]
+) { color: #22d3ee !important; }
+
+html.dark :is(
+    [class~="text-sky-600"], [class~="text-sky-700"], [class~="text-sky-800"], [class~="text-sky-900"]
+) { color: #06b5d1 !important; }
+
+html.dark :is(
+    [class~="text-blue-600"], [class~="text-blue-700"], [class~="text-blue-800"], [class~="text-blue-900"]
+) { color: #60a5f6 !important; }
+
+html.dark :is(
+    [class~="text-indigo-600"], [class~="text-indigo-700"], [class~="text-indigo-800"], [class~="text-indigo-900"]
+) { color: #818cf8 !important; }
+
+html.dark :is(
+    [class~="text-violet-600"], [class~="text-violet-700"], [class~="text-violet-800"], [class~="text-violet-900"]
+) { color: #a781fa !important; }
+
+html.dark :is(
+    [class~="text-purple-600"], [class~="text-purple-700"], [class~="text-purple-800"], [class~="text-purple-900"]
+) { color: #c084fc !important; }
+
+html.dark :is(
+    [class~="text-fuchsia-600"], [class~="text-fuchsia-700"], [class~="text-fuchsia-800"], [class~="text-fuchsia-900"]
+) { color: #e879f9 !important; }
+
+html.dark :is(
+    [class~="text-pink-600"], [class~="text-pink-700"], [class~="text-pink-800"], [class~="text-pink-900"]
+) { color: #f472b6 !important; }
+
+html.dark :is(
+    [class~="text-orange-600"], [class~="text-orange-700"], [class~="text-orange-800"], [class~="text-orange-900"]
+) { color: #fb923c !important; }
+
+html.dark :is(
+    [class~="text-amber-600"], [class~="text-amber-700"], [class~="text-amber-800"], [class~="text-amber-900"]
+) { color: #fbbf24 !important; }
+
+html.dark :is(
+    [class~="text-yellow-600"], [class~="text-yellow-700"], [class~="text-yellow-800"], [class~="text-yellow-900"]
+) { color: #facc15 !important; }
+
+html.dark :is(
+    [class~="text-lime-600"], [class~="text-lime-700"], [class~="text-lime-800"], [class~="text-lime-900"]
+) { color: #a3e635 !important; }
 
 html.dark .animated-bg {
     background: linear-gradient(145deg, #0F172A 0%, #111827 55%, #0B2630 100%);
@@ -441,7 +565,107 @@ html.dark .apexcharts-tooltip [style*="border-top: 1px solid #e2e8f0"] {
     border-color: var(--border-color) !important;
 }
 
-/* Professional White Theme Components */
+/* ===== Dark Mode: Dashboard Inline Style Overrides =====
+   These elements use inline <style> blocks with white/light gradients that
+   leak through in dark mode, making KPI cards appear grey.
+   All are set to match the analytics page card aesthetic. */
+
+/* Main KPI card white gradient overlay (::before pseudo-element) - the root cause of grey backgrounds */
+html.dark .dashboard-kpi-card::before,
+html.dark .dashboard-kpi-card {
+    background: transparent !important;
+}
+
+/* Analytics container with light gradient background */
+html.dark .analytics-container {
+    background: var(--surface-raised) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: var(--shadow-medium) !important;
+}
+html.dark .analytics-container:hover {
+    box-shadow: var(--shadow-medium) !important;
+}
+
+/* Analytics card (white background) */
+html.dark .analytics-card {
+    background: var(--surface-raised) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: var(--shadow-light) !important;
+}
+html.dark .analytics-card:hover {
+    border-color: var(--border-color) !important;
+    box-shadow: var(--shadow-medium) !important;
+}
+
+/* Analytics card pie (light gradient background) */
+html.dark .analytics-card-pie {
+    background: var(--surface-raised) !important;
+    border-color: var(--border-color) !important;
+}
+html.dark .analytics-card-pie:hover {
+    border-color: var(--border-color) !important;
+}
+
+/* Matrix chart card (light gradient background) */
+html.dark .matrix-chart-card {
+    background: var(--surface-raised) !important;
+    border-color: var(--border-color) !important;
+}
+html.dark .matrix-chart-card:hover {
+    border-color: var(--border-color) !important;
+}
+
+/* Matrix chart card ::before colored gradient strip - keep vibrant in dark mode */
+html.dark .matrix-chart-card::before {
+    background: linear-gradient(90deg, #0891b2, #38bdf8, #818cf8) !important;
+}
+
+/* Analytics legend item hover (white background in light mode) */
+html.dark .analytics-legend-item:hover {
+    background: color-mix(in srgb, var(--text-secondary) 10%, var(--surface-raised)) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.30) !important;
+}
+
+/* Chart gridlines - light gray stroke */
+html.dark #analyticsGrid .apexcharts-gridline,
+html.dark #chartContainer .apexcharts-gridline {
+    stroke: var(--border-color) !important;
+}
+
+/* Chart tooltip containers - white backgrounds */
+html.dark #analyticsGrid .apexcharts-tooltip,
+html.dark #analyticsGrid .apexcharts-xaxistooltip,
+html.dark #analyticsGrid .apexcharts-yaxistooltip,
+html.dark #chartContainer .apexcharts-tooltip,
+html.dark #chartContainer .apexcharts-xaxistooltip,
+html.dark #chartContainer .apexcharts-yaxistooltip {
+    background: var(--surface-raised) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Dashboard content wrapper */
+html.dark #completedProjectsAnalytics {
+    background: var(--surface-raised) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: var(--shadow-medium) !important;
+}
+
+/* Section filter active tab - white background */
+html.dark .tab-btn.bg-white {
+    background: var(--surface-raised) !important;
+    color: var(--text-primary) !important;
+}
+
+/* ===== Dark Mode: Professional White Theme Component Overlays =====
+   @apply hover:bg-white creates white hover backgrounds that need dark overrides */
+html.dark .prof-nav-item,
+html.dark .prof-nav-item[style*="rgba(255, 255, 255"] {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 100%) !important;
+}
+html.dark .prof-nav-item:hover {
+    background: color-mix(in srgb, var(--text-primary) 8%, var(--surface-raised)) !important;
+}
 
 /* Enhanced Navigation Styles with Lifted Popping Effects */
 .prof-nav-item {
@@ -606,6 +830,25 @@ html.dark .apexcharts-tooltip [style*="border-top: 1px solid #e2e8f0"] {
     min-width: 200px;
 }
 
+/* ===== Spreadsheet Editor Grid =====
+   Used by the admin risk-pool spreadsheet editor. .ss-th keeps column
+   headers pinned to the top while scrolling the (potentially tall) tbody
+   inside the modal body. Background/border use theme variables so the
+   pinned header stays legible in both light and dark modes. */
+.ss-grid {
+    @apply w-full border-collapse text-[10px] font-bold;
+}
+.ss-grid .ss-th {
+    @apply sticky top-0 z-10 bg-white border-b;
+    background-color: var(--surface-raised);
+    border-color: var(--border-color);
+}
+html.dark .ss-grid .ss-th {
+    background-color: var(--surface-raised);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
 /* Attendance Status Pills */
 .attendance-status-pill {
     @apply inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium border;
@@ -706,8 +949,533 @@ html.dark .apexcharts-tooltip [style*="border-top: 1px solid #e2e8f0"] {
         font-size: 0.75rem;
     }
 
-    .prof-table th,
+        .prof-table th,
     .prof-table td {
         padding: 0.5rem;
     }
+}
+
+/* ===== Dark Mode: Neutral Opacity Modifiers =====
+   bg-slate-50/20, bg-gray-50/30, etc. - subtle surfaces in dark mode */
+html.dark :is([class*="bg-slate-50/"], [class*="bg-gray-50/"]) {
+    background-color: var(--app-background) !important;
+}
+
+html.dark :is([class*="bg-slate-100/"], [class*="bg-gray-100/"]) {
+    background-color: var(--surface-raised) !important;
+}
+
+html.dark :is([class*="bg-slate-200/"], [class*="bg-gray-200/"]) {
+    background-color: #273449 !important;
+}
+
+html.dark :is([class*="bg-slate-300/"], [class*="bg-gray-300/"]) {
+    background-color: #334155 !important;
+}
+
+/* ===== Dark Mode: Colored Hover Backgrounds =====
+   hover:bg-{color}-50 -> tinted hover state in dark mode */
+html.dark [class~="hover:bg-rose-50"]:hover { background-color: color-mix(in srgb, #dc2626 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-emerald-50"]:hover { background-color: color-mix(in srgb, #10b981 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-cyan-50"]:hover { background-color: color-mix(in srgb, #0891b2 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-sky-50"]:hover { background-color: color-mix(in srgb, #0284c7 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-indigo-50"]:hover { background-color: color-mix(in srgb, #4f46e5 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-amber-50"]:hover { background-color: color-mix(in srgb, #f59e0b 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-blue-50"]:hover { background-color: color-mix(in srgb, #2563eb 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-purple-50"]:hover { background-color: color-mix(in srgb, #a855f7 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-lime-50"]:hover { background-color: color-mix(in srgb, #65a30d 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-pink-50"]:hover { background-color: color-mix(in srgb, #db27b0 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-fuchsia-50"]:hover { background-color: color-mix(in srgb, #d946ef 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-green-50"]:hover { background-color: color-mix(in srgb, #22c55e 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-teal-50"]:hover { background-color: color-mix(in srgb, #14b8a3 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-orange-50"]:hover { background-color: color-mix(in srgb, #f97316 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-violet-50"]:hover { background-color: color-mix(in srgb, #7c3aed 25%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-yellow-50"]:hover { background-color: color-mix(in srgb, #eab308 25%, var(--surface-raised)) !important; }
+
+/* ===== Dark Mode: Colored Hover States (solid bg) =====
+   hover:bg-{color}-500 -> keep vibrant color, already good on dark */
+html.dark [class~="hover:bg-rose-500"]:hover { background-color: #ef4444 !important; }
+html.dark [class~="hover:bg-emerald-500"]:hover { background-color: #10b981 !important; }
+html.dark [class~="hover:bg-cyan-500"]:hover { background-color: #06b5d3 !important; }
+html.dark [class~="hover:bg-amber-500"]:hover { background-color: #f59e0b !important; }
+html.dark [class~="hover:bg-rose-600"]:hover { background-color: #dc2626 !important; }
+html.dark [class~="hover:bg-cyan-800"]:hover { background-color: color-mix(in srgb, #0891b2 30%, var(--surface-raised)) !important; }
+html.dark [class~="hover:bg-slate-800"]:hover { background-color: var(--primary-bg) !important; }
+
+/* ===== Dark Mode: Colored Borders =====
+   border-{color}-100/-200 on badges, alerts, cards */
+html.dark [class~="border-rose-100"], html.dark [class~="border-rose-200"] { border-color: color-mix(in srgb, #dc2626 35%, var(--border-color)) !important; }
+html.dark [class~="border-red-100"], html.dark [class~="border-red-200"] { border-color: color-mix(in srgb, #ef4444 35%, var(--border-color)) !important; }
+html.dark [class~="border-emerald-100"], html.dark [class~="border-emerald-200"] { border-color: color-mix(in srgb, #10b981 35%, var(--border-color)) !important; }
+html.dark [class~="border-green-100"], html.dark [class~="border-green-200"] { border-color: color-mix(in srgb, #22c55e 35%, var(--border-color)) !important; }
+html.dark [class~="border-teal-100"], html.dark [class~="border-teal-200"] { border-color: color-mix(in srgb, #14b8a3 35%, var(--border-color)) !important; }
+html.dark [class~="border-cyan-100"], html.dark [class~="border-cyan-200"] { border-color: color-mix(in srgb, #0891b2 35%, var(--border-color)) !important; }
+html.dark [class~="border-sky-100"], html.dark [class~="border-sky-200"] { border-color: color-mix(in srgb, #0284c7 35%, var(--border-color)) !important; }
+html.dark [class~="border-blue-100"], html.dark [class~="border-blue-200"] { border-color: color-mix(in srgb, #2563eb 35%, var(--border-color)) !important; }
+html.dark [class~="border-indigo-100"], html.dark [class~="border-indigo-200"] { border-color: color-mix(in srgb, #4f46e5 35%, var(--border-color)) !important; }
+html.dark [class~="border-violet-100"], html.dark [class~="border-violet-200"] { border-color: color-mix(in srgb, #7c3aed 35%, var(--border-color)) !important; }
+html.dark [class~="border-purple-100"], html.dark [class~="border-purple-200"] { border-color: color-mix(in srgb, #a855f7 35%, var(--border-color)) !important; }
+html.dark [class~="border-fuchsia-100"], html.dark [class~="border-fuchsia-200"] { border-color: color-mix(in srgb, #d946ef 35%, var(--border-color)) !important; }
+html.dark [class~="border-pink-100"], html.dark [class~="border-pink-200"] { border-color: color-mix(in srgb, #db27b0 35%, var(--border-color)) !important; }
+html.dark [class~="border-orange-100"], html.dark [class~="border-orange-200"] { border-color: color-mix(in srgb, #f97316 35%, var(--border-color)) !important; }
+html.dark [class~="border-amber-100"], html.dark [class~="border-amber-200"] { border-color: color-mix(in srgb, #f59e0b 35%, var(--border-color)) !important; }
+html.dark [class~="border-yellow-100"], html.dark [class~="border-yellow-200"] { border-color: color-mix(in srgb, #eab308 35%, var(--border-color)) !important; }
+html.dark [class~="border-lime-100"], html.dark [class~="border-lime-200"] { border-color: color-mix(in srgb, #65a30d 35%, var(--border-color)) !important; }
+
+/* ===== Dark Mode: Colored Border Opacity Modifiers =====
+   border-{color}-100/30, border-{color}-200/50, etc. */
+html.dark :is(
+    [class*="border-rose-100/"], [class*="border-rose-200/"],
+    [class*="border-red-100/"], [class*="border-red-200/"],
+    [class*="border-emerald-100/"], [class*="border-emerald-200/"],
+    [class*="border-cyan-100/"], [class*="border-cyan-200/"],
+    [class*="border-sky-100/"], [class*="border-sky-200/"],
+    [class*="border-amber-100/"], [class*="border-amber-200/"],
+    [class*="border-indigo-100/"], [class*="border-indigo-200/"],
+    [class*="border-emerald-100/"]
+) { border-color: var(--border-color) !important; }
+
+/* ===== Dark Mode: Neutral Border Opacity Modifiers =====
+   border-slate-200/60, border-slate-50/60, border-gray-200/50, etc. */
+html.dark :is(
+    [class*="border-slate-50/"], [class*="border-slate-100/"], [class*="border-slate-200/"], [class*="border-slate-300/"],
+    [class*="border-gray-50/"], [class*="border-gray-100/"], [class*="border-gray-200/"], [class*="border-gray-300/"]
+) { border-color: var(--border-color) !important; }
+
+/* ===== Dark Mode: Missing Neutral Text Colors =====
+   gray-200, gray-300, gray-600, gray-800 already handled. Adding 200/300. */
+html.dark [class~="text-gray-200"], html.dark [class~="text-gray-300"] { color: var(--text-primary) !important; }
+html.dark [class~="text-slate-200"], html.dark [class~="text-slate-300"] { color: var(--text-primary) !important; }
+
+/* ===== Dark Mode: Shadow Opacity Modifiers =====
+   shadow-slate-200/40, shadow-slate-900/20, etc. - reduce shadow intensity */
+html.dark [class*="shadow-slate-200/"] { box-shadow: var(--shadow-light) !important; }
+html.dark [class*="shadow-slate-900/"] { box-shadow: 0 0 0 1px transparent !important; }
+html.dark [class*="shadow-rose-100/"] { box-shadow: var(--shadow-light) !important; }
+html.dark [class*="shadow-emerald-100/"] { box-shadow: var(--shadow-light) !important; }
+html.dark [class*="shadow-emerald-900/"] { box-shadow: 0 0 0 1px transparent !important; }
+html.dark [class*="shadow-cyan-900/"] { box-shadow: 0 0 0 1px transparent !important; }
+html.dark [class*="shadow-blue-500/"] { box-shadow: 0 0 0 1px transparent !important; }
+
+/* ===== Dark Mode: Zebra Striping Fix ===== */
+html.dark tbody tr:nth-child(odd) { background-color: var(--surface-raised) !important; }
+html.dark tbody tr:nth-child(even) { background-color: var(--app-background) !important; }
+html.dark tbody tr:hover { background-color: #273449 !important; }
+
+/* ===== Dark Mode: Table Headers ===== */
+html.dark thead tr { background-color: var(--surface-raised) !important; }
+html.dark thead th { color: var(--text-secondary) !important; border-color: var(--border-color) !important; }
+html.dark thead [class~="bg-slate-50"], html.dark thead [class~="bg-gray-50"], html.dark thead [class~="bg-slate-100"], html.dark thead [class~="bg-gray-100"] {
+    background-color: var(--surface-raised) !important;
+}
+
+/* ===== Dark Mode: Pagination ===== */
+html.dark .pagination-container {
+    background-color: var(--surface-raised) !important;
+    border-color: var(--border-color) !important;
+}
+html.dark nav[role="navigation"] span,
+html.dark nav[role="navigation"] a {
+    background-color: var(--surface-raised) !important;
+    border-color: var(--border-color) !important;
+}
+html.dark nav[role="navigation"] span.cursor-default,
+html.dark nav[role="navigation"] span[aria-current="page"] {
+    background-color: #273449 !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+html.dark nav[role="navigation"] span:not(.cursor-default):not([aria-current="page"]),
+html.dark nav[role="navigation"] span[aria-disabled="true"] {
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+}
+html.dark .pagination-info {
+    color: var(--text-secondary) !important;
+}
+html.dark .pagination-info span {
+    color: var(--text-primary) !important;
+}
+
+/* ===== Dark Mode: Alert / Toastr ===== */
+html.dark .bg-emerald-50.border-emerald-100 {
+    background-color: color-mix(in srgb, #10b981 18%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #10b981 35%, var(--border-color)) !important;
+}
+html.dark .bg-rose-50.border-rose-100 {
+    background-color: color-mix(in srgb, #dc2626 18%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #dc2626 35%, var(--border-color)) !important;
+}
+
+/* ===== Dark Mode: Arbitrary Light Hex Colors =====
+   bg-[#f3f4f6], border-[#f3f4f6], etc. - convert to dark equivalents */
+html.dark [class*="bg-[#f"], html.dark [class*="bg-[#e"] {
+    background-color: var(--surface-raised) !important;
+}
+html.dark [class*="border-[#f"], html.dark [class*="border-[#e"] {
+    border-color: var(--border-color) !important;
+}
+
+/* ===== Dark Mode: Ring / Focus Rings ===== */
+html.dark [class*="focus:ring-cyan-500"] {
+    box-shadow: 0 0 0 3px color-mix(in srgb, #0891b2 40%, transparent) !important;
+}
+html.dark [class*="focus:ring-rose-500"] {
+    box-shadow: 0 0 0 3px color-mix(in srgb, #ef4444 40%, transparent) !important;
+}
+html.dark [class*="focus:ring-amber-500"] {
+    box-shadow: 0 0 0 3px color-mix(in srgb, #f59e0b 40%, transparent) !important;
+}
+html.dark [class*="focus:ring-emerald-500"] {
+    box-shadow: 0 0 0 3px color-mix(in srgb, #10b981 40%, transparent) !important;
+}
+
+/* ===== Dark Mode: Divide Lines =====
+   divide-slate-50, divide-gray-50 and opacity variants -> dark border */
+html.dark [class~="divide-slate-50"], html.dark [class*="divide-slate-50/"] {
+    border-top-color: var(--border-color) !important;
+    border-bottom-color: var(--border-color) !important;
+}
+html.dark [class~="divide-gray-50"], html.dark [class*="divide-gray-50/"] {
+    border-top-color: var(--border-color) !important;
+    border-bottom-color: var(--border-color) !important;
+}
+
+/* ===== Dark Mode: Missing Neutral Borders =====
+   border-slate-50, border-gray-50 used in section dividers */
+html.dark [class~="border-slate-50"], html.dark [class*="border-slate-50/"],
+html.dark [class~="border-gray-50"], html.dark [class*="border-gray-50/"] {
+    border-color: var(--border-color) !important;
+}
+
+/* ===== Dark Mode: Arbitrary Hex Accent Colors =====
+   text-[#00515f] (dark teal) -> bright cyan for readability on dark bg */
+html.dark [class*="text-[#00515f"], html.dark [class*="text-[#00515F"] {
+    color: #00ADC5 !important;
+}
+
+/* border-[#00515f] (dark teal) -> neutral border in dark mode */
+html.dark [class*="border-[#00515f"], html.dark [class*="border-[#00515F"] {
+    border-color: var(--border-color) !important;
+}
+
+/* ===== Dark Mode: Chart Grid Lines =====
+   Chart.js grid color #f1f5f9 -> dark border color */
+html.dark canvas { background-color: transparent !important; }
+
+/* ===== Dark Mode: Colored 100-Level Backgrounds =====
+html.dark :is([class~="bg-cyan-100"], [class*="bg-cyan-100/"]) {
+    background-color: color-mix(in srgb, #0891b2 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #0891b2 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-violet-100"], [class*="bg-violet-100/"]) {
+    background-color: color-mix(in srgb, #7c3aed 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #7c3aed 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-amber-100"], [class*="bg-amber-100/"]) {
+    background-color: color-mix(in srgb, #f59e0b 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #f59e0b 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-emerald-100"], [class*="bg-emerald-100/"]) {
+    background-color: color-mix(in srgb, #10b981 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #10b981 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-sky-100"], [class*="bg-sky-100/"]) {
+    background-color: color-mix(in srgb, #0284c7 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #0284c7 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-indigo-100"], [class*="bg-indigo-100/"]) {
+    background-color: color-mix(in srgb, #4f46e5 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #4f46e5 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-purple-100"], [class*="bg-purple-100/"]) {
+    background-color: color-mix(in srgb, #a855f7 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #a855f7 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-rose-100"], [class*="bg-rose-100/"]) {
+    background-color: color-mix(in srgb, #dc2626 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #dc2626 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-pink-100"], [class*="bg-pink-100/"]) {
+    background-color: color-mix(in srgb, #db27b0 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #db27b0 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-fuchsia-100"], [class*="bg-fuchsia-100/"]) {
+    background-color: color-mix(in srgb, #d946ef 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #d946ef 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-orange-100"], [class*="bg-orange-100/"]) {
+    background-color: color-mix(in srgb, #f97316 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #f97316 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-lime-100"], [class*="bg-lime-100/"]) {
+    background-color: color-mix(in srgb, #65a30d 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #65a30d 40%, var(--border-color)) !important;
+}
+html.dark :is([class~="bg-yellow-100"], [class*="bg-yellow-100/"]) {
+    background-color: color-mix(in srgb, #eab308 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #eab308 40%, var(--border-color)) !important;
+}
+
+/* ===== Dark Mode: Accent Cyan Arbitrary Colors =====
+   bg-[#00ADC5], border-[#00ADC5], text-[#00ADC5] - keep vibrant
+   Uses ~= (word match) to avoid catching hover:bg-[#00ADC5] on view buttons */
+html.dark [class~="bg-[#00ADC5"] {
+    background-color: #00ADC5 !important;
+}
+html.dark [class~="border-[#00ADC5"] {
+    border-color: color-mix(in srgb, #00ADC5 35%, var(--border-color)) !important;
+}
+html.dark [class~="text-[#00ADC5"] {
+    color: #00ADC5 !important;
+}
+
+/* ===== Dark Mode: Hover States for View Button (hover:bg-[#00ADC5]) =====
+   Matches hover:bg-[#00ADC5], hover:border-[#00ADC5], hover:text-[#00ADC5] */
+html.dark [class*="hover:bg-[#00ADC5"]:hover {
+    background-color: #00ADC5 !important;
+}
+html.dark [class*="hover:border-[#00ADC5"]:hover {
+    border-color: #00ADC5 !important;
+}
+html.dark [class*="hover:text-[#00ADC5"]:hover {
+    color: #00ADC5 !important;
+}
+
+/* ===== Dark Mode: Colored 200-Level Borders (standalone) =====
+   border-{color}-200 used alone (not inside badges) */
+html.dark :is([class~="border-rose-200"], [class*="border-rose-200/"]) { border-color: color-mix(in srgb, #dc2626 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-emerald-200"], [class*="border-emerald-200/"]) { border-color: color-mix(in srgb, #10b981 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-cyan-200"], [class*="border-cyan-200/"]) { border-color: color-mix(in srgb, #0891b2 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-amber-200"], [class*="border-amber-200/"]) { border-color: color-mix(in srgb, #f59e0b 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-indigo-200"], [class*="border-indigo-200/"]) { border-color: color-mix(in srgb, #4f46e5 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-sky-200"], [class*="border-sky-200/"]) { border-color: color-mix(in srgb, #0284c7 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-purple-200"], [class*="border-purple-200/"]) { border-color: color-mix(in srgb, #a855f7 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-violet-200"], [class*="border-violet-200/"]) { border-color: color-mix(in srgb, #7c3aed 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-pink-200"], [class*="border-pink-200/"]) { border-color: color-mix(in srgb, #db27b0 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-fuchsia-200"], [class*="border-fuchsia-200/"]) { border-color: color-mix(in srgb, #d946ef 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-orange-200"], [class*="border-orange-200/"]) { border-color: color-mix(in srgb, #f97316 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-lime-200"], [class*="border-lime-200/"]) { border-color: color-mix(in srgb, #65a30d 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-yellow-200"], [class*="border-yellow-200/"]) { border-color: color-mix(in srgb, #eab308 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-green-200"], [class*="border-green-200/"]) { border-color: color-mix(in srgb, #22c55e 40%, var(--border-color)) !important; }
+html.dark :is([class~="border-teal-200"], [class*="border-teal-200/"]) { border-color: color-mix(in srgb, #14b8a3 40%, var(--border-color)) !important; }
+
+/* ===== Dark Mode: Colored 100-Level Borders (standalone) =====
+   border-{color}-100 used alone (not inside badges) */
+html.dark [class~="border-rose-100"] { border-color: color-mix(in srgb, #dc2626 25%, var(--border-color)) !important; }
+html.dark [class~="border-emerald-100"] { border-color: color-mix(in srgb, #10b981 25%, var(--border-color)) !important; }
+html.dark [class~="border-cyan-100"] { border-color: color-mix(in srgb, #0891b2 25%, var(--border-color)) !important; }
+html.dark [class~="border-amber-100"] { border-color: color-mix(in srgb, #f59e0b 25%, var(--border-color)) !important; }
+html.dark [class~="border-indigo-100"] { border-color: color-mix(in srgb, #4f46e5 25%, var(--border-color)) !important; }
+html.dark [class~="border-sky-100"] { border-color: color-mix(in srgb, #0284c7 25%, var(--border-color)) !important; }
+html.dark [class~="border-purple-100"] { border-color: color-mix(in srgb, #a855f7 25%, var(--border-color)) !important; }
+html.dark [class~="border-violet-100"] { border-color: color-mix(in srgb, #7c3aed 25%, var(--border-color)) !important; }
+html.dark [class~="border-pink-100"] { border-color: color-mix(in srgb, #db27b0 25%, var(--border-color)) !important; }
+html.dark [class~="border-fuchsia-100"] { border-color: color-mix(in srgb, #d946ef 25%, var(--border-color)) !important; }
+html.dark [class~="border-orange-100"] { border-color: color-mix(in srgb, #f97316 25%, var(--border-color)) !important; }
+html.dark [class~="border-lime-100"] { border-color: color-mix(in srgb, #65a30d 25%, var(--border-color)) !important; }
+html.dark [class~="border-yellow-100"] { border-color: color-mix(in srgb, #eab308 25%, var(--border-color)) !important; }
+html.dark [class~="border-green-100"] { border-color: color-mix(in srgb, #22c55e 25%, var(--border-color)) !important; }
+html.dark [class~="border-teal-100"] { border-color: color-mix(in srgb, #14b8a3 25%, var(--border-color)) !important; }
+
+/* ===== Dark Mode: Colored Hover Border States =====
+   hover:border-{color}-500 on action buttons */
+html.dark [class*="hover:border-[#00ADC5]"]:hover { border-color: #00ADC5 !important; }
+html.dark [class~="hover:border-rose-500"]:hover { border-color: #ef4444 !important; }
+html.dark [class~="hover:border-amber-500"]:hover { border-color: #f59e0b !important; }
+html.dark [class~="hover:border-cyan-400"]:hover { border-color: #22d3ee !important; }
+html.dark [class~="hover:border-cyan-200"]:hover { border-color: color-mix(in srgb, #0891b2 40%, var(--border-color)) !important; }
+html.dark [class~="hover:border-emerald-200"]:hover { border-color: color-mix(in srgb, #10b981 40%, var(--border-color)) !important; }
+html.dark [class~="hover:border-blue-200"]:hover { border-color: color-mix(in srgb, #2563eb 40%, var(--border-color)) !important; }
+html.dark [class~="hover:border-slate-200"]:hover { border-color: var(--border-color) !important; }
+html.dark [class~="hover:border-slate-100"]:hover { border-color: var(--border-color) !important; }
+html.dark [class~="hover:border-sky-200"]:hover { border-color: color-mix(in srgb, #0284c7 40%, var(--border-color)) !important; }
+html.dark [class~="hover:border-amber-200"]:hover { border-color: color-mix(in srgb, #f59e0b 40%, var(--border-color)) !important; }
+html.dark [class~="hover:border-red-200"]:hover { border-color: color-mix(in srgb, #ef4444 40%, var(--border-color)) !important; }
+html.dark [class~="hover:border-rose-200"]:hover { border-color: color-mix(in srgb, #f43f5e 40%, var(--border-color)) !important; }
+
+/* ===== Dark Mode: Action Button Hover Colors (500-level) =====
+   View=sky, Edit=amber, Delete=rose — ensures hover states work despite base
+   text-slate-400/border-slate-200 rules having higher specificity */
+html.dark [class~="hover:border-sky-500"]:hover { border-color: #0ea5e9 !important; }
+html.dark [class~="hover:border-amber-500"]:hover { border-color: #f59e0b !important; }
+html.dark [class~="hover:border-rose-500"]:hover { border-color: #ef4444 !important; }
+html.dark [class~="hover:border-emerald-500"]:hover { border-color: #10b981 !important; }
+html.dark [class~="hover:border-cyan-500"]:hover { border-color: #06b7d4 !important; }
+
+html.dark [class~="hover:text-sky-500"]:hover { color: #0ea5e9 !important; }
+html.dark [class~="hover:text-amber-500"]:hover { color: #f59e0b !important; }
+html.dark [class~="hover:text-rose-500"]:hover { color: #ef4444 !important; }
+html.dark [class~="hover:text-emerald-500"]:hover { color: #10b981 !important; }
+html.dark [class~="hover:text-cyan-500"]:hover { color: #06b7d4 !important; }
+
+/* ===== Dark Mode: Semantic Classes from Inline Styles =====
+   Premium cards, dashboard KPIs, analytics legends with hardcoded hex */
+html.dark .premium-card {
+    background: var(--surface-raised) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.30) !important;
+}
+html.dark .premium-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.40) !important;
+}
+
+html.dark .kpi-card-total,
+html.dark .dashboard-filters,
+html.dark .kpi-progress-track,
+html.dark .analytics-legend-inactive,
+html.dark .analytics-legend-active,
+html.dark .analytics-card-hover-overlay {
+    background: var(--surface-raised) !important;
+    border-color: var(--border-color) !important;
+}
+html.dark .kpi-progress-track {
+    background: var(--app-background) !important;
+}
+html.dark .analytics-legend-inactive {
+    background: color-mix(in srgb, var(--border-color) 40%, transparent) !important;
+}
+html.dark .analytics-legend-active {
+    background: var(--surface-raised) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.30) !important;
+}
+
+/* ===== Dark Mode: KPI Icons - Colored Gradient Backgrounds =====
+   Match analytics dashboard style: gradient icon containers with white icons */
+html.dark .kpi-icon-total {
+    background: linear-gradient(135deg, #0891b2, #06b5d1) !important;
+    border-color: #0891b2 !important;
+}
+html.dark .kpi-icon-completed {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    border-color: #10b981 !important;
+}
+html.dark .kpi-icon-in-progress {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    border-color: #f59e0b !important;
+}
+html.dark .kpi-icon-suspended {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    border-color: #ef4444 !important;
+}
+
+/* ===== Dark Mode: KPI Badges - Colored Tint Backgrounds =====
+   Match analytics: subtle colored tint on dark cards */
+html.dark .kpi-badge-total {
+    background: color-mix(in srgb, #0891b2 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #0891b2 40%, var(--border-color)) !important;
+    color: #7dd3fc !important;
+}
+html.dark .kpi-badge-completed {
+    background: color-mix(in srgb, #10b981 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #10b981 40%, var(--border-color)) !important;
+    color: #86efac !important;
+}
+html.dark .kpi-badge-in-progress {
+    background: color-mix(in srgb, #f59e0b 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #f59e0b 40%, var(--border-color)) !important;
+    color: #fde047 !important;
+}
+html.dark .kpi-badge-suspended {
+    background: color-mix(in srgb, #ef4444 25%, var(--surface-raised)) !important;
+    border-color: color-mix(in srgb, #ef4444 40%, var(--border-color)) !important;
+    color: #fca5a5 !important;
+}
+
+/* ===== Dark Mode: KPI Card Hover Borders =====
+   Colored borders on hover to match analytics card style */
+html.dark .kpi-card-total:hover { border-color: color-mix(in srgb, #0891b2 40%, var(--border-color)) !important; }
+html.dark .kpi-card-completed:hover { border-color: color-mix(in srgb, #10b981 40%, var(--border-color)) !important; }
+html.dark .kpi-card-in-progress:hover { border-color: color-mix(in srgb, #f59e0b 40%, var(--border-color)) !important; }
+html.dark .kpi-card-suspended:hover { border-color: color-mix(in srgb, #ef4444 40%, var(--border-color)) !important; }
+
+html.dark .kpi-card-in-progress { border-color: var(--border-color) !important; }
+html.dark .kpi-card-suspended { border-color: var(--border-color) !important; }
+html.dark .performance-card { border-color: var(--border-color) !important; }
+html.dark .kpi-insight-text { color: var(--text-secondary) !important; }
+
+/* ===== Dark Mode: KPI Total Status & Gold/Amber Arbitrary Colors ===== */
+html.dark .kpi-total-status { border-top-color: var(--border-color) !important; }
+html.dark [class*="text-[#fcba03"] { color: #fbbf24 !important; }
+html.dark [class*="bg-[#fcba03"] { background-color: color-mix(in srgb, #fbbf24 20%, var(--surface-raised)) !important; }
+html.dark [class*="border-[#fcba03"] { border-color: color-mix(in srgb, #fbbf24 40%, var(--border-color)) !important; }
+html.dark [class*="text-[#008ea1"] { color: #06b5d1 !important; }
+
+/* ===== Dark Mode: KPI Card Icon Gradient Inline Styles =====
+   Inline linear-gradient backgrounds on small icon containers */
+html.dark [style*="background: linear-gradient(135deg, #64748b"],
+html.dark [style*="background: linear-gradient(135deg, #475569"] {
+    background: linear-gradient(135deg, var(--text-secondary), var(--border-color)) !important;
+}
+html.dark [style*="background: linear-gradient(135deg, #0ea5e9"],
+html.dark [style*="background: linear-gradient(135deg, #0284c7"] {
+    background: linear-gradient(135deg, #0284c7, #0369a1) !important;
+}
+html.dark [style*="background: linear-gradient(135deg, #f59e0b"],
+html.dark [style*="background: linear-gradient(135deg, #d97706"] {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+}
+html.dark [style*="background: linear-gradient(135deg, #10b981"],
+html.dark [style*="background: linear-gradient(135deg, #059669"] {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+html.dark [style*="background: linear-gradient(135deg, #ef4444"],
+html.dark [style*="background: linear-gradient(135deg, #dc2626"] {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+}
+html.dark [style*="background: linear-gradient(135deg, #f43f5e"],
+html.dark [style*="background: linear-gradient(135deg, #e11d48"] {
+    background: linear-gradient(135deg, #f43f5e, #e11d48) !important;
+}
+html.dark [style*="background: linear-gradient(135deg, #6366f1"],
+html.dark [style*="background: linear-gradient(135deg, #4f46e5"] {
+    background: linear-gradient(135deg, #4f46e5, #4338ca) !important;
+}
+html.dark [style*="background: linear-gradient(135deg, #8b5cf6"],
+html.dark [style*="background: linear-gradient(135deg, #7c3aed"] {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+}
+
+/* ===== Dark Mode: KPI Card Containers (issue/analytics/dashboard) ===== */
+html.dark .issue-kpi-card { background: var(--surface-raised) !important; border-color: var(--border-color) !important; }
+html.dark .analytics-kpi-card { background: var(--surface-raised) !important; border-color: var(--border-color) !important; }
+html.dark .dashboard-kpi-card { background: var(--surface-raised) !important; border-color: var(--border-color) !important; }
+
+/* ===== Dark Mode: Tailwind Gradient Backgrounds (from-white, bg-gradient-to-br) =====
+   Risk/manage KPI cards use bg-gradient-to-br from-white to-slate-50/80 which creates
+   white gradient overlays that appear grey in dark mode. Analytics cards avoid this
+   because they use bg-white which is already handled. */
+html.dark [class*="bg-gradient-to-br"][class*="from-white"] {
+    background-image: none !important;
+    background-color: var(--surface-raised) !important;
+}
+html.dark [class*="bg-gradient-to-t"][class*="from-white"] {
+    background-image: none !important;
+    background-color: var(--surface-raised) !important;
+}
+
+/* ===== Dark Mode: Issue Report KPI Card Containers ===== */
+html.dark .issue-kpi-card { background: var(--surface-raised) !important; border-color: var(--border-color) !important; }
+html.dark .issue-kpi-card::before { background: transparent !important; }
+
+/* ===== Dark Mode: Dashboard Analytics Card Insight =====
+   .analytics-card-insight has hardcoded #f8fafc background that appears white in dark mode */
+html.dark .analytics-card-insight {
+    background: var(--surface-raised) !important;
+    border-top-color: var(--border-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ===== Dark Mode: Matrix Sector Legend Items =====
+   .matrix-sector-legend-item has hardcoded #f8fafc background */
+html.dark .matrix-sector-legend-item {
+    background: var(--surface-raised) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ===== Dark Mode: Matrix Section Container =====
+   .matrix-section-container has hardcoded #e2e8f0 border */
+html.dark .matrix-section-container {
+    border-color: var(--border-color) !important;
+    background: var(--surface-raised) !important;
 }

@@ -13,6 +13,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Admin\MaterialController;
 use App\Http\Controllers\Admin\MaterialProgressController;
 use App\Http\Controllers\Admin\ProjectSiteController;
+use App\Http\Controllers\Admin\RiskCategoryController;
+use App\Http\Controllers\Admin\RiskPoolController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -43,15 +45,33 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/data', [AdminDashboardController::class, 'data'])->name('dashboard.data');
 
-        // Project Risk
+         // Project Risk
         Route::get('/projects/risk', [\App\Http\Controllers\ProjectController::class, 'riskIndex'])->name('projects.risk.index');
         Route::get('/projects/risk/manage/{project}', [\App\Http\Controllers\ProjectController::class, 'riskManage'])->name('projects.risk.manage');
         Route::get('/projects/risk/manage/{project}/create-modal', [\App\Http\Controllers\ProjectController::class, 'riskCreateModal'])->name('projects.risk.create-modal');
+        Route::get('/projects/risk/manage/{project}/pool-risks', [\App\Http\Controllers\ProjectController::class, 'poolRisksByCategory'])->name('projects.risk.pool-risks');
         Route::post('/projects/risk/manage/{project}', [\App\Http\Controllers\ProjectController::class, 'riskStore'])->name('projects.risk.store');
         Route::get('/projects/risk/{risk}/view-modal', [\App\Http\Controllers\ProjectController::class, 'riskViewModal'])->name('projects.risk.view-modal');
         Route::get('/projects/risk/{risk}/edit-modal', [\App\Http\Controllers\ProjectController::class, 'riskEditModal'])->name('projects.risk.edit-modal');
         Route::put('/projects/risk/{risk}', [\App\Http\Controllers\ProjectController::class, 'riskUpdate'])->name('projects.risk.update');
         Route::delete('/projects/risk/{risk}', [\App\Http\Controllers\ProjectController::class, 'riskDestroy'])->name('projects.risk.destroy');
+
+        // Risk Pool (centralized repository)
+        Route::get('/projects/risk-pool', [RiskPoolController::class, 'index'])->name('projects.risk-pool.index');
+        Route::get('/projects/risk-pool/create-modal', [RiskPoolController::class, 'create'])->name('projects.risk-pool.create-modal');
+        Route::get('/projects/risk-pool/suggest-id', [RiskPoolController::class, 'suggestId'])->name('projects.risk-pool.suggest-id');
+        Route::post('/projects/risk-pool', [RiskPoolController::class, 'store'])->name('projects.risk-pool.store');
+        Route::post('/projects/risk-pool/bulk', [RiskPoolController::class, 'bulkStore'])->name('projects.risk-pool.bulk-store');
+
+        // Risk Pool categories (admin only)
+        Route::get('/projects/risk-pool/categories', [RiskCategoryController::class, 'index'])->name('projects.risk-pool.categories.index');
+        Route::post('/projects/risk-pool/categories', [RiskCategoryController::class, 'store'])->name('projects.risk-pool.categories.store');
+        Route::put('/projects/risk-pool/categories/{risk_category}', [RiskCategoryController::class, 'update'])->name('projects.risk-pool.categories.update');
+        Route::delete('/projects/risk-pool/categories/{risk_category}', [RiskCategoryController::class, 'destroy'])->name('projects.risk-pool.categories.destroy');
+
+        Route::get('/projects/risk-pool/{risk}', [RiskPoolController::class, 'show'])->name('projects.risk-pool.show');
+        Route::get('/projects/risk-pool/{risk}/edit-modal', [RiskPoolController::class, 'edit'])->name('projects.risk-pool.edit-modal');
+        Route::put('/projects/risk-pool/{risk}', [RiskPoolController::class, 'update'])->name('projects.risk-pool.update');
 
         Route::get('/projects/closeout', [\App\Http\Controllers\ProjectController::class, 'closeoutIndex'])->name('projects.closeout.index');
         Route::get('/projects/{project}/closeout', [\App\Http\Controllers\ProjectController::class, 'closeoutShow'])->name('projects.closeout.show');

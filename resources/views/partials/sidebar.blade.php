@@ -114,13 +114,19 @@
                      $menu[] = [
                          'label' => 'Risk Management',
                          'icon' => 'file-text',
-                         'active' => request()->routeIs('admin.projects.risk.*'),
+                         'active' => request()->routeIs('admin.projects.risk.*') || request()->routeIs('admin.projects.risk-pool.*'),
                          'submenu' => [
                              [
                                  'label' => 'Risk Registry',
                                  'icon' => 'list',
                                  'route' => 'admin.projects.risk.index',
                                  'active' => request()->routeIs('admin.projects.risk.index')
+                             ],
+                             [
+                                 'label' => 'Risk Pool',
+                                 'icon' => 'folder-open',
+                                 'route' => 'admin.projects.risk-pool.index',
+                                 'active' => request()->routeIs('admin.projects.risk-pool.*')
                              ],
                          ]
                      ];

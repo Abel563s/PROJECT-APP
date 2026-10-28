@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Issue;
 use App\Models\Project;
 use App\Models\ProjectRisk;
+use App\Models\ProjectRiskPool;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -663,7 +664,35 @@ class ProjectController extends Controller
     {
         abort_unless(auth()->user()->canManageProject($project), 403);
 
-        return view('admin.projects.risk.create-modal', compact('project'))->render();
+        $poolCategories = ProjectRiskPool::availableCategories();
+
+        return view('admin.projects.risk.create-modal', compact('project', 'poolCategories'))->render();
+    }
+
+    /**
+     * Return the risks from the centralized risk pool for a given category,
+     * so the New Risk modal can populate Risk ID + Specific Risk after a
+     * category is selected.
+     */
+    public function poolRisksByCategory(Request $request, Project $project)
+    {
+        abort_unless(auth()->user()->canManageProject($project), 403);
+
+        $category = $request->query('category');
+
+        if (!$category) {
+            return response()->json([]);
+        }
+
+        $risks = ProjectRiskPool::where('risk_category', $category)->ordered()->get();
+
+        return response()->json($risks->map(fn ($r) => [
+            'risk_id'                      => $r->risk_id,
+            'specific_risk'                 => $r->specific_risk,
+            'detailed_risk_explanation'     => $r->detailed_risk_explanation,
+            'overall_impact_level'          => $r->overall_impact_level,
+            'risk_category'                 => $r->risk_category,
+        ])->values());
     }
 
     public function riskStore(Request $request, Project $project)
@@ -720,7 +749,8 @@ class ProjectController extends Controller
     public function riskEditModal(ProjectRisk $risk)
     {
         $this->authorizeRiskMutation($risk);
-        return view('admin.projects.risk.edit-modal', compact('risk'))->render();
+        $poolCategories = ProjectRiskPool::availableCategories();
+        return view('admin.projects.risk.edit-modal', compact('risk', 'poolCategories'))->render();
     }
 
     public function riskUpdate(Request $request, ProjectRisk $risk)

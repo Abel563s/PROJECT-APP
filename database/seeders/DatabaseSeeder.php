@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             RebarSeeder::class,
             ProjectSeeder::class,
+            RiskPoolSeeder::class,
         ]);
 
     }
