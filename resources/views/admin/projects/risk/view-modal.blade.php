@@ -6,18 +6,19 @@
         'Extreme' => 'bg-rose-50 text-rose-700 border-rose-200',
     ];
     $statusClasses = [
-        'Open'     => 'bg-sky-50 text-sky-700 border-sky-200',
+        'Open'       => 'bg-sky-50 text-sky-700 border-sky-200',
         'Inprogress' => 'bg-amber-50 text-amber-700 border-amber-200',
-        'Closed'   => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        'Closed'     => 'bg-emerald-50 text-emerald-700 border-emerald-200',
     ];
     $typeClasses = [
         'Threat'      => 'bg-rose-50 text-rose-700 border-rose-200',
         'Opportunity' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
     ];
-    $labelClass = 'mb-1 block text-[8px] font-black uppercase tracking-widest text-slate-400';
+    $labelClass = 'block text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1';
 @endphp
 
 <div class="space-y-4">
+    <!-- Lead summary -->
     <div class="bg-slate-50 rounded-xl p-4">
         <div class="flex items-start justify-between gap-3 mb-3">
             <div class="flex-1 min-w-0">
@@ -33,7 +34,7 @@
                 </span>
             </div>
         </div>
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <div>
                 <p class="{{ $labelClass }}">Risk Category</p>
                 <span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">
@@ -48,7 +49,7 @@
                 </span>
             </div>
             <div>
-                <p class="{{ $labelClass }}">Urgency</p>
+                <p class="{{ $labelClass }}">Risk Urgency</p>
                 <p class="text-xs font-black text-slate-900">{{ $risk->risk_urgency ?: '---' }}</p>
             </div>
         </div>
@@ -82,6 +83,16 @@
                 <p class="text-xs font-black text-slate-900">{{ $risk->severity }}/5</p>
             </div>
             <div>
+                <p class="{{ $labelClass }}">Risk Frequency</p>
+                <span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">
+                    {{ $risk->risk_frequency ?: '---' }}
+                </span>
+            </div>
+            <div>
+                <p class="{{ $labelClass }}">Risk Urgency</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->risk_urgency ?: '---' }}</p>
+            </div>
+            <div>
                 <p class="{{ $labelClass }}">Project Impact</p>
                 <span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">
                     {{ $risk->project_impact ?: '---' }}
@@ -92,16 +103,6 @@
                 <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $risk->intent_to_claim ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200' }}">
                     {{ $risk->intent_to_claim ? 'Yes' : 'No' }}
                 </span>
-            </div>
-            <div>
-                <p class="{{ $labelClass }}">Risk Frequency</p>
-                <span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">
-                    {{ $risk->risk_frequency ?: '---' }}
-                </span>
-            </div>
-            <div>
-                <p class="{{ $labelClass }}">Risk Urgency</p>
-                <p class="text-xs font-black text-slate-900">{{ $risk->risk_urgency ?: '---' }}</p>
             </div>
             <div>
                 <p class="{{ $labelClass }}">Most Likely Cost Impact (METB)</p>
@@ -141,11 +142,11 @@
                 </span>
             </div>
             <div class="col-span-2">
-                <p class="{{ $labelClass }}">Response / Mitigation Plan / Risk Treatment</p>
+                <p class="{{ $labelClass }}">Mitigation Plan</p>
                 <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->mitigation_plan ?: '---' }}</p>
             </div>
             <div class="col-span-2">
-                <p class="{{ $labelClass }}">Risk Contingency Plan</p>
+                <p class="{{ $labelClass }}">Contingency Plan</p>
                 <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->contingency_plan ?: '---' }}</p>
             </div>
             <div>

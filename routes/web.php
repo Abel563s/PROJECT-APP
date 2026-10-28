@@ -72,6 +72,7 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::get('/projects/risk-pool/{risk}', [RiskPoolController::class, 'show'])->name('projects.risk-pool.show');
         Route::get('/projects/risk-pool/{risk}/edit-modal', [RiskPoolController::class, 'edit'])->name('projects.risk-pool.edit-modal');
         Route::put('/projects/risk-pool/{risk}', [RiskPoolController::class, 'update'])->name('projects.risk-pool.update');
+        Route::delete('/projects/risk-pool/{risk}', [RiskPoolController::class, 'destroy'])->name('projects.risk-pool.destroy');
 
         Route::get('/projects/closeout', [\App\Http\Controllers\ProjectController::class, 'closeoutIndex'])->name('projects.closeout.index');
         Route::get('/projects/{project}/closeout', [\App\Http\Controllers\ProjectController::class, 'closeoutShow'])->name('projects.closeout.show');

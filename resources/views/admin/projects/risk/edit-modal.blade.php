@@ -41,7 +41,7 @@
                 <select id="pool_risk_category" class="{{ $fieldClass }}">
                     <option value="">Select pool category</option>
                     @foreach(($poolCategories ?? []) as $pcat)
-                        <option value="{{ $pcat }}" @selected(old('pool_risk_category', $risk->risk_category) === $pcat)>{{ $pcat }}</option>
+                        <option value="{{ $pcat }}" @selected($risk->risk_category === $pcat)>{{ $pcat }}</option>
                     @endforeach
                 </select>
             </div>

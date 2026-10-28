@@ -245,6 +245,22 @@ class RiskPoolController extends Controller
         return redirect()->route('admin.projects.risk-pool.index')->with('success', 'Risk updated successfully.');
     }
 
+    public function destroy(Request $request, ProjectRiskPool $risk)
+    {
+        $this->authorizeAdmin();
+
+        $risk->delete();
+
+        if ($request->expectsJson() || $request->isXmlHttpRequest()) {
+            return response()->json([
+                'message' => 'Risk removed from the risk pool.',
+                'refresh' => true,
+            ], 200);
+        }
+
+        return redirect()->route('admin.projects.risk-pool.index')->with('success', 'Risk removed from the risk pool.');
+    }
+
     public function suggestId(Request $request)
     {
         $this->authorizeAdmin();

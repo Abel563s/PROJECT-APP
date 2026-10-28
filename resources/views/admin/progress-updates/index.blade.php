@@ -124,14 +124,14 @@
                                 <td class="px-6 py-4">
                                     @php
                                         $plannedVal = (float) $update->progress_planned;
-                                        $plannedColor = $plannedVal >= 80 ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : ($plannedVal >= 70 ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-rose-50 text-rose-600 border-rose-200');
+                                        $plannedColor = 'bg-slate-100 border-slate-200 text-slate-900';
                                     @endphp
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $plannedColor }} border shadow-sm">{{ $plannedVal }}%</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     @php
                                         $actualVal = (float) $update->progress_actual;
-                                        $actualColor = $actualVal >= 80 ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : ($actualVal >= 70 ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-rose-50 text-rose-600 border-rose-200');
+                                        $actualColor = 'bg-slate-100 border-slate-200 text-slate-900';
                                     @endphp
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $actualColor }} border shadow-sm">{{ $actualVal }}%</span>
                                 </td>
@@ -177,14 +177,19 @@
                                         {{ number_format($update->revenue_actual) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-right">
+                                <td class="px-6 py-4">
                                     @php
                                         $fspi = $update->revenue_planned > 0 ? ($update->revenue_actual / $update->revenue_planned) * 100 : 0;
-                                        $fspiColor = $fspi >= 80 ? 'text-emerald-600' : ($fspi >= 70 ? 'text-amber-600' : 'text-rose-600');
+                                        $fspiColor = $fspi >= 80 ? 'text-emerald-500' : ($fspi >= 70 ? 'text-amber-500' : 'text-rose-500');
+                                        $fspiBg = $fspi >= 80 ? 'bg-emerald-50 border-emerald-200' : ($fspi >= 70 ? 'bg-amber-50 border-amber-200' : 'bg-rose-50 border-rose-200');
+                                        $fspiArrow = $fspi >= 80 ? 'trending-up' : ($fspi >= 70 ? 'minus' : 'trending-down');
                                     @endphp
-                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 {{ $fspiColor }} text-[11px] font-black tabular-nums tracking-tight shadow-sm">
-                                        {{ number_format($fspi, 1) }}%
-                                    </span>
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $fspiBg }} border shadow-sm {{ $fspiColor }}">
+                                            <i data-lucide="{{ $fspiArrow }}" class="w-3.5 h-3.5"></i>
+                                            {{ number_format($fspi, 1) }}%
+                                        </span>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('M d, Y') : '-' }}</span>

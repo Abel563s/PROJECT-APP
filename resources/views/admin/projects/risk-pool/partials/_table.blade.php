@@ -64,6 +64,11 @@
                                         title="Edit">
                                         <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                     </button>
+                                    <button onclick="deleteRiskPoolItem({{ $risk->id }})"
+                                        class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-rose-500 hover:border-rose-500 hover:shadow-sm transition-all"
+                                        title="Delete">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                    </button>
                                 @endif
                             </div>
                         </td>

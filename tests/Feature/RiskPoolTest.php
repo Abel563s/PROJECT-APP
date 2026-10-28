@@ -487,3 +487,48 @@ it('renders the card grid with correct information and respects the impact filte
     expect($html)->toContain('Labor Shortages')
         ->and(strpos($html, 'Advance Payment Delay (Client)'))->toBeFalse();
 });
+
+it('allows an admin to delete a risk from the pool', function () {
+    $admin = adminUser();
+    $risk = ProjectRiskPool::create(validRiskData(['risk_id' => '1.01']));
+
+    $this->actingAs($admin)
+        ->deleteJson(route('admin.projects.risk-pool.destroy', $risk))
+        ->assertOk()
+        ->assertJson(['refresh' => true]);
+
+    expect(ProjectRiskPool::find($risk->id))->toBeNull();
+});
+
+it('shows the delete icon only to admins in the risk pool table', function () {
+    $admin = adminUser();
+    $manager = managerUser();
+    $risk = ProjectRiskPool::create(validRiskData(['risk_id' => '1.01']));
+
+    $adminHtml = $this->actingAs($admin)
+        ->get(route('admin.projects.risk-pool.index'))
+        ->assertViewHas('isAdmin', true)
+        ->getContent();
+
+    $managerHtml = $this->actingAs($manager)
+        ->get(route('admin.projects.risk-pool.index'))
+        ->assertViewHas('isAdmin', false)
+        ->getContent();
+
+    expect(strpos($adminHtml, 'title="Delete"'))->not->toBeFalse()
+        ->and(strpos($managerHtml, 'title="Delete"'))->toBeFalse();
+});
+
+it('blocks non-admins from deleting risk pool items', function () {
+    $manager = managerUser();
+    $coordinator = coordinatorUser();
+    $risk = ProjectRiskPool::create(validRiskData(['risk_id' => '1.01']));
+
+    foreach ([$manager, $coordinator] as $user) {
+        $this->actingAs($user)
+            ->deleteJson(route('admin.projects.risk-pool.destroy', $risk))
+            ->assertForbidden();
+    }
+
+    expect(ProjectRiskPool::find($risk->id))->not->toBeNull();
+});

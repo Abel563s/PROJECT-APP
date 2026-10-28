@@ -178,6 +178,7 @@
     const riskPoolShowRoute     = @json(route('admin.projects.risk-pool.show', ['risk' => '__RISK__']));
     const riskPoolEditRoute     = @json(route('admin.projects.risk-pool.edit-modal', ['risk' => '__RISK__']));
     const riskPoolCreateRoute   = @json(route('admin.projects.risk-pool.create-modal'));
+    const riskPoolDeleteRoute   = @json(route('admin.projects.risk-pool.destroy', ['risk' => '__RISK__']));
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const isAdmin = @json($isAdmin);
 
@@ -249,6 +250,21 @@
     }
 
     async function refreshAll() { await Promise.all([refreshSummary(), refreshView()]); }
+
+    async function deleteRiskPoolItem(riskId) {
+        if (!isAdmin) { showNotification('Only an admin can delete risk pool items.', 'error'); return; }
+        if (!confirm('Delete this risk from the pool? This cannot be undone.')) return;
+        const url = riskPoolDeleteRoute.replace('__RISK__', encodeURIComponent(riskId));
+        try {
+            const resp = await fetch(url, {
+                method: 'DELETE',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json' },
+            });
+            const data = await resp.json().catch(() => ({}));
+            if (resp.ok) { showNotification(data.message || 'Risk removed from the pool.'); refreshAll(); }
+            else { showNotification(data.message || 'Unable to delete the risk.', 'error'); }
+        } catch (e) { console.error(e); showNotification('Unable to delete the risk.', 'error'); }
+    }
 
     function riskPoolFilterByImpact(level) {
         riskPoolState.impact = level;
@@ -501,8 +517,11 @@
             if (!pasteBound) { bindPaste(); pasteBound = true; }
             renderIcons();
         }
-        function addRow() { state.rows.push({}); renderRows(); const lr = state.rows.length - 1; const first = tbody.querySelector('tr[data-row-index="' + lr + '"] input.ss-input, tr[data-row-index="' + lr + '"] select.ss-select'); if (first) first.focus(); }
-        function removeRow(ri) { if (!confirm('Remove this row? It has not been saved.')) return; state.rows.splice(ri, 1); renderRows(); }
+        function syncStateFromDOM() {
+            state.rows = collectRows();
+        }
+        function addRow() { syncStateFromDOM(); state.rows.push({}); renderRows(); const lr = state.rows.length - 1; const first = tbody.querySelector('tr[data-row-index="' + lr + '"] input.ss-input, tr[data-row-index="' + lr + '"] select.ss-select'); if (first) first.focus(); }
+        function removeRow(ri) { syncStateFromDOM(); if (!confirm('Remove this row? It has not been saved.')) return; state.rows.splice(ri, 1); renderRows(); }
         async function suggestRiskId(ri) {
             const category = getCellValue(ri, 'risk_category');
             if (!category) { showNotification('Please select a risk category first.', 'error'); return; }
