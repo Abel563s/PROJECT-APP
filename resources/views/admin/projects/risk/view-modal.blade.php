@@ -14,7 +14,15 @@
         'Threat'      => 'bg-rose-50 text-rose-700 border-rose-200',
         'Opportunity' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
     ];
+    $impactClasses = [
+        'High'   => 'bg-rose-50 text-rose-700 border-rose-200',
+        'Medium' => 'bg-amber-50 text-amber-700 border-amber-200',
+        'Low'    => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    ];
     $labelClass = 'block text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1';
+    $poolTimeline = $poolRisk?->impact_on_timeline ?? '';
+    $poolCost = $poolRisk?->impact_on_cost ?? '';
+    $poolQuality = $poolRisk?->overall_impact_level ?? '';
 @endphp
 
 <div class="space-y-4">
@@ -36,12 +44,6 @@
         </div>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <div>
-                <p class="{{ $labelClass }}">Risk Category</p>
-                <span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">
-                    {{ $risk->risk_category ?: '---' }}
-                </span>
-            </div>
-            <div>
                 <p class="{{ $labelClass }}">Rating (P × I)</p>
                 <span class="inline-flex flex-col items-center rounded-lg border px-2.5 py-1 {{ $ratingClasses[$risk->risk_level] ?? 'bg-slate-100 text-slate-500 border-slate-200' }}">
                     <span class="text-[10px] font-black">{{ $risk->risk_score }}</span>
@@ -53,6 +55,28 @@
                 <p class="text-xs font-black text-slate-900">{{ $risk->risk_urgency ?: '---' }}</p>
             </div>
         </div>
+        @if($risk->pool_risk_id && ($poolTimeline || $poolCost || $poolQuality))
+            <div class="mt-3 grid grid-cols-3 gap-2">
+                <div>
+                    <p class="{{ $labelClass }}">Impact on Timeline</p>
+                    <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolTimeline] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
+                        {{ $poolTimeline ?: '—' }}
+                    </span>
+                </div>
+                <div>
+                    <p class="{{ $labelClass }}">Impact on Cost</p>
+                    <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolCost] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
+                        {{ $poolCost ?: '—' }}
+                    </span>
+                </div>
+                <div>
+                    <p class="{{ $labelClass }}">Quality</p>
+                    <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolQuality] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
+                        {{ $poolQuality ?: '—' }}
+                    </span>
+                </div>
+            </div>
+        @endif
     </div>
 
     <!-- Step 1 - Risk Identification -->
@@ -91,12 +115,6 @@
             <div>
                 <p class="{{ $labelClass }}">Risk Urgency</p>
                 <p class="text-xs font-black text-slate-900">{{ $risk->risk_urgency ?: '---' }}</p>
-            </div>
-            <div>
-                <p class="{{ $labelClass }}">Project Impact</p>
-                <span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">
-                    {{ $risk->project_impact ?: '---' }}
-                </span>
             </div>
             <div>
                 <p class="{{ $labelClass }}">Intent to Claim</p>

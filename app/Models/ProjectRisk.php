@@ -11,6 +11,8 @@ class ProjectRisk extends Model
         'project_id',
         'created_by',
         'risk_category',
+        'pool_risk_category',
+        'pool_risk_id',
         'activity',
         'risk_type',
         'risk_name',

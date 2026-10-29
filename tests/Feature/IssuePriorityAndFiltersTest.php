@@ -74,7 +74,7 @@ it('filters the project issue table by priority and displays the requested colum
             ->assertSee('grid-cols-7', false)
             ->assertDontSee('Filter Issues')
             ->assertDontSee('Narrow the list by issue details, status, and priority')
-            ->assertDontSee('Data Date')
+            ->assertSee('Data Date')
             ->assertDontSee('Raised By')
             ->assertDontSee('Raised From')
             ->assertDontSee('Raised To')

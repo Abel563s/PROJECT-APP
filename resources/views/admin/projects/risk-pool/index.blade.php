@@ -56,7 +56,7 @@
                 </select>
             </label>
             <label class="space-y-1">
-                <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Overall Impact</span>
+                <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Quality</span>
                 <select id="riskPoolImpact" name="overall_impact_level" onchange="riskPoolRefresh()"
                     class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                     <option value="all" @selected(request('overall_impact_level', 'all') === 'all')>All Impacts</option>
@@ -337,7 +337,7 @@
     /* ===================== Spreadsheet Editor ===================== */
     let spreadsheetDirty = false;
     let spreadsheetContainer = null;
-    const COLS = ['risk_id', 'risk_category', 'specific_risk', 'detailed_risk_explanation', 'impact_on_timeline', 'impact_on_cost', 'overall_impact_level', 'stakeholder', 'recommended_mitigation_measures'];
+    const COLS = ['risk_id', 'risk_category', 'specific_risk', 'detailed_risk_explanation', 'impact_on_timeline', 'impact_on_cost', 'overall_impact_level', 'stakeholder'];
 
     function openSpreadsheetModal() {
         const modal = document.getElementById('riskPoolEditorModal');
@@ -505,7 +505,6 @@
             tr.appendChild(elWrap(elSelect('impact_on_cost', state.impactLevels, row.impact_on_cost, ri, 'Select impact')));
             tr.appendChild(elWrap(elSelect('overall_impact_level', state.impactLevels, row.overall_impact_level, ri, 'Select impact')));
             tr.appendChild(elWrap(elTextarea('stakeholder', row.stakeholder, ri, 2)));
-            tr.appendChild(elWrap(elTextarea('recommended_mitigation_measures', row.recommended_mitigation_measures, ri, 2)));
             tr.appendChild(actionCell(row, ri));
             return tr;
         }
@@ -539,7 +538,7 @@
             tbody.querySelectorAll('tr.ss-row').forEach(tr => {
                 const ri = parseInt(tr.dataset.rowIndex, 10);
                 const row = (state.rows[ri] || {});
-                const collected = { id: row.id || null, risk_id: '', risk_category: '', specific_risk: '', detailed_risk_explanation: '', impact_on_timeline: '', impact_on_cost: '', overall_impact_level: '', stakeholder: '', recommended_mitigation_measures: '' };
+                const collected = { id: row.id || null, risk_id: '', risk_category: '', specific_risk: '', detailed_risk_explanation: '', impact_on_timeline: '', impact_on_cost: '', overall_impact_level: '', stakeholder: '' };
                 tr.querySelectorAll('input.ss-input, select.ss-select, textarea.ss-textarea').forEach(el => { if (el.dataset.field) collected[el.dataset.field] = el.value; });
                 rows.push(collected);
             });
@@ -617,6 +616,7 @@
                 if (!text) return;
                 const pasted = text.split(/\r?\n/).filter(r => r !== '').map(r => r.split('\t'));
                 e.preventDefault();
+                syncStateFromDOM();
                 let startRow = activeCell.row >= 0 ? activeCell.row : state.rows.length - 1;
                 if (startRow < 0) startRow = 0;
                 const startCol = Math.min(activeCell.col >= 0 ? activeCell.col : 0, COLS.length - 1);
@@ -758,16 +758,25 @@
         container.querySelectorAll('.cat-toggle').forEach(toggle => {
             toggle.addEventListener('change', async () => {
                 const id = toggle.dataset.id;
+                const wasChecked = toggle.checked;
+                toggle.disabled = true;
                 try {
                     const response = await fetch(state.routes.update.replace('__ID__', id), {
                         method: 'PUT',
                         headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json', 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ is_active: toggle.checked ? 1 : 0 }),
+                        body: JSON.stringify({ is_active: wasChecked ? 1 : 0 }),
                     });
                     const data = await response.json().catch(() => ({}));
-                    if (!response.ok) throw new Error(data.message || 'Unable to update category.');
+                    if (!response.ok) {
+                        toggle.checked = !wasChecked;
+                        throw new Error(data.message || 'Unable to update category.');
+                    }
+                    await reloadCategoryManager(false);
                     showNotification('Category updated.');
-                } catch (error) { renderCatError(error.message); }
+                } catch (error) {
+                    toggle.disabled = false;
+                    renderCatError(error.message);
+                }
             });
         });
 
@@ -788,18 +797,59 @@
             });
         });
 
-        async function reloadCategoryManager() {
+        // Save button: flush all inline edits to the server, then refresh.
+        const saveAllBtn = container.querySelector('#catSaveAll');
+        saveAllBtn?.addEventListener('click', async () => {
+            const inputs = container.querySelectorAll('.cat-edit, .cat-order');
+            const saves = [];
+            inputs.forEach(inp => {
+                const id = inp.dataset.id;
+                const field = inp.dataset.field;
+                const value = inp.value;
+                if (!id || !field) return;
+                const payload = {};
+                payload[field] = field === 'display_order' ? Number(value) : value;
+                saves.push(
+                    fetch(state.routes.update.replace('__ID__', id), {
+                        method: 'PUT',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json', 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                    }).then(r => {
+                        if (!r.ok) throw new Error('Unable to update category.');
+                        return r.json().catch(() => ({}));
+                    })
+                );
+            });
+            try {
+                saveAllBtn.disabled = true;
+                saveAllBtn.innerHTML = '<span class="flex items-center gap-1.5"><span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>Saving...</span>';
+                await Promise.all(saves);
+                await reloadCategoryManager();
+                showNotification('Categories saved.');
+            } catch (error) { renderCatError(error.message || 'Some categories failed to save.'); }
+            finally {
+                if (saveAllBtn) {
+                    saveAllBtn.disabled = false;
+                    saveAllBtn.innerHTML = '<i data-lucide="save" class="h-3 w-3"></i> Save';
+                    renderIcons();
+                }
+            }
+        });
+
+        async function reloadCategoryManager(refreshPool = true) {
             try {
                 const response = await fetch(riskPoolCategoryRoute);
                 const html = await response.text();
-                const modal = document.getElementById('riskPoolCategoryModal');
                 const content = document.getElementById('categoryModalContent');
-                content.innerHTML = html;
-                initCategoryManager(content);
-                renderIcons();
-                closeCategoryModal();
-                refreshSummary();
-                refreshView();
+                if (content) {
+                    content.innerHTML = html;
+                    initCategoryManager(content);
+                    renderIcons();
+                }
+                if (refreshPool) {
+                    refreshSummary();
+                    refreshView();
+                }
             } catch (e) { console.error(e); }
         }
     }

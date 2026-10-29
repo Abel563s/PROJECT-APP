@@ -107,7 +107,7 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'project_code' => 'nullable|string',
             'project_name' => 'required|string',
-            'status' => 'nullable|in:in progress,completed',
+            'status' => 'nullable|in:in progress,suspended,completed',
             'project_type' => 'nullable|in:Building,Fit-Out,Infrastructure,Mixed (Bui/Road),Mixed (Bui/Fit-Out)',
             'delivery_method' => 'nullable|in:DB,DBB,DB-LS,DB-ADM,DBB-ADM,DB-CP',
             'project_client' => 'nullable|string',
@@ -472,7 +472,7 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'project_code' => 'nullable|string',
             'project_name' => 'required|string',
-            'status' => 'nullable|in:in progress,completed',
+            'status' => 'nullable|in:in progress,suspended,completed',
             'project_type' => 'nullable|in:Building,Fit-Out,Infrastructure,Mixed (Bui/Road),Mixed (Bui/Fit-Out)',
             'delivery_method' => 'nullable|in:DB,DBB,DB-LS,DB-ADM,DBB-ADM,DB-CP',
             'project_client' => 'nullable|string',
@@ -655,7 +655,10 @@ class ProjectController extends Controller
             'low' => ProjectRisk::where('project_id', $project->id)->whereRaw('likelihood * severity < 5')->count(),
         ];
 
-        $riskCategories = ['Contractual', 'Design', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality'];
+        $riskCategories = array_merge(
+            ['Contractual', 'Design', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality'],
+            ProjectRiskPool::availableCategories()
+        );
 
         return view('admin.projects.risk.manage', compact('project', 'risks', 'stats', 'canManageProject', 'riskCategories'));
     }
@@ -690,6 +693,8 @@ class ProjectController extends Controller
             'risk_id'                      => $r->risk_id,
             'specific_risk'                 => $r->specific_risk,
             'detailed_risk_explanation'     => $r->detailed_risk_explanation,
+            'impact_on_timeline'            => $r->impact_on_timeline,
+            'impact_on_cost'                => $r->impact_on_cost,
             'overall_impact_level'          => $r->overall_impact_level,
             'risk_category'                 => $r->risk_category,
         ])->values());
@@ -701,14 +706,15 @@ class ProjectController extends Controller
         abort_unless($project->status === 'in progress', 403);
 
         $validated = $request->validate([
-            'risk_category' => ['required', Rule::in(['Contractual', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality', 'Design'])],
+            'risk_category' => ['nullable', 'string', 'max:255'],
+            'pool_risk_category' => ['nullable', 'string', 'max:255'],
+            'pool_risk_id' => ['nullable', 'string', 'max:255'],
             'activity' => 'required|string',
             'risk_type' => ['required', Rule::in(['Opportunity', 'Threat'])],
             'risk_name' => 'required|string|max:255',
             'risk_description' => 'required|string',
             'likelihood' => 'required|integer|between:1,5',
             'severity' => 'required|integer|between:1,5',
-            'project_impact' => ['nullable', Rule::in(['Time', 'Cost', 'Time & Cost'])],
             'intent_to_claim' => 'required|boolean',
             'most_likely_cost_impact' => 'nullable|numeric|min:0',
             'most_likely_time_impact' => 'nullable|integer|min:0',
@@ -743,14 +749,22 @@ class ProjectController extends Controller
 
     public function riskViewModal(ProjectRisk $risk)
     {
-        return view('admin.projects.risk.view-modal', compact('risk'))->render();
+        $poolRisk = $risk->pool_risk_id
+            ? ProjectRiskPool::where('risk_id', $risk->pool_risk_id)->first()
+            : null;
+
+        return view('admin.projects.risk.view-modal', compact('risk', 'poolRisk'))->render();
     }
 
     public function riskEditModal(ProjectRisk $risk)
     {
         $this->authorizeRiskMutation($risk);
         $poolCategories = ProjectRiskPool::availableCategories();
-        return view('admin.projects.risk.edit-modal', compact('risk', 'poolCategories'))->render();
+        $poolRisk = $risk->pool_risk_id
+            ? ProjectRiskPool::where('risk_id', $risk->pool_risk_id)->first()
+            : null;
+
+        return view('admin.projects.risk.edit-modal', compact('risk', 'poolCategories', 'poolRisk'))->render();
     }
 
     public function riskUpdate(Request $request, ProjectRisk $risk)
@@ -758,14 +772,15 @@ class ProjectController extends Controller
         $this->authorizeRiskMutation($risk);
 
         $validated = $request->validate([
-            'risk_category' => ['required', Rule::in(['Contractual', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality', 'Design'])],
+            'risk_category' => ['nullable', 'string', 'max:255'],
+            'pool_risk_category' => ['nullable', 'string', 'max:255'],
+            'pool_risk_id' => ['nullable', 'string', 'max:255'],
             'activity' => 'required|string',
             'risk_type' => ['required', Rule::in(['Opportunity', 'Threat'])],
             'risk_name' => 'required|string|max:255',
             'risk_description' => 'required|string',
             'likelihood' => 'required|integer|between:1,5',
             'severity' => 'required|integer|between:1,5',
-            'project_impact' => ['nullable', Rule::in(['Time', 'Cost', 'Time & Cost'])],
             'intent_to_claim' => 'required|boolean',
             'most_likely_cost_impact' => 'nullable|numeric|min:0',
             'most_likely_time_impact' => 'nullable|integer|min:0',

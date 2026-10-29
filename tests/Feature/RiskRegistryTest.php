@@ -26,16 +26,14 @@ it('creates a project risk with a calculated rating', function () {
         'status' => 'in progress',
     ]);
 
-    $this->actingAs($admin)
+        $this->actingAs($admin)
         ->post(route('admin.projects.risk.store', $project), [
-            'risk_category' => 'Contractual',
             'activity' => 'Awarding the subcontract',
             'risk_type' => 'Threat',
             'risk_name' => 'Late subcontract award',
             'risk_description' => 'A late award may delay the critical path.',
             'likelihood' => 4,
             'severity' => 5,
-            'project_impact' => 'Time & Cost',
             'intent_to_claim' => '1',
             'action_status' => 'Open',
         ])
@@ -126,7 +124,6 @@ it('renders the project risk dashboard and create modal', function () {
 
     $this->get(route('admin.projects.risk.create-modal', $project))
         ->assertOk()
-        ->assertSee('Risk Category')
         ->assertSee('Project Name');
 });
 
@@ -206,18 +203,15 @@ it('allows Project Coordinator to see New Risk button and create, view, edit ris
         ->assertSee('Total Risks');
 
     $this->get(route('admin.projects.risk.create-modal', $project))
-        ->assertOk()
-        ->assertSee('Risk Category');
+        ->assertOk();
 
     $this->post(route('admin.projects.risk.store', $project), [
-        'risk_category' => 'Operational',
         'activity' => 'Coordination task',
         'risk_type' => 'Threat',
         'risk_name' => 'Coordinator Created Risk',
         'risk_description' => 'A risk created by coordinator',
         'likelihood' => 3,
         'severity' => 3,
-        'project_impact' => 'Time',
         'intent_to_claim' => '1',
         'action_status' => 'Open',
     ])
@@ -237,14 +231,12 @@ it('allows Project Coordinator to see New Risk button and create, view, edit ris
         ->assertSee('Coordinator Created Risk');
 
     $this->put(route('admin.projects.risk.update', $risk), [
-        'risk_category' => 'Operational',
         'activity' => 'Updated task',
         'risk_type' => 'Threat',
         'risk_name' => 'Updated Risk Name',
         'risk_description' => 'Updated description',
         'likelihood' => 4,
         'severity' => 4,
-        'project_impact' => 'Time',
         'intent_to_claim' => '1',
         'action_status' => 'Inprogress',
         'most_likely_cost_impact' => 0,

@@ -59,7 +59,7 @@ class RiskCategoryController extends Controller
         $this->authorizeAdmin();
 
         $validated = $request->validate([
-            'name'           => ['required', 'string', 'max:255', Rule::unique('risk_categories', 'name')->ignore($risk_category->id)],
+            'name'           => ['sometimes', 'required', 'string', 'max:255', Rule::unique('risk_categories', 'name')->ignore($risk_category->id)],
             'code'           => ['nullable', 'string', 'max:255', function ($attr, $val, $fail) {
                 if ($val !== null && $val !== '' && !ctype_digit((string) $val)) {
                     $fail('The category code must be numeric (used as the Risk ID prefix).');
@@ -69,13 +69,15 @@ class RiskCategoryController extends Controller
             'is_active'      => ['sometimes', 'boolean'],
         ]);
 
-        $validated['is_active'] = $request->has('is_active') ? (bool) $validated['is_active'] : false;
+        if (array_key_exists('is_active', $validated)) {
+            $validated['is_active'] = (bool) $validated['is_active'];
+        }
 
         // Renaming a category cascades to all pooled risks that reference it.
         $originalName = $risk_category->getOriginal('name');
 
         DB::transaction(function () use ($risk_category, $validated, $originalName) {
-            if ($validated['name'] !== $originalName) {
+            if (array_key_exists('name', $validated) && $validated['name'] !== $originalName) {
                 ProjectRiskPool::where('risk_category', $originalName)->update(['risk_category' => $validated['name']]);
             }
 

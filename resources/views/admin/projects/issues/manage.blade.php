@@ -136,6 +136,9 @@
                             <th class="px-4 py-3 text-center">Priority</th>
                             <th class="px-4 py-3">Raised Date</th>
                             <th class="px-4 py-3">Planned Action Date</th>
+                            <th class="px-4 py-3">Action By</th>
+                            <th class="px-4 py-3">Data Date</th>
+                            <th class="px-4 py-3">Last Updated</th>
                             <th class="px-4 py-3 text-right">Action</th>
                         </tr>
                     </thead>
@@ -203,12 +206,27 @@
                                         {{ $issue->raised_date ? $issue->raised_date->format('M d, Y') : '---' }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                                        {{ $issue->planned_resolution_date ? $issue->planned_resolution_date->format('M d, Y') : '---' }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 text-right">
+                <td class="px-4 py-3">
+                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                        {{ $issue->planned_resolution_date ? $issue->planned_resolution_date->format('M d, Y') : '---' }}
+                    </span>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                        {{ $issue->action_by ?? '---' }}
+                    </span>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                        {{ $issue->date ? $issue->date->format('M d, Y') : '---' }}
+                    </span>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                        {{ $issue->last_updated_date ? $issue->last_updated_date->format('M d, Y') : '---' }}
+                    </span>
+                </td>
+                <td class="px-4 py-3 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
                                         <button onclick="openViewModal({{ $issue->id }})"
                                             class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-sky-500 hover:border-sky-500 hover:shadow-sm transition-all"
@@ -239,7 +257,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-4 py-16 text-center">
+                                <td colspan="12" class="px-4 py-16 text-center">
                                     <div class="flex flex-col items-center gap-4">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="alert-circle" class="w-8 h-8"></i>

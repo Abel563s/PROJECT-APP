@@ -1,7 +1,6 @@
 <form action="{{ route('admin.projects.update', $project->id) }}" method="POST" id="editModalForm" class="space-y-4">
     @csrf
     @method('PUT')
-    <input type="hidden" name="status" value="{{ $project->status }}" id="projectStatusInput">
 
     <!-- Section 1: Project Identity -->
     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
@@ -56,6 +55,15 @@
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Scope</label>
                 <textarea name="scope" rows="2"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $project->scope }}</textarea>
+            </div>
+            <div class="col-span-2 space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Project Status</label>
+                <select name="status" id="projectStatusInput" required
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
+                    <option value="in progress" {{ $project->status == 'in progress' ? 'selected' : '' }}>In Progress</option>
+                    <option value="suspended" {{ $project->status == 'suspended' ? 'selected' : '' }}>Suspended</option>
+                    <option value="completed" {{ $project->status == 'completed' ? 'selected' : '' }} disabled>Completed</option>
+                </select>
             </div>
         </div>
      </div>
@@ -249,7 +257,7 @@
     const statusInput = document.getElementById('projectStatusInput');
     if (actualFinishInput && statusInput) {
         actualFinishInput.addEventListener('change', function () {
-            statusInput.value = this.value ? 'completed' : '{{ $project->status }}';
+            statusInput.value = this.value ? 'completed' : '{{ $project->status === "completed" ? "in progress" : $project->status }}';
         });
     }
 </script>

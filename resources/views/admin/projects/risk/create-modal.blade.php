@@ -1,9 +1,26 @@
-<form action="{{ route('admin.projects.risk.store', $project) }}" method="POST" class="space-y-4">
+<form action="{{ route('admin.projects.risk.store', $project) }}" method="POST" class="space-y-4" novalidate>
     @csrf
     <div class="rounded-xl border border-cyan-100 bg-cyan-50/60 p-4">
         <p class="text-[9px] font-black uppercase tracking-widest text-cyan-700">Project Name</p>
         <p class="mt-1 text-sm font-black text-slate-900">{{ $project->project_name }}</p>
         <p class="text-[10px] font-bold text-slate-500">{{ $project->project_code }}</p>
+        <div id="poolImpactSummary" class="hidden mt-3">
+            <p class="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">From Risk Repository</p>
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Timeline</p>
+                    <span id="poolImpactTimeline" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700"></span>
+                </div>
+                <div>
+                    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Cost</p>
+                    <span id="poolImpactCost" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700"></span>
+                </div>
+                <div>
+                    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Quality</p>
+                    <span id="poolImpactQuality" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700"></span>
+                </div>
+            </div>
+        </div>
     </div>
 
     @if($errors->any())
@@ -21,7 +38,6 @@
         $fieldClass = 'w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-black text-slate-700 focus:ring-2 focus:ring-cyan-100 focus:bg-white focus:border-[#00ADC5]/30';
         $labelClass = 'mb-1 block text-[9px] font-black uppercase tracking-widest text-slate-500';
         $areaClass = $fieldClass . ' min-h-24 resize-y';
-        $riskCategories = ['Contractual', 'Design', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality'];
     @endphp
 
     <!-- Step indicator -->
@@ -37,31 +53,24 @@
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div>
                 <label class="{{ $labelClass }}" for="pool_risk_category">Pool Risk Category</label>
-                <select id="pool_risk_category" class="{{ $fieldClass }}">
+                <select id="pool_risk_category" name="risk_category" class="{{ $fieldClass }}">
                     <option value="">Select pool category</option>
                     @foreach(($poolCategories ?? []) as $pcat)
                         <option value="{{ $pcat }}">{{ $pcat }}</option>
                     @endforeach
                 </select>
+                <input type="hidden" name="pool_risk_category" id="pool_risk_category_hidden">
             </div>
             <div>
                 <label class="{{ $labelClass }}" for="pool_risk_id">Pool Risk ID</label>
                 <select id="pool_risk_id" class="{{ $fieldClass }}" disabled>
                     <option value="">Select category first</option>
                 </select>
+                <input type="hidden" name="pool_risk_id" id="pool_risk_id_hidden">
             </div>
             <div class="md:col-span-2">
                 <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">From Risk Repository</p>
                 <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Select a category, then a risk, to auto-fill Risk Name and Risk Description.</p>
-            </div>
-            <div>
-                <label class="{{ $labelClass }}" for="risk_category">Risk Category</label>
-                <select id="risk_category" name="risk_category" required class="{{ $fieldClass }}">
-                    <option value="">Select category</option>
-                    @foreach($riskCategories as $category)
-                        <option value="{{ $category }}" @selected(old('risk_category') === $category)>{{ $category }}</option>
-                    @endforeach
-                </select>
             </div>
             <div>
                 <label class="{{ $labelClass }}" for="risk_type">Risk Type</label>
@@ -133,15 +142,6 @@
                     <option value="">Select urgency</option>
                     @foreach(['Very Urgent', 'Urgent', 'Moderate', 'Low'] as $urgency)
                         <option value="{{ $urgency }}" @selected(old('risk_urgency') === $urgency)>{{ $urgency }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div>
-                <label class="{{ $labelClass }}" for="project_impact">Project Impact</label>
-                <select id="project_impact" name="project_impact" class="{{ $fieldClass }}">
-                    <option value="">Select impact</option>
-                    @foreach(['Time', 'Cost', 'Time & Cost'] as $impact)
-                        <option value="{{ $impact }}" @selected(old('project_impact') === $impact)>{{ $impact }}</option>
                     @endforeach
                 </select>
             </div>

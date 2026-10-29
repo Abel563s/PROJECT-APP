@@ -1,6 +1,5 @@
 <form action="{{ route('admin.projects.store') }}" method="POST" id="createModalForm" class="space-y-4">
     @csrf
-    <input type="hidden" name="status" value="in progress" id="projectStatusInput">
 
     <!-- Section 1: Project Identity -->
     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
@@ -46,6 +45,15 @@
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Scope</label>
                 <textarea name="scope" rows="2"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all"></textarea>
+            </div>
+            <div class="col-span-2 space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Project Status</label>
+                <select name="status" id="projectStatusInput" required
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
+                    <option value="in progress" selected>In Progress</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="completed" disabled>Completed</option>
+                </select>
             </div>
         </div>
      </div>

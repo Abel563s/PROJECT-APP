@@ -156,7 +156,7 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Budget Performance</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Cost Performance</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Schedule Performance</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center cursor-pointer" title="Click to toggle status">Project Status</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Project Status</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Actions</th>
                         </tr>
                     </thead>
@@ -254,15 +254,9 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    @can('update', $project)
-                                        <button type="button" onclick="toggleStatus({{ $project->id }}, this)" class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border hover:shadow-md transition-all {{ $project->status === 'in progress' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' : ($project->status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200') }}">
-                                            {{ ucfirst($project->status) }}
-                                        </button>
-                                    @else
-                                        <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border {{ $project->status === 'in progress' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' : ($project->status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200') }}">
-                                            {{ ucfirst($project->status) }}
-                                        </span>
-                                    @endcan
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border {{ $project->status === 'in progress' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' : ($project->status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200') }}">
+                                        {{ ucfirst($project->status) }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
@@ -455,61 +449,11 @@
                 });
         }
 
-        function closeCreateModal() {
-            document.getElementById('createModal').classList.add('hidden');
-        }
+    function closeCreateModal() {
+        document.getElementById('createModal').classList.add('hidden');
+    }
 
-        function toggleStatus(id, btn) {
-            const originalText = btn.textContent;
-            const originalClass = btn.className;
-            btn.disabled = true;
-            btn.style.opacity = '0.6';
-            
-            console.log('Toggling status for project ID:', id);
-            
-            fetch(`/admin/projects/${id}/toggle-status?_t=${Date.now()}`, {
-                method: 'PATCH',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                cache: 'no-store',
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Response data:', data);
-                if (data.success && data.status) {
-                    const newStatus = data.status;
-                    btn.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
-                    btn.className = 'inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border hover:shadow-md transition-all ' + (
-                        newStatus === 'in progress' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' :
-                        newStatus === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' :
-                        'bg-rose-50 text-rose-600 border-rose-200'
-                    );
-                } else {
-                    throw new Error('Unexpected response format');
-                }
-            })
-            .catch(error => {
-                console.error('Toggle status failed:', error);
-                btn.textContent = originalText;
-                btn.className = originalClass;
-                alert('Failed to update status: ' + error.message);
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.style.opacity = '1';
-            });
-        }
-
-        document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal();
                 closeEditModal();

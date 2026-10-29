@@ -67,7 +67,7 @@
                             </span>
                         </div>
                         <div>
-                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Overall Impact</p>
+                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Quality</p>
                             <span class="mt-1 inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$overall] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
                                 @if($overall)<i data-lucide="{{ $impactIcons[$overall] ?? 'circle' }}" class="w-3 h-3"></i>@endif
                                 {{ $overall ?: '—' }}

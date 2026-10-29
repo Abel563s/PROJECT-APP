@@ -15,7 +15,6 @@
         'impact_on_cost'                => '',
         'overall_impact_level'          => '',
         'stakeholder'                   => '',
-        'recommended_mitigation_measures' => '',
     ];
 
     $existingRows = [];
@@ -85,9 +84,8 @@
                     <th class="ss-th ss-col-detail border-b border-slate-200 px-2 py-2 text-left">Detailed Risk Explanation</th>
                     <th class="ss-th ss-col-timeline border-b border-slate-200 px-2 py-2 text-left">Timeline</th>
                     <th class="ss-th ss-col-cost border-b border-slate-200 px-2 py-2 text-left">Cost</th>
-                    <th class="ss-th ss-col-overall border-b border-slate-200 px-2 py-2 text-left">Overall Impact</th>
+                    <th class="ss-th ss-col-overall border-b border-slate-200 px-2 py-2 text-left">Quality</th>
                     <th class="ss-th ss-col-stakeholder border-b border-slate-200 px-2 py-2 text-left">Stakeholder</th>
-                    <th class="ss-th ss-col-mitigation border-b border-slate-200 px-2 py-2 text-left">Mitigation</th>
                     <th class="ss-th ss-col-actions border-b border-slate-200 px-2 py-2 text-center">Actions</th>
                 </tr>
             </thead>

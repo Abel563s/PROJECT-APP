@@ -16,7 +16,7 @@
                     <th class="px-4 py-3">Specific Risk</th>
                     <th class="px-4 py-3 text-center">Impact on Timeline</th>
                     <th class="px-4 py-3 text-center">Impact on Cost</th>
-                    <th class="px-4 py-3 text-center">Overall Impact Level</th>
+                    <th class="px-4 py-3 text-center">Quality</th>
                     <th class="px-4 py-3">Stakeholder</th>
                     <th class="px-4 py-3 text-right">Actions</th>
                 </tr>

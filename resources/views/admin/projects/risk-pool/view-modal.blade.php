@@ -110,7 +110,7 @@
                 </span>
             </div>
             <div>
-                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Overall Impact Level</p>
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Quality</p>
                 <span class="mt-1 inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$risk->overall_impact_level] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
                     @if($risk->overall_impact_level)<i data-lucide="{{ $impactIcons[$risk->overall_impact_level] ?? 'circle' }}" class="w-3 h-3"></i>@endif
                     {{ $risk->overall_impact_level ?: 'Unassigned' }}
@@ -138,36 +138,6 @@
             @endif
         </div>
     </div>
-
-    @if($risk->recommended_mitigation_measures)
-        <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
-            <div class="flex items-center gap-2">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
-                    <i data-lucide="shield-check" class="w-4 h-4"></i>
-                </div>
-                <div>
-                    <h4 class="text-sm font-black text-slate-900">Recommended Mitigation Measures</h4>
-                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Preventive and responsive actions</p>
-                </div>
-            </div>
-            <div class="bg-slate-50/50 rounded-lg border border-slate-100 p-3 max-h-48 overflow-y-auto custom-scrollbar">
-                <p class="whitespace-pre-wrap break-words text-xs font-black text-slate-900">{{ $risk->recommended_mitigation_measures }}</p>
-            </div>
-        </div>
-    @else
-        <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
-            <div class="flex items-center gap-2">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
-                    <i data-lucide="shield-check" class="w-4 h-4"></i>
-                </div>
-                <div>
-                    <h4 class="text-sm font-black text-slate-900">Recommended Mitigation Measures</h4>
-                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Preventive and responsive actions</p>
-                </div>
-            </div>
-            <p class="text-xs italic text-slate-400">No mitigation measures have been added.</p>
-        </div>
-    @endif
 
     <!-- Record Information -->
     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">

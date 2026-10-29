@@ -63,11 +63,13 @@
                                 class="cat-order rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-black text-slate-900 focus:border-[#00ADC5] focus:ring-cyan-100 w-16">
                         </td>
                         <td class="border-b border-slate-100/60 px-2 py-2">
-                            <label class="relative inline-flex h-5 w-9 items-center">
+                            <label class="relative inline-flex h-6 w-11 items-center">
                                 <input data-toggle="is_active" data-id="{{ $cat->id }}" type="checkbox"
                                     class="cat-toggle peer h-0 w-0 opacity-0" {{ $cat->is_active ? 'checked' : '' }}>
-                                <span
-                                    class="peer-focus:ring-[#00ADC5] peer-focus:ring-2 peer-focus:ring-offset-2 absolute inset-0 cursor-pointer rounded-full border border-slate-300 transition-colors {{ $cat->is_active ? 'bg-[#00ADC5]' : 'bg-slate-300' }}"></span>
+                                <span class="peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-offset-1 absolute inset-0 cursor-pointer rounded-full border border-slate-300 transition-colors duration-200
+                                    {{ $cat->is_active ? 'bg-green-500 ring-green-200' : 'bg-red-500 ring-rose-200' }}"></span>
+                                <span class="absolute inline-block h-5 w-5 transform rounded-full bg-white shadow pointer-events-none transition-transform duration-200
+                                    {{ $cat->is_active ? 'translate-x-6' : 'translate-x-1' }}"></span>
                             </label>
                         </td>
                         <td class="border-b border-slate-100/60 px-2 py-2 text-center align-middle">
@@ -93,9 +95,15 @@
         </table>
     </div>
 
-    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">
-        Inactive categories are hidden here. Edits auto-save when you click away.
-    </p>
+    <div class="flex items-center justify-between pt-1">
+        <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">
+            Inactive categories are hidden here. Edits auto-save when you click away.
+        </p>
+        <button type="button" id="catSaveAll"
+            class="inline-flex items-center gap-1.5 rounded-xl bg-[#00515f] px-4 py-2 text-[9px] font-black uppercase tracking-widest text-white shadow-lg shadow-[#00515f]/20 transition-all hover:bg-[#006572] active:scale-95">
+            <i data-lucide="save" class="h-3 w-3"></i> Save
+        </button>
+    </div>
 </div>
 
 <script type="application/json" id="categoryManagerState">{!! json_encode([

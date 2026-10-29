@@ -368,12 +368,51 @@
             const idSelect = container.querySelector('#pool_risk_id');
             const riskName = container.querySelector('#risk_name');
             const riskDesc = container.querySelector('#risk_description');
+            const poolCategoryHidden = container.querySelector('#pool_risk_category_hidden');
+            const poolRiskIdHidden = container.querySelector('#pool_risk_id_hidden');
+            const impactSummary = container.querySelector('#poolImpactSummary');
+            const impactTimeline = container.querySelector('#poolImpactTimeline');
+            const impactCost = container.querySelector('#poolImpactCost');
+            const impactQuality = container.querySelector('#poolImpactQuality');
             if (!cat || !idSelect) return;
+
+            const impactClasses = {
+                'High': 'bg-rose-50 text-rose-700 border-rose-200',
+                'Medium': 'bg-amber-50 text-amber-700 border-amber-200',
+                'Low': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            };
+
+            function applyImpact(el, level) {
+                if (level) {
+                    el.textContent = level;
+                    el.className = 'mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider ' + (impactClasses[level] || 'border-slate-200 bg-slate-100 text-slate-400');
+                } else {
+                    el.textContent = '—';
+                    el.className = 'mt-1 inline-flex rounded-lg border border-slate-200 bg-slate-100 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-400';
+                }
+            }
+
+            function showImpact(timeline, cost, quality) {
+                if (impactTimeline) applyImpact(impactTimeline, timeline);
+                if (impactCost) applyImpact(impactCost, cost);
+                if (impactQuality) applyImpact(impactQuality, quality);
+                if (impactSummary) {
+                    const hasAny = timeline || cost || quality;
+                    impactSummary.classList.toggle('hidden', !hasAny);
+                }
+            }
+
+            function clearImpact() {
+                showImpact('', '', '');
+                if (poolRiskIdHidden) poolRiskIdHidden.value = '';
+            }
 
             cat.addEventListener('change', async () => {
                 const category = cat.value;
+                if (poolCategoryHidden) poolCategoryHidden.value = category;
                 idSelect.innerHTML = '<option value="">Select risk</option>';
                 idSelect.disabled = !category;
+                clearImpact();
                 if (!category) return;
                 try {
                     const res = await fetch(url + '?category=' + encodeURIComponent(category));
@@ -384,17 +423,42 @@
                         o.textContent = (r.risk_id || '') + ' — ' + (r.specific_risk || '');
                         o.dataset.specific = r.specific_risk || '';
                         o.dataset.detail = r.detailed_risk_explanation || '';
+                        o.dataset.timeline = r.impact_on_timeline || '';
+                        o.dataset.cost = r.impact_on_cost || '';
+                        o.dataset.quality = r.overall_impact_level || '';
                         idSelect.appendChild(o);
                     });
+                    const selectedId = idSelect.dataset.selectedId;
+                    if (selectedId) {
+                        const opt = idSelect.querySelector('option[value="' + selectedId + '"]');
+                        if (opt) {
+                            idSelect.value = selectedId;
+                            idSelect.disabled = false;
+                            idSelect.dispatchEvent(new Event('change'));
+                        }
+                    }
                 } catch (e) { console.error(e); }
             });
 
             idSelect.addEventListener('change', () => {
                 const opt = idSelect.options[idSelect.selectedIndex];
-                if (!opt || !opt.value) return;
-                if (riskName) riskName.value = opt.dataset.specific || '';
-                if (riskDesc) riskDesc.value = opt.dataset.detail || '';
+                if (!opt || !opt.value) { clearImpact(); return; }
+                if (riskName && !riskName.value) riskName.value = opt.dataset.specific || '';
+                if (riskDesc && !riskDesc.value) riskDesc.value = opt.dataset.detail || '';
+                if (poolRiskIdHidden) poolRiskIdHidden.value = opt.value;
+                showImpact(opt.dataset.timeline, opt.dataset.cost, opt.dataset.quality);
             });
+
+            const initialCategory = cat.value;
+            if (initialCategory) {
+                cat.dispatchEvent(new Event('change'));
+            } else {
+                const selectedId = idSelect.dataset.selectedId;
+                if (selectedId && poolRiskIdHidden) {
+                    poolRiskIdHidden.value = selectedId;
+                    idSelect.value = selectedId;
+                }
+            }
         }
 
         function initRiskStepper(container) {
@@ -419,14 +483,19 @@
                 if (backBtn) backBtn.style.display = step <= 1 ? 'none' : 'inline-flex';
                 if (nextBtn) {
                     const isLast = step >= panels.length;
-                    nextBtn.type = isLast ? 'submit' : 'button';
                     nextBtn.textContent = isLast ? (nextBtn.dataset.submitLabel || 'Save Risk') : 'Next';
                 }
                 if (step === 2) updateRiskRating();
             }
 
             if (backBtn) backBtn.addEventListener('click', () => { if (step > 1) { step--; render(); } });
-            if (nextBtn) nextBtn.addEventListener('click', () => { if (step < panels.length) { step++; render(); } });
+            if (nextBtn) nextBtn.addEventListener('click', () => {
+                if (step < panels.length) { step++; render(); }
+                else {
+                    const form = container.querySelector('form');
+                    if (form) form.submit();
+                }
+            });
             render();
         }
 

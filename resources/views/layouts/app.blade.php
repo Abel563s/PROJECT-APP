@@ -121,8 +121,7 @@
         :is(body.management-readonly, body.project-coordinator-readonly) a[href*="/edit"],
         :is(body.management-readonly, body.project-coordinator-readonly) button[onclick*="create" i],
         :is(body.management-readonly, body.project-coordinator-readonly) button[onclick*="edit" i],
-        :is(body.management-readonly, body.project-coordinator-readonly) button[onclick*="delete" i],
-        :is(body.management-readonly, body.project-coordinator-readonly) button[onclick*="toggleStatus" i] {
+        :is(body.management-readonly, body.project-coordinator-readonly) button[onclick*="delete" i] {
             display: none !important;
         }
     </style>

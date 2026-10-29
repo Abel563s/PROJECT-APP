@@ -82,7 +82,7 @@
                 </select>
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="overall_impact_level">Overall Impact Level</label>
+                <label class="{{ $labelClass }}" for="overall_impact_level">Quality</label>
                 <select id="overall_impact_level" name="overall_impact_level" class="{{ $fieldClass }}">
                     <option value="">Select level</option>
                     @foreach($impactLevels as $level)

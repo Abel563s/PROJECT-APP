@@ -149,7 +149,7 @@
             </div>
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Last Updated</label>
-                <input type="text" id="lastUpdatedDisplay" value="{{ $issue->last_updated_date ? $issue->last_updated_date->format('M d, Y H:i') : now()->format('M d, Y H:i') }}" readonly
+                <input type="text" id="lastUpdatedDisplay" value="{{ $issue->last_updated_date ? $issue->last_updated_date->format('M d, Y') : now()->format('M d, Y') }}" readonly
                     class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-500 cursor-not-allowed focus:ring-0">
             </div>
             <div class="col-span-2 space-y-1">

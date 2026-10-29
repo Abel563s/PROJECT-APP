@@ -7,9 +7,9 @@
     ];
     $kpis = [
         ['label' => 'Total Risks',    'key' => 'total',  'icon' => 'triangle-alert', 'tone' => 'slate',  'desc' => 'All records',      'level' => null],
-        ['label' => 'High Impact',    'key' => 'high',   'icon' => 'triangle-alert', 'tone' => 'rose',   'desc' => 'Overall impact',   'level' => 'High'],
-        ['label' => 'Medium Impact',  'key' => 'medium', 'icon' => 'minus',          'tone' => 'amber',  'desc' => 'Overall impact',   'level' => 'Medium'],
-        ['label' => 'Low Impact',     'key' => 'low',    'icon' => 'arrow-down',     'tone' => 'cyan',   'desc' => 'Overall impact',   'level' => 'Low'],
+        ['label' => 'High Impact',    'key' => 'high',   'icon' => 'triangle-alert', 'tone' => 'rose',   'desc' => 'Quality',   'level' => 'High'],
+        ['label' => 'Medium Impact',  'key' => 'medium', 'icon' => 'minus',          'tone' => 'amber',  'desc' => 'Quality',   'level' => 'Medium'],
+        ['label' => 'Low Impact',     'key' => 'low',    'icon' => 'arrow-down',     'tone' => 'cyan',   'desc' => 'Quality',   'level' => 'Low'],
     ];
     $activeImpact = $filters['overall_impact_level'] ?? null;
 @endphp

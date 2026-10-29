@@ -171,9 +171,32 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <button onclick="openViewModal({{ $issue->id }})" class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-sky-500 hover:border-sky-500 hover:shadow-sm transition-all" title="View">
-                                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                    </button>
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <button onclick="openViewModal({{ $issue->id }})"
+                                            class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-sky-500 hover:border-sky-500 hover:shadow-sm transition-all"
+                                            title="View">
+                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                        @if(auth()->user()->isAdmin() || (auth()->user()->isUser() && ($issue->project ? auth()->user()->canManageProject($issue->project) : false) && (int) $issue->created_by === (int) auth()->id()))
+                                            <button onclick="openEditModal({{ $issue->id }})"
+                                                class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-amber-500 hover:border-amber-500 hover:shadow-sm transition-all"
+                                                title="Edit">
+                                                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                            </button>
+                                        @endif
+                                        @if(auth()->user()->isAdmin())
+                                            <form action="{{ route('admin.projects.issues.destroy', $issue->id) }}" method="POST" class="inline"
+                                                onsubmit="return confirm('Are you sure you want to delete this issue?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-rose-500 hover:border-rose-500 hover:shadow-sm transition-all"
+                                                    title="Delete">
+                                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -238,6 +261,33 @@
         </div>
     </div>
 
+    <!-- Edit Modal -->
+    <div id="editModal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm hidden">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
+                        <i data-lucide="pencil" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-black text-white">Edit Issue</h3>
+                        <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Update issue details</p>
+                    </div>
+                </div>
+                <button onclick="closeEditModal()"
+                    class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div id="editModalContent" class="p-6 overflow-y-auto flex-1">
+                <div class="flex items-center justify-center py-12">
+                    <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function openViewModal(id) {
             fetch(`/admin/projects/issues/${id}?partial=1&action=view`)
@@ -263,12 +313,74 @@
             document.getElementById('viewModal').classList.add('hidden');
         }
 
+        function initIssueForm() {
+            const projectSelect = document.getElementById('issueProjectSelect');
+            const sectorInput = document.getElementById('issueSector');
+            const codeInput = document.getElementById('issueProjectCode');
+            const lastUpdatedInput = document.getElementById('lastUpdatedDate');
+            const lastUpdatedDisplay = document.getElementById('lastUpdatedDisplay');
+
+            function updateTimestamp() {
+                const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+                if (lastUpdatedInput) lastUpdatedInput.value = now;
+                if (lastUpdatedDisplay) lastUpdatedDisplay.value = now;
+            }
+
+            if (projectSelect) {
+                projectSelect.addEventListener('change', function () {
+                    const selectedOption = this.options[this.selectedIndex];
+                    if (selectedOption && selectedOption.dataset.sector) {
+                        sectorInput.value = selectedOption.dataset.sector;
+                        codeInput.value = selectedOption.dataset.code;
+                    } else {
+                        sectorInput.value = '';
+                        codeInput.value = '';
+                    }
+                    updateTimestamp();
+                });
+            }
+
+            updateTimestamp();
+        }
+
+        function openEditModal(id) {
+            const url = `{{ route('admin.projects.issues.edit', ['issue' => '__ISSUE__']) }}`.replace('__ISSUE__', encodeURIComponent(id));
+            fetch(`${url}?partial=1`)
+                .then(response => {
+                    if (!response.ok) throw new Error(`Unable to load the issue form (${response.status}).`);
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById('editModalContent').innerHTML = html;
+                    document.getElementById('editModal').classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                    if (window.lucide) lucide.createIcons();
+                    initIssueForm();
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert(error.message || 'Unable to load the issue form.');
+                });
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('editModal').addEventListener('click', function (e) {
+            if (e.target === this) closeEditModal();
+        });
+
         document.getElementById('viewModal').addEventListener('click', function (e) {
             if (e.target === this) closeViewModal();
         });
 
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeViewModal();
+            if (e.key === 'Escape') {
+                closeViewModal();
+                closeEditModal();
+            }
         });
 
         if (window.lucide) lucide.createIcons();

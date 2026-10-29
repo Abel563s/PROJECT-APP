@@ -152,7 +152,7 @@ it('renders the view modal content for a risk', function () {
         ->assertOk()
         ->assertSee('Detailed Risk Explanation')
         ->assertSee('A delay in receiving the client advance payment.')
-        ->assertSee('Recommended Mitigation Measures')
+        ->assertSee('Stakeholder')
         ->assertSee('1.01');
 });
 
@@ -425,12 +425,50 @@ it('lets an admin manage risk categories in the database', function () {
 
     expect(\App\Models\RiskCategory::where('name', 'Technology Risks')->exists())->toBeTrue();
 
+     $cat = \App\Models\RiskCategory::where('name', 'Financial Risks')->first();
+     $this->actingAs($admin)
+         ->putJson(route('admin.projects.risk-pool.categories.update', $cat), [
+             'name' => 'Financial Risks', 'code' => '1', 'display_order' => 1, 'is_active' => true,
+         ])
+         ->assertOk();
+});
+
+it('partial-updates a category with only is_active (toggle without name)', function () {
+    $admin = adminUser();
     $cat = \App\Models\RiskCategory::where('name', 'Financial Risks')->first();
+
+    // Deactivating must not require the name field.
     $this->actingAs($admin)
         ->putJson(route('admin.projects.risk-pool.categories.update', $cat), [
-            'name' => 'Financial Risks', 'code' => '1', 'display_order' => 1, 'is_active' => true,
+            'is_active' => false,
         ])
         ->assertOk();
+
+    expect(\App\Models\RiskCategory::where('name', 'Financial Risks')->value('is_active'))->toBeFalse();
+
+    // Re-activating must also work without the name field.
+    $this->actingAs($admin)
+        ->putJson(route('admin.projects.risk-pool.categories.update', $cat), [
+            'is_active' => true,
+        ])
+        ->assertOk();
+
+    expect(\App\Models\RiskCategory::where('name', 'Financial Risks')->value('is_active'))->toBeTrue();
+});
+
+it('partial-updates a category with only code (inline edit without name)', function () {
+    $admin = adminUser();
+    $cat = \App\Models\RiskCategory::where('name', 'Financial Risks')->first();
+
+    $this->actingAs($admin)
+        ->putJson(route('admin.projects.risk-pool.categories.update', $cat), [
+            'code' => '99',
+        ])
+        ->assertOk();
+
+    expect(\App\Models\RiskCategory::where('name', 'Financial Risks')->value('code'))->toBe('99');
+    // is_active must be preserved (not flipped to false).
+    expect(\App\Models\RiskCategory::where('name', 'Financial Risks')->value('is_active'))->toBeTrue();
 });
 
 it('prevents deactivating-in-use categories from being deleted and blocks non-admins', function () {
