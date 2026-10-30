@@ -265,6 +265,23 @@ it('allows admins to create and update multiple coordinator assignments', functi
     expect($secondCoordinator->fresh()->role_label)->toBe('Project Coordinator');
 });
 
+it('allows superadmin to create and delete projects', function () {
+    $superadmin = User::factory()->create(['role' => 'superadmin', 'must_change_password' => false]);
+
+    $this->actingAs($superadmin)->get(route('admin.projects.create').'?partial=1')
+        ->assertOk();
+
+    $this->actingAs($superadmin)->post(route('admin.projects.store'), [
+        'project_name' => 'Superadmin Project',
+    ])->assertRedirect(route('admin.projects.index'));
+
+    $project = Project::where('project_name', 'Superadmin Project')->firstOrFail();
+
+    $this->actingAs($superadmin)->delete(route('admin.projects.destroy', $project))
+        ->assertRedirect(route('admin.projects.index'));
+    $this->assertDatabaseMissing('projects', ['id' => $project->id]);
+});
+
 it('allows admins to assign projects while creating or editing coordinators', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $firstProject = makeAccessProject('Coordinator Project One');

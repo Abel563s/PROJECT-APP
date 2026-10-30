@@ -45,7 +45,7 @@ class ProjectProgressUpdateController extends Controller
     public function create()
     {
         $user = request()->user();
-        abort_unless($user->isAdmin() || $user->isUser(), 403);
+        abort_unless($user->isAdmin() || $user->isSuperadmin() || $user->isUser(), 403);
         $projects = $this->availableProjects($user);
 
         if (request()->has('partial')) {
@@ -148,7 +148,7 @@ class ProjectProgressUpdateController extends Controller
         $project = Project::findOrFail($validated['project_id']);
         $this->authorize('update', $project);
 
-        if (!$request->user()->isAdmin()) {
+        if (!$request->user()->isAdmin() && !$request->user()->isSuperadmin()) {
             unset($validated['data_date']);
         }
 
@@ -167,7 +167,7 @@ class ProjectProgressUpdateController extends Controller
 
     private function availableProjects(\App\Models\User $user)
     {
-        return $user->isAdmin()
+        return $user->isAdmin() || $user->isSuperadmin()
             ? Project::orderBy('project_name')->get()
             : $user->assignedProjects()->orderBy('project_name')->get();
     }

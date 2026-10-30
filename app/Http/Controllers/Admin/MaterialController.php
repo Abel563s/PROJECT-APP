@@ -283,7 +283,7 @@ class MaterialController extends Controller
 
     private function scopeProjectManagementForUser($query)
     {
-        if (auth()->user()->isAdmin() || auth()->user()->isDceo()) {
+        if (auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || auth()->user()->isDceo()) {
             return $query;
         }
 
@@ -315,7 +315,7 @@ class MaterialController extends Controller
 
     private function authorizeViewHrRecord(ManageMaterial $material): void
     {
-        if (auth()->user()->isAdmin() || auth()->user()->isDceo() || auth()->id() === $material->created_by) {
+        if (auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || auth()->user()->isDceo() || auth()->id() === $material->created_by) {
             return;
         }
 
@@ -324,7 +324,7 @@ class MaterialController extends Controller
 
     private function authorizeEditHrRecord(ManageMaterial $material): void
     {
-        if (auth()->user()->isAdmin() || auth()->user()->isDceo() || auth()->id() === $material->created_by) {
+        if (auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || auth()->user()->isDceo() || auth()->id() === $material->created_by) {
             return;
         }
 
@@ -333,7 +333,7 @@ class MaterialController extends Controller
 
     private function authorizeDeleteHrRecord(ManageMaterial $material): void
     {
-        if (auth()->user()->isAdmin() || auth()->user()->isDceo() || auth()->id() === $material->created_by) {
+        if (auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || auth()->user()->isDceo() || auth()->id() === $material->created_by) {
             return;
         }
 

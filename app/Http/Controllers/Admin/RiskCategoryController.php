@@ -13,7 +13,7 @@ class RiskCategoryController extends Controller
 {
     private function authorizeAdmin(): void
     {
-        abort_unless(auth()->check() && auth()->user()->isAdmin(), 403);
+        abort_unless(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()), 403);
     }
 
     public function index()

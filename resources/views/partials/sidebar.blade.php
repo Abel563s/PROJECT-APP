@@ -180,7 +180,7 @@
                     ];
 
                     // 7. Roles (User Management)
-                    if (Auth::user()->isAdmin()) {
+                    if (Auth::user()->isAdmin() || Auth::user()->isSuperadmin()) {
                         $menu[] = [
                             'label' => 'Access Control',
                             'icon' => 'users-2',
@@ -188,7 +188,8 @@
                             'active' => request()->routeIs('admin.roles.*') || request()->routeIs('admin.users.*')
                         ];
                     }
-                } else {
+
+                    } else {
                     $menu[] = ['label' => 'Dashboard', 'icon' => 'layout-dashboard', 'route' => 'dashboard', 'active' => request()->routeIs('dashboard')];
                 }
             }
@@ -287,7 +288,7 @@
                 </div>
             </div>
 
-            @if(Auth::user()->isAdmin())
+            @if(Auth::user()->isAdmin() || Auth::user()->isSuperadmin())
             <a href="{{ route('admin.settings.index') }}"
                 class="sidebar-text p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-lg transition-all shadow-sm border border-transparent hover:border-white/20 group/settings"
                 title="Security Settings">

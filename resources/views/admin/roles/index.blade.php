@@ -13,21 +13,38 @@
                     </h2>
                     <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Identity Matrix & Node Permissions</p>
                 </div>
-            </div>
-            <button onclick="openCreateModal()"
-                class="group/btn relative px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20">
-                <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
-                <span class="relative flex items-center gap-1.5">
-                    <i data-lucide="plus" class="w-3 h-3"></i>
-                    New Identity
-                </span>
-            </button>
-        </div>
+             </div>
+              <div class="flex items-center gap-2.5">
+                  @if(auth()->user()->isSuperadmin())
+                  <button onclick="openOrgManagementModal()"
+                      class="group/btn relative px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20">
+                      <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
+                      <span class="relative flex items-center gap-1.5">
+                          <i data-lucide="building-2" class="w-3 h-3"></i>
+                          Manage Business Units &amp; Sectors
+                      </span>
+                  </button>
+                  @endif
+                  <button onclick="openCreateModal()"
+                     class="group/btn relative px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20">
+                     <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
+                     <span class="relative flex items-center gap-1.5">
+                         <i data-lucide="plus" class="w-3 h-3"></i>
+                         New Identity
+                     </span>
+                 </button>
+             </div>
+         </div>
 
-        <!-- Role Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+         <!-- Role Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
             @php
                 $roleConfig = [
+                    'superadmin' => [
+                        'label' => 'Superadmin',
+                        'icon' => 'shield-check',
+                        'color' => 'bg-purple-50 text-purple-600 border-purple-100',
+                    ],
                     'admin' => [
                         'label' => 'Admin',
                         'icon' => 'crown',
@@ -119,10 +136,11 @@
                     <label for="identityRoleFilter" class="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-500">Role</label>
                     <select id="identityRoleFilter" name="role"
                         class="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
-                        <option value="">All roles</option>
-                        <option value="admin" @selected(request('role') === 'admin')>Admin</option>
-                        <option value="manager" @selected(request('role') === 'manager')>Management</option>
-                        <option value="user" @selected(request('role') === 'user')>Project Coordinator</option>
+                    <option value="">All roles</option>
+                         <option value="superadmin" @selected(request('role') === 'superadmin')>Superadmin</option>
+                         <option value="admin" @selected(request('role') === 'admin')>Admin</option>
+                         <option value="manager" @selected(request('role') === 'manager')>Management</option>
+                         <option value="user" @selected(request('role') === 'user')>Project Coordinator</option>
                     </select>
                 </div>
                 <div>
@@ -156,7 +174,9 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Identity</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Department</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Role</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Assigned Projects</th>
+                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Business Unit</th>
+                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Sector</th>
+                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Assigned Projects</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Status</th>
                             <th class="px-6 py-3 text-right border-b border-[#00515f]/30"></th>
                         </tr>
@@ -187,6 +207,7 @@
                                 <td class="px-6 py-4">
                                     @php
                                         $roleStyles = match ($user->role) {
+                                            'superadmin' => 'bg-purple-100/50 text-purple-600 border-purple-200',
                                             'admin' => 'bg-emerald-100/50 text-emerald-600 border-emerald-200',
                                             'manager' => 'bg-indigo-100/50 text-indigo-600 border-indigo-200',
                                             default => 'bg-slate-100/50 text-slate-500 border-slate-200',
@@ -194,6 +215,24 @@
                                     @endphp
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $roleStyles }} border">
                                         {{ $user->role_label }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded">
+                                        @if($user->businessUnit)
+                                            {{ $user->businessUnit->name }}
+                                        @else
+                                            <span class="text-slate-400">---</span>
+                                        @endif
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded">
+                                        @if($user->sector)
+                                            {{ $user->sector->name }}
+                                        @else
+                                            <span class="text-slate-400">---</span>
+                                        @endif
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
@@ -241,7 +280,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-16 text-center">
+                                <td colspan="9" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="user-x" class="w-8 h-8"></i>
@@ -305,7 +344,50 @@
         </div>
     </div>
 
+    <!-- Org Management Modal -->
+    <div id="orgManagementModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeOrgManagementModal()"></div>
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
+                    <h3 class="text-base font-black text-slate-900">Business Units & Sectors</h3>
+                    <button type="button" onclick="closeOrgManagementModal()" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div id="orgManagementModalContent" class="p-0">
+                    <div class="flex items-center justify-center py-12">
+                        <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        function openOrgManagementModal() {
+            const content = document.getElementById('orgManagementModalContent');
+            content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div></div>';
+            document.getElementById('orgManagementModal').classList.remove('hidden');
+
+            fetch(`/admin/business-units/manage?partial=1`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Unable to load organizational management.');
+                    return response.text();
+                })
+                .then(html => {
+                    content.innerHTML = html;
+                    if (window.lucide) lucide.createIcons();
+                })
+                .catch(error => {
+                    content.innerHTML = `<p class="rounded-xl bg-rose-50 p-4 text-sm font-semibold text-rose-700">${error.message}</p>`;
+                });
+        }
+
+        function closeOrgManagementModal() {
+            document.getElementById('orgManagementModal').classList.add('hidden');
+        }
+
         function openCreateModal() {
             fetch(`/admin/users/create?partial=1`)
                 .then(response => response.text())
@@ -314,6 +396,7 @@
                     document.getElementById('createModal').classList.remove('hidden');
                     bindAssignedProjectVisibility('createUserRole', 'createAssignedProjects');
                     updateCreateIdentityFields();
+                    updateCreateSectorOptions();
                     bindProjectPicker('createProjectPicker');
                     bindCreateIdentityForm();
                     if (window.lucide) lucide.createIcons();
@@ -372,6 +455,8 @@
                 .then(html => {
                     content.innerHTML = html;
                     bindAssignedProjectVisibility('editIdentityRole', 'editIdentityAssignedProjects');
+                    updateEditIdentityFields();
+                    updateEditSectorOptions();
                     bindProjectPicker('editIdentityProjectPicker');
                     if (window.lucide) lucide.createIcons();
                 })
@@ -396,17 +481,81 @@
         function updateCreateIdentityFields() {
             const roleSelect = document.getElementById('createUserRole');
             const assignments = document.getElementById('createAssignedProjects');
+            const orgAssignment = document.getElementById('createOrgAssignment');
             const passwordFields = document.getElementById('createInitialPasswordFields');
             const defaultPasswordNotice = document.getElementById('createDefaultPasswordNotice');
             if (!roleSelect || !assignments || !passwordFields || !defaultPasswordNotice) return;
 
-            const isAdmin = roleSelect.value === 'admin';
-            assignments.classList.toggle('hidden', roleSelect.value !== 'user');
+            const selectedRole = roleSelect.value;
+            const isAdmin = selectedRole === 'admin';
+            const showOrg = ['user', 'manager', 'admin', 'superadmin'].includes(selectedRole);
+            assignments.classList.toggle('hidden', selectedRole !== 'user');
+            orgAssignment?.classList.toggle('hidden', !showOrg);
             passwordFields.classList.toggle('hidden', !isAdmin);
             defaultPasswordNotice.classList.toggle('hidden', isAdmin);
             passwordFields.querySelectorAll('input').forEach(input => {
                 input.disabled = !isAdmin;
                 input.required = isAdmin;
+            });
+            bindAssignedProjectVisibility('createUserRole', 'createAssignedProjects');
+            orgAssignment?.classList.toggle('hidden', !showOrg);
+        }
+
+        function updateCreateSectorOptions() {
+            const buSelect = document.getElementById('createBusinessUnit');
+            const sectorSelect = document.getElementById('createSector');
+            if (!buSelect || !sectorSelect) return;
+
+            sectorSelect.innerHTML = '<option value="">Select a Sector</option>';
+
+            const selectedOption = buSelect.options[buSelect.selectedIndex];
+            const sectors = selectedOption?.dataset?.sectors ? JSON.parse(selectedOption.dataset.sectors) : [];
+
+            sectors.forEach(sector => {
+                const option = document.createElement('option');
+                option.value = sector.id;
+                option.textContent = sector.name;
+                sectorSelect.appendChild(option);
+            });
+
+            sectorSelect.disabled = buSelect.value === '';
+        }
+
+        function updateEditIdentityFields() {
+            const roleSelect = document.getElementById('editIdentityRole');
+            const orgAssignment = document.getElementById('editOrgAssignment');
+            const assignments = document.getElementById('editIdentityAssignedProjects');
+            if (!roleSelect) return;
+
+            const selectedRole = roleSelect.value;
+            const showOrg = ['user', 'manager', 'admin', 'superadmin'].includes(selectedRole);
+            orgAssignment?.classList.toggle('hidden', !showOrg);
+            assignments.classList.toggle('hidden', selectedRole !== 'user');
+        }
+
+        function updateEditSectorOptions() {
+            const buSelect = document.getElementById('editIdentityBU');
+            const sectorSelect = document.getElementById('editIdentitySector');
+            if (!sectorSelect) return;
+
+            sectorSelect.innerHTML = '<option value="">None</option>';
+
+            if (!buSelect || buSelect.value === '') {
+                sectorSelect.disabled = true;
+                return;
+            }
+
+            sectorSelect.disabled = false;
+            sectorSelect.innerHTML = '<option value="">None</option>';
+
+            const selectedOption = buSelect.options[buSelect.selectedIndex];
+            const sectors = selectedOption?.dataset?.sectors ? JSON.parse(selectedOption.dataset.sectors) : [];
+
+            sectors.forEach(sector => {
+                const option = document.createElement('option');
+                option.value = sector.id;
+                option.textContent = sector.name;
+                sectorSelect.appendChild(option);
             });
         }
 
@@ -449,12 +598,226 @@
 
         function closeEditIdentityModal() {
             document.getElementById('editIdentityModal').classList.add('hidden');
+            document.getElementById('orgManagementModal').classList.add('hidden');
+        }
+
+        const sectorApiBase = '/admin/sectors';
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        async function showOrgError(message) {
+            const el = document.getElementById('orgManagementErrors');
+            if (!el) return;
+            el.textContent = message;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 5000);
+        }
+
+        async function saveBusinessUnit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const buId = formData.get('id');
+            const url = buId ? `/admin/business-units/${buId}` : '/admin/business-units';
+            const method = buId ? 'PUT' : 'POST';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    body: formData,
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken },
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Unable to save Business Unit.');
+                closeOrgForm('buForm');
+                closeOrgManagementModal();
+                window.location.reload();
+            } catch (error) {
+                showOrgError(error.message);
+            }
+        }
+
+        async function saveSector(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const sectorId = formData.get('id');
+            const url = sectorId ? `${sectorApiBase}/${sectorId}` : `${sectorApiBase}`;
+            const method = sectorId ? 'PUT' : 'POST';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    body: formData,
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken },
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Unable to save Sector.');
+                closeOrgForm('sectorForm');
+                closeOrgManagementModal();
+                window.location.reload();
+            } catch (error) {
+                showOrgError(error.message);
+            }
+        }
+
+        function openBuForm(buId = null) {
+            const formContainer = document.getElementById('buFormContainer');
+            if (!formContainer) return;
+            let formHtml = '';
+            if (buId) {
+                fetch(`/admin/business-units/${buId}`, { headers: { 'X-CSRF-TOKEN': csrfToken } })
+                    .then(r => r.json())
+                    .then(bu => {
+                        formHtml = `
+                            <form id="buForm" onsubmit="saveBusinessUnit(event)" class="mb-4 rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-4">
+                                <h4 class="text-sm font-black text-slate-900">Edit Business Unit</h4>
+                                <input type="hidden" name="id" value="${bu.id}">
+                                <div><label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-1">Name *</label>
+                                    <input type="text" name="name" value="${bu.name}" required class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"></label></div>
+                                <div><label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-1">Code</label>
+                                    <input type="text" name="code" value="${bu.code || ''}" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"></label></div>
+                                <div><label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-1">Description</label>
+                                    <textarea name="description" rows="2" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">${bu.description || ''}</textarea></div>
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" name="is_active" value="1" ${bu.is_active ? 'checked' : ''} class="h-4 w-4">
+                                    <label class="text-[9px] font-black uppercase text-slate-500">Active</label>
+                                </div>
+                                <div class="flex justify-end gap-2">
+                                    <button type="button" onclick="closeOrgForm('buForm')" class="px-3 py-1 text-[9px] font-black text-slate-500">Cancel</button>
+                                    <button type="submit" class="px-3 py-1 text-[9px] font-black text-white bg-[#00ADC5] rounded-lg">Save</button>
+                                </div>
+                            </form>
+                        `;
+                        formContainer.innerHTML = formHtml;
+                    });
+                return;
+            }
+            formHtml = `
+                <form id="buForm" onsubmit="saveBusinessUnit(event)" class="mb-4 rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-4">
+                    <h4 class="text-sm font-black text-slate-900">New Business Unit</h4>
+                    <div><label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-1">Name *</label>
+                        <input type="text" name="name" required class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"></label></div>
+                    <div><label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-1">Code</label>
+                        <input type="text" name="code" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"></label></div>
+                    <div><label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-1">Description</label>
+                        <textarea name="description" rows="2" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"></textarea></div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" name="is_active" value="1" checked class="h-4 w-4">
+                        <label class="text-[9px] font-black uppercase text-slate-500">Active</label>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="closeOrgForm('buForm')" class="px-3 py-1 text-[9px] font-black text-slate-500">Cancel</button>
+                        <button type="submit" class="px-3 py-1 text-[9px] font-black text-white bg-[#00ADC5] rounded-lg">Create</button>
+                    </div>
+                </form>
+            `;
+            formContainer.innerHTML = formHtml;
+        }
+
+        function openSectorForm(buId, sectorId = null) {
+            const formContainer = document.getElementById('sectorFormContainer');
+            if (!formContainer) return;
+            let formHtml = '';
+            if (sectorId) {
+                fetch(`${sectorApiBase}/${sectorId}`, { headers: { 'X-CSRF-TOKEN': csrfToken } })
+                    .then(r => r.json())
+                    .then(sector => {
+                        formHtml = `
+                            <form id="sectorForm" onsubmit="saveSector(event)" class="mb-4 rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-4">
+                                <h4 class="text-sm font-black text-slate-900">Edit Sector</h4>
+                                <input type="hidden" name="id" value="${sector.id}">
+                                <input type="hidden" name="business_unit_id" value="${buId}">
+                                <div><label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-1">Name *</label>
+                                    <input type="text" name="name" value="${sector.name}" required class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"></label></div>
+                                <div><label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-1">Description</label>
+                                    <textarea name="description" rows="2" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">${sector.description || ''}</textarea></div>
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" name="is_active" value="1" ${sector.is_active ? 'checked' : ''} class="h-4 w-4">
+                                    <label class="text-[9px] font-black uppercase text-slate-500">Active</label>
+                                </div>
+                                <div class="flex justify-end gap-2">
+                                    <button type="button" onclick="closeOrgForm('sectorForm')" class="px-3 py-1 text-[9px] font-black text-slate-500">Cancel</button>
+                                    <button type="submit" class="px-3 py-1 text-[9px] font-black text-white bg-[#00ADC5] rounded-lg">Save</button>
+                                </div>
+                            </form>
+                        `;
+                        formContainer.innerHTML = formHtml;
+                    });
+                return;
+            }
+            formHtml = `
+                <form id="sectorForm" onsubmit="saveSector(event)" class="mb-4 rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-4">
+                    <h4 class="text-sm font-black text-slate-900">New Sector</h4>
+                    <input type="hidden" name="business_unit_id" value="${buId}">
+                    <div><label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-1">Name *</label>
+                        <input type="text" name="name" required class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"></label></div>
+                    <div><label class="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-1">Description</label>
+                        <textarea name="description" rows="2" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"></textarea></div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" name="is_active" value="1" checked class="h-4 w-4">
+                        <label class="text-[9px] font-black uppercase text-slate-500">Active</label>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="closeOrgForm('sectorForm')" class="px-3 py-1 text-[9px] font-black text-slate-500">Cancel</button>
+                        <button type="submit" class="px-3 py-1 text-[9px] font-black text-white bg-[#00ADC5] rounded-lg">Create</button>
+                    </div>
+                </form>
+            `;
+            formContainer.innerHTML = formHtml;
+        }
+
+        function closeOrgForm(formId) {
+            const container = document.getElementById(formId + 'Container');
+            if (container) container.innerHTML = '';
+        }
+
+        async function editBusinessUnit(buId) {
+            closeOrgForm('sectorForm');
+            openBuForm(buId);
+        }
+
+        async function editSector(sectorId) {
+            const response = await fetch(`${sectorApiBase}/${sectorId}`, { headers: { 'X-CSRF-TOKEN': csrfToken } }).then(r => r.json());
+            closeOrgForm('buForm');
+            openSectorForm(response.business_unit_id, sectorId);
+        }
+
+        async function deleteBusinessUnit(buId) {
+            if (!confirm('Are you sure?')) return;
+            try {
+                const response = await fetch(`/admin/business-units/${buId}`, {
+                    method: 'DELETE',
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken },
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Unable to delete.');
+                window.location.reload();
+            } catch (error) {
+                showOrgError(error.message);
+            }
+        }
+
+        async function deleteSector(sectorId) {
+            if (!confirm('Are you sure?')) return;
+            try {
+                const response = await fetch(`${sectorApiBase}/${sectorId}`, {
+                    method: 'DELETE',
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken },
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Unable to delete.');
+                window.location.reload();
+            } catch (error) {
+                showOrgError(error.message);
+            }
         }
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeCreateModal();
                 closeEditIdentityModal();
+                const orgModal = document.getElementById('orgManagementModal');
+                if (orgModal) orgModal.classList.add('hidden');
             }
         });
     </script>

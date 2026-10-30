@@ -9,7 +9,7 @@ class ProjectPolicy
 {
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isSuperadmin();
     }
 
     public function update(User $user, Project $project): bool
@@ -19,6 +19,6 @@ class ProjectPolicy
 
     public function delete(User $user, Project $project): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isSuperadmin();
     }
 }

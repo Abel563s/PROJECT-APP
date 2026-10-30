@@ -162,7 +162,7 @@
                                             title="Edit">
                                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                         </button>
-                                        @if(auth()->user()->isAdmin())
+                                        @if(auth()->user()->isAdmin() || auth()->user()->isSuperadmin())
                                             <form action="{{ route('admin.material.destroy', $record) }}" method="POST" class="inline"
                                                 onsubmit="return confirm('Are you sure you want to delete this material? This action cannot be undone.');">
                                                 @csrf

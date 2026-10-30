@@ -2,6 +2,13 @@
     @csrf
     @method('PUT')
 
+    @php
+        $canManageOrg = auth()->user()->isSuperadmin() || auth()->user()->isAdmin();
+        $selectedBuId = old('business_unit_id', $user->business_unit_id);
+        $selectedSectorId = old('sector_id', $user->sector_id);
+    @endphp
+
+    <!-- Basic Details -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-xl border border-slate-100 bg-white p-4">
         <div class="space-y-1">
             <label for="editIdentityName" class="text-[9px] font-black uppercase tracking-widest text-slate-400">Full Name</label>
@@ -15,11 +22,14 @@
         </div>
         <div class="space-y-1">
             <label for="editIdentityRole" class="text-[9px] font-black uppercase tracking-widest text-slate-400">Role</label>
-            <select id="editIdentityRole" name="role" required
+            <select id="editIdentityRole" name="role" required onchange="updateEditIdentityFields()"
                 class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-[#00ADC5]/30 focus:bg-white focus:ring-2 focus:ring-cyan-100">
                 <option value="user" @selected(old('role', $user->role) === 'user')>Project Coordinator</option>
                 <option value="manager" @selected(old('role', $user->role) === 'manager')>Management</option>
                 <option value="admin" @selected(old('role', $user->role) === 'admin')>Admin</option>
+                @if(auth()->user()->isSuperadmin())
+                    <option value="superadmin" @selected(old('role', $user->role) === 'superadmin')>Superadmin</option>
+                @endif
             </select>
         </div>
         <div class="space-y-1">
@@ -29,6 +39,46 @@
                 <option value="1" @selected((string) old('is_active', (int) $user->is_active) === '1')>Active</option>
                 <option value="0" @selected((string) old('is_active', (int) $user->is_active) === '0')>Inactive</option>
             </select>
+        </div>
+    </div>
+
+    <!-- Organizational Assignment -->
+    <div id="editOrgAssignment" @class([
+        'bg-white border border-slate-100 rounded-xl p-4 space-y-3',
+        'hidden' => !in_array(old('role', $user->role), ['user', 'manager', 'admin', 'superadmin'], true),
+    ])>
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600">
+                <i data-lucide="building-2" class="w-4 h-4"></i>
+            </div>
+            <div>
+                <h4 class="text-sm font-black text-slate-900">Organizational Assignment</h4>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Business Unit &amp; Sector</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="space-y-1">
+                <label for="editIdentityBU" class="text-[9px] font-black uppercase tracking-widest text-slate-400">Business Unit</label>
+                <select id="editIdentityBU" name="business_unit_id" onchange="updateEditSectorOptions()"
+                    class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-[#00ADC5]/30 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+                    {{ auth()->user()->isAdmin() ? 'disabled' : '' }}>
+                    <option value="">None</option>
+                    @foreach($businessUnits as $bu)
+                        <option value="{{ $bu->id }}" data-sectors='@json($bu->activeSectors)' @selected($selectedBuId == $bu->id)>{{ $bu->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label for="editIdentitySector" class="text-[9px] font-black uppercase tracking-widest text-slate-400">Sector</label>
+                <select id="editIdentitySector" name="sector_id"
+                    class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-[#00ADC5]/30 focus:bg-white focus:ring-2 focus:ring-cyan-100"
+                    {{ auth()->user()->isAdmin() ? 'disabled' : '' }}>
+                    <option value="">None</option>
+                    @foreach($sectors as $sector)
+                        <option value="{{ $sector->id }}" @selected($selectedSectorId == $sector->id)>{{ $sector->name }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
     </div>
 

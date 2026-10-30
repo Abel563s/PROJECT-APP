@@ -118,7 +118,7 @@
                                             title="Edit">
                                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                         </button>
-                                        @if(auth()->user() && auth()->user()->isAdmin())
+                                        @if(auth()->user() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()))
                                             <form action="{{ route('admin.weekly-updates.destroy', $update->id) }}" method="POST" class="inline"
                                                 onsubmit="return confirm('Are you sure you want to delete this weekly update?');">
                                                 @csrf

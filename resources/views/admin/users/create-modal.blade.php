@@ -46,6 +46,9 @@
                     <option value="user">Project Coordinator</option>
                     <option value="manager">Management</option>
                     <option value="admin">Admin</option>
+                    @if(auth()->user()->isSuperadmin())
+                        <option value="superadmin">Superadmin</option>
+                    @endif
                 </select>
             </div>
             <div class="space-y-1">
@@ -54,6 +57,45 @@
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
                     <option value="1">Active / Operational</option>
                     <option value="0">Decommissioned / Static</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2b: Organizational Assignment -->
+    <div id="createOrgAssignment" @class([
+        'bg-white border border-slate-100 rounded-xl p-4 space-y-3',
+        'hidden' => old('role', 'user') === 'department_attendance_user' || old('role', 'user') === 'dceo',
+    ])>
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600">
+                <i data-lucide="building-2" class="w-4 h-4"></i>
+            </div>
+            <div>
+                <h4 class="text-sm font-black text-slate-900">Organizational Assignment</h4>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Business Unit &amp; Sector</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Business Unit</label>
+                <select name="business_unit_id" id="createBusinessUnit"
+                    onchange="updateCreateSectorOptions()"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-teal-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
+                    <option value="">Select a Business Unit</option>
+                    @foreach($businessUnits as $bu)
+                        <option value="{{ $bu->id }}" data-sectors='@json($bu->activeSectors)'>{{ $bu->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Sector</label>
+                <select name="sector_id" id="createSector"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-teal-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
+                    <option value="">Select a Sector</option>
+                    @foreach($sectors as $sector)
+                        <option value="{{ $sector->id }}">{{ $sector->name }}</option>
+                    @endforeach
                 </select>
             </div>
         </div>

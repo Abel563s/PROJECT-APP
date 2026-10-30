@@ -93,7 +93,7 @@
                 </div>
             </div>
 
-            @if(auth()->user()->isAdmin())
+            @if(auth()->user()->isAdmin() || auth()->user()->isSuperadmin())
                 <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-50 space-y-5">
                     <div>
                         <h3 class="text-lg font-black text-slate-900">Project Coordinators</h3>

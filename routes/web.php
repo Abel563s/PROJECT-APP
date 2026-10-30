@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\BusinessUnitController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\SystemSettingController;
@@ -123,11 +124,34 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::patch('/settings/profile', [SystemSettingController::class, 'updateProfile'])->name('settings.profile.update');
         Route::put('/settings/password', [SystemSettingController::class, 'updatePassword'])->name('settings.password.update');
 
-        // User Management / Access Control
+         // User Management / Access Control
         Route::middleware('role:admin')->group(function () {
             Route::resource('users', AdminUserController::class)->except(['index', 'show']);
             Route::get('/users/{user}/password-modal', [AdminUserController::class, 'passwordModal'])->name('users.password.modal');
             Route::get('/roles', [AdminUserController::class, 'roles'])->name('roles.index');
+        });
+
+        // Business Unit & Sector Management (Superadmin only)
+        Route::middleware('role:superadmin')->group(function () {
+             Route::get('/business-units', [BusinessUnitController::class, 'index'])->name('business-units.index');
+            Route::post('/business-units', [BusinessUnitController::class, 'store'])->name('business-units.store');
+            Route::get('/business-units/{businessUnit}', [BusinessUnitController::class, 'show'])->name('business-units.show');
+            Route::get('/business-units/{businessUnit}/sectors', [BusinessUnitController::class, 'sectors'])->name('business-units.sectors');
+            Route::put('/business-units/{businessUnit}', [BusinessUnitController::class, 'update'])->name('business-units.update');
+            Route::delete('/business-units/{businessUnit}', [BusinessUnitController::class, 'destroy'])->name('business-units.destroy');
+            Route::patch('/business-units/{businessUnit}/toggle-status', [BusinessUnitController::class, 'toggleStatus'])->name('business-units.toggle-status');
+
+            Route::post('/sectors', [BusinessUnitController::class, 'storeSector'])->name('sectors.store');
+            Route::get('/sectors/{sector}', [BusinessUnitController::class, 'showSector'])->name('sectors.show');
+            Route::put('/sectors/{sector}', [BusinessUnitController::class, 'updateSector'])->name('sectors.update');
+            Route::delete('/sectors/{sector}', [BusinessUnitController::class, 'destroySector'])->name('sectors.destroy');
+            Route::patch('/sectors/{sector}/toggle-status', [BusinessUnitController::class, 'toggleSectorStatus'])->name('sectors.toggle-status');
+
+            Route::get('/organization/dropdown-data', [BusinessUnitController::class, 'dropdownData'])->name('organization.dropdown');
+        });
+
+        Route::middleware('role:admin')->group(function () {
+            Route::get('/organization/admin-dropdown-data', [BusinessUnitController::class, 'adminDropdownData'])->name('organization.admin-dropdown');
         });
 
     });

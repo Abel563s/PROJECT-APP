@@ -363,7 +363,7 @@ class IssueController extends Controller
      */
     public function destroy(Issue $issue)
     {
-        abort_unless(auth()->user()->isAdmin(), 403);
+        abort_unless(auth()->user()->isAdmin() || auth()->user()->isSuperadmin(), 403);
 
         $issue->delete();
 
@@ -376,6 +376,7 @@ class IssueController extends Controller
 
         abort_unless(
             $user->isAdmin()
+            || $user->isSuperadmin()
             || ($user->isUser()
                 && $issue->project
                 && $user->canManageProject($issue->project)

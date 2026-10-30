@@ -24,7 +24,7 @@
             </div>
 
             <div class="flex justify-end">
-                @if(auth()->user()->isAdmin() || auth()->user()->isUser())
+                @if(auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || auth()->user()->isUser())
                 <button onclick="openCreateModal()"
                    class="group/btn relative px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20">
                    <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
@@ -211,7 +211,7 @@
                                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                         </button>
                                         @endcan
-                                        @if(auth()->user() && auth()->user()->isAdmin())
+                                        @if(auth()->user() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()))
                                             <form action="{{ route('admin.progress-updates.destroy', $update->id) }}" method="POST" class="inline" onclick="event.stopPropagation();"
                                                 onsubmit="return confirm('Are you sure you want to delete this progress update?');">
                                                 @csrf

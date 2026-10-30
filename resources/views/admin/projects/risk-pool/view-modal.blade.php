@@ -11,7 +11,7 @@
         'Medium' => 'minus',
         'Low'    => 'arrow-down',
     ];
-    $isAdmin = auth()->user() && auth()->user()->isAdmin();
+    $isAdmin = auth()->user() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin());
 @endphp
 
 <div class="risk-details-modal space-y-4 text-slate-900">

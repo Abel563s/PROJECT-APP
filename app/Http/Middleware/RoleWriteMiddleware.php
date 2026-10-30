@@ -13,7 +13,7 @@ class RoleWriteMiddleware
         $user = $request->user();
         $routeName = $request->route()?->getName() ?? '';
 
-        if (!$user || $user->isAdmin()) {
+        if (!$user || $user->isSuperadmin() || $user->isAdmin()) {
             return $next($request);
         }
 

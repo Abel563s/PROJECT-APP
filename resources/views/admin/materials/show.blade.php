@@ -22,7 +22,7 @@
             </div>
 
             <div class="flex items-center gap-4">
-                @if(auth()->user()->isAdmin())
+                @if(auth()->user()->isAdmin() || auth()->user()->isSuperadmin())
                     <a href="{{ route('admin.material.edit', $material) }}"
                         class="px-8 py-3 bg-slate-800 text-white rounded-[1.25rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:scale-105 active:scale-95 transition-all">
                         Edit Material

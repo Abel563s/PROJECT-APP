@@ -19,7 +19,35 @@ class AdminUserSeeder extends Seeder
         // Get all departments
         $departments = Department::all();
 
-        // Step 1: Create Admin User
+        // Step 1: Create Superadmin User
+        $superAdminUser = User::create([
+            'name' => 'Super Administrator',
+            'email' => 'superadmin@company.com',
+            'password' => Hash::make('password123'),
+            'role' => 'superadmin',
+            'employee_id' => 'SUP001',
+            'phone' => '+1-555-0001',
+            'date_of_joining' => now()->subDays(365)->toDateString(),
+            'is_active' => true,
+        ]);
+
+        Employee::create([
+            'user_id' => $superAdminUser->id,
+            'department_id' => $departments->where('code', 'ADM')->first()?->id ?? 1,
+            'employee_id' => 'SUP001',
+            'first_name' => 'Super',
+            'last_name' => 'Administrator',
+            'email' => 'superadmin@company.com',
+            'phone' => '+1-555-0001',
+            'date_of_birth' => now()->subYears(35)->subDays(rand(1, 365))->toDateString(),
+            'date_of_joining' => $superAdminUser->date_of_joining,
+            'position' => 'Super Administrator',
+            'salary' => 120000,
+            'employment_type' => 'full_time',
+            'is_active' => true,
+        ]);
+
+        // Step 1: Create Admin User (assigned to a Business Unit by Superadmin later)
         $adminUser = User::create([
             'name' => 'System Administrator',
             'email' => 'admin@company.com',

@@ -111,7 +111,7 @@
                         <input type="date" name="completion_date" value="{{ $update->completion_date ? \Carbon\Carbon::parse($update->completion_date)->format('Y-m-d') : '' }}"
                             class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-white focus:ring-4 focus:ring-emerald-500/20 focus:bg-white/10 transition-all">
                     </div>
-                    @if(auth()->user() && auth()->user()->isAdmin())
+                    @if(auth()->user() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()))
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Data Date *</label>
                             <input type="date" name="data_date" value="{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('Y-m-d') : '' }}" required

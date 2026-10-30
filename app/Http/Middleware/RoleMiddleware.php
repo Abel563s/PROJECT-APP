@@ -22,7 +22,22 @@ class RoleMiddleware
 
         $user = Auth::user();
 
-        // High priority: Admins always have access to everything
+        $requiredRoles = explode('|', $role);
+
+        // Superadmin-only routes: require explicit superadmin role (Admin does NOT bypass)
+        if (in_array('superadmin', $requiredRoles, true)) {
+            if (!$user->isSuperadmin()) {
+                abort(403, 'Unauthorized. Only Superadmin can access this resource.');
+            }
+            return $next($request);
+        }
+
+        // Superadmin bypasses all other role checks
+        if ($user->isSuperadmin()) {
+            return $next($request);
+        }
+
+        // High priority: Admins always have access to everything (except superadmin-only routes)
         if ($user->isAdmin()) {
             return $next($request);
         }
@@ -41,6 +56,11 @@ class RoleMiddleware
      */
     private function hasRole($user, string $role): bool
     {
+        // Superadmin satisfies any role requirement
+        if ($user->isSuperadmin()) {
+            return true;
+        }
+
         // Allow multiple roles separated by pipe
         $roles = explode('|', $role);
 
@@ -58,12 +78,20 @@ class RoleMiddleware
                     if ($user->isUser())
                         return true;
                     break;
+                case 'superadmin':
+                    if ($user->isSuperadmin())
+                        return true;
+                    break;
                 case 'admin_manager':
                     if ($user->isAdmin() || $user->isManager())
                         return true;
                     break;
                 case 'manager_user':
                     if ($user->isManager() || $user->isUser())
+                        return true;
+                    break;
+                case 'admin_manager_user':
+                    if ($user->isAdmin() || $user->isManager() || $user->isUser())
                         return true;
                     break;
                 case 'department_attendance_user':

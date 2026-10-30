@@ -24,7 +24,7 @@
             </div>
 
             <div class="flex justify-end">
-                @if(auth()->user()->isAdmin())
+                @if(auth()->user()->isAdmin() || auth()->user()->isSuperadmin())
                 <button onclick="openCreateModal()"
                     class="group/btn relative px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20">
                     <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
@@ -272,7 +272,7 @@
                                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                         </button>
                                         @endcan
-                                        @if(auth()->user() && auth()->user()->isAdmin())
+                                        @if(auth()->user() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()))
                                             <form action="{{ route('admin.projects.destroy', $project->id) }}" method="POST" class="inline"
                                                 onsubmit="return confirm('Are you sure you want to delete this project? This action cannot be undone.');">
                                                 @csrf
@@ -298,7 +298,7 @@
                                             <h3 class="text-lg font-black text-slate-900">Operational Vacancy</h3>
                                             <p class="text-[9px] uppercase font-black tracking-widest text-slate-400">No project nodes discovered in the current registry subset.</p>
                                         </div>
-                                        @if(auth()->user()->isAdmin())
+                                        @if(auth()->user()->isAdmin() || auth()->user()->isSuperadmin())
                                         <a href="{{ route('admin.projects.create') }}"
                                             class="px-5 py-2 bg-slate-900 text-white rounded-lg font-black text-[9px] uppercase tracking-widest shadow-lg shadow-slate-900/10 hover:scale-105 active:scale-95 transition-all">
                                             Initialize First Protocol

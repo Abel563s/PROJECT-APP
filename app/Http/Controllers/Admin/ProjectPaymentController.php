@@ -206,6 +206,7 @@ class ProjectPaymentController extends Controller
 
         abort_unless(
             $user->isAdmin()
+            || $user->isSuperadmin()
             || ($user->isUser()
                 && $user->canManageProject($payment->project)
                 && (int) $payment->created_by === (int) $user->id),

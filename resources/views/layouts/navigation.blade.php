@@ -34,7 +34,7 @@
                             :active="request()->routeIs('admin.projects.analytics')">
                             {{ __('Reports') }}
                         </x-nav-link>
-                        @if(Auth::user()->isAdmin())
+                        @if(Auth::user()->isAdmin() || Auth::user()->isSuperadmin())
                             <x-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*') || request()->routeIs('admin.users.*')">
                                 {{ __('Access Control') }}
                             </x-nav-link>
@@ -113,7 +113,7 @@
                     :active="request()->routeIs('admin.projects.analytics')">
                     {{ __('Reports') }}
                 </x-responsive-nav-link>
-                @if(Auth::user()->isAdmin())
+                @if(Auth::user()->isAdmin() || Auth::user()->isSuperadmin())
                     <x-responsive-nav-link :href="route('admin.roles.index')" :active="request()->routeIs('admin.roles.*') || request()->routeIs('admin.users.*')">
                         {{ __('Access Control') }}
                     </x-responsive-nav-link>
