@@ -74,7 +74,7 @@
             </div>
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Status</label>
-                @if(in_array($issue->status, ['Open', 'Closed'], true))
+                @if(in_array($issue->status, ['Open', 'Closed', 'In Progress'], true))
                     <select name="status" required
                         class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-rose-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
                         <option value="Open" {{ $issue->status === 'Open' ? 'selected' : '' }}>Open</option>

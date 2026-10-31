@@ -84,17 +84,17 @@ it('filters the project issue table by priority and displays the requested colum
             ->assertDontSee('>Cancelled</option>', false);
 
         $issue = Issue::where('issue', 'Due soon')->firstOrFail();
-        $this->get(route('admin.projects.issues.show', $issue) . '?partial=1')
+        $this->get(route('admin.projects.issues.show', $issue).'?partial=1')
             ->assertOk()
             ->assertSee('Days Left')
             ->assertSee('6 days left');
 
-        $this->get(route('admin.projects.issues.create-modal', $project) . '?partial=1')
+        $this->get(route('admin.projects.issues.create-modal', $project).'?partial=1')
             ->assertOk()
             ->assertDontSee('value="In Progress"', false)
             ->assertDontSee('value="Cancelled"', false);
 
-        $this->get(route('admin.projects.issues.edit', $issue) . '?partial=1')
+        $this->get(route('admin.projects.issues.edit', $issue).'?partial=1')
             ->assertOk()
             ->assertDontSee('value="In Progress"', false)
             ->assertDontSee('value="Cancelled"', false);
@@ -183,6 +183,7 @@ it('shows status and priority issue counts in the project registry and filters b
             ->assertDontSee('>In Progress</th>', false);
         $registryResponse->assertViewHas('projects', function ($projects) {
             $listedProject = $projects->first();
+
             return $listedProject->total_issues === 5
                 && $listedProject->open_issues === 4
                 && $listedProject->closed_issues === 1
@@ -233,6 +234,7 @@ it('shows impact counts in the project registry and filters by impact', function
             ->assertSee('Impact')
             ->assertViewHas('projects', function ($projects) {
                 $listed = $projects->first();
+
                 return $listed
                     && $listed->high_impact_issues === 1
                     && $listed->medium_impact_issues === 0
