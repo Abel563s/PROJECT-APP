@@ -499,6 +499,31 @@ it('prevents deactivating-in-use categories from being deleted and blocks non-ad
     expect(ProjectRiskPool::where('risk_category', 'Financial & Budget Risks')->exists())->toBeTrue();
 });
 
+it('allows an admin to delete an unused category', function () {
+    $admin = adminUser();
+    $cat = \App\Models\RiskCategory::where('name', 'Legal & Regulatory Risks')->first();
+
+    $this->actingAs($admin)
+        ->deleteJson(route('admin.projects.risk-pool.categories.destroy', $cat))
+        ->assertOk()
+        ->assertJson(['message' => 'Category removed.', 'refresh' => true]);
+
+    expect(\App\Models\RiskCategory::find($cat->id))->toBeNull();
+});
+
+it('renders the category management page with delete buttons', function () {
+    $admin = adminUser();
+
+    $html = $this->actingAs($admin)
+        ->get(route('admin.projects.risk-pool.categories.index'))
+        ->assertOk()
+        ->getContent();
+
+    expect($html)->toContain('data-action="delete"')
+        ->and(strpos($html, 'categoryManagerState'))->not->toBeFalse()
+        ->and(strpos($html, 'Risk Categories'))->not->toBeFalse();
+});
+
 it('sorts risks by overall impact level', function () {
     $admin = adminUser();
     ProjectRiskPool::create(validRiskData(['risk_id' => '1.01', 'overall_impact_level' => 'Low']));

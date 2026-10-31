@@ -98,6 +98,7 @@ class IssueController extends Controller
         }
 
         $projects = $query->orderByDesc('baseline_start_date')->paginate(15)->withQueryString();
+
         return view('admin.projects.issues.index', compact('projects'));
     }
 
@@ -122,7 +123,7 @@ class IssueController extends Controller
         }
 
         if ($request->filled('issue_search')) {
-            $issueQuery->where('issue', 'like', '%' . $request->query('issue_search') . '%');
+            $issueQuery->where('issue', 'like', '%'.$request->query('issue_search').'%');
         }
 
         if ($request->filled('impact')) {
@@ -264,6 +265,7 @@ class IssueController extends Controller
                 $projectsQuery->whereKey($issue->project_id);
             }
             $projects = $projectsQuery->get(['id', 'project_code', 'project_name', 'project_type', 'consultancy_sector']);
+
             return view('admin.projects.issues.edit-modal', compact('issue', 'projects'))->render();
         }
 
@@ -352,10 +354,31 @@ class IssueController extends Controller
             $query->whereDate('date', '<=', $request->date_to);
         }
 
+        $today = Carbon::today();
+        $notClosed = fn ($q) => $q->where(function ($s) {
+            $s->whereNull('status')->orWhere('status', '!=', 'Closed');
+        });
+
+        $stats = [
+            'total' => (clone $query)->count(),
+            'open' => (clone $query)->where('status', 'Open')->count(),
+            'closed' => (clone $query)->where('status', 'Closed')->count(),
+            'overdue' => (clone $query)->where($notClosed)->whereNotNull('planned_resolution_date')
+                ->whereDate('planned_resolution_date', '<', $today)->count(),
+            'high' => (clone $query)->where($notClosed)->whereNotNull('planned_resolution_date')
+                ->whereDate('planned_resolution_date', '>=', $today)
+                ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(7))->count(),
+            'medium' => (clone $query)->where($notClosed)->whereNotNull('planned_resolution_date')
+                ->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(7))
+                ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(14))->count(),
+            'low' => (clone $query)->where($notClosed)->whereNotNull('planned_resolution_date')
+                ->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(14))->count(),
+        ];
+
         $issues = $query->orderByDesc('raised_date')->paginate(15)->withQueryString();
         $projects = \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
 
-        return view('admin.projects.issues.history', compact('issues', 'projects'));
+        return view('admin.projects.issues.history', compact('issues', 'projects', 'stats'));
     }
 
     /**
@@ -379,8 +402,7 @@ class IssueController extends Controller
             || $user->isSuperadmin()
             || ($user->isUser()
                 && $issue->project
-                && $user->canManageProject($issue->project)
-                && (int) $issue->created_by === (int) $user->id),
+                && $user->canManageProject($issue->project)),
             403
         );
     }

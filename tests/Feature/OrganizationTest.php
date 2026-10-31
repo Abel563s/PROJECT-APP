@@ -519,7 +519,28 @@ it('superadmin filter works in users page', function () {
     User::factory()->create(['role' => 'admin', 'must_change_password' => false]);
     User::factory()->create(['role' => 'manager']);
 
-    $this->actingAs($superadmin)
+     $this->actingAs($superadmin)
         ->get(route('admin.roles.index', ['role' => 'superadmin']))
         ->assertOk();
+});
+
+it('superadmin can load business unit manage html partial', function () {
+    $superadmin = User::factory()->create(['role' => 'superadmin', 'must_change_password' => false]);
+    BusinessUnit::create(['name' => 'Engineering', 'code' => 'ENG', 'description' => 'Dev team']);
+
+    $this->actingAs($superadmin)
+        ->get('/admin/business-units/manage?partial=1')
+        ->assertOk()
+        ->assertSee('Business Units')
+        ->assertSee('Engineering')
+        ->assertSee('buFormContainer')
+        ->assertSee('orgManagementErrors');
+});
+
+it('non-superadmin cannot load business unit manage html', function () {
+    $admin = User::factory()->create(['role' => 'admin', 'must_change_password' => false]);
+
+    $this->actingAs($admin)
+        ->get('/admin/business-units/manage?partial=1')
+        ->assertForbidden();
 });

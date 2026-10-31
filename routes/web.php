@@ -1,21 +1,19 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\BusinessUnitController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\SystemSettingController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\FirstLoginPasswordController;
-use App\Http\Controllers\Auth\PasswordController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\MaterialController;
 use App\Http\Controllers\Admin\MaterialProgressController;
 use App\Http\Controllers\Admin\ProjectSiteController;
 use App\Http\Controllers\Admin\RiskCategoryController;
 use App\Http\Controllers\Admin\RiskPoolController;
+use App\Http\Controllers\Admin\SystemSettingController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\FirstLoginPasswordController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -36,8 +34,6 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
     Route::get('password/first-login', [FirstLoginPasswordController::class, 'edit'])->name('password.first-login.edit');
     Route::put('password/first-login', [FirstLoginPasswordController::class, 'update'])->name('password.first-login.update');
 
-
-
     // Dashboard - accessible by all authenticated users
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -46,7 +42,7 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/data', [AdminDashboardController::class, 'data'])->name('dashboard.data');
 
-         // Project Risk
+        // Project Risk
         Route::get('/projects/risk', [\App\Http\Controllers\ProjectController::class, 'riskIndex'])->name('projects.risk.index');
         Route::get('/projects/risk/manage/{project}', [\App\Http\Controllers\ProjectController::class, 'riskManage'])->name('projects.risk.manage');
         Route::get('/projects/risk/manage/{project}/create-modal', [\App\Http\Controllers\ProjectController::class, 'riskCreateModal'])->name('projects.risk.create-modal');
@@ -59,6 +55,8 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
 
         // Risk Pool (centralized repository)
         Route::get('/projects/risk-pool', [RiskPoolController::class, 'index'])->name('projects.risk-pool.index');
+        Route::get('/projects/risk-pool/eot', [RiskPoolController::class, 'eot'])->name('projects.risk-pool.eot');
+        Route::get('/projects/risk-pool/contract-clauses', [RiskPoolController::class, 'contractClauses'])->name('projects.risk-pool.contract-clauses');
         Route::get('/projects/risk-pool/create-modal', [RiskPoolController::class, 'create'])->name('projects.risk-pool.create-modal');
         Route::get('/projects/risk-pool/suggest-id', [RiskPoolController::class, 'suggestId'])->name('projects.risk-pool.suggest-id');
         Route::post('/projects/risk-pool', [RiskPoolController::class, 'store'])->name('projects.risk-pool.store');
@@ -115,7 +113,7 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::get('material-progress/{material}', [MaterialProgressController::class, 'show'])->name('material-progress.show');
         Route::get('material-report', [MaterialProgressController::class, 'report'])->name('material.report');
         Route::get('projects/search', [\App\Http\Controllers\ProjectController::class, 'search'])->name('projects.search');
-        Route::resource('project-sites', ProjectSiteController::class)->only(['index','create','store','update','destroy']);
+        Route::resource('project-sites', ProjectSiteController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
 
         // System Settings
         Route::get('/settings', [SystemSettingController::class, 'index'])->name('settings.index');
@@ -124,7 +122,7 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
         Route::patch('/settings/profile', [SystemSettingController::class, 'updateProfile'])->name('settings.profile.update');
         Route::put('/settings/password', [SystemSettingController::class, 'updatePassword'])->name('settings.password.update');
 
-         // User Management / Access Control
+        // User Management / Access Control
         Route::middleware('role:admin')->group(function () {
             Route::resource('users', AdminUserController::class)->except(['index', 'show']);
             Route::get('/users/{user}/password-modal', [AdminUserController::class, 'passwordModal'])->name('users.password.modal');
@@ -133,7 +131,8 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
 
         // Business Unit & Sector Management (Superadmin only)
         Route::middleware('role:superadmin')->group(function () {
-             Route::get('/business-units', [BusinessUnitController::class, 'index'])->name('business-units.index');
+            Route::get('/business-units', [BusinessUnitController::class, 'index'])->name('business-units.index');
+            Route::get('/business-units/manage', [BusinessUnitController::class, 'manageHtml'])->name('business-units.manage');
             Route::post('/business-units', [BusinessUnitController::class, 'store'])->name('business-units.store');
             Route::get('/business-units/{businessUnit}', [BusinessUnitController::class, 'show'])->name('business-units.show');
             Route::get('/business-units/{businessUnit}/sectors', [BusinessUnitController::class, 'sectors'])->name('business-units.sectors');

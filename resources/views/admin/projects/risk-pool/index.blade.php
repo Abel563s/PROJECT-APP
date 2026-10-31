@@ -1,36 +1,7 @@
 <x-app-layout>
-<div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
-
-    <!-- Page Header -->
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
-        <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-900/20">
-                <i data-lucide="folder-open" class="w-4 h-4"></i>
-            </div>
-            <div>
-                <h2 class="text-xl font-bold text-slate-900 tracking-tight font-outfit leading-none">
-                    Risk <span class="font-black text-slate-900">Pool</span>
-                </h2>
-                <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Centralized risk repository</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-2">
-            @if($isAdmin)
-                <button onclick="openSpreadsheetEditor()" type="button"
-                    class="group/btn relative overflow-hidden rounded-xl bg-slate-900 px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-white shadow-lg shadow-slate-900/20 transition-all hover:scale-105 active:scale-95">
-                    <span class="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-[#00ADC5] to-blue-500 transition-transform duration-500 group-hover/btn:translate-x-0"></span>
-                    <span class="relative flex items-center gap-1.5"><i data-lucide="plus" class="h-3 w-3"></i>Add New Risk</span>
-                </button>
-            @endif
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-b from-[#00515f] to-black rounded-lg shadow-sm border border-white/10">
-                <i data-lucide="layers" class="w-3.5 h-3.5 text-white/90"></i>
-                <span class="text-base font-black text-white tracking-tight" id="riskPoolSize">{{ $stats['total'] }}</span>
-                <span class="text-[9px] font-black text-white/80 uppercase tracking-wider">Risks</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Search & Filter -->
+@include('admin.projects.risk-pool.partials._tabs', ['activeTab' => 'risk-pool'])
+ <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
+       <!-- Search & Filter -->
     @php
         $riskPoolFiltersActive = request()->anyFilled(['search', 'risk_category', 'overall_impact_level']);
     @endphp
@@ -41,7 +12,8 @@
                 <span class="relative block">
                     <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
                     <input id="riskPoolSearch" type="search" name="search" value="{{ request('search') }}"
-                        placeholder="Risk ID, risk, category, stakeholder, explanation"
+                        placeholder="Risk ID, risk, category, stakeholder"
+                    
                         class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                 </span>
             </label>
@@ -189,6 +161,8 @@
         sort:         @json($sort),
         direction:    @json($direction),
         view:         @json($viewMode),
+        page:         @json(request('page')),
+        perPage:      @json(request('per_page', 15)),
         filtersActive: {{ (request()->filled('search') || request('risk_category','all') !== 'all' || request('overall_impact_level','all') !== 'all') ? 'true' : 'false' }},
     };
 
@@ -201,6 +175,8 @@
         if (riskPoolState.search) params.set('search', riskPoolState.search);
         if (riskPoolState.category && riskPoolState.category !== 'all') params.set('risk_category', riskPoolState.category);
         if (riskPoolState.impact && riskPoolState.impact !== 'all') params.set('overall_impact_level', riskPoolState.impact);
+        if (riskPoolState.page) params.set('page', riskPoolState.page);
+        if (riskPoolState.perPage && riskPoolState.perPage != 15) params.set('per_page', riskPoolState.perPage);
         params.set('sort', riskPoolState.sort || 'risk_id');
         params.set('direction', riskPoolState.direction || 'asc');
         for (const k in extra) {
@@ -233,6 +209,7 @@
             const html = await fetch(riskPoolIndexRoute + '?' + qs + (qs ? '&' : '') + 'partial=table', { headers: { 'X-Requested-With': 'XMLHttpRequest' } }).then(r => r.json()).then(d => d.html);
             const table = document.getElementById('risk-pool-table');
             if (table) { table.classList.remove('hidden'); table.innerHTML = html; }
+            attachPaginationHandlers();
             renderIcons();
         } catch (e) { console.error(e); }
     }
@@ -274,8 +251,22 @@
         updateClearFiltersVisibility();
     }
 
-    function riskPoolClearFilters() {
-        riskPoolState.search = ''; riskPoolState.category = ''; riskPoolState.impact = '';
+    function attachPaginationHandlers() {
+        const table = document.getElementById('risk-pool-table');
+        if (!table) return;
+        table.querySelectorAll('a[href*="page="]').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const url = new URL(this.href);
+                riskPoolState.page = url.searchParams.get('page') || '1';
+                riskPoolPushState();
+                refreshView();
+            });
+        });
+    }
+
+     function riskPoolClearFilters() {
+        riskPoolState.search = ''; riskPoolState.category = ''; riskPoolState.impact = ''; riskPoolState.page = '';
         if (riskPoolSearch) riskPoolSearch.value = '';
         if (riskPoolCategory) riskPoolCategory.value = 'all';
         if (riskPoolImpact) riskPoolImpact.value = 'all';
@@ -297,6 +288,7 @@
         if (riskPoolSearch) riskPoolState.search = riskPoolSearch.value;
         if (riskPoolCategory) riskPoolState.category = riskPoolCategory.value;
         if (riskPoolImpact) riskPoolState.impact = riskPoolImpact.value;
+        riskPoolState.page = '';
         refreshAll();
         riskPoolPushState();
         updateClearFiltersVisibility();
@@ -310,7 +302,9 @@
                 riskPoolState.search = riskPoolSearch.value;
                 refreshAll();
                 riskPoolPushState();
-                updateClearFiltersVisibility();
+      updateClearFiltersVisibility();
+     attachPaginationHandlers();
+
             }, 400);
         });
     }
@@ -337,7 +331,7 @@
     /* ===================== Spreadsheet Editor ===================== */
     let spreadsheetDirty = false;
     let spreadsheetContainer = null;
-    const COLS = ['risk_id', 'risk_category', 'specific_risk', 'detailed_risk_explanation', 'impact_on_timeline', 'impact_on_cost', 'overall_impact_level', 'stakeholder'];
+    const COLS = ['risk_id', 'risk_category', 'specific_risk', 'impact_on_timeline', 'impact_on_cost', 'overall_impact_level', 'stakeholder'];
 
     function openSpreadsheetModal() {
         const modal = document.getElementById('riskPoolEditorModal');
@@ -500,7 +494,6 @@
             tr.appendChild(elWrap(riskIdCell(row, ri)));
             tr.appendChild(elWrap(elSelect('risk_category', state.categories, row.risk_category, ri, 'Select category')));
             tr.appendChild(elWrap(elInput('specific_risk', row.specific_risk, ri)));
-            tr.appendChild(elWrap(elTextarea('detailed_risk_explanation', row.detailed_risk_explanation, ri, 2)));
             tr.appendChild(elWrap(elSelect('impact_on_timeline', state.impactLevels, row.impact_on_timeline, ri, 'Select impact')));
             tr.appendChild(elWrap(elSelect('impact_on_cost', state.impactLevels, row.impact_on_cost, ri, 'Select impact')));
             tr.appendChild(elWrap(elSelect('overall_impact_level', state.impactLevels, row.overall_impact_level, ri, 'Select impact')));
@@ -519,7 +512,7 @@
         function syncStateFromDOM() {
             state.rows = collectRows();
         }
-        function addRow() { syncStateFromDOM(); state.rows.push({}); renderRows(); const lr = state.rows.length - 1; const first = tbody.querySelector('tr[data-row-index="' + lr + '"] input.ss-input, tr[data-row-index="' + lr + '"] select.ss-select'); if (first) first.focus(); }
+        function addRow() { syncStateFromDOM(); state.rows.unshift({}); renderRows(); const first = tbody.querySelector('tr[data-row-index="0"] input.ss-input, tr[data-row-index="0"] select.ss-select'); if (first) first.focus(); }
         function removeRow(ri) { syncStateFromDOM(); if (!confirm('Remove this row? It has not been saved.')) return; state.rows.splice(ri, 1); renderRows(); }
         async function suggestRiskId(ri) {
             const category = getCellValue(ri, 'risk_category');
@@ -538,7 +531,7 @@
             tbody.querySelectorAll('tr.ss-row').forEach(tr => {
                 const ri = parseInt(tr.dataset.rowIndex, 10);
                 const row = (state.rows[ri] || {});
-                const collected = { id: row.id || null, risk_id: '', risk_category: '', specific_risk: '', detailed_risk_explanation: '', impact_on_timeline: '', impact_on_cost: '', overall_impact_level: '', stakeholder: '' };
+                const collected = { id: row.id || null, risk_id: '', risk_category: '', specific_risk: '', impact_on_timeline: '', impact_on_cost: '', overall_impact_level: '', stakeholder: '' };
                 tr.querySelectorAll('input.ss-input, select.ss-select, textarea.ss-textarea').forEach(el => { if (el.dataset.field) collected[el.dataset.field] = el.value; });
                 rows.push(collected);
             });
@@ -729,6 +722,7 @@
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.message || 'Unable to add category.');
                 addForm.reset();
+                showNotification('Category added.');
                 await reloadCategoryManager();
             } catch (error) { renderCatError(error.message); }
         });
@@ -792,6 +786,7 @@
                     });
                     const data = await response.json().catch(() => ({}));
                     if (!response.ok) throw new Error(data.message || 'Unable to remove category.');
+                    showNotification('Category removed.');
                     await reloadCategoryManager();
                 } catch (error) { renderCatError(error.message); }
             });

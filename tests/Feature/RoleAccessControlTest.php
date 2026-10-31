@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\Project;
-use App\Models\ProjectProgressUpdate;
 use App\Models\Issue;
+use App\Models\Project;
 use App\Models\ProjectPayment;
+use App\Models\ProjectProgressUpdate;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -132,7 +132,7 @@ it('lets coordinators manage issues and payments they created on assigned projec
     $this->actingAs($coordinator)->get(route('admin.projects.issues.manage', $project))
         ->assertOk()
         ->assertSee('New Issue')
-        ->assertDontSee('onclick="openEditModal(', false);
+        ->assertSee('onclick="openEditModal(', false);
     $this->actingAs($coordinator)->get(route('admin.projects.issues.index'))->assertOk();
     $this->actingAs($coordinator)->get(route('admin.projects.payments.manage', $project))
         ->assertOk()
@@ -173,10 +173,10 @@ it('lets coordinators manage issues and payments they created on assigned projec
         'certificate_date' => '2026-10-15',
     ])->assertForbidden();
 
-    $this->actingAs($coordinator)->get(route('admin.projects.issues.edit', $otherIssue).'?partial=1')->assertForbidden();
+    $this->actingAs($coordinator)->get(route('admin.projects.issues.edit', $otherIssue).'?partial=1')->assertOk();
     $this->actingAs($coordinator)->put(route('admin.projects.issues.update', $otherIssue), [
-        'issue' => 'Unauthorized edit',
-    ])->assertForbidden();
+        'issue' => 'Edited by fellow coordinator',
+    ])->assertSessionHasNoErrors();
     $this->actingAs($coordinator)->delete(route('admin.projects.issues.destroy', $otherIssue))->assertForbidden();
     $this->actingAs($coordinator)->get(route('admin.projects.payments.edit-modal', $otherPayment).'?partial=1')->assertForbidden();
     $this->actingAs($coordinator)->put(route('admin.projects.payments.update', $otherPayment), [
@@ -435,7 +435,7 @@ it('allows admin role to view and edit data_date in progress update edit modal w
 
     // Admin view edit modal has editable input
     $this->actingAs($admin)
-        ->get(route('admin.progress-updates.edit', $update) . '?partial=1')
+        ->get(route('admin.progress-updates.edit', $update).'?partial=1')
         ->assertOk()
         ->assertSee('name="data_date"', false)
         ->assertSee('value="2026-10-15"', false)
@@ -443,7 +443,7 @@ it('allows admin role to view and edit data_date in progress update edit modal w
 
     // Coordinator view edit modal has disabled input
     $this->actingAs($coordinator)
-        ->get(route('admin.progress-updates.edit', $update) . '?partial=1')
+        ->get(route('admin.progress-updates.edit', $update).'?partial=1')
         ->assertOk()
         ->assertSee('disabled readonly', false);
 
@@ -468,4 +468,3 @@ it('allows admin role to view and edit data_date in progress update edit modal w
     expect($update->fresh()->data_date->format('Y-m-d'))->toBe('2026-10-25')
         ->and($update->fresh()->progress_planned)->toBe(30.0);
 });
-

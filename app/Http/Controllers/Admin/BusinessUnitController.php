@@ -60,6 +60,18 @@ class BusinessUnitController extends Controller
         ]);
     }
 
+    public function manageHtml(Request $request)
+    {
+        $this->authorizeSuperadmin();
+
+        $businessUnits = BusinessUnit::with(['activeSectors' => fn ($q) => $q->withCount('users')])
+            ->active()
+            ->orderBy('name')
+            ->get(['id', 'name', 'code', 'description', 'is_active']);
+
+        return view('admin.business-units.manage', compact('businessUnits'));
+    }
+
     public function show(BusinessUnit $businessUnit)
     {
         $this->authorizeSuperadmin();

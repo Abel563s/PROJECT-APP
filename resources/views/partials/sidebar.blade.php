@@ -123,7 +123,7 @@
                                  'active' => request()->routeIs('admin.projects.risk.index')
                              ],
                              [
-                                 'label' => 'Risk Pool',
+                                  'label' => 'Information Pool',
                                  'icon' => 'folder-open',
                                  'route' => 'admin.projects.risk-pool.index',
                                  'active' => request()->routeIs('admin.projects.risk-pool.*')

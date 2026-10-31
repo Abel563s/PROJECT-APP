@@ -17,9 +17,47 @@
             <div class="flex justify-center">
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-b from-[#00515f] to-black rounded-lg shadow-sm border border-white/10">
                     <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-white/90"></i>
-                    <span class="text-base font-black text-white tracking-tight">{{ $issues->total() }}</span>
+                    <span class="text-base font-black text-white tracking-tight">{{ $stats['total'] }}</span>
                     <span class="text-[9px] font-black text-white/80 uppercase tracking-wider">Issues Logged</span>
                 </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="-mx-4 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
+            <div class="grid grid-cols-7 gap-3 min-w-[992px]" style="grid-template-columns: repeat(7, minmax(0, 1fr)); min-width: 992px;">
+                @php
+                    $kpis = [
+                        ['label' => 'Total Issues', 'key' => 'total', 'icon' => 'layers-3', 'tone' => 'slate'],
+                        ['label' => 'Open', 'key' => 'open', 'icon' => 'circle-dot', 'tone' => 'sky'],
+                        ['label' => 'Closed', 'key' => 'closed', 'icon' => 'check-check', 'tone' => 'emerald'],
+                        ['label' => 'Overdue', 'key' => 'overdue', 'icon' => 'alarm-clock', 'tone' => 'rose'],
+                        ['label' => 'High', 'key' => 'high', 'icon' => 'triangle-alert', 'tone' => 'orange'],
+                        ['label' => 'Medium', 'key' => 'medium', 'icon' => 'minus', 'tone' => 'amber'],
+                        ['label' => 'Low', 'key' => 'low', 'icon' => 'arrow-down', 'tone' => 'cyan'],
+                    ];
+                    $kpiTones = [
+                        'slate' => ['icon' => 'bg-slate-100 text-slate-600', 'value' => 'text-slate-900', 'border' => 'hover:border-slate-300'],
+                        'sky' => ['icon' => 'bg-sky-100 text-sky-700', 'value' => 'text-sky-700', 'border' => 'hover:border-sky-200'],
+                        'emerald' => ['icon' => 'bg-emerald-100 text-emerald-700', 'value' => 'text-emerald-700', 'border' => 'hover:border-emerald-200'],
+                        'rose' => ['icon' => 'bg-rose-100 text-rose-700', 'value' => 'text-rose-700', 'border' => 'hover:border-rose-200'],
+                        'orange' => ['icon' => 'bg-orange-100 text-orange-700', 'value' => 'text-orange-700', 'border' => 'hover:border-orange-200'],
+                        'amber' => ['icon' => 'bg-amber-100 text-amber-700', 'value' => 'text-amber-700', 'border' => 'hover:border-amber-200'],
+                        'cyan' => ['icon' => 'bg-cyan-100 text-cyan-700', 'value' => 'text-cyan-700', 'border' => 'hover:border-cyan-200'],
+                    ];
+                @endphp
+                @foreach($kpis as $kpi)
+                    <div class="group rounded-2xl border border-slate-100 bg-gradient-to-br from-white to-slate-50/80 p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ $kpiTones[$kpi['tone']]['border'] }}">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex h-9 w-9 items-center justify-center rounded-xl {{ $kpiTones[$kpi['tone']]['icon'] }} transition-transform group-hover:scale-105">
+                                <i data-lucide="{{ $kpi['icon'] }}" class="h-4 w-4"></i>
+                            </div>
+                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">{{ $kpi['label'] }}</span>
+                        </div>
+                        <p class="mt-3 text-2xl font-black leading-none tabular-nums {{ $kpiTones[$kpi['tone']]['value'] }}">{{ $stats[$kpi['key']] }}</p>
+                        <p class="mt-1 text-[8px] font-bold uppercase tracking-wider text-slate-400">{{ $kpi['key'] === 'total' ? 'All records' : ($kpi['key'] === 'open' || $kpi['key'] === 'closed' ? 'By status' : 'By priority') }}</p>
+                    </div>
+                @endforeach
             </div>
         </div>
 
@@ -96,18 +134,21 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
-                        <tr class="bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">
-                            <th class="px-4 py-3 text-center">#</th>
-                            <th class="px-4 py-3">Project</th>
-                            <th class="px-4 py-3">Issue Owner</th>
-                            <th class="px-4 py-3">Issue</th>
-                            <th class="px-4 py-3 text-center">Impact</th>
-                            <th class="px-4 py-3 text-center">Status</th>
-                            <th class="px-4 py-3">Raised Date</th>
-                            <th class="px-4 py-3">Data Date</th>
-                            <th class="px-4 py-3">Raised By</th>
-                            <th class="px-4 py-3 text-center">Action</th>
-                        </tr>
+                            <tr class="bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">
+                             <th class="px-4 py-3 text-center">#</th>
+                             <th class="px-4 py-3">Project</th>
+                             <th class="px-4 py-3">Issue Owner</th>
+                             <th class="px-4 py-3">Issue</th>
+                             <th class="px-4 py-3 text-center">Impact</th>
+                             <th class="px-4 py-3 text-center">Status</th>
+                             <th class="px-4 py-3 text-center">Priority</th>
+                             <th class="px-4 py-3">Raised Date</th>
+                             <th class="px-4 py-3">Planned Action Date</th>
+                             <th class="px-4 py-3">Action By</th>
+                             <th class="px-4 py-3">Data Date</th>
+                             <th class="px-4 py-3">Last Updated</th>
+                             <th class="px-4 py-3 text-center">Action</th>
+                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50">
                         @forelse($issues as $issue)
@@ -155,9 +196,37 @@
                                         {{ $issue->status ?? '---' }}
                                     </span>
                                 </td>
+                                <td class="px-4 py-3 text-center">
+                                    @php
+                                        $priorityColors = [
+                                            'Done' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                                            'Overdue' => 'bg-rose-50 text-rose-700 border-rose-200',
+                                            'High' => 'bg-orange-50 text-orange-700 border-orange-200',
+                                            'Medium' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                            'Low' => 'bg-sky-50 text-sky-700 border-sky-200',
+                                            'Unscheduled' => 'bg-slate-100 text-slate-500 border-slate-200',
+                                        ];
+                                    @endphp
+                                    <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $priorityColors[$issue->priority] ?? 'bg-slate-100 text-slate-400 border-slate-200' }}">
+                                        {{ $issue->priority }}
+                                    </span>
+                                    @if($issue->priority !== 'Done' && $issue->days_left !== null)
+                                        <p class="mt-1 text-[9px] font-bold {{ $issue->days_left < 0 ? 'text-rose-600' : 'text-slate-400' }}">{{ abs($issue->days_left) }} {{ abs($issue->days_left) === 1 ? 'day' : 'days' }} {{ $issue->days_left < 0 ? 'overdue' : 'left' }}</p>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                                         {{ $issue->raised_date ? $issue->raised_date->format('M d, Y') : '---' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                                        {{ $issue->planned_resolution_date ? $issue->planned_resolution_date->format('M d, Y') : '---' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm">
+                                        {{ $issue->action_by ?? '---' }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3">
@@ -166,8 +235,8 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm">
-                                        {{ $issue->raised_by ?? '---' }}
+                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                                        {{ $issue->last_updated_date ? $issue->last_updated_date->format('M d, Y') : '---' }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-center">
@@ -177,7 +246,7 @@
                                             title="View">
                                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                         </button>
-                                        @if(auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || (auth()->user()->isUser() && ($issue->project ? auth()->user()->canManageProject($issue->project) : false) && (int) $issue->created_by === (int) auth()->id()))
+                                        @if(auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || (auth()->user()->isUser() && ($issue->project ? auth()->user()->canManageProject($issue->project) : false)))
                                             <button onclick="openEditModal({{ $issue->id }})"
                                                 class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-amber-500 hover:border-amber-500 hover:shadow-sm transition-all"
                                                 title="Edit">
@@ -201,7 +270,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="px-4 py-16 text-center">
+                                <td colspan="13" class="px-4 py-16 text-center">
                                     <div class="flex flex-col items-center gap-4">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="alert-circle" class="w-8 h-8"></i>
@@ -243,10 +312,6 @@
                     <div>
                         <h3 class="text-base font-black text-white">Issue Details</h3>
                         <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest">View issue information</p>
-                    </div>
-                    <div id="viewModalDataDate" class="hidden ml-4 px-3 py-1 rounded-lg bg-white/10 border border-white/20">
-                        <span class="text-[9px] font-black text-white uppercase tracking-widest">Data Date: </span>
-                        <span class="text-[10px] font-black text-white" id="viewModalDataDateValue">---</span>
                     </div>
                 </div>
                 <button onclick="closeViewModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
@@ -290,22 +355,20 @@
 
     <script>
         function openViewModal(id) {
-            fetch(`/admin/projects/issues/${id}?partial=1&action=view`)
-                .then(response => response.text())
+            const url = `{{ route('admin.projects.issues.show', ['issue' => '__ISSUE__']) }}`.replace('__ISSUE__', encodeURIComponent(id));
+            fetch(`${url}?partial=1&action=view`)
+                .then(response => {
+                    if (!response.ok) throw new Error(`Unable to load issue (${response.status}).`);
+                    return response.text();
+                })
                 .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const dataDateEl = doc.querySelector('.issue-data-date');
-                    const dataDateValue = dataDateEl ? dataDateEl.textContent.trim() : '---';
-                    const dataDateContainer = document.getElementById('viewModalDataDate');
-                    const dataDateValueEl = document.getElementById('viewModalDataDateValue');
-                    if (dataDateContainer && dataDateValueEl) {
-                        dataDateValueEl.textContent = dataDateValue;
-                        dataDateContainer.classList.remove('hidden');
-                    }
                     document.getElementById('viewModalContent').innerHTML = html;
                     document.getElementById('viewModal').classList.remove('hidden');
                     if (window.lucide) lucide.createIcons();
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert(error.message || 'Unable to load the issue.');
                 });
         }
 
