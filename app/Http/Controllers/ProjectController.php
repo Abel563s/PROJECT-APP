@@ -600,6 +600,8 @@ class ProjectController extends Controller
 
     public function riskManage(Project $project)
     {
+        abort_unless(request()->user()->canManageProject($project), 403);
+
         if ($project->status !== 'in progress') {
             return redirect()->route('admin.projects.risk.index')->with('error', 'Risk management is only available for projects with "In Progress" status.');
         }
@@ -827,8 +829,7 @@ class ProjectController extends Controller
             $user->isAdmin()
             || ($user->isUser()
                 && $risk->project
-                && $user->canManageProject($risk->project)
-                && (int) $risk->created_by === (int) $user->id),
+                && $user->canManageProject($risk->project)),
             403
         );
     }

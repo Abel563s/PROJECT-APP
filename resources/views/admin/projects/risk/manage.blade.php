@@ -193,7 +193,7 @@
                                             title="View">
                                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                         </button>
-                                        @if(auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || ($canManageProject && auth()->user()->isUser() && (int) $risk->created_by === (int) auth()->id()))
+                                        @if(auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || ($canManageProject && auth()->user()->isUser()))
                                             <button onclick="openEditModal({{ $risk->id }})"
                                                 class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-amber-500 hover:border-amber-500 hover:shadow-sm transition-all"
                                                 title="Edit">

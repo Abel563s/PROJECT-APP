@@ -140,6 +140,7 @@
             'admin.progress-updates.edit',
             'admin.projects.issues.index',
             'admin.projects.issues.manage',
+            'admin.projects.risk.manage',
             'admin.projects.payments.manage'
         ),
 ])>
