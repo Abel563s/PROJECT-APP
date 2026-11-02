@@ -55,6 +55,10 @@ class IssueController extends Controller
             ->withCount(['issues as medium_impact_issues' => fn ($issues) => $issues->where('impact', 'Medium')])
             ->withCount(['issues as low_impact_issues' => fn ($issues) => $issues->where('impact', 'Low')]);
 
+        if ($request->user()->isUser()) {
+            $query->whereHas('coordinators', fn ($coordinators) => $coordinators->whereKey($request->user()->id));
+        }
+
         $projectStatus = $request->input('status', 'in progress');
         if ($projectStatus !== 'all') {
             $query->where('status', $projectStatus);
@@ -107,6 +111,8 @@ class IssueController extends Controller
      */
     public function manage(Request $request, Project $project)
     {
+        abort_unless($request->user()->canManageProject($project), 403);
+
         $request->validate([
             'issue_owner' => 'nullable|string|max:255',
             'issue_search' => 'nullable|string|max:255',
