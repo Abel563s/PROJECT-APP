@@ -37,7 +37,7 @@
 
         <!-- Search & Filter -->
         <form action="{{ route('admin.weekly-updates.index') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
+            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-end justify-center gap-3 w-full mx-auto">
                 <div class="min-w-[220px] max-w-[320px] relative group shrink-0">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
@@ -45,7 +45,9 @@
                         class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                 </div>
 
-                @if(request()->anyFilled('search'))
+                @include('admin.partials.project-organization-filters')
+
+                @if(request()->anyFilled(['search', 'business_unit_id', 'sector_id']))
                     <a href="{{ route('admin.weekly-updates.index') }}"
                         class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
                         title="Clear Filters">
@@ -113,12 +115,15 @@
                                             title="View">
                                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                         </button>
+                                        @if(auth()->user()->isSuperadmin() || !auth()->user()->isAdmin() || auth()->user()->canManageProject($update->project))
                                         <button onclick="openEditModal({{ $update->id }})"
                                             class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-200"
                                             title="Edit">
                                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                         </button>
+                                        @endif
                                         @if(auth()->user() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()))
+                                            @if(auth()->user()->isSuperadmin() || auth()->user()->canManageProject($update->project))
                                             <form action="{{ route('admin.weekly-updates.destroy', $update->id) }}" method="POST" class="inline"
                                                 onsubmit="return confirm('Are you sure you want to delete this weekly update?');">
                                                 @csrf
@@ -129,6 +134,7 @@
                                                     <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         @endif
                                     </div>
                                 </td>

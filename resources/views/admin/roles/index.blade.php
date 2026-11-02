@@ -64,7 +64,11 @@
             @endphp
 
             @foreach($roles as $role => $count)
-                @php $config = $roleConfig[$role] ?? $roleConfig['user']; @endphp
+                @php $config = $roleConfig[$role] ?? [
+                    'label' => ucfirst(str_replace('_', ' ', $role)),
+                    'icon' => 'users',
+                    'color' => 'bg-slate-50 text-slate-600 border-slate-100',
+                ]; @endphp
                 <div class="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-white px-3 py-2 shadow-sm transition-all duration-300 hover:shadow-md hover:shadow-cyan-100">
                     <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border {{ $config['color'] }}">
                         <i data-lucide="{{ $config['icon'] }}" class="h-3.5 w-3.5"></i>
@@ -122,7 +126,7 @@
         </details>
 
         <section aria-label="Search and filter identities" class="bg-white rounded-2xl border border-slate-100 p-3 shadow-sm">
-            <form method="GET" action="{{ route('admin.roles.index') }}" class="grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_9rem_9rem_auto_auto] lg:items-end">
+            <form method="GET" action="{{ route('admin.roles.index') }}" class="grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_9rem_9rem_12rem_12rem_auto_auto] lg:items-end">
                 <div class="min-w-0">
                     <label for="identitySearch" class="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-500">Search</label>
                     <div class="relative">
@@ -150,6 +154,25 @@
                         <option value="">All statuses</option>
                         <option value="active" @selected(request('status') === 'active')>Active</option>
                         <option value="inactive" @selected(request('status') === 'inactive')>Offline</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="identityBusinessUnitFilter" class="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-500">Business Unit</label>
+                    <select id="identityBusinessUnitFilter" name="business_unit_id" onchange="this.form.querySelector('[name=sector_id]').value=''; this.form.submit()"
+                        class="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                        <option value="">All units</option>
+                        @foreach($businessUnits as $businessUnit)
+                            <option value="{{ $businessUnit->id }}" @selected(\App\Support\ProjectOrganizationFilters::effectiveBusinessUnitId(request()) == $businessUnit->id)>{{ $businessUnit->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="identitySectorFilter" class="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-500">Organizational Sector</label>
+                    <select id="identitySectorFilter" name="sector_id" class="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                        <option value="">All sectors</option>
+                        @foreach($sectors as $sector)
+                            <option value="{{ $sector->id }}" @selected(request('sector_id') == $sector->id)>{{ $sector->name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <button type="submit"
@@ -258,12 +281,14 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
+                                        @if(auth()->user()->isSuperadmin() || (auth()->user()->business_unit_id !== null && $user->business_unit_id !== null && (int) $user->business_unit_id === (int) auth()->user()->business_unit_id))
                                         <button type="button" onclick="openEditIdentityModal({{ $user->id }})"
                                             class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-200"
                                             title="Edit">
                                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                         </button>
-                                        @if($user->id !== auth()->id())
+                                        @endif
+                                        @if($user->id !== auth()->id() && (auth()->user()->isSuperadmin() || (auth()->user()->business_unit_id !== null && $user->business_unit_id !== null && (int) $user->business_unit_id === (int) auth()->user()->business_unit_id)))
                                             <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline"
                                                 onsubmit="return confirm('Initiate user node decommission?')">
                                                 @csrf
@@ -455,6 +480,7 @@
                 .then(html => {
                     content.innerHTML = html;
                     bindAssignedProjectVisibility('editIdentityRole', 'editIdentityAssignedProjects');
+                    bindEditIdentityForm();
                     updateEditIdentityFields();
                     updateEditSectorOptions();
                     bindProjectPicker('editIdentityProjectPicker');
@@ -463,6 +489,45 @@
                 .catch(error => {
                     content.innerHTML = `<p class="rounded-xl bg-rose-50 p-4 text-sm font-semibold text-rose-700">${error.message}</p>`;
                 });
+        }
+
+        function bindEditIdentityForm() {
+            const form = document.getElementById('editIdentityModalForm');
+            if (!form) return;
+
+            form.addEventListener('submit', async event => {
+                event.preventDefault();
+
+                const submitButton = form.querySelector('button[type="submit"]');
+                const errors = form.querySelector('[data-edit-identity-errors]');
+                errors.classList.add('hidden');
+                errors.textContent = '';
+                submitButton.disabled = true;
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: new FormData(form),
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                    });
+                    const result = await response.json().catch(() => ({}));
+
+                    if (!response.ok) {
+                        const messages = Object.values(result.errors || {}).flat();
+                        throw new Error(messages.join(' ') || result.message || 'Unable to save this identity.');
+                    }
+
+                    window.location.reload();
+                } catch (error) {
+                    errors.textContent = error.message;
+                    errors.classList.remove('hidden');
+                } finally {
+                    submitButton.disabled = false;
+                }
+            });
         }
 
         function bindAssignedProjectVisibility(roleId, assignmentsId) {
@@ -484,6 +549,7 @@
             const orgAssignment = document.getElementById('createOrgAssignment');
             const passwordFields = document.getElementById('createInitialPasswordFields');
             const defaultPasswordNotice = document.getElementById('createDefaultPasswordNotice');
+            const riskPoolPermissions = document.getElementById('createRiskPoolPermissions');
             if (!roleSelect || !assignments || !passwordFields || !defaultPasswordNotice) return;
 
             const selectedRole = roleSelect.value;
@@ -491,6 +557,8 @@
             const showOrg = ['user', 'manager', 'admin', 'superadmin'].includes(selectedRole);
             assignments.classList.toggle('hidden', selectedRole !== 'user');
             orgAssignment?.classList.toggle('hidden', !showOrg);
+            riskPoolPermissions?.classList.toggle('hidden', !isAdmin);
+            riskPoolPermissions?.querySelectorAll('input').forEach(input => { input.disabled = !isAdmin; });
             passwordFields.classList.toggle('hidden', !isAdmin);
             defaultPasswordNotice.classList.toggle('hidden', isAdmin);
             passwordFields.querySelectorAll('input').forEach(input => {
@@ -525,18 +593,24 @@
             const roleSelect = document.getElementById('editIdentityRole');
             const orgAssignment = document.getElementById('editOrgAssignment');
             const assignments = document.getElementById('editIdentityAssignedProjects');
+            const riskPoolPermissions = document.getElementById('editRiskPoolPermissions');
             if (!roleSelect) return;
 
             const selectedRole = roleSelect.value;
             const showOrg = ['user', 'manager', 'admin', 'superadmin'].includes(selectedRole);
             orgAssignment?.classList.toggle('hidden', !showOrg);
             assignments.classList.toggle('hidden', selectedRole !== 'user');
+            const isAdmin = selectedRole === 'admin';
+            riskPoolPermissions?.classList.toggle('hidden', !isAdmin);
+            riskPoolPermissions?.querySelectorAll('input').forEach(input => { input.disabled = !isAdmin; });
         }
 
         function updateEditSectorOptions() {
             const buSelect = document.getElementById('editIdentityBU');
             const sectorSelect = document.getElementById('editIdentitySector');
             if (!sectorSelect) return;
+
+            const previouslySelectedSectorId = sectorSelect.value;
 
             sectorSelect.innerHTML = '<option value="">None</option>';
 
@@ -555,6 +629,7 @@
                 const option = document.createElement('option');
                 option.value = sector.id;
                 option.textContent = sector.name;
+                option.selected = String(sector.id) === previouslySelectedSectorId;
                 sectorSelect.appendChild(option);
             });
         }

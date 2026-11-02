@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ManageMaterial;
 use App\Models\ProjectSite;
+use App\Support\ProjectOrganizationFilters;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,7 @@ class MaterialController extends Controller
     public function index(Request $request): View
     {
         $query = $this->scopeProjectManagementForUser(ManageMaterial::query());
+        ProjectOrganizationFilters::apply($query, $request);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -51,9 +53,12 @@ class MaterialController extends Controller
 
         $records = $query->latest()->paginate(15);
         $departments = $this->departmentsForUser();
-        $projects = \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+        $projects = $this->availableProjects();
 
-        return view('admin.materials.index', compact('records', 'departments', 'projects'));
+        return view('admin.materials.index', array_merge(
+            compact('records', 'departments', 'projects'),
+            ProjectOrganizationFilters::options($request)
+        ));
     }
 
     public function create(): View
@@ -63,13 +68,13 @@ class MaterialController extends Controller
         if (request()->has('partial')) {
             return view('admin.materials.create-modal', [
                 'departments' => $this->departmentsForUser(),
-                'projects' => \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name'])
+                'projects' => $this->availableProjects()
             ]);
         }
 
         return view('admin.materials.create', [
             'departments' => $this->departmentsForUser(),
-            'projects' => \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name'])
+            'projects' => $this->availableProjects()
         ]);
     }
 
@@ -216,7 +221,7 @@ class MaterialController extends Controller
     {
         $this->authorizeEditHrRecord($material);
 
-        $projects = \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+        $projects = $this->availableProjects();
 
         if (request()->has('partial')) {
             return view('admin.materials.edit-modal', [
@@ -283,7 +288,7 @@ class MaterialController extends Controller
 
     private function scopeProjectManagementForUser($query)
     {
-        if (auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || auth()->user()->isDceo()) {
+        if (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()) {
             return $query;
         }
 
@@ -308,6 +313,16 @@ class MaterialController extends Controller
             ->values();
     }
 
+    private function availableProjects()
+    {
+        $query = \App\Models\Project::query();
+        if (auth()->user()->isAdmin()) {
+            $query->where('business_unit_id', auth()->user()->business_unit_id);
+        }
+
+        return $query->orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+    }
+
     private function authorizeCreateHrRecord(): void
     {
         // All authenticated users are allowed to submit material records.
@@ -315,7 +330,7 @@ class MaterialController extends Controller
 
     private function authorizeViewHrRecord(ManageMaterial $material): void
     {
-        if (auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || auth()->user()->isDceo() || auth()->id() === $material->created_by) {
+        if (auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || auth()->id() === $material->created_by) {
             return;
         }
 
@@ -324,7 +339,9 @@ class MaterialController extends Controller
 
     private function authorizeEditHrRecord(ManageMaterial $material): void
     {
-        if (auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || auth()->user()->isDceo() || auth()->id() === $material->created_by) {
+        if (auth()->user()->isSuperadmin()
+            || (auth()->user()->isAdmin() && $material->project && auth()->user()->canManageProject($material->project))
+            || (!auth()->user()->isAdmin() && auth()->id() === $material->created_by)) {
             return;
         }
 
@@ -333,7 +350,9 @@ class MaterialController extends Controller
 
     private function authorizeDeleteHrRecord(ManageMaterial $material): void
     {
-        if (auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || auth()->user()->isDceo() || auth()->id() === $material->created_by) {
+        if (auth()->user()->isSuperadmin()
+            || (auth()->user()->isAdmin() && $material->project && auth()->user()->canManageProject($material->project))
+            || (!auth()->user()->isAdmin() && auth()->id() === $material->created_by)) {
             return;
         }
 

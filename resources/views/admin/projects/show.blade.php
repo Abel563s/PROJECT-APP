@@ -24,10 +24,13 @@
             </div>
 
             <div class="flex items-center gap-4">
+                @can('update', $project)
                 <a href="{{ route('admin.projects.edit', $project->id) }}"
                     class="px-8 py-3 bg-slate-800 text-white rounded-[1.25rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:scale-105 active:scale-95 transition-all">
                     Edit Project
                 </a>
+                @endcan
+                @can('delete', $project)
                 <form action="{{ route('admin.projects.destroy', $project->id) }}" method="POST"
                     onsubmit="return confirm('Are you sure you want to delete this project?');">
                     @csrf
@@ -37,6 +40,7 @@
                         <i data-lucide="trash-2" class="w-5 h-5"></i>
                     </button>
                 </form>
+                @endcan
             </div>
         </div>
 

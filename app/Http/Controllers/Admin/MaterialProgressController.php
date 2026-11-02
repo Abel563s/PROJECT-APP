@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ManageMaterial;
+use App\Support\ProjectOrganizationFilters;
 use App\Services\MaterialProgressService;
 use App\Services\MaterialReportService;
 use Illuminate\Http\Request;
@@ -23,6 +24,7 @@ class MaterialProgressController extends Controller
     public function index(Request $request): View
     {
         $query = ManageMaterial::query()->with('project');
+        ProjectOrganizationFilters::apply($query, $request);
 
         if ($request->filled('discipline')) $query->where('discipline', $request->discipline);
         if ($request->filled('procurement_type')) $query->where('procurement_type', $request->procurement_type);
@@ -56,12 +58,14 @@ class MaterialProgressController extends Controller
 
         $materials->setCollection($rows);
 
-        $total = ManageMaterial::count();
-        $completed = ManageMaterial::whereNotNull('delivery_to_site')->count();
+        $summaryQuery = ManageMaterial::query();
+        ProjectOrganizationFilters::apply($summaryQuery, $request);
+        $total = (clone $summaryQuery)->count();
+        $completed = (clone $summaryQuery)->whereNotNull('delivery_to_site')->count();
         $delayed = 0;
         $avgCompletion = 0;
 
-        $sample = ManageMaterial::latest()->limit(200)->get();
+        $sample = (clone $summaryQuery)->latest()->limit(200)->get();
         $sum = 0; $cnt = 0;
         foreach ($sample as $m) {
             $c = $this->svc->computeForMaterial($m);
@@ -73,7 +77,7 @@ class MaterialProgressController extends Controller
 
         $projects = \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
 
-        return view('admin.materials.progress', [
+        return view('admin.materials.progress', array_merge([
             'materials' => $materials,
             'total' => $total,
             'completed' => $completed,
@@ -81,7 +85,7 @@ class MaterialProgressController extends Controller
             'active' => max(0, $total - $completed),
             'avgCompletion' => $avgCompletion,
             'projects' => $projects,
-        ]);
+        ], ProjectOrganizationFilters::options($request)));
     }
 
     public function show(ManageMaterial $material)

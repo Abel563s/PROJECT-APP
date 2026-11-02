@@ -22,12 +22,13 @@
             </div>
 
             <div class="flex items-center gap-4">
-                @if(auth()->user()->isAdmin() || auth()->user()->isSuperadmin())
+                @if(auth()->user()->isSuperadmin() || (auth()->user()->isAdmin() && $material->project && auth()->user()->canManageProject($material->project)))
                     <a href="{{ route('admin.material.edit', $material) }}"
                         class="px-8 py-3 bg-slate-800 text-white rounded-[1.25rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:scale-105 active:scale-95 transition-all">
                         Edit Material
                     </a>
                 @endif
+                @if(auth()->user()->isSuperadmin() || (auth()->user()->isAdmin() && $material->project && auth()->user()->canManageProject($material->project)))
                 <form action="{{ route('admin.material.destroy', $material) }}" method="POST"
                     onsubmit="return confirm('Are you sure you want to delete this material?');">
                     @csrf
@@ -37,6 +38,7 @@
                         <i data-lucide="trash-2" class="w-5 h-5"></i>
                     </button>
                 </form>
+                @endif
             </div>
         </div>
 

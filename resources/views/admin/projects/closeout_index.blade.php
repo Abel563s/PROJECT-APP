@@ -26,7 +26,9 @@
                         class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-xs font-bold text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                 </div>
 
-                @if(request()->anyFilled('search'))
+                @include('admin.partials.project-organization-filters')
+
+                @if(request()->anyFilled(['search', 'business_unit_id', 'sector_id']))
                     <a href="{{ route('admin.projects.closeout.index') }}"
                         class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
                         title="Clear Filters">

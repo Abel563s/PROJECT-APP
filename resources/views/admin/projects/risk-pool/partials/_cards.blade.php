@@ -90,12 +90,20 @@
                         <i data-lucide="eye" class="w-4 h-4"></i>
                         <span class="sr-only">View Details</span>
                     </button>
-                    @if($isAdmin)
+                    @if($canEditRiskPool ?? $isAdmin)
                         <button onclick="openSpreadsheetEditor({{ $risk->id }})" type="button"
                             class="p-2 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-amber-500 hover:border-amber-500 hover:shadow-sm transition-all"
                             title="Edit Risk">
                             <i data-lucide="pencil" class="w-4 h-4"></i>
                             <span class="sr-only">Edit Risk</span>
+                        </button>
+                    @endif
+                    @if($canDeleteRiskPool ?? $isAdmin)
+                        <button onclick="deleteRiskPoolItem({{ $risk->id }})" type="button"
+                            class="p-2 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-rose-500 hover:border-rose-500 hover:shadow-sm transition-all"
+                            title="Delete Risk">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            <span class="sr-only">Delete Risk</span>
                         </button>
                     @endif
                 </div>

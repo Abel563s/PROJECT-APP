@@ -20,6 +20,6 @@ class ProjectProgressUpdatePolicy
 
     public function delete(User $user, ProjectProgressUpdate $progressUpdate): bool
     {
-        return $user->isAdmin() || $user->isSuperadmin();
+        return $user->isSuperadmin() || ($user->isAdmin() && $user->canManageProject($progressUpdate->project));
     }
 }

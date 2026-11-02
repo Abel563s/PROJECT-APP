@@ -11,9 +11,9 @@ use Illuminate\Validation\ValidationException;
 
 class RiskPoolController extends Controller
 {
-    private function authorizeAdmin(): void
+    private function authorizeRiskPoolAction(string $action): void
     {
-        abort_unless(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()), 403);
+        abort_unless(auth()->check() && auth()->user()->canManageRiskPool($action), 403, 'You do not have permission to '.$action.' risk pool records.');
     }
 
     public function index(Request $request)
@@ -50,27 +50,30 @@ class RiskPoolController extends Controller
         $risks = $query->paginate($perPage)->withQueryString();
 
         $stats = ProjectRiskPool::stats();
-        $isAdmin = auth()->user()->isAdmin() || auth()->user()->isSuperadmin();
+        $isAdmin = auth()->user()->isSuperadmin();
+        $canCreateRiskPool = auth()->user()->canManageRiskPool('create');
+        $canEditRiskPool = auth()->user()->canManageRiskPool('edit');
+        $canDeleteRiskPool = auth()->user()->canManageRiskPool('delete');
         $categories = ProjectRiskPool::availableCategories();
         $viewMode = 'table';
 
         if ($request->filled('partial')) {
             $view = match ($request->input('partial')) {
                 'summary' => view('admin.projects.risk-pool.partials._summary-cards', compact('stats', 'isAdmin', 'filters'))->render(),
-                'cards' => view('admin.projects.risk-pool.partials._cards', compact('risks', 'isAdmin'))->render(),
-                'table' => view('admin.projects.risk-pool.partials._table', compact('risks', 'isAdmin'))->render(),
+                'cards' => view('admin.projects.risk-pool.partials._cards', compact('risks', 'isAdmin', 'canEditRiskPool', 'canDeleteRiskPool'))->render(),
+                'table' => view('admin.projects.risk-pool.partials._table', compact('risks', 'isAdmin', 'canEditRiskPool', 'canDeleteRiskPool'))->render(),
                 default => null,
             };
 
             return response()->json(['html' => $view]);
         }
 
-        return view('admin.projects.risk-pool.index', compact('risks', 'stats', 'isAdmin', 'categories', 'viewMode', 'sort', 'direction', 'filters'));
+        return view('admin.projects.risk-pool.index', compact('risks', 'stats', 'isAdmin', 'canCreateRiskPool', 'canEditRiskPool', 'canDeleteRiskPool', 'categories', 'viewMode', 'sort', 'direction', 'filters'));
     }
 
     public function eot(Request $request)
     {
-        $isAdmin = auth()->user()->isAdmin() || auth()->user()->isSuperadmin();
+        $isAdmin = auth()->user()->isSuperadmin();
         $stats = ProjectRiskPool::stats();
 
         return view('admin.projects.risk-pool.eot', compact('isAdmin', 'stats'));
@@ -78,7 +81,7 @@ class RiskPoolController extends Controller
 
     public function contractClauses(Request $request)
     {
-        $isAdmin = auth()->user()->isAdmin() || auth()->user()->isSuperadmin();
+        $isAdmin = auth()->user()->isSuperadmin();
         $stats = ProjectRiskPool::stats();
 
         return view('admin.projects.risk-pool.contract-clauses', compact('isAdmin', 'stats'));
@@ -86,16 +89,19 @@ class RiskPoolController extends Controller
 
     public function create()
     {
-        $this->authorizeAdmin();
+        abort_unless(auth()->user()->canManageRiskPool('create') || auth()->user()->canManageRiskPool('edit'), 403);
 
-        $existingRisks = ProjectRiskPool::ordered()->get();
+        $canCreateRiskPool = auth()->user()->canManageRiskPool('create');
+        $canEditRiskPool = auth()->user()->canManageRiskPool('edit');
+        $canDeleteRiskPool = auth()->user()->canManageRiskPool('delete');
+        $existingRisks = $canEditRiskPool ? ProjectRiskPool::ordered()->get() : collect();
 
-        return view('admin.projects.risk-pool.create-modal', compact('existingRisks'))->render();
+        return view('admin.projects.risk-pool.create-modal', compact('existingRisks', 'canCreateRiskPool', 'canEditRiskPool', 'canDeleteRiskPool'))->render();
     }
 
     public function store(Request $request)
     {
-        $this->authorizeAdmin();
+        $this->authorizeRiskPoolAction('create');
 
         $validated = $this->validateRiskData($request);
 
@@ -120,8 +126,6 @@ class RiskPoolController extends Controller
      */
     public function bulkStore(Request $request)
     {
-        $this->authorizeAdmin();
-
         $data = $request->validate([
             'rows' => ['required', 'array', 'min:1'],
             'rows.*.id' => ['nullable', 'integer', 'exists:project_risk_pools,id'],
@@ -142,6 +146,11 @@ class RiskPoolController extends Controller
         ]);
 
         $rows = $data['rows'];
+        foreach ($rows as $row) {
+            $action = !empty($row['id']) ? 'edit' : 'create';
+            abort_unless($request->user()->canManageRiskPool($action), 403, 'You do not have permission to '.$action.' risk pool records.');
+        }
+
         $userId = $request->user()->id;
 
         $seenIds = [];
@@ -221,27 +230,29 @@ class RiskPoolController extends Controller
 
     public function show(Request $request, ProjectRiskPool $risk)
     {
+        $canEditRiskPool = $request->user()->canManageRiskPool('edit');
         if ($request->has('partial')) {
-            return view('admin.projects.risk-pool.view-modal', compact('risk'))->render();
+            return view('admin.projects.risk-pool.view-modal', compact('risk', 'canEditRiskPool'))->render();
         }
 
         if ($request->expectsJson() || $request->isXmlHttpRequest()) {
             return response()->json($risk);
         }
 
-        return view('admin.projects.risk-pool.view-modal', compact('risk'));
+        return view('admin.projects.risk-pool.view-modal', compact('risk', 'canEditRiskPool'));
     }
 
     public function edit(ProjectRiskPool $risk)
     {
-        $this->authorizeAdmin();
+        $this->authorizeRiskPoolAction('edit');
 
-        return view('admin.projects.risk-pool.edit-modal', compact('risk'))->render();
+        $canEditRiskPool = true;
+        return view('admin.projects.risk-pool.edit-modal', compact('risk', 'canEditRiskPool'))->render();
     }
 
     public function update(Request $request, ProjectRiskPool $risk)
     {
-        $this->authorizeAdmin();
+        $this->authorizeRiskPoolAction('edit');
 
         $validated = $this->validateRiskData($request, $risk->id);
 
@@ -261,7 +272,7 @@ class RiskPoolController extends Controller
 
     public function destroy(Request $request, ProjectRiskPool $risk)
     {
-        $this->authorizeAdmin();
+        $this->authorizeRiskPoolAction('delete');
 
         $risk->delete();
 
@@ -277,7 +288,11 @@ class RiskPoolController extends Controller
 
     public function suggestId(Request $request)
     {
-        $this->authorizeAdmin();
+        abort_unless(
+            $request->user()->canManageRiskPool('create') || $request->user()->canManageRiskPool('edit'),
+            403,
+            'You do not have permission to manage risk pool records.'
+        );
 
         $category = $request->query('category');
 

@@ -62,10 +62,16 @@
         </div>
     </div>
 
+    @if(auth()->user()->isSuperadmin())
+        @include('admin.users.partials.risk-pool-permissions', [
+            'riskPoolPermissionId' => 'createRiskPoolPermissions',
+            'riskPoolPermissionState' => [],
+        ])
+    @endif
+
     <!-- Section 2b: Organizational Assignment -->
     <div id="createOrgAssignment" @class([
         'bg-white border border-slate-100 rounded-xl p-4 space-y-3',
-        'hidden' => old('role', 'user') === 'department_attendance_user' || old('role', 'user') === 'dceo',
     ])>
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600">

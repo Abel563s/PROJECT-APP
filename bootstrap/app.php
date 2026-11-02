@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'role.write' => \App\Http\Middleware\RoleWriteMiddleware::class,
+            'admin.business-unit' => \App\Http\Middleware\AdminBusinessUnitAccessMiddleware::class,
             'password.change.required' => \App\Http\Middleware\RequirePasswordChange::class,
         ]);
     })

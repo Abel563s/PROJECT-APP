@@ -94,10 +94,6 @@ class RoleMiddleware
                     if ($user->isAdmin() || $user->isManager() || $user->isUser())
                         return true;
                     break;
-                case 'department_attendance_user':
-                    if ($user->isDepartmentAttendanceUser())
-                        return true;
-                    break;
             }
         }
 

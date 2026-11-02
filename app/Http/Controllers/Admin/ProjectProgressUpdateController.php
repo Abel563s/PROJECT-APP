@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\ProjectProgressUpdate;
+use App\Support\ProjectOrganizationFilters;
 use Illuminate\Validation\Rule;
 
 class ProjectProgressUpdateController extends Controller
@@ -13,6 +14,7 @@ class ProjectProgressUpdateController extends Controller
     public function index(Request $request)
     {
         $query = ProjectProgressUpdate::with('project.coordinators');
+        ProjectOrganizationFilters::apply($query, $request);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -39,7 +41,10 @@ class ProjectProgressUpdateController extends Controller
 
         $updates = $query->latest()->paginate(15)->withQueryString();
         $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
-        return view('admin.progress-updates.index', compact('updates', 'projects'));
+        return view('admin.progress-updates.index', array_merge(
+            compact('updates', 'projects'),
+            ProjectOrganizationFilters::options($request)
+        ));
     }
 
     public function create()
@@ -167,8 +172,14 @@ class ProjectProgressUpdateController extends Controller
 
     private function availableProjects(\App\Models\User $user)
     {
-        return $user->isAdmin() || $user->isSuperadmin()
-            ? Project::orderBy('project_name')->get()
-            : $user->assignedProjects()->orderBy('project_name')->get();
+        if ($user->isSuperadmin()) {
+            return Project::orderBy('project_name')->get();
+        }
+
+        if ($user->isAdmin()) {
+            return Project::where('business_unit_id', $user->business_unit_id)->orderBy('project_name')->get();
+        }
+
+        return $user->assignedProjects()->orderBy('project_name')->get();
     }
 }

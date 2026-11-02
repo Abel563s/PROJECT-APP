@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Issue;
 use App\Models\Project;
+use App\Support\ProjectOrganizationFilters;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -54,6 +55,7 @@ class IssueController extends Controller
             ->withCount(['issues as high_impact_issues' => fn ($issues) => $issues->where('impact', 'High')])
             ->withCount(['issues as medium_impact_issues' => fn ($issues) => $issues->where('impact', 'Medium')])
             ->withCount(['issues as low_impact_issues' => fn ($issues) => $issues->where('impact', 'Low')]);
+        ProjectOrganizationFilters::apply($query, $request, true);
 
         if ($request->user()->isUser()) {
             $query->whereHas('coordinators', fn ($coordinators) => $coordinators->whereKey($request->user()->id));
@@ -103,7 +105,10 @@ class IssueController extends Controller
 
         $projects = $query->orderByDesc('baseline_start_date')->paginate(15)->withQueryString();
 
-        return view('admin.projects.issues.index', compact('projects'));
+        return view('admin.projects.issues.index', array_merge(
+            compact('projects'),
+            ProjectOrganizationFilters::options($request)
+        ));
     }
 
     /**
@@ -111,7 +116,7 @@ class IssueController extends Controller
      */
     public function manage(Request $request, Project $project)
     {
-        abort_unless($request->user()->canManageProject($project), 403);
+        abort_unless($request->user()->isAdmin() || $request->user()->isSuperadmin() || $request->user()->canManageProject($project), 403);
 
         $request->validate([
             'issue_owner' => 'nullable|string|max:255',
@@ -320,7 +325,13 @@ class IssueController extends Controller
      */
     public function history(Request $request)
     {
+        $request->validate([
+            'issue_owner' => 'nullable|string|max:255',
+            'priority' => 'nullable|in:Done,Overdue,High,Medium,Low,Unscheduled',
+        ]);
+
         $query = Issue::query()->with('project');
+        ProjectOrganizationFilters::apply($query, $request);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -328,6 +339,7 @@ class IssueController extends Controller
                 $q->where('issue', 'like', "%{$search}%")
                     ->orWhere('issue_type', 'like', "%{$search}%")
                     ->orWhere('raised_by', 'like', "%{$search}%")
+                    ->orWhere('action_by', 'like', "%{$search}%")
                     ->orWhereHas('project', function ($q2) use ($search) {
                         $q2->where('project_name', 'like', "%{$search}%")
                             ->orWhere('project_code', 'like', "%{$search}%")
@@ -348,8 +360,35 @@ class IssueController extends Controller
             $query->where('impact', $request->impact);
         }
 
-        if ($request->filled('issue_type')) {
-            $query->where('issue_type', $request->issue_type);
+        if ($request->filled('issue_owner')) {
+            $query->where('action_by', $request->issue_owner);
+        }
+
+        $today = Carbon::today();
+        if ($request->filled('priority')) {
+            $priority = $request->string('priority')->toString();
+            $query->where(function ($issues) use ($priority, $today) {
+                if ($priority === 'Done') {
+                    $issues->where('status', 'Closed');
+                } elseif ($priority === 'Unscheduled') {
+                    $issues->where(function ($status) {
+                        $status->whereNull('status')->orWhere('status', '!=', 'Closed');
+                    })->whereNull('planned_resolution_date');
+                } else {
+                    $issues->where(function ($status) {
+                        $status->whereNull('status')->orWhere('status', '!=', 'Closed');
+                    })->whereNotNull('planned_resolution_date');
+
+                    match ($priority) {
+                        'Overdue' => $issues->whereDate('planned_resolution_date', '<', $today),
+                        'High' => $issues->whereDate('planned_resolution_date', '>=', $today)
+                            ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(7)),
+                        'Medium' => $issues->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(7))
+                            ->whereDate('planned_resolution_date', '<', $today->copy()->addDays(14)),
+                        'Low' => $issues->whereDate('planned_resolution_date', '>=', $today->copy()->addDays(14)),
+                    };
+                }
+            });
         }
 
         if ($request->filled('date_from')) {
@@ -360,7 +399,6 @@ class IssueController extends Controller
             $query->whereDate('date', '<=', $request->date_to);
         }
 
-        $today = Carbon::today();
         $notClosed = fn ($q) => $q->where(function ($s) {
             $s->whereNull('status')->orWhere('status', '!=', 'Closed');
         });
@@ -382,9 +420,16 @@ class IssueController extends Controller
         ];
 
         $issues = $query->orderByDesc('raised_date')->paginate(15)->withQueryString();
-        $projects = \App\Models\Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+        $projectOptionsQuery = Project::orderBy('project_name');
+        ProjectOrganizationFilters::apply($projectOptionsQuery, $request, true);
+        $projects = $projectOptionsQuery->get(['id', 'project_code', 'project_name']);
+        $owners = Issue::query()->whereNotNull('action_by')->where('action_by', '!=', '')
+            ->distinct()->orderBy('action_by')->pluck('action_by');
 
-        return view('admin.projects.issues.history', compact('issues', 'projects', 'stats'));
+        return view('admin.projects.issues.history', array_merge(
+            compact('issues', 'projects', 'stats', 'owners'),
+            ProjectOrganizationFilters::options($request)
+        ));
     }
 
     /**
@@ -392,7 +437,8 @@ class IssueController extends Controller
      */
     public function destroy(Issue $issue)
     {
-        abort_unless(auth()->user()->isAdmin() || auth()->user()->isSuperadmin(), 403);
+        $user = auth()->user();
+        abort_unless(($user->isAdmin() || $user->isSuperadmin()) && $user->canManageProject($issue->project), 403);
 
         $issue->delete();
 
@@ -404,8 +450,7 @@ class IssueController extends Controller
         $user = auth()->user();
 
         abort_unless(
-            $user->isAdmin()
-            || $user->isSuperadmin()
+            ($user->isAdmin() || $user->isSuperadmin()) && $user->canManageProject($issue->project)
             || ($user->isUser()
                 && $issue->project
                 && $user->canManageProject($issue->project)),

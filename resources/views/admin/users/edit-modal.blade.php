@@ -2,9 +2,13 @@
     @csrf
     @method('PUT')
 
+    <div data-edit-identity-errors class="hidden rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700" role="alert"></div>
+
     @php
         $canManageOrg = auth()->user()->isSuperadmin() || auth()->user()->isAdmin();
-        $selectedBuId = old('business_unit_id', $user->business_unit_id);
+        $selectedBuId = auth()->user()->isAdmin()
+            ? auth()->user()->business_unit_id
+            : old('business_unit_id', $user->business_unit_id);
         $selectedSectorId = old('sector_id', $user->sector_id);
     @endphp
 
@@ -42,6 +46,13 @@
         </div>
     </div>
 
+    @if(auth()->user()->isSuperadmin())
+        @include('admin.users.partials.risk-pool-permissions', [
+            'riskPoolPermissionId' => 'editRiskPoolPermissions',
+            'riskPoolPermissionState' => $user->risk_pool_permissions ?? [],
+        ])
+    @endif
+
     <!-- Organizational Assignment -->
     <div id="editOrgAssignment" @class([
         'bg-white border border-slate-100 rounded-xl p-4 space-y-3',
@@ -71,8 +82,7 @@
             <div class="space-y-1">
                 <label for="editIdentitySector" class="text-[9px] font-black uppercase tracking-widest text-slate-400">Sector</label>
                 <select id="editIdentitySector" name="sector_id"
-                    class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-[#00ADC5]/30 focus:bg-white focus:ring-2 focus:ring-cyan-100"
-                    {{ auth()->user()->isAdmin() ? 'disabled' : '' }}>
+                    class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-[#00ADC5]/30 focus:bg-white focus:ring-2 focus:ring-cyan-100">
                     <option value="">None</option>
                     @foreach($sectors as $sector)
                         <option value="{{ $sector->id }}" @selected($selectedSectorId == $sector->id)>{{ $sector->name }}</option>
@@ -126,9 +136,9 @@
             <p class="mt-1 text-[10px] font-medium text-amber-700">Leave both fields blank to keep the current password.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input type="password" name="password" placeholder="New password"
+            <input type="password" name="password" value="" autocomplete="new-password" placeholder="New password"
                 class="w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-amber-100">
-            <input type="password" name="password_confirmation" placeholder="Confirm new password"
+            <input type="password" name="password_confirmation" value="" autocomplete="new-password" placeholder="Confirm new password"
                 class="w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-amber-100">
         </div>
         <x-input-error :messages="$errors->get('password')" />

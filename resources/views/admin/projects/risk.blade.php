@@ -23,11 +23,12 @@
 
         <!-- Search & Filter -->
         @php
-            $riskFiltersActive = request()->anyFilled(['search', 'project_id', 'impact', 'risk_type', 'risk_status']);
+            $riskFiltersActive = request()->anyFilled(['search', 'project_id', 'impact', 'risk_type', 'risk_status', 'business_unit_id', 'sector_id']);
+            $riskAdvancedFiltersActive = request()->anyFilled(['project_id', 'impact', 'risk_type']);
         @endphp
         <form action="{{ route('admin.projects.risk.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $riskFiltersActive ? '6' : '5' }}" style="grid-template-columns: repeat({{ $riskFiltersActive ? 6 : 5 }}, minmax(0, 1fr));">
-                <label class="space-y-1">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
+                <label class="space-y-1 xl:col-span-2">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
@@ -35,6 +36,28 @@
                             class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                     </span>
                 </label>
+                @include('admin.partials.project-organization-filters')
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Status</span>
+                    <select name="risk_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="all">All Statuses</option>
+                        @foreach(['Open', 'Inprogress', 'Closed'] as $status)
+                            <option value="{{ $status }}" @selected(request('risk_status') === $status)>{{ $status === 'Inprogress' ? 'In Progress' : $status }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
+                    <button type="button" aria-controls="riskAdvancedFilters" aria-expanded="{{ $riskAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'riskAdvancedFilters')"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
+                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>More filters
+                        <i data-lucide="chevron-down" class="filter-panel-chevron h-3.5 w-3.5 transition-transform {{ $riskAdvancedFiltersActive ? 'rotate-180' : '' }}"></i>
+                    </button>
+                    @if($riskFiltersActive)
+                        <a href="{{ route('admin.projects.risk.index') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white"><i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters</a>
+                    @endif
+                </div>
+                <div id="riskAdvancedFilters" class="{{ $riskAdvancedFiltersActive ? '' : 'hidden' }} col-span-full rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project</span>
                     <select name="project_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
@@ -62,24 +85,11 @@
                         @endforeach
                     </select>
                 </label>
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Status</span>
-                    <select name="risk_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="all">All Statuses</option>
-                        @foreach(['Open', 'Inprogress', 'Closed'] as $status)
-                            <option value="{{ $status }}" @selected(request('risk_status') === $status)>{{ $status === 'Inprogress' ? 'In Progress' : $status }}</option>
-                        @endforeach
-                    </select>
-                </label>
-                @if($riskFiltersActive)
-                    <div class="flex items-end justify-end">
-                        <a href="{{ route('admin.projects.risk.index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-sm text-[9px] font-black uppercase tracking-widest">
-                            <i data-lucide="x" class="w-3.5 h-3.5"></i>Clear Filters
-                        </a>
                     </div>
-                @endif
+                </div>
             </div>
         </form>
+        @include('admin.partials.filter-panel-toggle-script')
 
         <!-- Data Table -->
         <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-50 overflow-hidden">

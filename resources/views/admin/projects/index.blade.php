@@ -40,22 +40,46 @@
         <!-- Search & Filter -->
         <form id="projectsFilterForm" action="{{ route('admin.projects.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
             @php
-                $hasActiveFilters = request()->anyFilled(['search', 'project_sector', 'delivery_method', 'consultant_type', 'budget_performance', 'cost_performance', 'schedule_performance', 'project_status']);
+                $hasActiveFilters = request()->anyFilled(['search', 'business_unit_id', 'sector_id', 'project_sector', 'delivery_method', 'consultant_type', 'budget_performance', 'cost_performance', 'schedule_performance', 'project_status']);
+                $hasAdvancedFilters = request()->anyFilled(['delivery_method', 'consultant_type', 'budget_performance', 'cost_performance', 'schedule_performance', 'project_status']);
+                $selectedBusinessUnitFilterId = \App\Support\ProjectOrganizationFilters::effectiveBusinessUnitId(request());
             @endphp
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $hasActiveFilters ? '9' : '8' }}" style="grid-template-columns: repeat({{ $hasActiveFilters ? 9 : 8 }}, minmax(0, 1fr));">
-                <label class="space-y-1">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
+                <label class="space-y-1 xl:col-span-2">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" name="search" value="{{ request('search') }}"
+                        <input type="text" name="search" value="{{ request('search') }}" onchange="this.form.requestSubmit()"
                             placeholder="Search by name, code or protocol..."
                             class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                     </span>
                 </label>
 
                 <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Business Unit</span>
+                    <select name="business_unit_id" onchange="this.form.querySelector('[name=sector_id]').value=''; this.form.requestSubmit()"
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Business Units</option>
+                        @foreach($businessUnits as $businessUnit)
+                            <option value="{{ $businessUnit->id }}" @selected($selectedBusinessUnitFilterId == $businessUnit->id)>{{ $businessUnit->name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Organizational Sector</span>
+                    <select name="sector_id" onchange="this.form.requestSubmit()"
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Sectors</option>
+                        @foreach($sectors as $sector)
+                            <option value="{{ $sector->id }}" @selected(request('sector_id') == $sector->id)>{{ $sector->name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+
+                <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Sector</span>
-                    <select name="project_sector" onchange="this.form.submit()"
+                    <select name="project_sector" onchange="this.form.requestSubmit()"
                         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Sectors</option>
                         @foreach(['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'] as $sector)
@@ -64,9 +88,26 @@
                     </select>
                 </label>
 
+                <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
+                    <button type="button" aria-controls="projectAdvancedFilters" aria-expanded="{{ $hasAdvancedFilters ? 'true' : 'false' }}"
+                        onclick="toggleProjectAdvancedFilters(this)"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
+                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>
+                        More filters
+                        <i data-lucide="chevron-down" class="project-filter-chevron h-3.5 w-3.5 transition-transform {{ $hasAdvancedFilters ? 'rotate-180' : '' }}"></i>
+                    </button>
+                    @if($hasActiveFilters)
+                        <a href="{{ route('admin.projects.index') }}" class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white">
+                            <i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters
+                        </a>
+                    @endif
+                </div>
+
+                <div id="projectAdvancedFilters" class="{{ $hasAdvancedFilters ? '' : 'hidden' }} col-span-full rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Delivery Method</span>
-                    <select name="delivery_method" onchange="this.form.submit()"
+                    <select name="delivery_method" onchange="this.form.requestSubmit()"
                         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Methods</option>
                         @foreach(['DB', 'DBB'] as $method)
@@ -77,7 +118,7 @@
 
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Consultant Type</span>
-                    <select name="consultant_type" onchange="this.form.submit()"
+                    <select name="consultant_type" onchange="this.form.requestSubmit()"
                         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Types</option>
                         @foreach(['Government', 'Private', 'Client / Engineering Team'] as $type)
@@ -88,7 +129,7 @@
 
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Budget Performance</span>
-                    <select name="budget_performance" onchange="this.form.submit()"
+                    <select name="budget_performance" onchange="this.form.requestSubmit()"
                         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All</option>
                         <option value="Above Budget" {{ request('budget_performance') == 'Above Budget' ? 'selected' : '' }}>Above Budget</option>
@@ -99,7 +140,7 @@
 
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Cost Performance</span>
-                    <select name="cost_performance" onchange="this.form.submit()"
+                    <select name="cost_performance" onchange="this.form.requestSubmit()"
                         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All</option>
                         <option value="Above Allowable Cost" {{ request('cost_performance') == 'Above Allowable Cost' ? 'selected' : '' }}>Above Allowable Cost</option>
@@ -110,7 +151,7 @@
 
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Schedule Performance</span>
-                    <select name="schedule_performance" onchange="this.form.submit()"
+                    <select name="schedule_performance" onchange="this.form.requestSubmit()"
                         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All</option>
                         <option value="Behind Schedule" {{ request('schedule_performance') == 'Behind Schedule' ? 'selected' : '' }}>Behind Schedule</option>
@@ -121,7 +162,7 @@
 
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Status</span>
-                    <select name="project_status" onchange="this.form.submit()"
+                    <select name="project_status" onchange="this.form.requestSubmit()"
                         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All</option>
                         <option value="in progress" {{ request('project_status') == 'in progress' ? 'selected' : '' }}>In Progress</option>
@@ -130,13 +171,8 @@
                     </select>
                 </label>
 
-                @if($hasActiveFilters)
-                    <div class="flex items-end justify-end">
-                        <a href="{{ route('admin.projects.index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-sm text-[9px] font-black uppercase tracking-widest">
-                            <i data-lucide="x" class="w-3.5 h-3.5"></i>Clear Filters
-                        </a>
                     </div>
-                @endif
+                </div>
             </div>
         </form>
 
@@ -172,12 +208,12 @@
                                 <td class="px-6 py-4">
                                     @php
                                         $typeColors = [
-                                            'Building' => 'bg-cyan-100/60 text-cyan-700 border-cyan-200',
-                                            'Fit-Out' => 'bg-violet-100/60 text-violet-700 border-violet-200',
-                                            'Infrastructure' => 'bg-amber-100/60 text-amber-700 border-amber-200',
-                                            'Water & Energy' => 'bg-emerald-100/60 text-emerald-700 border-emerald-200',
+                                            'Building' => 'bg-cyan-100/60 text-cyan-700 border-cyan-200 dark:bg-cyan-950 dark:text-cyan-300 dark:border-cyan-700',
+                                            'Fit-Out' => 'bg-violet-100/60 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-300 dark:border-violet-700',
+                                            'Infrastructure' => 'bg-amber-100/60 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-700',
+                                            'Water & Energy' => 'bg-emerald-100/60 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-700',
                                         ];
-                                        $typeColor = $typeColors[$project->project_type] ?? 'bg-slate-100 text-slate-600 border-slate-200';
+                                        $typeColor = $typeColors[$project->project_type] ?? 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600';
                                     @endphp
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $typeColor }} border shadow-sm group-hover:shadow-md transition-all">
                                         {{ $project->project_type }}
@@ -272,7 +308,7 @@
                                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                         </button>
                                         @endcan
-                                        @if(auth()->user() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()))
+                                        @can('delete', $project)
                                             <form action="{{ route('admin.projects.destroy', $project->id) }}" method="POST" class="inline"
                                                 onsubmit="return confirm('Are you sure you want to delete this project? This action cannot be undone.');">
                                                 @csrf
@@ -283,7 +319,7 @@
                                                     <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                                 </button>
                                             </form>
-                                        @endif
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -435,8 +471,32 @@
                 });
         }
 
+        // Modal HTML is fetched and inserted dynamically, so its inline scripts do
+        // not run. Delegate these changes from the persistent modal container.
+        document.getElementById('editModalContent').addEventListener('change', function (event) {
+            const statusInput = event.target.closest('#projectStatusInput');
+            if (statusInput && statusInput.value === 'in progress') {
+                const actualFinishInput = this.querySelector('input[name="actual_finish_date"]');
+                if (actualFinishInput) actualFinishInput.value = '';
+            }
+
+            const actualFinishInput = event.target.closest('input[name="actual_finish_date"]');
+            if (actualFinishInput && actualFinishInput.value) {
+                const statusSelect = this.querySelector('#projectStatusInput');
+                if (statusSelect) statusSelect.value = 'completed';
+            }
+        });
+
         function closeEditModal() {
             document.getElementById('editModal').classList.add('hidden');
+        }
+
+        function toggleProjectAdvancedFilters(button) {
+            const panel = document.getElementById('projectAdvancedFilters');
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', String(!isExpanded));
+            panel.classList.toggle('hidden', isExpanded);
+            button.querySelector('.project-filter-chevron')?.classList.toggle('rotate-180', !isExpanded);
         }
 
         function openCreateModal() {
@@ -447,6 +507,19 @@
                     document.getElementById('createModal').classList.remove('hidden');
                     if (window.lucide) lucide.createIcons();
                 });
+        }
+
+        function updateProjectSectorOptions(businessUnitSelect) {
+            const sectorSelect = businessUnitSelect.closest('.grid').querySelector('select[name="sector_id"]');
+            const selectedOption = businessUnitSelect.options[businessUnitSelect.selectedIndex];
+            const sectors = selectedOption?.dataset.sectors ? JSON.parse(selectedOption.dataset.sectors) : [];
+            sectorSelect.innerHTML = '<option value="">Select a Sector</option>';
+            sectors.forEach(sector => {
+                const option = document.createElement('option');
+                option.value = sector.id;
+                option.textContent = sector.name;
+                sectorSelect.appendChild(option);
+            });
         }
 
     function closeCreateModal() {

@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 
 use App\Models\Project;
 use App\Models\ProjectWeeklyUpdate;
+use App\Support\ProjectOrganizationFilters;
 
 class ProjectWeeklyUpdateController extends Controller
 {
     public function index(Request $request)
     {
         $query = ProjectWeeklyUpdate::with('project');
+        ProjectOrganizationFilters::apply($query, $request);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -24,12 +26,15 @@ class ProjectWeeklyUpdateController extends Controller
         }
 
         $updates = $query->latest()->paginate(15)->withQueryString();
-        return view('admin.weekly-updates.index', compact('updates'));
+        return view('admin.weekly-updates.index', array_merge(
+            compact('updates'),
+            ProjectOrganizationFilters::options($request)
+        ));
     }
 
     public function create()
     {
-        $projects = Project::all();
+        $projects = $this->availableProjects();
         if (request()->has('partial')) {
             return view('admin.weekly-updates.create-modal', compact('projects'));
         }
@@ -64,7 +69,7 @@ class ProjectWeeklyUpdateController extends Controller
 
     public function edit(ProjectWeeklyUpdate $weekly_update)
     {
-        $projects = Project::all();
+        $projects = $this->availableProjects();
         if (request()->has('partial')) {
             return view('admin.weekly-updates.edit-modal', [
                 'update' => $weekly_update,
@@ -99,5 +104,15 @@ class ProjectWeeklyUpdateController extends Controller
     {
         $weekly_update->delete();
         return redirect()->route('admin.weekly-updates.index')->with('success', 'Weekly update deleted successfully.');
+    }
+
+    private function availableProjects()
+    {
+        $query = Project::query();
+        if (request()->user()->isAdmin()) {
+            $query->where('business_unit_id', request()->user()->business_unit_id);
+        }
+
+        return $query->orderBy('project_name')->get();
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\ProjectPayment;
+use App\Support\ProjectOrganizationFilters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,6 +17,7 @@ class ProjectPaymentController extends Controller
     public function index(Request $request)
     {
         $query = Project::query();
+        ProjectOrganizationFilters::apply($query, $request, true);
 
         $status = $request->filled('status') ? $request->status : 'in progress';
         if ($status === 'in progress') {
@@ -34,7 +36,10 @@ class ProjectPaymentController extends Controller
         }
 
         $projects = $query->latest()->paginate(15)->withQueryString();
-        return view('admin.projects.payments.index', compact('projects'));
+        return view('admin.projects.payments.index', array_merge(
+            compact('projects'),
+            ProjectOrganizationFilters::options($request)
+        ));
     }
 
     /**
@@ -205,8 +210,7 @@ class ProjectPaymentController extends Controller
         $user = auth()->user();
 
         abort_unless(
-            $user->isAdmin()
-            || $user->isSuperadmin()
+            (($user->isAdmin() || $user->isSuperadmin()) && $user->canManageProject($payment->project))
             || ($user->isUser()
                 && $user->canManageProject($payment->project)
                 && (int) $payment->created_by === (int) $user->id),

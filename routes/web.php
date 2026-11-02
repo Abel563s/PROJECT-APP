@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\BusinessUnitController;
+use App\Http\Controllers\Admin\ContractClauseController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\EotPoolController;
 use App\Http\Controllers\Admin\MaterialController;
 use App\Http\Controllers\Admin\MaterialProgressController;
 use App\Http\Controllers\Admin\ProjectSiteController;
@@ -38,7 +40,7 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Admin Routes
-    Route::middleware(['role:admin|manager|user', 'role.write'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['role:admin|manager|user', 'role.write', 'admin.business-unit'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/data', [AdminDashboardController::class, 'data'])->name('dashboard.data');
 
@@ -55,8 +57,25 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
 
         // Risk Pool (centralized repository)
         Route::get('/projects/risk-pool', [RiskPoolController::class, 'index'])->name('projects.risk-pool.index');
-        Route::get('/projects/risk-pool/eot', [RiskPoolController::class, 'eot'])->name('projects.risk-pool.eot');
-        Route::get('/projects/risk-pool/contract-clauses', [RiskPoolController::class, 'contractClauses'])->name('projects.risk-pool.contract-clauses');
+        Route::get('/projects/risk-pool/eot', [EotPoolController::class, 'index'])->name('projects.risk-pool.eot');
+        Route::get('/projects/risk-pool/eot/create-modal', [EotPoolController::class, 'create'])->name('projects.risk-pool.eot.create-modal');
+        Route::get('/projects/risk-pool/eot/suggest-id', [EotPoolController::class, 'suggestId'])->name('projects.risk-pool.eot.suggest-id');
+        Route::post('/projects/risk-pool/eot', [EotPoolController::class, 'store'])->name('projects.risk-pool.eot.store');
+        Route::get('/projects/risk-pool/eot/categories', [EotPoolController::class, 'categories'])->name('projects.risk-pool.eot.categories.index');
+        Route::post('/projects/risk-pool/eot/categories', [EotPoolController::class, 'storeCategory'])->name('projects.risk-pool.eot.categories.store');
+        Route::put('/projects/risk-pool/eot/categories/{category}', [EotPoolController::class, 'updateCategory'])->name('projects.risk-pool.eot.categories.update');
+        Route::delete('/projects/risk-pool/eot/categories/{category}', [EotPoolController::class, 'destroyCategory'])->name('projects.risk-pool.eot.categories.destroy');
+        Route::get('/projects/risk-pool/eot/{eot}', [EotPoolController::class, 'show'])->name('projects.risk-pool.eot.show');
+        Route::get('/projects/risk-pool/eot/{eot}/edit-modal', [EotPoolController::class, 'edit'])->name('projects.risk-pool.eot.edit-modal');
+        Route::put('/projects/risk-pool/eot/{eot}', [EotPoolController::class, 'update'])->name('projects.risk-pool.eot.update');
+        Route::delete('/projects/risk-pool/eot/{eot}', [EotPoolController::class, 'destroy'])->name('projects.risk-pool.eot.destroy');
+        Route::get('/projects/risk-pool/contract-clauses', [ContractClauseController::class, 'index'])->name('projects.risk-pool.contract-clauses');
+        Route::get('/projects/risk-pool/contract-clauses/create-modal', [ContractClauseController::class, 'create'])->name('projects.risk-pool.contract-clauses.create-modal');
+        Route::post('/projects/risk-pool/contract-clauses', [ContractClauseController::class, 'store'])->name('projects.risk-pool.contract-clauses.store');
+        Route::get('/projects/risk-pool/contract-clauses/{clause}/view-modal', [ContractClauseController::class, 'show'])->name('projects.risk-pool.contract-clauses.show');
+        Route::get('/projects/risk-pool/contract-clauses/{clause}/edit-modal', [ContractClauseController::class, 'edit'])->name('projects.risk-pool.contract-clauses.edit-modal');
+        Route::put('/projects/risk-pool/contract-clauses/{clause}', [ContractClauseController::class, 'update'])->name('projects.risk-pool.contract-clauses.update');
+        Route::delete('/projects/risk-pool/contract-clauses/{clause}', [ContractClauseController::class, 'destroy'])->name('projects.risk-pool.contract-clauses.destroy');
         Route::get('/projects/risk-pool/create-modal', [RiskPoolController::class, 'create'])->name('projects.risk-pool.create-modal');
         Route::get('/projects/risk-pool/suggest-id', [RiskPoolController::class, 'suggestId'])->name('projects.risk-pool.suggest-id');
         Route::post('/projects/risk-pool', [RiskPoolController::class, 'store'])->name('projects.risk-pool.store');

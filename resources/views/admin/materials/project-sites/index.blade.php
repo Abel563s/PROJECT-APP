@@ -16,6 +16,7 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
+                @if(auth()->user()->isSuperadmin())
                 <a href="{{ route('admin.project-sites.create') }}" class="group/btn relative px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-xl shadow-slate-900/20">
                     <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-blue-500 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
                     <span class="relative flex items-center gap-2">
@@ -23,6 +24,7 @@
                         Add Site
                     </span>
                 </a>
+                @endif
             </div>
         </div>
 
@@ -55,6 +57,7 @@
                                 </td>
                                 <td class="px-12 py-9 text-right">
                                     <div class="flex items-center justify-end gap-2">
+                                        @if(auth()->user()->isSuperadmin())
                                         <form action="{{ route('admin.project-sites.destroy', $site) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this site?');" class="inline">
                                             @csrf
                                             @method('DELETE')
@@ -62,6 +65,7 @@
                                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -78,9 +82,11 @@
                                             <h3 class="text-2xl font-black text-slate-900">No Sites Found</h3>
                                             <p class="text-[10px] uppercase font-black tracking-widest text-slate-400">No project sites registered.</p>
                                         </div>
+                                        @if(auth()->user()->isSuperadmin())
                                         <a href="{{ route('admin.project-sites.create') }}" class="px-8 py-3 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:scale-105 active:scale-95 transition-all">
                                             Add First Site
                                         </a>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

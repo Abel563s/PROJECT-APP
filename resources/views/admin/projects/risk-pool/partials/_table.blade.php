@@ -58,12 +58,14 @@
                                     title="View">
                                     <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                 </button>
-                                @if($isAdmin)
+                                @if($canEditRiskPool ?? auth()->user()->isSuperadmin())
                                     <button onclick="openSpreadsheetEditor({{ $risk->id }})"
                                         class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-amber-500 hover:border-amber-500 hover:shadow-sm transition-all"
                                         title="Edit">
                                         <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                     </button>
+                                @endif
+                                @if($canDeleteRiskPool ?? auth()->user()->isSuperadmin())
                                     <button onclick="deleteRiskPoolItem({{ $risk->id }})"
                                         class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-rose-500 hover:border-rose-500 hover:shadow-sm transition-all"
                                         title="Delete">

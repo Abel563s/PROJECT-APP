@@ -11,24 +11,38 @@ use Illuminate\Validation\Rule;
 
 class RiskCategoryController extends Controller
 {
-    private function authorizeAdmin(): void
+    private function authorizeRiskCategoryAction(?string $action = null): void
     {
-        abort_unless(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()), 403);
+        $user = auth()->user();
+        if ($user?->isSuperadmin()) {
+            return;
+        }
+
+        $hasRiskPoolAccess = $user && collect(['create', 'edit', 'delete'])
+            ->contains(fn (string $permission) => $user->canManageRiskPool($permission));
+        abort_unless($hasRiskPoolAccess, 403);
+
+        if ($action !== null) {
+            abort_unless($user->canManageRiskPool($action), 403, 'You do not have permission to '.$action.' risk categories.');
+        }
     }
 
     public function index()
     {
-        $this->authorizeAdmin();
+        $this->authorizeRiskCategoryAction();
 
         $active = RiskCategory::ordered()->get();
         $defaults = ProjectRiskPool::CATEGORIES;
+        $canCreateRiskCategory = auth()->user()->canManageRiskPool('create');
+        $canEditRiskCategory = auth()->user()->canManageRiskPool('edit');
+        $canDeleteRiskCategory = auth()->user()->canManageRiskPool('delete');
 
-        return view('admin.projects.risk-pool.category-manage', compact('active', 'defaults'));
+        return view('admin.projects.risk-pool.category-manage', compact('active', 'defaults', 'canCreateRiskCategory', 'canEditRiskCategory', 'canDeleteRiskCategory'));
     }
 
     public function store(Request $request)
     {
-        $this->authorizeAdmin();
+        $this->authorizeRiskCategoryAction('create');
 
         $validated = $request->validate([
             'name'           => ['required', 'string', 'max:255', 'unique:risk_categories,name'],
@@ -56,7 +70,7 @@ class RiskCategoryController extends Controller
 
     public function update(Request $request, RiskCategory $risk_category)
     {
-        $this->authorizeAdmin();
+        $this->authorizeRiskCategoryAction('edit');
 
         $validated = $request->validate([
             'name'           => ['sometimes', 'required', 'string', 'max:255', Rule::unique('risk_categories', 'name')->ignore($risk_category->id)],
@@ -93,7 +107,7 @@ class RiskCategoryController extends Controller
 
     public function destroy(Request $request, RiskCategory $risk_category)
     {
-        $this->authorizeAdmin();
+        $this->authorizeRiskCategoryAction('delete');
 
         $references = ProjectRiskPool::where('risk_category', $risk_category->name)->count();
 

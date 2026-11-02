@@ -10,7 +10,7 @@
                 <p class="text-[9px] font-black text-[#00ADC5] uppercase tracking-widest">{{ $material->material_code }}</p>
             </div>
         </div>
-        @if(auth()->user() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()))
+        @if(auth()->user() && (auth()->user()->isSuperadmin() || (auth()->user()->isAdmin() && $material->project && auth()->user()->canManageProject($material->project))))
             <form action="{{ route('admin.material.destroy', $material) }}" method="POST"
                 onsubmit="return confirm('Are you sure you want to delete this material?');">
                 @csrf

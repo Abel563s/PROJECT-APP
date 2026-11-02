@@ -236,12 +236,12 @@ class AdminUserSeeder extends Seeder
                 // Update department with manager
                 $department->update(['manager_id' => $managerUser->id]);
 
-                // Create Designated Attendance User (Department_Attendance_User role)
+                // Seed this employee as a regular Project Coordinator user.
                 $attendanceUser = User::create([
                     'name' => $deptData['attendance_user']['name'],
                     'email' => $deptData['attendance_user']['email'],
                     'password' => Hash::make('password123'),
-                    'role' => 'department_attendance_user', // New role for designated attendance users
+                    'role' => 'user',
                     'department_id' => $department->id,
                     'employee_id' => $deptData['attendance_user']['employee_id'],
                     'phone' => $deptData['attendance_user']['phone'],

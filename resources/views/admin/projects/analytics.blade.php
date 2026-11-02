@@ -42,6 +42,8 @@
                     </div>
                 </div>
 
+                @include('admin.partials.project-organization-filters')
+
                 <div class="flex flex-col gap-1">
                     <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project</label>
                     <div class="relative">
@@ -76,7 +78,7 @@
                 <div class="flex flex-col gap-1">
                     <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">&nbsp;</label>
                     <div class="flex items-center gap-2">
-                        @if(request()->anyFilled(['data_date', 'project_id', 'sector']))
+                        @if(request()->anyFilled(['data_date', 'project_id', 'sector', 'business_unit_id', 'sector_id']))
                             <a href="{{ route('admin.projects.analytics') }}"
                                 class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
                                 title="Clear Filters">
@@ -309,46 +311,46 @@
 
                 <!-- Summary KPI Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div class="group relative bg-gradient-to-br from-blue-50 to-blue-50/50 rounded-xl border border-blue-100 p-3 overflow-hidden hover:shadow-lg hover:border-blue-200 transition-all duration-300">
+                    <div class="group relative bg-gradient-to-br from-blue-50 to-blue-50/50 dark:from-blue-950 dark:to-slate-900 rounded-xl border border-blue-100 dark:border-blue-800 p-3 overflow-hidden hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-600 transition-all duration-300">
                         <div class="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                         <div class="relative z-10 flex items-start gap-2">
                             <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
                                 <i data-lucide="target" class="w-3.5 h-3.5"></i>
                             </div>
                             <div class="min-w-0">
-                                <p class="text-[7px] font-black text-slate-500 uppercase tracking-widest">Total Planned Revenue</p>
-                                <p class="text-lg font-black text-slate-900 tracking-tighter leading-none mt-1">
-                                    <span class="text-[8px] font-black text-slate-400 mr-0.5">ETB</span>{{ number_format($totalRevenuePlanned / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 ml-0.5">M</span>
+                                <p class="text-[7px] font-black text-slate-500 dark:text-blue-200 uppercase tracking-widest">Total Planned Revenue</p>
+                                <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
+                                    <span class="text-[8px] font-black text-slate-400 dark:text-blue-300 mr-0.5">ETB</span>{{ number_format($totalRevenuePlanned / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-blue-300 ml-0.5">M</span>
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="group relative bg-gradient-to-br from-emerald-50 to-emerald-50/50 rounded-xl border border-emerald-100 p-3 overflow-hidden hover:shadow-lg hover:border-emerald-200 transition-all duration-300">
+                    <div class="group relative bg-gradient-to-br from-emerald-50 to-emerald-50/50 dark:from-emerald-950 dark:to-slate-900 rounded-xl border border-emerald-100 dark:border-emerald-800 p-3 overflow-hidden hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-600 transition-all duration-300">
                         <div class="absolute top-0 right-0 w-16 h-16 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                         <div class="relative z-10 flex items-start gap-2">
                             <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-600 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 shrink-0">
                                 <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
                             </div>
                             <div class="min-w-0">
-                                <p class="text-[7px] font-black text-slate-500 uppercase tracking-widest">Total Earned Revenue</p>
-                                <p class="text-lg font-black text-slate-900 tracking-tighter leading-none mt-1">
-                                    <span class="text-[8px] font-black text-slate-400 mr-0.5">ETB</span>{{ number_format($totalRevenueActual / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 ml-0.5">M</span>
+                                <p class="text-[7px] font-black text-slate-500 dark:text-emerald-200 uppercase tracking-widest">Total Earned Revenue</p>
+                                <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
+                                    <span class="text-[8px] font-black text-slate-400 dark:text-emerald-300 mr-0.5">ETB</span>{{ number_format($totalRevenueActual / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-emerald-300 ml-0.5">M</span>
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="group relative bg-gradient-to-br from-amber-50 to-amber-50/50 rounded-xl border border-amber-100 p-3 overflow-hidden hover:shadow-lg hover:border-amber-200 transition-all duration-300">
+                    <div class="group relative bg-gradient-to-br from-amber-50 to-amber-50/50 dark:from-amber-950 dark:to-slate-900 rounded-xl border border-amber-100 dark:border-amber-800 p-3 overflow-hidden hover:shadow-lg hover:border-amber-200 dark:hover:border-amber-600 transition-all duration-300">
                         <div class="absolute top-0 right-0 w-16 h-16 bg-amber-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                         <div class="relative z-10 flex items-start gap-2">
                             <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-amber-500/20 shrink-0">
                                 <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
                             </div>
                             <div class="min-w-0">
-                                <p class="text-[7px] font-black text-slate-500 uppercase tracking-widest">Total Actual Cost</p>
-                                <p class="text-lg font-black text-slate-900 tracking-tighter leading-none mt-1">
-                                    <span class="text-[8px] font-black text-slate-400 mr-0.5">ETB</span>{{ number_format($totalCostActual / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 ml-0.5">M</span>
+                                <p class="text-[7px] font-black text-slate-500 dark:text-amber-200 uppercase tracking-widest">Total Actual Cost</p>
+                                <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
+                                    <span class="text-[8px] font-black text-slate-400 dark:text-amber-300 mr-0.5">ETB</span>{{ number_format($totalCostActual / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-amber-300 ml-0.5">M</span>
                                 </p>
                             </div>
                         </div>

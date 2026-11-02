@@ -12,6 +12,7 @@
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Core deployment</p>
             </div>
         </div>
+        @include('admin.projects.partials.organizational-assignment', ['project' => null])
         <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Project Code</label>

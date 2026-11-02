@@ -37,6 +37,14 @@
                 <p class="text-xs font-black text-slate-900">{{ $project->project_name }}</p>
             </div>
             <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Business Unit</p>
+                <p class="text-xs font-black text-slate-900">{{ $project->businessUnit?->name ?: 'Not assigned' }}</p>
+            </div>
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Organizational Sector</p>
+                <p class="text-xs font-black text-slate-900">{{ $project->sector?->name ?: 'Not assigned' }}</p>
+            </div>
+            <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Project Sector</p>
                 <p class="text-xs font-black text-slate-900">{{ $project->project_type }}</p>
             </div>

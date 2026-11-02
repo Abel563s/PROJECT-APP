@@ -119,8 +119,8 @@
 
         <!-- Filters -->
         <form id="dashboardFilterForm" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div id="dashboardFilterGrid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5" style="display:grid; gap:0.75rem;">
-                <label class="space-y-1">
+            <div id="dashboardFilterGrid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6" style="display:grid; gap:0.75rem;">
+                <label class="space-y-1 xl:col-span-2">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
@@ -131,12 +131,45 @@
                 </label>
 
                 <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Business Unit</span>
+                    <select id="filterBusinessUnit" onchange="filterDashboardSectors(); applyFilters()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="all">All Business Units</option>
+                        @foreach($businessUnits as $businessUnit)
+                            <option value="{{ $businessUnit->id }}" @selected(\App\Support\ProjectOrganizationFilters::effectiveBusinessUnitId(request()) == $businessUnit->id)>{{ $businessUnit->name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Organizational Sector</span>
+                    <select id="filterOrganizationSector" onchange="applyFilters()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="all">All Organizational Sectors</option>
+                        @foreach($allOrganizationSectors as $sector)
+                            <option value="{{ $sector->id }}" data-business-unit-id="{{ $sector->business_unit_id }}">{{ $sector->name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+
+                <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Sector</span>
                     <select id="filterSector" onchange="applyFilters()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="all">All Sectors</option>
                     </select>
                 </label>
 
+                <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
+                    <button type="button" aria-controls="dashboardAdvancedFilters" aria-expanded="false" onclick="toggleDashboardAdvancedFilters(this)"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
+                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>More filters
+                        <i data-lucide="chevron-down" class="filter-panel-chevron h-3.5 w-3.5 transition-transform"></i>
+                    </button>
+                    <a href="{{ route('admin.dashboard') }}" class="clear-filters-btn inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white" title="Clear Filters" onclick="clearFilters(); return false;" hidden>
+                        <i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters
+                    </a>
+                </div>
+
+                <div id="dashboardAdvancedFilters" class="hidden col-span-full rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Delivery Method</span>
                     <select id="filterDeliveryMethod" onchange="applyFilters()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
@@ -158,13 +191,7 @@
                     </select>
                 </label>
 
-                <div class="flex items-end">
-                    <a href="{{ route('admin.dashboard') }}"
-                        class="clear-filters-btn inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-sm text-[9px] font-black uppercase tracking-widest"
-                        title="Clear Filters" onclick="clearFilters()"
-                        hidden>
-                        <i data-lucide="x" class="w-3.5 h-3.5"></i>Clear Filter
-                    </a>
+                    </div>
                 </div>
             </div>
         </form>
@@ -449,6 +476,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
+        const defaultBusinessUnitFilter = @json((string) (\App\Support\ProjectOrganizationFilters::effectiveBusinessUnitId(request()) ?? 'all'));
+
         let currentTab = 'schedule';
         let allProjects = [];
         let filteredProjects = [];
@@ -472,13 +501,14 @@
         };
 
         document.addEventListener('DOMContentLoaded', function() {
+            filterDashboardSectors();
             loadFilters();
             loadDashboardData();
             updateClearFiltersVisibility();
         });
 
         function loadFilters() {
-            fetch('{{ route('admin.dashboard.data') }}')
+            fetch('{{ route('admin.dashboard.data') }}?business_unit_id=')
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
@@ -533,6 +563,16 @@
             const sectorFilteredByChart = activeChartFilter && activeChartFilter.chart === 'consultancy_sector';
             if (!sectorFilteredByChart && sectorDropdown && sectorDropdown.value !== 'all') {
                 params.append('sector', sectorDropdown.value);
+            }
+
+            const businessUnitDropdown = document.getElementById('filterBusinessUnit');
+            if (businessUnitDropdown) {
+                params.append('business_unit_id', businessUnitDropdown.value === 'all' ? '' : businessUnitDropdown.value);
+            }
+
+            const organizationSectorDropdown = document.getElementById('filterOrganizationSector');
+            if (organizationSectorDropdown && organizationSectorDropdown.value !== 'all') {
+                params.append('sector_id', organizationSectorDropdown.value);
             }
 
             const deliveryDropdown = document.getElementById('filterDeliveryMethod');
@@ -613,22 +653,27 @@
 
         function updateClearFiltersVisibility() {
             const btn = document.querySelector('.clear-filters-btn');
-            const grid = document.getElementById('dashboardFilterGrid');
-            if (!btn || !grid) return;
+            if (!btn) return;
             const hasSearch = document.getElementById('searchInput').value.trim() !== '';
+            const hasBusinessUnit = document.getElementById('filterBusinessUnit').value !== defaultBusinessUnitFilter;
+            const hasOrganizationSector = document.getElementById('filterOrganizationSector').value !== 'all';
             const hasSector = document.getElementById('filterSector').value !== 'all';
             const hasDelivery = document.getElementById('filterDeliveryMethod').value !== 'all';
             const hasConsultant = document.getElementById('filterConsultantType').value !== 'all';
             const hasStatus = document.getElementById('filterLifecycleStatus').value !== 'all';
-            if (hasSearch || hasSector || hasDelivery || hasConsultant || hasStatus) {
+            if (hasSearch || hasBusinessUnit || hasOrganizationSector || hasSector || hasDelivery || hasConsultant || hasStatus) {
                 btn.hidden = false;
-                grid.classList.remove('lg:grid-cols-5');
-                grid.classList.add('lg:grid-cols-6');
             } else {
                 btn.hidden = true;
-                grid.classList.remove('lg:grid-cols-6');
-                grid.classList.add('lg:grid-cols-5');
             }
+        }
+
+        function toggleDashboardAdvancedFilters(button) {
+            const panel = document.getElementById('dashboardAdvancedFilters');
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', String(!isExpanded));
+            panel.classList.toggle('hidden', isExpanded);
+            button.querySelector('.filter-panel-chevron')?.classList.toggle('rotate-180', !isExpanded);
         }
 
         function handleSearch(value) {
@@ -642,7 +687,15 @@
 
         function clearFilters() {
             clearTimeout(searchTimeout);
+            const advancedPanel = document.getElementById('dashboardAdvancedFilters');
+            const advancedToggle = document.querySelector('[aria-controls="dashboardAdvancedFilters"]');
+            advancedPanel?.classList.add('hidden');
+            advancedToggle?.setAttribute('aria-expanded', 'false');
+            advancedToggle?.querySelector('.filter-panel-chevron')?.classList.remove('rotate-180');
             document.getElementById('filterSector').value = 'all';
+            document.getElementById('filterBusinessUnit').value = defaultBusinessUnitFilter;
+            document.getElementById('filterOrganizationSector').value = 'all';
+            filterDashboardSectors();
             document.getElementById('filterDeliveryMethod').value = 'all';
             document.getElementById('filterConsultantType').value = 'all';
             document.getElementById('filterLifecycleStatus').value = 'all';
@@ -660,6 +713,16 @@
             updateClearFilterButton();
             updateClearFiltersVisibility();
             applyFilters();
+        }
+
+        function filterDashboardSectors() {
+            const businessUnitId = document.getElementById('filterBusinessUnit').value;
+            const sectorSelect = document.getElementById('filterOrganizationSector');
+            Array.from(sectorSelect.options).forEach(option => {
+                if (!option.value) return;
+                option.hidden = businessUnitId !== 'all' && option.dataset.businessUnitId !== businessUnitId;
+            });
+            if (sectorSelect.selectedOptions[0]?.hidden) sectorSelect.value = 'all';
         }
 
         function filterByStatus(status) {

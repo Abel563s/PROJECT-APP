@@ -3,11 +3,13 @@
  <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
        <!-- Search & Filter -->
     @php
-        $riskPoolFiltersActive = request()->anyFilled(['search', 'risk_category', 'overall_impact_level']);
+        $riskPoolFiltersActive = trim((string) request('search')) !== ''
+            || request('risk_category', 'all') !== 'all'
+            || request('overall_impact_level', 'all') !== 'all';
     @endphp
     <form id="riskPoolFilters" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm" autocomplete="off">
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $riskPoolFiltersActive ? '6' : '5' }}" style="grid-template-columns: repeat({{ $riskPoolFiltersActive ? 6 : 5 }}, minmax(0, 1fr));">
-            <label class="space-y-1 sm:col-span-2">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(220px,1fr)_minmax(180px,0.85fr)_auto]">
+            <label class="space-y-1">
                 <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Risks</span>
                 <span class="relative block">
                     <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
@@ -37,14 +39,12 @@
                     @endforeach
                 </select>
             </label>
-            @if($riskPoolFiltersActive)
-                <div class="flex items-end justify-end">
-                    <a href="{{ route('admin.projects.risk-pool.index') }}"
-                        class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-sm text-[9px] font-black uppercase tracking-widest">
-                        <i data-lucide="x" class="w-3.5 h-3.5"></i>Clear Filters
-                    </a>
-                </div>
-            @endif
+            <div id="riskPoolClearWrap" class="flex items-end justify-end {{ $riskPoolFiltersActive ? '' : 'hidden' }}">
+                <a id="riskPoolClearBtn" href="{{ route('admin.projects.risk-pool.index') }}"
+                    class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-sm text-[9px] font-black uppercase tracking-widest">
+                    <i data-lucide="x" class="w-3.5 h-3.5"></i>Clear Filters
+                </a>
+            </div>
         </div>
     </form>
 
@@ -152,7 +152,9 @@
     const riskPoolCreateRoute   = @json(route('admin.projects.risk-pool.create-modal'));
     const riskPoolDeleteRoute   = @json(route('admin.projects.risk-pool.destroy', ['risk' => '__RISK__']));
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const isAdmin = @json($isAdmin);
+    const canCreateRiskPool = @json($canCreateRiskPool);
+    const canEditRiskPool = @json($canEditRiskPool);
+    const canDeleteRiskPool = @json($canDeleteRiskPool);
 
     const riskPoolState = {
         search:       @json(request('search')),
@@ -169,6 +171,10 @@
     const riskPoolSearch   = document.getElementById('riskPoolSearch');
     const riskPoolCategory = document.getElementById('riskPoolCategory');
     const riskPoolImpact   = document.getElementById('riskPoolImpact');
+    document.getElementById('riskPoolFilters')?.addEventListener('submit', function (event) {
+        event.preventDefault();
+        riskPoolRefresh();
+    });
 
     function riskPoolBuildQS(extra = {}) {
         const params = new URLSearchParams();
@@ -229,7 +235,7 @@
     async function refreshAll() { await Promise.all([refreshSummary(), refreshView()]); }
 
     async function deleteRiskPoolItem(riskId) {
-        if (!isAdmin) { showNotification('Only an admin can delete risk pool items.', 'error'); return; }
+        if (!canDeleteRiskPool) { showNotification('You do not have permission to delete risk pool items.', 'error'); return; }
         if (!confirm('Delete this risk from the pool? This cannot be undone.')) return;
         const url = riskPoolDeleteRoute.replace('__RISK__', encodeURIComponent(riskId));
         try {
@@ -276,12 +282,12 @@
     }
 
     function updateClearFiltersVisibility() {
-        const btn = document.getElementById('riskPoolClearBtn');
-        if (!btn) return;
+        const wrap = document.getElementById('riskPoolClearWrap');
+        if (!wrap) return;
         const active = (riskPoolState.search && riskPoolState.search.trim() !== '')
             || (riskPoolState.category && riskPoolState.category !== 'all')
             || (riskPoolState.impact && riskPoolState.impact !== 'all');
-        btn.style.display = active ? 'inline-flex' : 'none';
+        wrap.classList.toggle('hidden', !active);
     }
 
     function riskPoolRefresh() {
@@ -351,6 +357,8 @@
     }
 
     async function openSpreadsheetEditor(riskId) {
+        if (riskId && !canEditRiskPool) { showNotification('You do not have permission to edit risk pool items.', 'error'); return; }
+        if (!riskId && !canCreateRiskPool && !canEditRiskPool) { showNotification('You do not have permission to manage risk pool items.', 'error'); return; }
         const modal = document.getElementById('riskPoolEditorModal');
         const content = document.getElementById('spreadsheetModalContent');
         const title = document.getElementById('spreadsheetModalTitle');
@@ -359,8 +367,8 @@
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         spreadsheetDirty = false;
-        if (title) title.textContent = riskId ? 'Edit Risk' : 'Add New Risk';
-        if (subtitle) subtitle.textContent = riskId ? 'Edit risk details in the spreadsheet' : 'Bulk-edit multiple risks in the spreadsheet';
+        if (title) title.textContent = riskId ? 'Edit Risk' : (canCreateRiskPool ? 'Add New Risk' : 'Edit Risk Pool');
+        if (subtitle) subtitle.textContent = riskId ? 'Edit risk details in the spreadsheet' : 'Manage risk pool records in the spreadsheet';
         content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="h-8 w-8 animate-spin rounded-full border-2 border-[#00ADC5] border-t-transparent"></div></div>';
 
         const url = riskId ? riskPoolEditRoute.replace('__RISK__', encodeURIComponent(riskId)) : riskPoolCreateRoute;

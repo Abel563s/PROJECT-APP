@@ -30,6 +30,7 @@ class User extends Authenticatable
         'date_of_joining',
         'business_unit_id',
         'sector_id',
+        'risk_pool_permissions',
     ];
 
     /**
@@ -54,6 +55,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'must_change_password' => 'boolean',
+            'risk_pool_permissions' => 'array',
         ];
     }
 
@@ -89,14 +91,6 @@ class User extends Authenticatable
         return $this->role === 'user';
     }
 
-    /**
-     * Check if user is department attendance user.
-     */
-    public function isDepartmentAttendanceUser(): bool
-    {
-        return $this->role === 'department_attendance_user';
-    }
-
     public function getRoleLabelAttribute(): string
     {
         return match ($this->role) {
@@ -104,8 +98,6 @@ class User extends Authenticatable
             'admin' => 'Admin',
             'manager' => 'Management',
             'user' => 'Project Coordinator',
-            'department_attendance_user' => 'Department Attendance User',
-            'dceo' => 'DCEO',
             default => ucfirst(str_replace('_', ' ', (string) $this->role)),
         };
     }
@@ -145,6 +137,19 @@ class User extends Authenticatable
     public function canManageOrganizations(): bool
     {
         return $this->isSuperadmin();
+    }
+
+    public function canManageRiskPool(string $action): bool
+    {
+        if ($this->isSuperadmin()) {
+            return true;
+        }
+
+        if (!$this->isAdmin() || !in_array($action, ['create', 'edit', 'delete'], true)) {
+            return false;
+        }
+
+        return (bool) data_get($this->risk_pool_permissions ?? [], $action, false);
     }
 
     /**
@@ -191,8 +196,13 @@ class User extends Authenticatable
 
     public function canManageProject(Project $project): bool
     {
-        if ($this->isAdmin() || $this->isSuperadmin()) {
+        if ($this->isSuperadmin()) {
             return true;
+        }
+
+        if ($this->isAdmin()) {
+            return $this->business_unit_id !== null
+                && (int) $project->business_unit_id === (int) $this->business_unit_id;
         }
 
         if (!$this->isUser()) {
@@ -202,14 +212,6 @@ class User extends Authenticatable
         return $project->relationLoaded('coordinators')
             ? $project->coordinators->contains('id', $this->id)
             : $project->coordinators()->whereKey($this->id)->exists();
-    }
-
-    /**
-     * Check if user is DCEO.
-     */
-    public function isDceo(): bool
-    {
-        return $this->role === 'dceo';
     }
 
     /**

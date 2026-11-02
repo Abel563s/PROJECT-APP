@@ -4,6 +4,10 @@
     $mode = $mode ?? 'create';
     $risk = $risk ?? null;
     $categories = $categories ?? \App\Models\ProjectRiskPool::availableCategories();
+    $canCreateRiskPool = $canCreateRiskPool ?? auth()->user()->canManageRiskPool('create');
+    $canEditRiskPool = $canEditRiskPool ?? auth()->user()->canManageRiskPool('edit');
+    $canDeleteRiskPool = $canDeleteRiskPool ?? auth()->user()->canManageRiskPool('delete');
+    $canManageRiskCategories = $canCreateRiskPool || $canEditRiskPool || $canDeleteRiskPool;
 
     $emptyRow = [
         'id'                            => null,
@@ -30,6 +34,7 @@
     $state = [
         'mode'        => $mode,
         'riskId'      => $risk ? $risk->id : null,
+        'permissions' => ['create' => $canCreateRiskPool, 'edit' => $canEditRiskPool],
         'categories'  => $categories,
         'impactLevels' => \App\Models\ProjectRiskPool::IMPACT_LEVELS,
         'rows'        => $initialRows,
@@ -45,14 +50,14 @@
 <div class="spreadsheet-editor space-y-3">
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2.5">
-            <button type="button" id="ssAddRow"
+            @if($canCreateRiskPool)<button type="button" id="ssAddRow"
                 class="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2 text-[9px] font-black uppercase tracking-widest text-white shadow-lg shadow-slate-900/20 transition-all hover:bg-[#00515f]/90 active:scale-95">
                 <i data-lucide="plus" class="h-3 w-3"></i> Add Row
-            </button>
-            <button type="button" id="ssManageCategories"
+            </button>@endif
+            @if($canManageRiskCategories)<button type="button" id="ssManageCategories"
                 class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-[9px] font-black uppercase tracking-widest text-slate-600 shadow-sm transition-all hover:border-[#00ADC5] hover:text-[#00ADC5]">
                 <i data-lucide="layers" class="h-3 w-3"></i> Manage Categories
-            </button>
+            </button>@endif
             <span id="ssRowCount" class="text-[9px] font-black uppercase tracking-widest text-slate-400">
                 1 row
             </span>

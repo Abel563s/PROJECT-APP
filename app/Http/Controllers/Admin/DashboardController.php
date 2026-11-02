@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\ProjectProgressUpdate;
+use App\Support\ProjectOrganizationFilters;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.dashboard');
+        return view('admin.dashboard', ProjectOrganizationFilters::options($request));
     }
 
     public function data(Request $request)
@@ -43,6 +44,7 @@ class DashboardController extends Controller
     private function buildDashboardData(Request $request)
     {
         $query = Project::query();
+        ProjectOrganizationFilters::apply($query, $request, true);
 
         if ($request->filled('search')) {
             $search = $request->search;

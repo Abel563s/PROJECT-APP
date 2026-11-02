@@ -15,6 +15,8 @@ class Project extends Model
         'custom_id',
         'project_code',
         'project_name',
+        'business_unit_id',
+        'sector_id',
         'status',
         'project_type',
         'delivery_method',
@@ -151,6 +153,16 @@ class Project extends Model
     public function coordinators()
     {
         return $this->belongsToMany(User::class)->where('role', 'user');
+    }
+
+    public function businessUnit()
+    {
+        return $this->belongsTo(BusinessUnit::class);
+    }
+
+    public function sector()
+    {
+        return $this->belongsTo(Sector::class);
     }
 
     public function weeklyUpdates()

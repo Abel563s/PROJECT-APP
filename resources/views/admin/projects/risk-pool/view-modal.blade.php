@@ -11,7 +11,7 @@
         'Medium' => 'minus',
         'Low'    => 'arrow-down',
     ];
-    $isAdmin = auth()->user() && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin());
+    $canEditRiskPool = $canEditRiskPool ?? (auth()->user() && auth()->user()->canManageRiskPool('edit'));
 @endphp
 
 <div class="risk-details-modal space-y-4 text-slate-900">
@@ -168,7 +168,7 @@
         </div>
     </div>
 
-    @if($isAdmin)
+    @if($canEditRiskPool)
         <div class="flex justify-end gap-2 pt-2">
             <button type="button" onclick="editRiskFromDetails({{ $risk->id }})"
                 class="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 px-4 py-2 text-[9px] font-black uppercase tracking-widest text-white shadow-lg shadow-amber-600/20 transition-all hover:bg-amber-700 active:scale-95">

@@ -6,6 +6,9 @@ use App\Models\Issue;
 use App\Models\Project;
 use App\Models\ProjectRisk;
 use App\Models\ProjectRiskPool;
+use App\Models\BusinessUnit;
+use App\Models\Sector;
+use App\Support\ProjectOrganizationFilters;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +18,21 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
+        $request->validate([
+            'business_unit_id' => ['nullable', 'integer', Rule::exists('business_units', 'id')],
+            'sector_id' => ['nullable', 'integer', Rule::exists('sectors', 'id')],
+        ]);
+
         $query = Project::with('coordinators');
+        $businessUnitFilterId = ProjectOrganizationFilters::effectiveBusinessUnitId($request);
+
+        if ($businessUnitFilterId) {
+            $query->where('business_unit_id', $businessUnitFilterId);
+        }
+
+        if ($request->filled('sector_id')) {
+            $query->where('sector_id', $request->input('sector_id'));
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -86,29 +103,48 @@ class ProjectController extends Controller
             ->orderBy('consultant')
             ->pluck('consultant');
 
-        return view('admin.projects.index', compact('projects', 'consultantTypes'));
+        $businessUnits = BusinessUnit::active()->orderBy('name')->get(['id', 'name']);
+        $sectors = Sector::active()
+            ->when($businessUnitFilterId, fn ($sectors) => $sectors->where('business_unit_id', $businessUnitFilterId))
+            ->orderBy('name')
+            ->get(['id', 'business_unit_id', 'name']);
+
+        return view('admin.projects.index', compact('projects', 'consultantTypes', 'businessUnits', 'sectors'));
     }
 
     public function create()
     {
         $this->authorize('create', Project::class);
         $coordinators = \App\Models\User::where('role', 'user')->orderBy('name')->get(['id', 'name', 'email']);
+        $user = request()->user();
+        $businessUnits = $user->isAdmin()
+            ? BusinessUnit::whereKey($user->business_unit_id)->with('activeSectors')->get()
+            : BusinessUnit::active()->with('activeSectors')->get();
+        $selectedBusinessUnitId = $user->isAdmin() ? $user->business_unit_id : $businessUnits->first()?->id;
+        $sectors = Sector::active()->where('business_unit_id', $selectedBusinessUnitId)->get();
 
         if (request()->has('partial')) {
-            return view('admin.projects.create-modal', compact('coordinators'));
+            return view('admin.projects.create-modal', compact('coordinators', 'businessUnits', 'sectors', 'selectedBusinessUnitId'));
         }
-        return view('admin.projects.create', compact('coordinators'));
+        return view('admin.projects.create', compact('coordinators', 'businessUnits', 'sectors', 'selectedBusinessUnitId'));
     }
 
     public function store(Request $request)
     {
         $this->authorize('create', Project::class);
+        $businessUnitId = $request->user()->isAdmin()
+            ? $request->user()->business_unit_id
+            : $request->input('business_unit_id');
 
         $validated = $request->validate([
+            'business_unit_id' => $request->user()->isAdmin()
+                ? 'prohibited'
+                : ['nullable', 'exists:business_units,id'],
+            'sector_id' => ['nullable', Rule::exists('sectors', 'id')->where(fn ($query) => $query->where('business_unit_id', $businessUnitId))],
             'project_code' => 'nullable|string',
             'project_name' => 'required|string',
             'status' => 'nullable|in:in progress,suspended,completed',
-            'project_type' => 'nullable|in:Building,Fit-Out,Infrastructure,Mixed (Bui/Road),Mixed (Bui/Fit-Out)',
+            'project_type' => 'nullable|in:Building,Fit-Out,Infrastructure,Water & Energy,Mixed (Bui/Road),Mixed (Bui/Fit-Out)',
             'delivery_method' => 'nullable|in:DB,DBB,DB-LS,DB-ADM,DBB-ADM,DB-CP',
             'project_client' => 'nullable|string',
             'consultant' => 'nullable|string',
@@ -136,8 +172,15 @@ class ProjectController extends Controller
         ]);
 
         $validated['status'] = $validated['status'] ?? 'in progress';
+        $validated['business_unit_id'] = $request->user()->isAdmin()
+            ? $request->user()->business_unit_id
+            : ($validated['business_unit_id'] ?? null);
 
-        if (!empty($validated['actual_finish_date'])) {
+        if (($validated['status'] ?? null) === 'in progress') {
+            // An explicit In Progress selection clears completion data, even when
+            // the edit modal submits an existing Actual Finish value.
+            $validated['actual_finish_date'] = null;
+        } elseif (!empty($validated['actual_finish_date'])) {
             $validated['status'] = 'completed';
         }
 
@@ -158,18 +201,20 @@ class ProjectController extends Controller
         $selectedProjectId = $request->filled('project_id') ? $request->project_id : null;
         $selectedSector = $request->filled('sector') ? $request->sector : null;
 
+        $availableUpdates = \App\Models\ProjectProgressUpdate::query();
+        ProjectOrganizationFilters::apply($availableUpdates, $request);
+        if ($selectedProjectId) {
+            $availableUpdates->where('project_id', $selectedProjectId);
+        }
+
         $effectiveDataDate = $dataDate;
-        if (!$effectiveDataDate || \App\Models\ProjectProgressUpdate::query()
-            ->whereDate('project_progress_updates.data_date', $effectiveDataDate)
-            ->count() === 0
-        ) {
-            $effectiveDataDate = \App\Models\ProjectProgressUpdate::query()
-                ->whereNotNull('data_date')
-                ->max('data_date');
+        if (!$effectiveDataDate || !(clone $availableUpdates)->whereDate('data_date', $effectiveDataDate)->exists()) {
+            $effectiveDataDate = (clone $availableUpdates)->whereNotNull('data_date')->max('data_date');
         }
 
         $progressQueryDataDate = \App\Models\ProjectProgressUpdate::query()
             ->whereDate('project_progress_updates.data_date', $effectiveDataDate);
+        ProjectOrganizationFilters::apply($progressQueryDataDate, $request);
         
         if ($selectedProjectId) {
             $progressQueryDataDate->where('project_progress_updates.project_id', $selectedProjectId);
@@ -177,11 +222,12 @@ class ProjectController extends Controller
         
         $projectIdsWithUpdates = $progressQueryDataDate->distinct('project_id')->pluck('project_id');
 
-        $allProjectIdsWithUpdates = \App\Models\ProjectProgressUpdate::query()
-            ->distinct('project_id')
-            ->pluck('project_id');
+        $allProjectUpdatesQuery = \App\Models\ProjectProgressUpdate::query();
+        ProjectOrganizationFilters::apply($allProjectUpdatesQuery, $request);
+        $allProjectIdsWithUpdates = $allProjectUpdatesQuery->distinct('project_id')->pluck('project_id');
 
         $projectsQuery = Project::query();
+        ProjectOrganizationFilters::apply($projectsQuery, $request, true);
         if ($selectedProjectId) {
             $projectsQuery->where('id', $selectedProjectId);
         } elseif ($selectedSector) {
@@ -223,13 +269,14 @@ class ProjectController extends Controller
             ->selectRaw('project_type, count(*) as project_count')
             ->pluck('project_count', 'project_type');
 
-        $puBaseScurve = function () {
-            return \App\Models\ProjectProgressUpdate::query();
+        $puBaseScurve = function () use ($allProjectIdsWithUpdates) {
+            return \App\Models\ProjectProgressUpdate::query()->whereIn('project_id', $allProjectIdsWithUpdates);
         };
 
-        $puBase = function () use ($effectiveDataDate, $selectedProjectId, $selectedSector) {
+        $puBase = function () use ($effectiveDataDate, $selectedProjectId, $selectedSector, $allProjectIdsWithUpdates) {
             $q = \App\Models\ProjectProgressUpdate::query()
-                ->whereDate('project_progress_updates.data_date', $effectiveDataDate);
+                ->whereDate('project_progress_updates.data_date', $effectiveDataDate)
+                ->whereIn('project_progress_updates.project_id', $allProjectIdsWithUpdates);
             if ($selectedProjectId) {
                 $q->where('project_progress_updates.project_id', $selectedProjectId);
             } elseif ($selectedSector) {
@@ -242,6 +289,7 @@ class ProjectController extends Controller
 
         $allProjectsWithUpdates = \App\Models\ProjectProgressUpdate::query()
             ->join('projects', 'project_progress_updates.project_id', '=', 'projects.id')
+            ->whereIn('project_progress_updates.project_id', $allProjectIdsWithUpdates)
             ->select('projects.id', 'projects.project_code', 'projects.project_name')
             ->distinct()
             ->orderBy('projects.project_code');
@@ -439,7 +487,7 @@ class ProjectController extends Controller
             'allProjectsWithUpdates',
             'selectedProjectId',
             'selectedSector'
-        ));
+        ) + ProjectOrganizationFilters::options($request));
     }
 
     public function show(Project $project)
@@ -454,11 +502,18 @@ class ProjectController extends Controller
     {
         $this->authorize('update', $project);
         $coordinators = \App\Models\User::where('role', 'user')->orderBy('name')->get(['id', 'name', 'email']);
+        $user = request()->user();
+        $businessUnits = $user->isAdmin()
+            ? BusinessUnit::whereKey($project->business_unit_id ?? $user->business_unit_id)->with('activeSectors')->get()
+            : BusinessUnit::active()->with('activeSectors')->get();
+        $selectedBusinessUnitId = $project->business_unit_id
+            ?? ($user->isAdmin() ? $user->business_unit_id : $businessUnits->first()?->id);
+        $sectors = Sector::active()->where('business_unit_id', $selectedBusinessUnitId)->get();
 
         if (request()->has('partial')) {
-            return view('admin.projects.edit-modal', compact('project', 'coordinators'));
+            return view('admin.projects.edit-modal', compact('project', 'coordinators', 'businessUnits', 'sectors', 'selectedBusinessUnitId'));
         }
-        return view('admin.projects.edit', compact('project', 'coordinators'));
+        return view('admin.projects.edit', compact('project', 'coordinators', 'businessUnits', 'sectors', 'selectedBusinessUnitId'));
     }
 
     public function update(Request $request, Project $project)
@@ -469,11 +524,23 @@ class ProjectController extends Controller
             abort(403, 'Only Admin can change project assignments.');
         }
 
+        $user = $request->user();
+        $businessUnitId = $user->isAdmin()
+            ? ($project->business_unit_id ?? $user->business_unit_id)
+            : ($user->isSuperadmin() ? $request->input('business_unit_id', $project->business_unit_id) : $project->business_unit_id);
+
         $validated = $request->validate([
+            'business_unit_id' => $user->isAdmin() || $user->isSuperadmin()
+                ? ($user->isAdmin() ? 'prohibited' : ['nullable', 'exists:business_units,id'])
+                : 'prohibited',
+            'sector_id' => [
+                $user->isAdmin() || $user->isSuperadmin() ? 'nullable' : 'prohibited',
+                Rule::exists('sectors', 'id')->where(fn ($query) => $query->where('business_unit_id', $businessUnitId)),
+            ],
             'project_code' => 'nullable|string',
             'project_name' => 'required|string',
             'status' => 'nullable|in:in progress,suspended,completed',
-            'project_type' => 'nullable|in:Building,Fit-Out,Infrastructure,Mixed (Bui/Road),Mixed (Bui/Fit-Out)',
+            'project_type' => 'nullable|in:Building,Fit-Out,Infrastructure,Water & Energy,Mixed (Bui/Road),Mixed (Bui/Fit-Out)',
             'delivery_method' => 'nullable|in:DB,DBB,DB-LS,DB-ADM,DBB-ADM,DB-CP',
             'project_client' => 'nullable|string',
             'consultant' => 'nullable|string',
@@ -500,8 +567,18 @@ class ProjectController extends Controller
             'coordinator_ids.*' => ['integer', Rule::exists('users', 'id')->where(fn ($query) => $query->where('role', 'user'))],
         ]);
 
-        if (!empty($validated['actual_finish_date'])) {
+        if (($validated['status'] ?? null) === 'in progress') {
+            $validated['actual_finish_date'] = null;
+        } elseif (!empty($validated['actual_finish_date'])) {
             $validated['status'] = 'completed';
+        }
+
+        if ($user->isAdmin()) {
+            $validated['business_unit_id'] = $project->business_unit_id ?? $user->business_unit_id;
+        } elseif ($user->isSuperadmin()) {
+            $validated['business_unit_id'] = $validated['business_unit_id'] ?? $project->business_unit_id;
+        } else {
+            unset($validated['business_unit_id'], $validated['sector_id']);
         }
 
         $coordinatorIds = $validated['coordinator_ids'] ?? null;
@@ -509,7 +586,7 @@ class ProjectController extends Controller
 
         DB::transaction(function () use ($project, $validated, $coordinatorIds, $request) {
             $project->update($validated);
-            if ($request->user()->isAdmin()) {
+            if ($request->user()->isAdmin() && $request->exists('coordinator_ids')) {
                 $project->coordinators()->sync($coordinatorIds ?? []);
             }
         });
@@ -520,6 +597,7 @@ class ProjectController extends Controller
     public function closeoutIndex(Request $request)
     {
         $query = Project::query();
+        ProjectOrganizationFilters::apply($query, $request, true);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -531,7 +609,7 @@ class ProjectController extends Controller
         }
 
         $projects = $query->latest()->paginate(15)->withQueryString();
-        return view('admin.projects.closeout_index', compact('projects'));
+        return view('admin.projects.closeout_index', compact('projects') + ProjectOrganizationFilters::options($request));
     }
 
     public function closeoutShow(Project $project)
@@ -556,6 +634,7 @@ class ProjectController extends Controller
             ->withCount(['risks as open_risk' => fn ($q) => $q->where('action_status', 'Open')])
             ->withCount(['risks as in_progress_risk' => fn ($q) => $q->where('action_status', 'Inprogress')])
             ->withCount(['risks as closed_risk' => fn ($q) => $q->where('action_status', 'Closed')]);
+        ProjectOrganizationFilters::apply($query, $request, true);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -592,15 +671,17 @@ class ProjectController extends Controller
         }
 
         $risks = $query->orderBy('project_code')->get()->toArray();
-        $projects = Project::query()->where('status', 'in progress')->orderBy('project_code')->get()->toArray();
+        $projectOptionsQuery = Project::query()->where('status', 'in progress')->orderBy('project_code');
+        ProjectOrganizationFilters::apply($projectOptionsQuery, $request, true);
+        $projects = $projectOptionsQuery->get()->toArray();
         $riskTypes = ['Contractual', 'Design', 'Environmental', 'Financial', 'Legal', 'Occupational Health & Safety (OHS)', 'Operational', 'Procurement', 'Quality'];
 
-        return view('admin.projects.risk', compact('risks', 'projects', 'riskTypes'));
+        return view('admin.projects.risk', compact('risks', 'projects', 'riskTypes') + ProjectOrganizationFilters::options($request));
     }
 
     public function riskManage(Project $project)
     {
-        abort_unless(request()->user()->canManageProject($project), 403);
+        abort_unless(request()->user()->isAdmin() || request()->user()->isSuperadmin() || request()->user()->canManageProject($project), 403);
 
         if ($project->status !== 'in progress') {
             return redirect()->route('admin.projects.risk.index')->with('error', 'Risk management is only available for projects with "In Progress" status.');
@@ -815,7 +896,7 @@ class ProjectController extends Controller
 
     public function riskDestroy(ProjectRisk $risk)
     {
-        abort_unless(auth()->user()->isAdmin(), 403);
+        abort_unless((auth()->user()->isAdmin() || auth()->user()->isSuperadmin()) && auth()->user()->canManageProject($risk->project), 403);
         $project = $risk->project;
         $risk->delete();
         return redirect()->route('admin.projects.risk.manage', $project)->with('success', 'Risk deleted successfully.');
@@ -826,7 +907,7 @@ class ProjectController extends Controller
         $user = auth()->user();
 
         abort_unless(
-            $user->isAdmin()
+            ($user->isAdmin() || $user->isSuperadmin()) && $risk->project && $user->canManageProject($risk->project)
             || ($user->isUser()
                 && $risk->project
                 && $user->canManageProject($risk->project)),
@@ -907,6 +988,7 @@ class ProjectController extends Controller
     public function issuesIndex(Request $request)
     {
         $query = Issue::query()->with('project');
+        ProjectOrganizationFilters::apply($query, $request);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -940,10 +1022,12 @@ class ProjectController extends Controller
         }
 
         $issues = $query->orderByDesc('raised_date')->paginate(15)->withQueryString();
-        $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name', 'project_type', 'consultancy_sector']);
+        $projectOptionsQuery = Project::orderBy('project_name');
+        ProjectOrganizationFilters::apply($projectOptionsQuery, $request, true);
+        $projects = $projectOptionsQuery->get(['id', 'project_code', 'project_name', 'project_type', 'consultancy_sector']);
         $issueTypes = Issue::query()->select('issue_type')->distinct()->orderBy('issue_type')->pluck('issue_type');
 
-        return view('admin.projects.issues', compact('issues', 'projects', 'issueTypes'));
+        return view('admin.projects.issues', compact('issues', 'projects', 'issueTypes') + ProjectOrganizationFilters::options($request));
     }
 
     public function issuesEdit(Request $request, Issue $issue)
@@ -1044,6 +1128,7 @@ class ProjectController extends Controller
     public function issuesReport(Request $request)
     {
         $query = Issue::query()->with('project');
+        ProjectOrganizationFilters::apply($query, $request);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -1090,9 +1175,14 @@ class ProjectController extends Controller
         $today = Carbon::today();
         $overdue = $allIssues->filter(function ($issue) use ($today) {
             return $issue->planned_resolution_date
-                && $issue->planned_resolution_date->isPast()
-                && !in_array($issue->status, ['Closed', 'Cancelled']);
+                && $issue->planned_resolution_date->lt($today)
+                && $issue->status !== 'Closed';
         })->count();
+
+        $notClosedIssues = $allIssues->filter(fn ($issue) => $issue->status !== 'Closed');
+        $highPriority = $notClosedIssues->filter(fn ($issue) => $issue->days_left !== null && $issue->days_left >= 0 && $issue->days_left < 7)->count();
+        $mediumPriority = $notClosedIssues->filter(fn ($issue) => $issue->days_left !== null && $issue->days_left >= 7 && $issue->days_left < 14)->count();
+        $lowPriority = $notClosedIssues->filter(fn ($issue) => $issue->days_left !== null && $issue->days_left >= 14)->count();
 
         $highImpact = $allIssues->where('impact', 'High')->count();
         $mediumImpact = $allIssues->where('impact', 'Medium')->count();
@@ -1157,7 +1247,23 @@ class ProjectController extends Controller
         $p50 = !empty($resolutionTimesArray) ? $resolutionTimesArray[max(0, floor((count($resolutionTimesArray) - 1) * 0.5))] : 0;
         $p90 = !empty($resolutionTimesArray) ? $resolutionTimesArray[max(0, floor((count($resolutionTimesArray) - 1) * 0.9))] : 0;
 
-        $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+        $projectOptionsQuery = Project::orderBy('project_name');
+        ProjectOrganizationFilters::apply($projectOptionsQuery, $request, true);
+        $projects = $projectOptionsQuery->get(['id', 'project_code', 'project_name']);
+
+        $exportIssues = $allIssues->map(function ($issue) {
+            return [
+                'project' => $issue->project?->project_code ?? $issue->project_code ?? '',
+                'issue' => $issue->issue ?? '',
+                'type' => $issue->issue_type ?? '',
+                'impact' => $issue->impact ?? '',
+                'status' => $issue->status ?? '',
+                'raised_by' => $issue->raised_by ?? '',
+                'raised_date' => $issue->raised_date?->format('Y-m-d') ?? '',
+                'planned_resolution_date' => $issue->planned_resolution_date?->format('Y-m-d') ?? '',
+                'action_by' => $issue->action_by ?? '',
+            ];
+        })->values();
 
         $issues = $query->orderByDesc('raised_date')->paginate(15)->withQueryString();
 
@@ -1170,6 +1276,9 @@ class ProjectController extends Controller
             'closed',
             'cancelled',
             'overdue',
+            'highPriority',
+            'mediumPriority',
+            'lowPriority',
             'highImpact',
             'mediumImpact',
             'lowImpact',
@@ -1182,6 +1291,7 @@ class ProjectController extends Controller
             'avgResolutionDays',
             'p50',
             'p90',
-        ));
+            'exportIssues',
+        ) + ProjectOrganizationFilters::options($request));
     }
 }
