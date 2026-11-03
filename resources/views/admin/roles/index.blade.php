@@ -126,7 +126,9 @@
         </details>
 
         <section aria-label="Search and filter identities" class="bg-white rounded-2xl border border-slate-100 p-3 shadow-sm">
-            @php($identityAdvancedFiltersActive = request()->anyFilled(['business_unit_id', 'sector_id']))
+            @php
+                $identityAdvancedFiltersActive = request()->anyFilled(['business_unit_id', 'sector_id']);
+            @endphp
             <form method="GET" action="{{ route('admin.roles.index') }}" class="admin-filter-grid gap-2.5">
                 <div class="min-w-0">
                     <label for="identitySearch" class="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-500">Search</label>
