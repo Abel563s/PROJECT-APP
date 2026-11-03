@@ -1078,7 +1078,7 @@ class ProjectController extends Controller
         }
 
         if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('status', $request->status);
+            $query->status($request->status);
         }
 
         if ($request->filled('impact') && $request->impact !== 'all') {
@@ -1216,7 +1216,7 @@ class ProjectController extends Controller
         }
 
         if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('status', $request->status);
+            $query->status($request->status);
         }
 
         if ($request->filled('impact') && $request->impact !== 'all') {

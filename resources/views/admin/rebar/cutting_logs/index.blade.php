@@ -86,7 +86,7 @@
                                         <div
                                             class="w-16 h-10 rounded-xl bg-slate-100 flex flex-col items-center justify-center border border-slate-200 group-hover:bg-white group-hover:border-cyan-200 transition-all">
                                             <span
-                                                class="text-[9px] font-black text-slate-400 uppercase leading-none">{{ \Carbon\Carbon::parse($log->date)->format('d-M-y') }}</span>
+                                                class="whitespace-nowrap text-[9px] font-black text-slate-400 uppercase leading-none">{{ \Carbon\Carbon::parse($log->date)->format('d-M-y') }}</span>
                                         </div>
                                         <div>
                                             <p class="text-sm font-black text-slate-900">

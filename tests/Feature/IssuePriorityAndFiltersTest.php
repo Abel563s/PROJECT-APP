@@ -5,6 +5,7 @@ use App\Models\Project;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
 
@@ -242,6 +243,59 @@ it('shows status and priority issue counts in the project registry and filters b
     } finally {
         Carbon::setTestNow();
     }
+});
+
+it('counts and filters issue statuses from dates when stored status values are stale', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $project = Project::create([
+        'project_name' => 'Date Status Project',
+        'project_code' => 'DATE-STATUS',
+        'status' => 'in progress',
+    ]);
+
+    $raised = $project->issues()->create([
+        'issue' => 'Raised from dates',
+        'status' => 'Open',
+    ]);
+    $open = $project->issues()->create([
+        'issue' => 'Open from dates',
+        'status' => 'Raised',
+        'planned_resolution_date' => '2026-11-10',
+    ]);
+    $closed = $project->issues()->create([
+        'issue' => 'Closed from dates',
+        'status' => 'Open',
+        'planned_resolution_date' => '2026-11-10',
+        'issue_closed_date' => '2026-11-12',
+    ]);
+
+    DB::table('issues')->whereIn('id', [$raised->id, $open->id, $closed->id])->update([
+        'status' => 'Open',
+    ]);
+
+    $this->actingAs($admin)
+        ->get(route('admin.projects.issues.index'))
+        ->assertOk()
+        ->assertViewHas('projects', function ($projects) {
+            $listed = $projects->first();
+
+            return $listed
+                && $listed->raised_issues === 1
+                && $listed->open_issues === 1
+                && $listed->closed_issues === 1;
+        });
+
+    $this->get(route('admin.projects.issues.index', ['issue_status' => 'Raised']))
+        ->assertOk()
+        ->assertViewHas('projects', fn ($projects) => $projects->count() === 1);
+
+    $this->get(route('admin.projects.issues.manage', $project))
+        ->assertOk()
+        ->assertViewHas('stats', fn ($stats) => $stats['raised'] === 1 && $stats['open'] === 1 && $stats['closed'] === 1);
+
+    $this->get(route('admin.projects.issues.history'))
+        ->assertOk()
+        ->assertViewHas('stats', fn ($stats) => $stats['raised'] === 1 && $stats['open'] === 1 && $stats['closed'] === 1);
 });
 
 it('shows impact counts in the project registry and filters by impact', function () {

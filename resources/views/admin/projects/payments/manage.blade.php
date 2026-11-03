@@ -95,7 +95,7 @@
                                         <td class="px-4 py-3">
                                             <div class="flex flex-col">
                                                 <span class="font-black text-slate-900 text-xs">#{{ $payment->certificate_number }}</span>
-                                                <span class="text-[9px] font-bold text-slate-400 uppercase">{{ $payment->certificate_date ? $payment->certificate_date->format('d-M-y') : '-' }}</span>
+                                                <span class="whitespace-nowrap text-[9px] font-bold text-slate-400 uppercase">{{ $payment->certificate_date ? $payment->certificate_date->format('d-M-y') : '-' }}</span>
                                             </div>
                                         </td>
 
@@ -103,7 +103,7 @@
                                             @if($payment->submitted_amount)
                                                 <div class="flex flex-col">
                                                     <span class="text-xs font-black text-indigo-600">ETB {{ number_format($payment->submitted_amount, 2) }}</span>
-                                                    <span class="text-[9px] font-bold text-slate-400">{{ $payment->submitted_date ? $payment->submitted_date->format('d-M-y') : '-' }}</span>
+                                                    <span class="whitespace-nowrap text-[9px] font-bold text-slate-400">{{ $payment->submitted_date ? $payment->submitted_date->format('d-M-y') : '-' }}</span>
                                                 </div>
                                             @else
                                                 <span class="text-slate-300 text-xs">-</span>
@@ -114,7 +114,7 @@
                                             @if($payment->certified_amount)
                                                 <div class="flex flex-col border-x border-slate-50 px-2">
                                                     <span class="text-xs font-black text-amber-600">ETB {{ number_format($payment->certified_amount, 2) }}</span>
-                                                    <span class="text-[9px] font-bold text-slate-400">{{ $payment->certified_date ? $payment->certified_date->format('d-M-y') : '-' }}</span>
+                                                    <span class="whitespace-nowrap text-[9px] font-bold text-slate-400">{{ $payment->certified_date ? $payment->certified_date->format('d-M-y') : '-' }}</span>
                                                 </div>
                                             @else
                                                 <span class="text-slate-300 text-xs">-</span>
@@ -125,7 +125,7 @@
                                             @if($payment->amount_paid)
                                                 <div class="flex flex-col">
                                                     <span class="text-xs font-black text-emerald-600">ETB {{ number_format($payment->amount_paid, 2) }}</span>
-                                                    <span class="text-[9px] font-bold text-slate-400">{{ $payment->payment_date ? $payment->payment_date->format('d-M-y') : '-' }}</span>
+                                                    <span class="whitespace-nowrap text-[9px] font-bold text-slate-400">{{ $payment->payment_date ? $payment->payment_date->format('d-M-y') : '-' }}</span>
                                                 </div>
                                             @else
                                                 <span class="text-slate-300 text-xs">-</span>

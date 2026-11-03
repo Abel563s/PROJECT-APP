@@ -224,12 +224,12 @@
                                         {{ number_format($project->contract_budget) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-center">
+                                <td class="whitespace-nowrap px-6 py-4 text-center">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                                         {{ $project->baseline_start_date ? $project->baseline_start_date->format('d-M-y') : '---' }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-center">
+                                <td class="whitespace-nowrap px-6 py-4 text-center">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                                         {{ $project->baseline_finish_date ? $project->baseline_finish_date->format('d-M-y') : '---' }}
                                     </span>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -57,6 +58,16 @@ class Issue extends Model
         }
 
         return $this->planned_resolution_date ? 'Open' : 'Raised';
+    }
+
+    public function scopeStatus(Builder $query, string $status): Builder
+    {
+        return match ($status) {
+            'Closed' => $query->whereNotNull('issue_closed_date'),
+            'Open' => $query->whereNull('issue_closed_date')->whereNotNull('planned_resolution_date'),
+            'Raised' => $query->whereNull('issue_closed_date')->whereNull('planned_resolution_date'),
+            default => $query->whereRaw('1 = 0'),
+        };
     }
 
     public function getDaysLeftAttribute(): ?int

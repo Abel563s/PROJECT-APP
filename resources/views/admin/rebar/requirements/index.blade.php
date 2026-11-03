@@ -111,7 +111,7 @@
                                         <div>
                                             <p class="text-sm font-black text-slate-900 tracking-tight">
                                                 {{ $req->tracking_id }}</p>
-                                            <p class="text-[10px] font-bold text-slate-400 uppercase">
+                                            <p class="whitespace-nowrap text-[10px] font-bold text-slate-400 uppercase">
                                                 {{ $req->created_at->format('d-M-y') }}</p>
                                         </div>
                                     </div>

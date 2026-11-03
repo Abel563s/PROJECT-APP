@@ -99,10 +99,10 @@
                                     <p class="text-xs font-black text-slate-900">{{ $update->responsible_person ?? 'N/A' }}</p>
                                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Project Owner</p>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="whitespace-nowrap px-6 py-4">
                                     <div class="flex items-center gap-1.5">
                                         <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#00ADC5]"></i>
-                                        <p class="text-xs font-black text-slate-700">{{ $update->expected_completion_date ? $update->expected_completion_date->format('d-M-y') : '---' }}</p>
+                                        <p class="whitespace-nowrap text-xs font-black text-slate-700">{{ $update->expected_completion_date ? $update->expected_completion_date->format('d-M-y') : '---' }}</p>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">

@@ -203,11 +203,11 @@
                                         </span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('d-M-y') : '-' }}</span>
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    <span class="whitespace-nowrap text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('d-M-y') : '-' }}</span>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->updated_at->format('d-M-y') }}</span>
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    <span class="whitespace-nowrap text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->updated_at->format('d-M-y') }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1.5">

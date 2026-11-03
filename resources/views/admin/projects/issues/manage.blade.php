@@ -212,12 +212,12 @@
                                         <p class="mt-1 text-[9px] font-bold {{ $issue->days_left < 0 ? 'text-rose-600' : 'text-slate-400' }}">{{ abs($issue->days_left) }} {{ abs($issue->days_left) === 1 ? 'day' : 'days' }} {{ $issue->days_left < 0 ? 'overdue' : 'left' }}</p>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3">
+                                <td class="whitespace-nowrap px-4 py-3">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                                         {{ $issue->raised_date ? $issue->raised_date->format('d-M-y') : '---' }}
                                     </span>
                                 </td>
-                <td class="px-4 py-3">
+                <td class="whitespace-nowrap px-4 py-3">
                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                         {{ $issue->planned_resolution_date ? $issue->planned_resolution_date->format('d-M-y') : '---' }}
                     </span>
@@ -227,12 +227,12 @@
                         {{ $issue->action_by ?? '---' }}
                     </span>
                 </td>
-                <td class="px-4 py-3">
+                <td class="whitespace-nowrap px-4 py-3">
                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                         {{ $issue->date ? $issue->date->format('d-M-y') : '---' }}
                     </span>
                 </td>
-                <td class="px-4 py-3">
+                <td class="whitespace-nowrap px-4 py-3">
                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                         {{ $issue->last_updated_date ? $issue->last_updated_date->format('d-M-y') : '---' }}
                     </span>

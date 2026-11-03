@@ -168,12 +168,12 @@
                                         {{ $issue->status ?? '---' }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="whitespace-nowrap px-6 py-4">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                                         {{ $issue->raised_date ? $issue->raised_date->format('d-M-y') : '---' }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="whitespace-nowrap px-6 py-4">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                                         {{ $issue->date ? $issue->date->format('d-M-y') : '---' }}
                                     </span>
@@ -181,7 +181,7 @@
                                 <td class="px-6 py-4">
                                     <p class="text-xs font-black text-slate-900">{{ $issue->raised_by ?? '---' }}</p>
                                 </td>
-                                <td class="px-6 py-4 text-center">
+                                <td class="whitespace-nowrap px-6 py-4 text-center">
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm">
                                         {{ $issue->last_updated_date ? $issue->last_updated_date->format('d-M-y') : '---' }}
                                     </span>

@@ -25,16 +25,14 @@ class IssueController extends Controller
 
         $today = Carbon::today();
         $priorityScope = function ($query) {
-            $query->where(function ($statusQuery) {
-                $statusQuery->whereNull('status')->orWhere('status', '!=', 'Closed');
-            })->whereNotNull('planned_resolution_date');
+            $query->whereNull('issue_closed_date')->whereNotNull('planned_resolution_date');
         };
 
         $query = Project::query()
             ->withCount('issues as total_issues')
-            ->withCount(['issues as raised_issues' => fn ($issues) => $issues->where('status', 'Raised')])
-            ->withCount(['issues as open_issues' => fn ($issues) => $issues->where('status', 'Open')])
-            ->withCount(['issues as closed_issues' => fn ($issues) => $issues->where('status', 'Closed')])
+            ->withCount(['issues as raised_issues' => fn ($issues) => $issues->status('Raised')])
+            ->withCount(['issues as open_issues' => fn ($issues) => $issues->status('Open')])
+            ->withCount(['issues as closed_issues' => fn ($issues) => $issues->status('Closed')])
             ->withCount(['issues as overdue_issues' => function ($issues) use ($today, $priorityScope) {
                 $priorityScope($issues);
                 $issues->whereDate('planned_resolution_date', '<', $today);
@@ -78,7 +76,7 @@ class IssueController extends Controller
 
         if ($request->filled('issue_status')) {
             $query->whereHas('issues', function ($q) use ($request) {
-                $q->where('status', $request->issue_status);
+                $q->status($request->issue_status);
             });
         }
 
@@ -143,18 +141,16 @@ class IssueController extends Controller
         }
 
         if ($request->filled('status')) {
-            $issueQuery->where('status', $request->query('status'));
+            $issueQuery->status($request->query('status'));
         }
 
         if ($request->filled('priority')) {
             $priority = $request->query('priority');
             $today = Carbon::today();
-            $notClosed = fn ($query) => $query->where(function ($statusQuery) {
-                $statusQuery->whereNull('status')->orWhere('status', '!=', 'Closed');
-            });
+            $notClosed = fn ($query) => $query->whereNull('issue_closed_date');
 
             if ($priority === 'Done') {
-                $issueQuery->where('status', 'Closed');
+                $issueQuery->status('Closed');
             } elseif ($priority === 'Unscheduled') {
                 $issueQuery->whereNull('planned_resolution_date')->where($notClosed);
             } else {
@@ -184,15 +180,13 @@ class IssueController extends Controller
 
         $projectIssues = Issue::where('project_id', $project->id);
         $today = Carbon::today();
-        $notClosed = fn ($query) => $query->where(function ($statusQuery) {
-            $statusQuery->whereNull('status')->orWhere('status', '!=', 'Closed');
-        });
+        $notClosed = fn ($query) => $query->whereNull('issue_closed_date');
         $stats = [
             'total' => (clone $projectIssues)->count(),
-            'raised' => (clone $projectIssues)->where('status', 'Raised')->count(),
-            'open' => (clone $projectIssues)->where('status', 'Open')->count(),
-            'closed' => (clone $projectIssues)->where('status', 'Closed')->count(),
-            'done' => (clone $projectIssues)->where('status', 'Closed')->count(),
+            'raised' => (clone $projectIssues)->status('Raised')->count(),
+            'open' => (clone $projectIssues)->status('Open')->count(),
+            'closed' => (clone $projectIssues)->status('Closed')->count(),
+            'done' => (clone $projectIssues)->status('Closed')->count(),
             'overdue' => (clone $projectIssues)->where($notClosed)->whereNotNull('planned_resolution_date')
                 ->whereDate('planned_resolution_date', '<', $today)->count(),
             'high' => (clone $projectIssues)->where($notClosed)->whereNotNull('planned_resolution_date')
@@ -353,7 +347,7 @@ class IssueController extends Controller
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->status($request->status);
         }
 
         if ($request->filled('impact')) {
@@ -369,15 +363,11 @@ class IssueController extends Controller
             $priority = $request->string('priority')->toString();
             $query->where(function ($issues) use ($priority, $today) {
                 if ($priority === 'Done') {
-                    $issues->where('status', 'Closed');
+                    $issues->status('Closed');
                 } elseif ($priority === 'Unscheduled') {
-                    $issues->where(function ($status) {
-                        $status->whereNull('status')->orWhere('status', '!=', 'Closed');
-                    })->whereNull('planned_resolution_date');
+                    $issues->whereNull('issue_closed_date')->whereNull('planned_resolution_date');
                 } else {
-                    $issues->where(function ($status) {
-                        $status->whereNull('status')->orWhere('status', '!=', 'Closed');
-                    })->whereNotNull('planned_resolution_date');
+                    $issues->whereNull('issue_closed_date')->whereNotNull('planned_resolution_date');
 
                     match ($priority) {
                         'Overdue' => $issues->whereDate('planned_resolution_date', '<', $today),
@@ -399,15 +389,13 @@ class IssueController extends Controller
             $query->whereDate('date', '<=', $request->date_to);
         }
 
-        $notClosed = fn ($q) => $q->where(function ($s) {
-            $s->whereNull('status')->orWhere('status', '!=', 'Closed');
-        });
+        $notClosed = fn ($q) => $q->whereNull('issue_closed_date');
 
         $stats = [
             'total' => (clone $query)->count(),
-            'raised' => (clone $query)->where('status', 'Raised')->count(),
-            'open' => (clone $query)->where('status', 'Open')->count(),
-            'closed' => (clone $query)->where('status', 'Closed')->count(),
+            'raised' => (clone $query)->status('Raised')->count(),
+            'open' => (clone $query)->status('Open')->count(),
+            'closed' => (clone $query)->status('Closed')->count(),
             'overdue' => (clone $query)->where($notClosed)->whereNotNull('planned_resolution_date')
                 ->whereDate('planned_resolution_date', '<', $today)->count(),
             'high' => (clone $query)->where($notClosed)->whereNotNull('planned_resolution_date')

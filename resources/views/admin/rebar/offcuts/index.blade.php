@@ -139,7 +139,7 @@
                                 <td class="px-8 py-6">
                                     <div class="flex flex-col">
                                         <span
-                                            class="text-sm font-bold text-slate-700">{{ $offcut->updated_at->format('d-M-y') }}</span>
+                                            class="whitespace-nowrap text-sm font-bold text-slate-700">{{ $offcut->updated_at->format('d-M-y') }}</span>
                                         <span
                                             class="text-[10px] text-slate-400 font-medium">{{ $offcut->updated_at->format('h:i A') }}</span>
                                     </div>
