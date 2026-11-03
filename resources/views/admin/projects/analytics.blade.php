@@ -1,5 +1,13 @@
 <x-app-layout>
     <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
+        @php
+            $analyticsAdvancedFiltersActive = request()->anyFilled(['project_id', 'sector']);
+            $revenueVariance = $totalRevenuePlanned > 0
+                ? (($totalRevenueActual - $totalRevenuePlanned) / $totalRevenuePlanned) * 100
+                : 0;
+            $revenueVarianceColor = $revenueVariance >= 0 ? 'text-emerald-600' : 'text-rose-600';
+            $revenueVarianceIcon = $revenueVariance >= 0 ? 'trending-up' : 'trending-down';
+        @endphp
         <style>
             .analytics-kpi-card {
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -32,7 +40,6 @@
                     <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Project Overview & Financial Balance</p>
                 </div>
             </div>
-            @php($analyticsAdvancedFiltersActive = request()->anyFilled(['project_id', 'sector']))
             <form action="{{ route('admin.projects.analytics') }}" method="GET" class="admin-filter-grid gap-2">
                 <div class="flex flex-col gap-1">
                     <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Data Date</label>
@@ -163,11 +170,6 @@
                     <div class="pt-3 border-t border-slate-100">
                         <div class="flex items-center justify-between mb-1">
                             <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Collection Rate</span>
-                            @php
-                                $revenueVariance = $totalRevenuePlanned > 0 ? (($totalRevenueActual - $totalRevenuePlanned) / $totalRevenuePlanned) * 100 : 0;
-                                $revenueVarianceColor = $revenueVariance >= 0 ? 'text-emerald-600' : 'text-rose-600';
-                                $revenueVarianceIcon = $revenueVariance >= 0 ? 'trending-up' : 'trending-down';
-                            @endphp
                             <span class="text-[9px] font-black {{ $revenueVarianceColor }} flex items-center gap-1">
                                 <i data-lucide="{{ $revenueVarianceIcon }}" class="w-3 h-3"></i>
                                 {{ number_format(abs($revenueVariance), 1) }}%

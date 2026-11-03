@@ -39,10 +39,20 @@ class ProjectProgressUpdateController extends Controller
             $query->whereDate('data_date', $request->data_date);
         }
 
+        $revenueTotals = (clone $query)->getQuery()
+            ->reorder()
+            ->selectRaw('
+                COALESCE(SUM(revenue_planned), 0) as total_revenue_planned,
+                COALESCE(SUM(revenue_actual), 0) as total_revenue_actual
+            ')
+            ->first();
+
+        $totalRevenuePlanned = (float) $revenueTotals->total_revenue_planned;
+        $totalRevenueActual = (float) $revenueTotals->total_revenue_actual;
         $updates = $query->latest()->paginate(15)->withQueryString();
         $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
         return view('admin.progress-updates.index', array_merge(
-            compact('updates', 'projects'),
+            compact('updates', 'projects', 'totalRevenuePlanned', 'totalRevenueActual'),
             ProjectOrganizationFilters::options($request)
         ));
     }

@@ -207,6 +207,29 @@ html.dark [class*="bg-white/"] {
     background-color: var(--surface-raised) !important;
 }
 
+html.dark .risk-project-summary {
+    background: linear-gradient(110deg, #123746 0%, #172334 100%) !important;
+    border-color: #155e75 !important;
+}
+
+html.dark .progress-update-filters {
+    border-color: var(--border-color) !important;
+    background-color: var(--surface-raised) !important;
+}
+
+html.dark .progress-revenue-card--planned {
+    background-image: linear-gradient(135deg, #047857, #059669 55%, #0f766e) !important;
+}
+
+html.dark .progress-revenue-card--actual {
+    background-image: linear-gradient(135deg, #0e7490, #0284c7 55%, #1d4ed8) !important;
+}
+
+html.dark .progress-revenue-glow,
+html.dark .progress-revenue-icon {
+    background-color: rgb(255 255 255 / 12%) !important;
+}
+
 html.dark [class~="bg-slate-50"],
 html.dark [class~="bg-gray-50"],
 html.dark [class~="bg-[#f8fafc]"] {

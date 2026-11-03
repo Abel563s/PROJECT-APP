@@ -20,18 +20,18 @@
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[1120px] table-fixed text-left">
                     <thead><tr class="border-b border-[#00515f]/30 bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black uppercase tracking-widest text-white">
-                        <th class="w-16 px-2 py-3">Row #</th><th class="w-44 px-2 py-3">Item</th><th class="w-28 px-2 py-3">PPA</th><th class="w-28 px-2 py-3">FIDIC Red</th><th class="w-28 px-2 py-3">FIDIC Yellow</th><th class="w-28 px-2 py-3">FIDIC Silver</th><th class="w-64 px-2 py-3">Explanation for Planners</th><th class="w-28 px-2 py-3 text-right">Actions</th>
+                        <th class="w-16 px-2 py-3">Row #</th><th class="w-44 px-2 py-3">Item</th><th class="w-64 px-2 py-3">Explanation for Planners</th><th class="w-28 px-2 py-3">PPA</th><th class="w-28 px-2 py-3">FIDIC Red</th><th class="w-28 px-2 py-3">FIDIC Yellow</th><th class="w-28 px-2 py-3">FIDIC Silver</th><th class="w-28 px-2 py-3 text-right">Actions</th>
                     </tr></thead>
                     <tbody class="divide-y divide-slate-50">
                         @forelse($clauses as $clause)
                             <tr class="transition-colors hover:bg-slate-50/80">
                                 <td class="whitespace-nowrap px-2 py-3"><span class="inline-flex min-w-8 justify-center rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700 shadow-sm tabular-nums">{{ $clause->row_number }}</span></td>
                                 <td class="px-2 py-3"><p class="truncate text-xs font-bold text-slate-800" title="{{ $clause->item }}">{{ $clause->item }}</p></td>
+                                <td class="px-2 py-3"><p class="line-clamp-2 break-words text-[10px] font-medium leading-4 text-slate-600" title="{{ $clause->planner_explanation }}">{{ $clause->planner_explanation }}</p></td>
                                 <td class="px-2 py-3 text-[10px] font-semibold text-slate-600"><span class="block truncate" title="{{ $clause->ppa }}">{{ $clause->ppa ?: '—' }}</span></td>
                                 <td class="px-2 py-3 text-[10px] font-semibold text-slate-600"><span class="block truncate" title="{{ $clause->fidic_red }}">{{ $clause->fidic_red ?: '—' }}</span></td>
                                 <td class="px-2 py-3 text-[10px] font-semibold text-slate-600"><span class="block truncate" title="{{ $clause->fidic_yellow }}">{{ $clause->fidic_yellow ?: '—' }}</span></td>
                                 <td class="px-2 py-3 text-[10px] font-semibold text-slate-600"><span class="block truncate" title="{{ $clause->fidic_silver }}">{{ $clause->fidic_silver ?: '—' }}</span></td>
-                                <td class="px-2 py-3"><p class="line-clamp-2 break-words text-[10px] font-medium leading-4 text-slate-600" title="{{ $clause->planner_explanation }}">{{ $clause->planner_explanation }}</p></td>
                                 <td class="px-2 py-3 text-right"><div class="flex items-center justify-end gap-1.5">
                                     <button type="button" onclick="openClauseView({{ $clause->id }})" class="rounded-md border border-slate-200 bg-white p-1.5 text-slate-400 transition hover:border-sky-500 hover:text-sky-500" title="View"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
                                     @if($canEditClauses)<button type="button" onclick="openClauseEdit({{ $clause->id }})" class="rounded-md border border-slate-200 bg-white p-1.5 text-slate-400 transition hover:border-amber-500 hover:text-amber-500" title="Edit"><i data-lucide="pencil" class="h-3.5 w-3.5"></i></button>@endif

@@ -1,6 +1,6 @@
 <form action="{{ route('admin.projects.risk.store', $project) }}" method="POST" class="space-y-4" novalidate>
     @csrf
-    <div class="rounded-xl border border-cyan-100 bg-gradient-to-r from-cyan-50/80 to-slate-50 p-4">
+    <div class="risk-project-summary rounded-xl border border-cyan-100 bg-gradient-to-r from-cyan-50/80 to-slate-50 p-4">
         <div class="flex flex-wrap items-start justify-between gap-3">
             <div class="min-w-0">
                 <p class="text-sm font-black tracking-wide text-slate-900">{{ $project->project_code }}</p>

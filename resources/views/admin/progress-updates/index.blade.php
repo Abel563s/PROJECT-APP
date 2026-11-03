@@ -37,12 +37,37 @@
             </div>
         </div>
 
+        <section aria-label="Filtered revenue totals" class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div class="progress-revenue-card progress-revenue-card--planned group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-5 text-white shadow-lg shadow-emerald-900/15">
+                <div class="progress-revenue-glow absolute -right-6 -top-8 h-28 w-28 rounded-full bg-white/10 transition-transform duration-300 group-hover:scale-125"></div>
+                <div class="relative flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-[9px] font-black uppercase tracking-[0.18em] text-emerald-100">Revenue Planned</p>
+                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-emerald-100">ETB</span>{{ number_format($totalRevenuePlanned, 2) }}</p>
+                        <p class="mt-1 text-[9px] font-semibold text-emerald-100/90">Total for current filters</p>
+                    </div>
+                    <span class="progress-revenue-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/15 shadow-inner"><i data-lucide="banknote" class="h-5 w-5"></i></span>
+                </div>
+            </div>
+            <div class="progress-revenue-card progress-revenue-card--actual group relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-500 via-sky-600 to-blue-700 p-5 text-white shadow-lg shadow-blue-900/15">
+                <div class="progress-revenue-glow absolute -right-6 -top-8 h-28 w-28 rounded-full bg-white/10 transition-transform duration-300 group-hover:scale-125"></div>
+                <div class="relative flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-[9px] font-black uppercase tracking-[0.18em] text-sky-100">Revenue Actual</p>
+                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-sky-100">ETB</span>{{ number_format($totalRevenueActual, 2) }}</p>
+                        <p class="mt-1 text-[9px] font-semibold text-sky-100/90">Total for current filters</p>
+                    </div>
+                    <span class="progress-revenue-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/15 shadow-inner"><i data-lucide="circle-dollar-sign" class="h-5 w-5"></i></span>
+                </div>
+            </div>
+        </section>
+
         <!-- Search & Filter -->
         @php
             $progressUpdateFiltersActive = request()->anyFilled(['search', 'project_id', 'project_sector', 'data_date', 'business_unit_id', 'sector_id']);
             $progressAdvancedFiltersActive = request()->anyFilled(['project_id', 'project_sector', 'data_date']);
         @endphp
-        <form action="{{ route('admin.progress-updates.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+        <form action="{{ route('admin.progress-updates.index') }}" method="GET" class="progress-update-filters rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
             <div class="admin-filter-grid gap-3">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Updates</span>
@@ -68,31 +93,28 @@
 
                 <div id="progressAdvancedFilters" class="admin-filter-advanced-panel {{ $progressAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
                     <div class="admin-filter-advanced-grid gap-3">
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project</span>
-                    <select name="project_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All Projects</option>
-                        @foreach($projects as $project)
-                            <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->project_code }}</option>
-                        @endforeach
-                    </select>
-                </label>
-
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Sector</span>
-                    <select name="project_sector" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All Sectors</option>
-                        @foreach(['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'] as $sector)
-                            <option value="{{ $sector }}" {{ request('project_sector') == $sector ? 'selected' : '' }}>{{ $sector }}</option>
-                        @endforeach
-                    </select>
-                </label>
-
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Data Date</span>
-                    <input type="date" name="data_date" value="{{ request('data_date') }}" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                </label>
-
+                        <label class="space-y-1">
+                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project</span>
+                            <select name="project_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                                <option value="">All Projects</option>
+                                @foreach($projects as $project)
+                                    <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->project_code }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <label class="space-y-1">
+                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Sector</span>
+                            <select name="project_sector" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                                <option value="">All Sectors</option>
+                                @foreach(['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'] as $sector)
+                                    <option value="{{ $sector }}" {{ request('project_sector') == $sector ? 'selected' : '' }}>{{ $sector }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <label class="space-y-1">
+                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Data Date</span>
+                            <input type="date" name="data_date" value="{{ request('data_date') }}" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        </label>
                     </div>
                 </div>
             </div>
