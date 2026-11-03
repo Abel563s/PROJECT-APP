@@ -126,7 +126,8 @@
         </details>
 
         <section aria-label="Search and filter identities" class="bg-white rounded-2xl border border-slate-100 p-3 shadow-sm">
-            <form method="GET" action="{{ route('admin.roles.index') }}" class="grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_9rem_9rem_12rem_12rem_auto_auto] lg:items-end">
+            @php($identityAdvancedFiltersActive = request()->anyFilled(['business_unit_id', 'sector_id']))
+            <form method="GET" action="{{ route('admin.roles.index') }}" class="admin-filter-grid gap-2.5">
                 <div class="min-w-0">
                     <label for="identitySearch" class="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-500">Search</label>
                     <div class="relative">
@@ -156,35 +157,42 @@
                         <option value="inactive" @selected(request('status') === 'inactive')>Offline</option>
                     </select>
                 </div>
-                <div>
-                    <label for="identityBusinessUnitFilter" class="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-500">Business Unit</label>
-                    <select id="identityBusinessUnitFilter" name="business_unit_id" onchange="this.form.querySelector('[name=sector_id]').value=''; this.form.submit()"
-                        class="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
-                        <option value="">All units</option>
-                        @foreach($businessUnits as $businessUnit)
-                            <option value="{{ $businessUnit->id }}" @selected(\App\Support\ProjectOrganizationFilters::effectiveBusinessUnitId(request()) == $businessUnit->id)>{{ $businessUnit->name }}</option>
-                        @endforeach
-                    </select>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" aria-controls="identityAdvancedFilters" aria-expanded="{{ $identityAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'identityAdvancedFilters')"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-800">
+                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>More filters
+                        <i data-lucide="chevron-down" class="filter-panel-chevron h-3.5 w-3.5 transition-transform {{ $identityAdvancedFiltersActive ? 'rotate-180' : '' }}"></i>
+                    </button>
+                    <button type="submit" class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
+                        <i data-lucide="filter" aria-hidden="true" class="h-3.5 w-3.5"></i>Apply
+                    </button>
+                    <a href="{{ route('admin.roles.index') }}" class="inline-flex items-center justify-center rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">Clear</a>
                 </div>
-                <div>
-                    <label for="identitySectorFilter" class="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-500">Organizational Sector</label>
-                    <select id="identitySectorFilter" name="sector_id" class="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
-                        <option value="">All sectors</option>
-                        @foreach($sectors as $sector)
-                            <option value="{{ $sector->id }}" @selected(request('sector_id') == $sector->id)>{{ $sector->name }}</option>
-                        @endforeach
-                    </select>
+                <div id="identityAdvancedFilters" class="admin-filter-advanced-panel {{ $identityAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="admin-filter-advanced-grid gap-3">
+                        <div>
+                            <label for="identityBusinessUnitFilter" class="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-500">Business Unit</label>
+                            <select id="identityBusinessUnitFilter" name="business_unit_id" onchange="this.form.querySelector('[name=sector_id]').value=''; this.form.submit()"
+                                class="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                                <option value="">All units</option>
+                                @foreach($businessUnits as $businessUnit)
+                                    <option value="{{ $businessUnit->id }}" @selected(\App\Support\ProjectOrganizationFilters::effectiveBusinessUnitId(request()) == $businessUnit->id)>{{ $businessUnit->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label for="identitySectorFilter" class="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-500">Organizational Sector</label>
+                            <select id="identitySectorFilter" name="sector_id" class="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                                <option value="">All sectors</option>
+                                @foreach($sectors as $sector)
+                                    <option value="{{ $sector->id }}" @selected(request('sector_id') == $sector->id)>{{ $sector->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <button type="submit"
-                    class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
-                    <i data-lucide="filter" aria-hidden="true" class="h-3.5 w-3.5"></i>
-                    Apply
-                </button>
-                <a href="{{ route('admin.roles.index') }}"
-                    class="inline-flex items-center justify-center rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2">
-                    Clear
-                </a>
             </form>
+            @include('admin.partials.filter-panel-toggle-script')
         </section>
 
         <!-- Users Table -->

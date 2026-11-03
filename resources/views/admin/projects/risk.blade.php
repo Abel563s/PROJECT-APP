@@ -24,11 +24,11 @@
         <!-- Search & Filter -->
         @php
             $riskFiltersActive = request()->anyFilled(['search', 'project_id', 'impact', 'risk_type', 'risk_status', 'business_unit_id', 'sector_id']);
-            $riskAdvancedFiltersActive = request()->anyFilled(['project_id', 'impact', 'risk_type']);
+            $riskAdvancedFiltersActive = request()->anyFilled(['project_id', 'impact', 'risk_type', 'risk_status']);
         @endphp
         <form action="{{ route('admin.projects.risk.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
-                <label class="space-y-1 xl:col-span-2">
+            <div class="admin-filter-grid gap-3">
+                <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
@@ -37,15 +37,6 @@
                     </span>
                 </label>
                 @include('admin.partials.project-organization-filters')
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Status</span>
-                    <select name="risk_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="all">All Statuses</option>
-                        @foreach(['Open', 'Inprogress', 'Closed'] as $status)
-                            <option value="{{ $status }}" @selected(request('risk_status') === $status)>{{ $status === 'Inprogress' ? 'In Progress' : $status }}</option>
-                        @endforeach
-                    </select>
-                </label>
                 <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
                     <button type="button" aria-controls="riskAdvancedFilters" aria-expanded="{{ $riskAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'riskAdvancedFilters')"
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
@@ -56,8 +47,17 @@
                         <a href="{{ route('admin.projects.risk.index') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white"><i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters</a>
                     @endif
                 </div>
-                <div id="riskAdvancedFilters" class="{{ $riskAdvancedFiltersActive ? '' : 'hidden' }} col-span-full rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div id="riskAdvancedFilters" class="admin-filter-advanced-panel {{ $riskAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="admin-filter-advanced-grid gap-3">
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Status</span>
+                    <select name="risk_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="all">All Statuses</option>
+                        @foreach(\App\Models\ProjectRisk::ACTION_STATUSES as $status)
+                            <option value="{{ $status }}" @selected(request('risk_status') === $status)>{{ $status }}</option>
+                        @endforeach
+                    </select>
+                </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project</span>
                     <select name="project_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
@@ -100,9 +100,9 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">#</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Total Risk</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Open</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">In Progress</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Closed</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Risk</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Issue</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Resolved</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Actions</th>
                         </tr>
                     </thead>

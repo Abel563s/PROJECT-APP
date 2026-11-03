@@ -8,7 +8,7 @@
             || request('overall_impact_level', 'all') !== 'all';
     @endphp
     <form id="riskPoolFilters" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm" autocomplete="off">
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(220px,1fr)_minmax(180px,0.85fr)_auto]">
+        <div class="admin-filter-grid gap-3">
             <label class="space-y-1">
                 <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Risks</span>
                 <span class="relative block">
@@ -337,7 +337,7 @@
     /* ===================== Spreadsheet Editor ===================== */
     let spreadsheetDirty = false;
     let spreadsheetContainer = null;
-    const COLS = ['risk_id', 'risk_category', 'specific_risk', 'impact_on_timeline', 'impact_on_cost', 'overall_impact_level', 'stakeholder'];
+    const COLS = ['risk_id', 'risk_type', 'risk_category', 'specific_risk', 'impact_on_timeline', 'impact_on_cost', 'overall_impact_level', 'stakeholder'];
 
     function openSpreadsheetModal() {
         const modal = document.getElementById('riskPoolEditorModal');
@@ -500,6 +500,7 @@
             tr.className = 'ss-row border-b border-slate-100/60';
             tr.dataset.rowIndex = ri;
             tr.appendChild(elWrap(riskIdCell(row, ri)));
+            tr.appendChild(elWrap(elSelect('risk_type', state.riskTypes, row.risk_type, ri, 'Select type')));
             tr.appendChild(elWrap(elSelect('risk_category', state.categories, row.risk_category, ri, 'Select category')));
             tr.appendChild(elWrap(elInput('specific_risk', row.specific_risk, ri)));
             tr.appendChild(elWrap(elSelect('impact_on_timeline', state.impactLevels, row.impact_on_timeline, ri, 'Select impact')));
@@ -539,7 +540,7 @@
             tbody.querySelectorAll('tr.ss-row').forEach(tr => {
                 const ri = parseInt(tr.dataset.rowIndex, 10);
                 const row = (state.rows[ri] || {});
-                const collected = { id: row.id || null, risk_id: '', risk_category: '', specific_risk: '', impact_on_timeline: '', impact_on_cost: '', overall_impact_level: '', stakeholder: '' };
+                const collected = { id: row.id || null, risk_id: '', risk_type: '', risk_category: '', specific_risk: '', impact_on_timeline: '', impact_on_cost: '', overall_impact_level: '', stakeholder: '' };
                 tr.querySelectorAll('input.ss-input, select.ss-select, textarea.ss-textarea').forEach(el => { if (el.dataset.field) collected[el.dataset.field] = el.value; });
                 rows.push(collected);
             });
@@ -551,6 +552,7 @@
             rows.forEach((row, i) => {
                 const base = 'rows.' + i;
                 if (!row.risk_id) (errors[base + '.risk_id'] = errors[base + '.risk_id'] || []).push('Risk ID is required.');
+                if (!row.id && !row.risk_type) (errors[base + '.risk_type'] = errors[base + '.risk_type'] || []).push('Risk type is required.');
                 if (!row.risk_category) (errors[base + '.risk_category'] = errors[base + '.risk_category'] || []).push('Risk category is required.');
                 if (!row.specific_risk) (errors[base + '.specific_risk'] = errors[base + '.specific_risk'] || []).push('Specific risk is required.');
                 if (row.risk_id && seenIds[row.risk_id] !== undefined) {

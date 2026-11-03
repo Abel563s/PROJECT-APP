@@ -26,6 +26,7 @@ it('shows edit and admin-only delete actions on the issue history page', functio
     $adminHtml = $this->actingAs($admin)
         ->get(route('admin.projects.issues.history'))
         ->assertOk()
+        ->assertSee('Raised')
         ->getContent();
 
     $coordHtml = $this->actingAs($coordinator)

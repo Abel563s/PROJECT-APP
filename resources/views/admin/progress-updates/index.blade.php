@@ -40,11 +40,11 @@
         <!-- Search & Filter -->
         @php
             $progressUpdateFiltersActive = request()->anyFilled(['search', 'project_id', 'project_sector', 'data_date', 'business_unit_id', 'sector_id']);
-            $progressAdvancedFiltersActive = request()->anyFilled(['project_sector', 'data_date']);
+            $progressAdvancedFiltersActive = request()->anyFilled(['project_id', 'project_sector', 'data_date']);
         @endphp
         <form action="{{ route('admin.progress-updates.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
-                <label class="space-y-1 xl:col-span-2">
+            <div class="admin-filter-grid gap-3">
+                <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Updates</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
@@ -54,16 +54,6 @@
                 </label>
 
                 @include('admin.partials.project-organization-filters')
-
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project</span>
-                    <select name="project_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All Projects</option>
-                        @foreach($projects as $project)
-                            <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->project_code }}</option>
-                        @endforeach
-                    </select>
-                </label>
 
                 <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
                     <button type="button" aria-controls="progressAdvancedFilters" aria-expanded="{{ $progressAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'progressAdvancedFilters')"
@@ -76,8 +66,17 @@
                     @endif
                 </div>
 
-                <div id="progressAdvancedFilters" class="{{ $progressAdvancedFiltersActive ? '' : 'hidden' }} col-span-full rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div id="progressAdvancedFilters" class="admin-filter-advanced-panel {{ $progressAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="admin-filter-advanced-grid gap-3">
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project</span>
+                    <select name="project_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Projects</option>
+                        @foreach($projects as $project)
+                            <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->project_code }}</option>
+                        @endforeach
+                    </select>
+                </label>
 
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Sector</span>
@@ -205,10 +204,10 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('M d, Y') : '-' }}</span>
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('d-M-y') : '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->updated_at->format('M d, Y') }}</span>
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->updated_at->format('d-M-y') }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1.5">

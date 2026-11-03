@@ -13,6 +13,7 @@ class ProjectRisk extends Model
         'risk_category',
         'pool_risk_category',
         'pool_risk_id',
+        'eot_entry_id',
         'activity',
         'risk_type',
         'risk_name',
@@ -23,8 +24,9 @@ class ProjectRisk extends Model
         'intent_to_claim',
         'most_likely_cost_impact',
         'most_likely_time_impact',
+        'most_likely_quality_impact',
         'time_impact_unit',
-        'stakeholder',
+        'resolution_by',
         'risk_frequency',
         'impact_date',
         'risk_urgency',
@@ -37,6 +39,7 @@ class ProjectRisk extends Model
         'owner_name',
         'planned_action_date',
         'date_last_updated',
+        'materialized_date',
         'tracking_comments',
         'action_status',
         'actual_action_date',
@@ -51,10 +54,12 @@ class ProjectRisk extends Model
         'intent_to_claim' => 'boolean',
         'most_likely_cost_impact' => 'decimal:2',
         'most_likely_time_impact' => 'integer',
+        'most_likely_quality_impact' => 'integer',
         'exposure' => 'integer',
         'impact_date' => 'date',
         'planned_action_date' => 'date',
         'date_last_updated' => 'date',
+        'materialized_date' => 'date',
         'actual_action_date' => 'date',
     ];
 
@@ -67,6 +72,13 @@ class ProjectRisk extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function eotEntry(): BelongsTo
+    {
+        return $this->belongsTo(EotEntry::class);
+    }
+
+    public const ACTION_STATUSES = ['Risk', 'Issue', 'Resolved'];
 
     public function getRiskScoreAttribute(): int
     {

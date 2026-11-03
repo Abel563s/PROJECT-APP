@@ -37,7 +37,7 @@
 
         <!-- Search & Filter -->
         <form action="{{ route('admin.weekly-updates.index') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-end justify-center gap-3 w-full mx-auto">
+            <div class="admin-filter-grid bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 gap-3 w-full mx-auto">
                 <div class="min-w-[220px] max-w-[320px] relative group shrink-0">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
@@ -102,7 +102,7 @@
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-1.5">
                                         <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#00ADC5]"></i>
-                                        <p class="text-xs font-black text-slate-700">{{ $update->expected_completion_date ? $update->expected_completion_date->format('M d, Y') : '---' }}</p>
+                                        <p class="text-xs font-black text-slate-700">{{ $update->expected_completion_date ? $update->expected_completion_date->format('d-M-y') : '---' }}</p>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">

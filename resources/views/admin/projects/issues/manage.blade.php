@@ -31,10 +31,11 @@
 
         <!-- Summary Cards -->
         <div class="-mx-4 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
-            <div class="grid grid-cols-7 gap-3 min-w-[992px]" style="grid-template-columns: repeat(7, minmax(0, 1fr)); min-width: 992px;">
+            <div class="grid grid-cols-8 gap-3 min-w-[1120px]" style="grid-template-columns: repeat(8, minmax(0, 1fr)); min-width: 1120px;">
                 @php
                 $kpis = [
                         ['label' => 'Total Issues', 'key' => 'total', 'icon' => 'layers-3', 'tone' => 'slate'],
+                        ['label' => 'Raised', 'key' => 'raised', 'icon' => 'circle-plus', 'tone' => 'slate'],
                         ['label' => 'Open', 'key' => 'open', 'icon' => 'circle-dot', 'tone' => 'sky'],
                         ['label' => 'Closed', 'key' => 'closed', 'icon' => 'check-check', 'tone' => 'emerald'],
                         ['label' => 'Overdue', 'key' => 'overdue', 'icon' => 'alarm-clock', 'tone' => 'rose'],
@@ -61,7 +62,7 @@
                             <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">{{ $kpi['label'] }}</span>
                         </div>
                         <p class="mt-3 text-2xl font-black leading-none tabular-nums {{ $kpiTones[$kpi['tone']]['value'] }}">{{ $stats[$kpi['key']] }}</p>
-                        <p class="mt-1 text-[8px] font-bold uppercase tracking-wider text-slate-400">{{ $kpi['key'] === 'total' ? 'All records' : ($kpi['key'] === 'open' || $kpi['key'] === 'closed' ? 'By status' : 'By priority') }}</p>
+                        <p class="mt-1 text-[8px] font-bold uppercase tracking-wider text-slate-400">{{ $kpi['key'] === 'total' ? 'All records' : (in_array($kpi['key'], ['raised', 'open', 'closed'], true) ? 'By status' : 'By priority') }}</p>
                     </div>
                 @endforeach
             </div>
@@ -69,9 +70,10 @@
 
         <form action="{{ route('admin.projects.issues.manage', $project) }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
             @php
+                $projectIssueAdvancedFiltersActive = request()->anyFilled(['impact', 'status', 'priority']);
                 $projectIssueFiltersActive = request()->anyFilled(['issue_owner', 'issue_search', 'impact', 'status', 'priority']);
             @endphp
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $projectIssueFiltersActive ? '6' : '5' }}" style="grid-template-columns: repeat({{ $projectIssueFiltersActive ? 6 : 5 }}, minmax(0, 1fr));">
+            <div class="admin-filter-grid gap-3">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Issue Owner</span>
                     <select name="issue_owner" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
@@ -85,42 +87,52 @@
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Issue</span>
                     <input type="search" name="issue_search" value="{{ request('issue_search') }}" placeholder="Search issues..." class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                 </label>
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact</span>
-                    <select name="impact" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All impacts</option>
-                        @foreach(['Low', 'Medium', 'High'] as $impact)
-                            <option value="{{ $impact }}" @selected(request('impact') === $impact)>{{ $impact }}</option>
-                        @endforeach
-                    </select>
-                </label>
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
-                    <select name="status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All statuses</option>
-                        @foreach(['Open', 'Closed'] as $status)
-                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ $status }}</option>
-                        @endforeach
-                    </select>
-                </label>
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Priority</span>
-                    <select name="priority" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All priorities</option>
-                        @foreach(['Done', 'Overdue', 'High', 'Medium', 'Low', 'Unscheduled'] as $priority)
-                            <option value="{{ $priority }}" @selected(request('priority') === $priority)>{{ $priority }}</option>
-                        @endforeach
-                    </select>
-                </label>
-                @if($projectIssueFiltersActive)
-                    <div class="flex items-end justify-end">
-                        <a href="{{ route('admin.projects.issues.manage', $project) }}" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-sm text-[9px] font-black uppercase tracking-widest">
-                            <i data-lucide="x" class="w-3.5 h-3.5"></i>Clear Filters
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" aria-controls="projectIssueAdvancedFilters" aria-expanded="{{ $projectIssueAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'projectIssueAdvancedFilters')"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
+                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>More filters
+                        <i data-lucide="chevron-down" class="filter-panel-chevron h-3.5 w-3.5 transition-transform {{ $projectIssueAdvancedFiltersActive ? 'rotate-180' : '' }}"></i>
+                    </button>
+                    @if($projectIssueFiltersActive)
+                        <a href="{{ route('admin.projects.issues.manage', $project) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white">
+                            <i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters
                         </a>
+                    @endif
+                </div>
+                <div id="projectIssueAdvancedFilters" class="admin-filter-advanced-panel {{ $projectIssueAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="admin-filter-advanced-grid">
+                        <label class="space-y-1">
+                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact</span>
+                            <select name="impact" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                                <option value="">All impacts</option>
+                                @foreach(['Low', 'Medium', 'High'] as $impact)
+                                    <option value="{{ $impact }}" @selected(request('impact') === $impact)>{{ $impact }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <label class="space-y-1">
+                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
+                            <select name="status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                                <option value="">All statuses</option>
+                                @foreach(['Raised', 'Open', 'Closed'] as $status)
+                                    <option value="{{ $status }}" @selected(request('status') === $status)>{{ $status }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <label class="space-y-1">
+                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Priority</span>
+                            <select name="priority" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                                <option value="">All priorities</option>
+                                @foreach(['Done', 'Overdue', 'High', 'Medium', 'Low', 'Unscheduled'] as $priority)
+                                    <option value="{{ $priority }}" @selected(request('priority') === $priority)>{{ $priority }}</option>
+                                @endforeach
+                            </select>
+                        </label>
                     </div>
-                @endif
+                </div>
             </div>
         </form>
+        @include('admin.partials.filter-panel-toggle-script')
 
         <!-- Issues Table -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -172,10 +184,9 @@
                                 <td class="px-4 py-3 text-center">
                                     @php
                                         $statusColors = [
+                                            'Raised' => 'bg-slate-100 text-slate-600 border-slate-200',
                                             'Open' => 'bg-sky-50 text-sky-600 border-sky-200',
-                                            'In Progress' => 'bg-amber-50 text-amber-600 border-amber-200',
                                             'Closed' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
-                                            'Cancelled' => 'bg-rose-50 text-rose-600 border-rose-200',
                                         ];
                                         $statusColor = $statusColors[$issue->status] ?? 'bg-slate-100 text-slate-400 border-slate-200';
                                     @endphp
@@ -203,12 +214,12 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                                        {{ $issue->raised_date ? $issue->raised_date->format('M d, Y') : '---' }}
+                                        {{ $issue->raised_date ? $issue->raised_date->format('d-M-y') : '---' }}
                                     </span>
                                 </td>
                 <td class="px-4 py-3">
                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                        {{ $issue->planned_resolution_date ? $issue->planned_resolution_date->format('M d, Y') : '---' }}
+                        {{ $issue->planned_resolution_date ? $issue->planned_resolution_date->format('d-M-y') : '---' }}
                     </span>
                 </td>
                 <td class="px-4 py-3">
@@ -218,12 +229,12 @@
                 </td>
                 <td class="px-4 py-3">
                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                        {{ $issue->date ? $issue->date->format('M d, Y') : '---' }}
+                        {{ $issue->date ? $issue->date->format('d-M-y') : '---' }}
                     </span>
                 </td>
                 <td class="px-4 py-3">
                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                        {{ $issue->last_updated_date ? $issue->last_updated_date->format('M d, Y') : '---' }}
+                        {{ $issue->last_updated_date ? $issue->last_updated_date->format('d-M-y') : '---' }}
                     </span>
                 </td>
                 <td class="px-4 py-3 text-right">
@@ -382,6 +393,37 @@
                 if (lastUpdatedInput) lastUpdatedInput.value = now;
                 if (lastUpdatedDisplay) lastUpdatedDisplay.value = now;
             }
+
+            const editModal = document.getElementById('editModal');
+            const createModal = document.getElementById('createModal');
+            const activeModal = editModal && !editModal.classList.contains('hidden') ? editModal : createModal;
+            const issueForm = activeModal ? activeModal.querySelector('#createIssueForm, #editIssueForm') : null;
+            const plannedDate = issueForm ? issueForm.querySelector('[name="planned_resolution_date"]') : null;
+            const closedDate = issueForm ? issueForm.querySelector('[name="issue_closed_date"]') : null;
+            const statusDisplay = issueForm ? issueForm.querySelector('[data-issue-status]') : null;
+
+            function updateIssueStatus() {
+                if (!statusDisplay) return;
+
+                const status = closedDate && closedDate.value
+                    ? 'Closed'
+                    : (plannedDate && plannedDate.value ? 'Open' : 'Raised');
+                const statusStyles = {
+                    Raised: 'border-slate-200 bg-slate-100 text-slate-600',
+                    Open: 'border-sky-200 bg-sky-50 text-sky-600',
+                    Closed: 'border-emerald-200 bg-emerald-50 text-emerald-600',
+                };
+                statusDisplay.textContent = status;
+                statusDisplay.className = `inline-flex rounded-lg border px-3 py-2 text-[10px] font-bold ${statusStyles[status]}`;
+            }
+
+            [plannedDate, closedDate].forEach((dateInput) => {
+                if (dateInput) {
+                    dateInput.addEventListener('input', updateIssueStatus);
+                    dateInput.addEventListener('change', updateIssueStatus);
+                }
+            });
+            updateIssueStatus();
 
             if (projectSelect) {
                 projectSelect.addEventListener('change', function () {

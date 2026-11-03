@@ -30,12 +30,13 @@
 
         <!-- Summary Cards -->
         <div class="-mx-4 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
-            <div class="grid grid-cols-7 gap-3 min-w-[992px]" style="grid-template-columns: repeat(7, minmax(0, 1fr)); min-width: 992px;">
+            <div class="grid grid-cols-8 gap-3 min-w-[1152px]" style="grid-template-columns: repeat(8, minmax(0, 1fr)); min-width: 1152px;">
                 @php
                     $kpis = [
                         ['label' => 'Total Risks', 'key' => 'total', 'icon' => 'alert-triangle', 'tone' => 'slate'],
-                        ['label' => 'Open', 'key' => 'open', 'icon' => 'circle', 'tone' => 'sky'],
-                        ['label' => 'Closed', 'key' => 'closed', 'icon' => 'check-circle', 'tone' => 'emerald'],
+                        ['label' => 'Risk', 'key' => 'risk', 'icon' => 'circle', 'tone' => 'sky'],
+                        ['label' => 'Issue', 'key' => 'issue', 'icon' => 'triangle-alert', 'tone' => 'amber'],
+                        ['label' => 'Resolved', 'key' => 'resolved', 'icon' => 'check-circle', 'tone' => 'emerald'],
                         ['label' => 'Extreme', 'key' => 'extreme', 'icon' => 'zap', 'tone' => 'rose'],
                         ['label' => 'High', 'key' => 'high', 'icon' => 'triangle-alert', 'tone' => 'orange'],
                         ['label' => 'Medium', 'key' => 'medium', 'icon' => 'minus', 'tone' => 'amber'],
@@ -60,7 +61,7 @@
                             <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">{{ $kpi['label'] }}</span>
                         </div>
                         <p class="mt-3 text-2xl font-black leading-none tabular-nums {{ $kpiTones[$kpi['tone']]['value'] }}">{{ $stats[$kpi['key']] }}</p>
-                        <p class="mt-1 text-[8px] font-bold uppercase tracking-wider text-slate-400">{{ in_array($kpi['key'], ['open', 'in_progress', 'closed']) ? 'By status' : (in_array($kpi['key'], ['extreme', 'high', 'medium', 'low']) ? 'By rating' : 'All records') }}</p>
+                        <p class="mt-1 text-[8px] font-bold uppercase tracking-wider text-slate-400">{{ in_array($kpi['key'], ['risk', 'issue', 'resolved']) ? 'By status' : (in_array($kpi['key'], ['extreme', 'high', 'medium', 'low']) ? 'By rating' : 'All records') }}</p>
                     </div>
                 @endforeach
             </div>
@@ -68,10 +69,11 @@
 
          <!-- Search & Filter -->
          @php
+            $riskManageAdvancedFiltersActive = request()->anyFilled(['risk_level', 'risk_urgency', 'action_status']);
             $riskManageFiltersActive = request()->anyFilled(['search', 'risk_category', 'risk_type', 'risk_level', 'risk_urgency', 'action_status']);
         @endphp
         <form action="{{ route('admin.projects.risk.manage', $project) }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-{{ $riskManageFiltersActive ? '7' : '6' }}" style="grid-template-columns: repeat({{ $riskManageFiltersActive ? 7 : 6 }}, minmax(0, 1fr));">
+            <div class="admin-filter-grid gap-3">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Risks</span>
                     <span class="relative block">
@@ -98,42 +100,52 @@
                         @endforeach
                     </select>
                 </label>
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Rating</span>
-                    <select name="risk_level" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All Ratings</option>
-                        @foreach(['Low', 'Medium', 'High', 'Extreme'] as $level)
-                            <option value="{{ $level }}" @selected(request('risk_level') === $level)>{{ $level }}</option>
-                        @endforeach
-                    </select>
-                </label>
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Urgency</span>
-                    <select name="risk_urgency" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All Urgencies</option>
-                        @foreach(['Very Urgent', 'Urgent', 'Moderate', 'Low'] as $urgency)
-                            <option value="{{ $urgency }}" @selected(request('risk_urgency') === $urgency)>{{ $urgency }}</option>
-                        @endforeach
-                    </select>
-                </label>
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
-                    <select name="action_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All Statuses</option>
-                        @foreach(['Open', 'Closed'] as $status)
-                            <option value="{{ $status }}" @selected(request('action_status') === $status)>{{ $status }}</option>
-                        @endforeach
-                    </select>
-                </label>
-                @if($riskManageFiltersActive)
-                    <div class="flex items-end justify-end">
-                        <a href="{{ route('admin.projects.risk.manage', $project) }}" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-sm text-[9px] font-black uppercase tracking-widest">
-                            <i data-lucide="x" class="w-3.5 h-3.5"></i>Clear Filters
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" aria-controls="riskManageAdvancedFilters" aria-expanded="{{ $riskManageAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'riskManageAdvancedFilters')"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
+                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>More filters
+                        <i data-lucide="chevron-down" class="filter-panel-chevron h-3.5 w-3.5 transition-transform {{ $riskManageAdvancedFiltersActive ? 'rotate-180' : '' }}"></i>
+                    </button>
+                    @if($riskManageFiltersActive)
+                        <a href="{{ route('admin.projects.risk.manage', $project) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white">
+                            <i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters
                         </a>
+                    @endif
+                </div>
+                <div id="riskManageAdvancedFilters" class="admin-filter-advanced-panel {{ $riskManageAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="admin-filter-advanced-grid">
+                        <label class="space-y-1">
+                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Rating</span>
+                            <select name="risk_level" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                                <option value="">All Ratings</option>
+                                @foreach(['Low', 'Medium', 'High', 'Extreme'] as $level)
+                                    <option value="{{ $level }}" @selected(request('risk_level') === $level)>{{ $level }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <label class="space-y-1">
+                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Urgency</span>
+                            <select name="risk_urgency" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                                <option value="">All Urgencies</option>
+                                @foreach(['Very Urgent', 'Urgent', 'Moderate', 'Low'] as $urgency)
+                                    <option value="{{ $urgency }}" @selected(request('risk_urgency') === $urgency)>{{ $urgency }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <label class="space-y-1">
+                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
+                            <select name="action_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                                <option value="">All Statuses</option>
+                                @foreach(\App\Models\ProjectRisk::ACTION_STATUSES as $status)
+                                    <option value="{{ $status }}" @selected(request('action_status') === $status)>{{ $status }}</option>
+                                @endforeach
+                            </select>
+                        </label>
                     </div>
-                @endif
+                </div>
             </div>
         </form>
+        @include('admin.partials.filter-panel-toggle-script')
 
         <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
             <div class="overflow-x-auto">
@@ -161,8 +173,9 @@
                                     'Extreme' => 'bg-rose-50 text-rose-700 border-rose-200',
                                 ];
                                 $statusClasses = [
-                                    'Open' => 'bg-sky-50 text-sky-700 border-sky-200',
-                                    'Closed' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                                    'Risk' => 'bg-sky-50 text-sky-700 border-sky-200',
+                                    'Issue' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                    'Resolved' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
                                 ];
                             @endphp
                             <tr class="transition-colors hover:bg-slate-50/80">
@@ -328,6 +341,7 @@
                     if (window.lucide) lucide.createIcons();
                     updateRiskRating();
                     initPoolRiskPicker(document.getElementById('createModalContent'));
+                    initEotPicker(document.getElementById('createModalContent'));
                     initRiskStepper(document.getElementById('createModalContent'));
                 })
                 .catch(error => {
@@ -351,6 +365,15 @@
 
             const likelihood = Number(likelihoodInput.value);
             const severity = Number(severityInput.value);
+            const sliderColors = {
+                1: '#16a34a',
+                2: '#84cc16',
+                3: '#f59e0b',
+                4: '#f97316',
+                5: '#e11d48',
+            };
+            likelihoodInput.style.accentColor = sliderColors[likelihood] || sliderColors[3];
+            severityInput.style.accentColor = sliderColors[severity] || sliderColors[3];
             const score = likelihood * severity;
             const level = score >= 17 ? 'Extreme' : score >= 10 ? 'High' : score >= 5 ? 'Medium' : 'Low';
             const colors = { Low: 'text-emerald-600', Medium: 'text-amber-600', High: 'text-orange-600', Extreme: 'text-rose-600' };
@@ -364,6 +387,7 @@
 
         function initPoolRiskPicker(container) {
             const url = @json(route('admin.projects.risk.pool-risks', $project));
+            const type = container.querySelector('#risk_type');
             const cat = container.querySelector('#pool_risk_category');
             const idSelect = container.querySelector('#pool_risk_id');
             const riskName = container.querySelector('#risk_name');
@@ -374,7 +398,7 @@
             const impactTimeline = container.querySelector('#poolImpactTimeline');
             const impactCost = container.querySelector('#poolImpactCost');
             const impactQuality = container.querySelector('#poolImpactQuality');
-            if (!cat || !idSelect) return;
+            if (!type || !cat || !idSelect) return;
 
             const impactClasses = {
                 'High': 'bg-rose-50 text-rose-700 border-rose-200',
@@ -407,15 +431,14 @@
                 if (poolRiskIdHidden) poolRiskIdHidden.value = '';
             }
 
-            cat.addEventListener('change', async () => {
-                const category = cat.value;
-                if (poolCategoryHidden) poolCategoryHidden.value = category;
+            async function loadRisks(category, riskType, selectedId = '') {
                 idSelect.innerHTML = '<option value="">Select risk</option>';
                 idSelect.disabled = !category;
                 clearImpact();
                 if (!category) return;
                 try {
-                    const res = await fetch(url + '?category=' + encodeURIComponent(category));
+                    const res = await fetch(url + '?risk_type=' + encodeURIComponent(riskType) + '&category=' + encodeURIComponent(category));
+                    if (!res.ok) throw new Error('Unable to load repository risks (' + res.status + ').');
                     const json = await res.json();
                     json.forEach(r => {
                         const o = document.createElement('option');
@@ -428,16 +451,52 @@
                         o.dataset.quality = r.overall_impact_level || '';
                         idSelect.appendChild(o);
                     });
-                    const selectedId = idSelect.dataset.selectedId;
-                    if (selectedId) {
-                        const opt = idSelect.querySelector('option[value="' + selectedId + '"]');
-                        if (opt) {
-                            idSelect.value = selectedId;
-                            idSelect.disabled = false;
-                            idSelect.dispatchEvent(new Event('change'));
-                        }
+                    if (selectedId && [...idSelect.options].some(option => option.value === selectedId)) {
+                        idSelect.value = selectedId;
+                        idSelect.disabled = false;
+                        idSelect.dispatchEvent(new Event('change'));
                     }
-                } catch (e) { console.error(e); }
+                } catch (e) {
+                    console.error(e);
+                    alert('Unable to load risks for this category.');
+                }
+            }
+
+            async function loadCategories(riskType, selectedCategory = '', selectedId = '') {
+                cat.innerHTML = '<option value="">Select pool category</option>';
+                cat.disabled = !riskType;
+                if (poolCategoryHidden) poolCategoryHidden.value = '';
+                if (poolRiskIdHidden) poolRiskIdHidden.value = '';
+                clearImpact();
+                idSelect.innerHTML = '<option value="">Select category first</option>';
+                idSelect.disabled = true;
+                if (!riskType) return;
+                try {
+                    const res = await fetch(url + '?risk_type=' + encodeURIComponent(riskType));
+                    if (!res.ok) throw new Error('Unable to load repository categories (' + res.status + ').');
+                    const categories = await res.json();
+                    categories.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category;
+                        option.textContent = category;
+                        cat.appendChild(option);
+                    });
+                    if (selectedCategory && categories.includes(selectedCategory)) {
+                        cat.value = selectedCategory;
+                        if (poolCategoryHidden) poolCategoryHidden.value = selectedCategory;
+                        await loadRisks(selectedCategory, riskType, selectedId);
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('Unable to load repository categories for this risk type.');
+                }
+            }
+
+            type.addEventListener('change', () => loadCategories(type.value));
+            cat.addEventListener('change', () => {
+                const category = cat.value;
+                if (poolCategoryHidden) poolCategoryHidden.value = category;
+                loadRisks(category, type.value);
             });
 
             idSelect.addEventListener('change', () => {
@@ -449,16 +508,65 @@
                 showImpact(opt.dataset.timeline, opt.dataset.cost, opt.dataset.quality);
             });
 
-            const initialCategory = cat.value;
-            if (initialCategory) {
-                cat.dispatchEvent(new Event('change'));
-            } else {
-                const selectedId = idSelect.dataset.selectedId;
-                if (selectedId && poolRiskIdHidden) {
-                    poolRiskIdHidden.value = selectedId;
-                    idSelect.value = selectedId;
+            loadCategories(
+                type.value,
+                cat.dataset.selectedCategory || '',
+                idSelect.dataset.selectedId || poolRiskIdHidden?.value || ''
+            );
+        }
+
+        function initEotPicker(container) {
+            const state = container.querySelector('#eotPoolState');
+            const intent = container.querySelector('#intent_to_claim');
+            const fields = container.querySelector('#eotClaimFields');
+            const base = container.querySelector('#eot_base_of_risk');
+            const entry = container.querySelector('#eot_entry_id');
+            const detail = container.querySelector('#eot_detail_reason');
+            if (!state || !intent || !fields || !base || !entry || !detail) return;
+
+            const options = JSON.parse(state.textContent);
+            const allEntries = options.entries || [];
+            const selectedEntry = entry.dataset.selectedEntry || '';
+            const selectedCategory = base.dataset.selectedCategory || '';
+
+            function loadEntries(categoryId, selectedId = '') {
+                entry.innerHTML = '<option value="">Select EOT ID</option>';
+                detail.value = '';
+                entry.disabled = !categoryId;
+                allEntries.filter(item => String(item.eot_category_id) === String(categoryId)).forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = item.eot_id;
+                    option.dataset.reason = item.detail_reason || '';
+                    entry.appendChild(option);
+                });
+                if (selectedId) entry.value = selectedId;
+                if (entry.value) detail.value = entry.options[entry.selectedIndex].dataset.reason || '';
+            }
+
+            function updateIntentVisibility() {
+                const claiming = intent.value === '1';
+                fields.classList.toggle('hidden', !claiming);
+                entry.required = claiming;
+                base.disabled = !claiming;
+                if (!claiming) {
+                    base.value = '';
+                    entry.value = '';
+                    entry.disabled = true;
+                    detail.value = '';
                 }
             }
+
+            base.addEventListener('change', () => loadEntries(base.value));
+            entry.addEventListener('change', () => {
+                detail.value = entry.options[entry.selectedIndex]?.dataset.reason || '';
+            });
+            intent.addEventListener('change', updateIntentVisibility);
+            if (selectedCategory) {
+                base.value = selectedCategory;
+                loadEntries(selectedCategory, selectedEntry);
+            }
+            updateIntentVisibility();
         }
 
         function initRiskStepper(container) {
@@ -545,6 +653,7 @@
                     if (window.lucide) lucide.createIcons();
                     updateRiskRating();
                     initPoolRiskPicker(document.getElementById('editModalContent'));
+                    initEotPicker(document.getElementById('editModalContent'));
                     initRiskStepper(document.getElementById('editModalContent'));
                 })
                 .catch(error => {

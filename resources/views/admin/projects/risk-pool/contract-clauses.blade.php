@@ -7,7 +7,7 @@
         ])
 
         <form method="GET" action="{{ route('admin.projects.risk-pool.contract-clauses') }}" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(16rem,1fr)_auto]">
+            <div class="admin-filter-grid gap-3">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Contract Clauses</span>
                     <span class="relative block"><i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i><input type="search" name="search" value="{{ request('search') }}" placeholder="Row number, item, standard, or explanation" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100"></span>

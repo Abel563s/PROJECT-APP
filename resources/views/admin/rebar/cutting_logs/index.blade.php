@@ -16,7 +16,7 @@
         <!-- Filter Bar -->
         <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200/60">
             <form method="GET" action="{{ route('admin.rebar.cutting-logs.index') }}"
-                class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                class="admin-filter-grid gap-6">
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Filter by
                         Date</label>
@@ -84,11 +84,9 @@
                                 <td class="px-8 py-6">
                                     <div class="flex items-center gap-3">
                                         <div
-                                            class="w-10 h-10 rounded-xl bg-slate-100 flex flex-col items-center justify-center border border-slate-200 group-hover:bg-white group-hover:border-cyan-200 transition-all">
+                                            class="w-16 h-10 rounded-xl bg-slate-100 flex flex-col items-center justify-center border border-slate-200 group-hover:bg-white group-hover:border-cyan-200 transition-all">
                                             <span
-                                                class="text-[9px] font-black text-slate-400 uppercase leading-none">{{ \Carbon\Carbon::parse($log->date)->format('M') }}</span>
-                                            <span
-                                                class="text-sm font-black text-slate-700 leading-tight">{{ \Carbon\Carbon::parse($log->date)->format('d') }}</span>
+                                                class="text-[9px] font-black text-slate-400 uppercase leading-none">{{ \Carbon\Carbon::parse($log->date)->format('d-M-y') }}</span>
                                         </div>
                                         <div>
                                             <p class="text-sm font-black text-slate-900">

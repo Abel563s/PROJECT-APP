@@ -17,7 +17,7 @@
         <!-- Filter Bar -->
         <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200/60">
             <form method="GET" action="{{ route('admin.rebar.offcuts.index') }}"
-                class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                class="admin-filter-grid gap-6">
                 <div>
                     <label
                         class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Status</label>
@@ -139,7 +139,7 @@
                                 <td class="px-8 py-6">
                                     <div class="flex flex-col">
                                         <span
-                                            class="text-sm font-bold text-slate-700">{{ $offcut->updated_at->format('M d, Y') }}</span>
+                                            class="text-sm font-bold text-slate-700">{{ $offcut->updated_at->format('d-M-y') }}</span>
                                         <span
                                             class="text-[10px] text-slate-400 font-medium">{{ $offcut->updated_at->format('h:i A') }}</span>
                                     </div>

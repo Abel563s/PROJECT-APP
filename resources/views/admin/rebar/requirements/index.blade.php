@@ -29,7 +29,7 @@
         <!-- Filter Modern Bar -->
         <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200/60 transition-all hover:shadow-md">
             <form method="GET" action="{{ route('admin.rebar.requirements.index') }}"
-                class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                class="admin-filter-grid gap-6">
                 <div class="space-y-2">
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Search
                         Keywords</label>
@@ -59,7 +59,6 @@
                     <input type="text" name="element" value="{{ request('element') }}" placeholder="e.g. Columns, Beam"
                         class="w-full py-3 bg-slate-50 border-transparent rounded-xl font-bold text-sm text-slate-700 focus:ring-4 focus:ring-cyan-500/10 focus:bg-white transition-all">
                 </div>
-                <div class="hidden lg:block"></div>
                 <div class="flex items-end gap-2">
                     <button type="submit"
                         class="flex-1 py-3 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">
@@ -113,7 +112,7 @@
                                             <p class="text-sm font-black text-slate-900 tracking-tight">
                                                 {{ $req->tracking_id }}</p>
                                             <p class="text-[10px] font-bold text-slate-400 uppercase">
-                                                {{ $req->created_at->format('M d, Y') }}</p>
+                                                {{ $req->created_at->format('d-M-y') }}</p>
                                         </div>
                                     </div>
                                 </td>

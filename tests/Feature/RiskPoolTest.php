@@ -26,6 +26,7 @@ function validRiskData(array $overrides = []): array
 {
     return array_merge([
         'risk_id' => '1.01',
+        'risk_type' => 'Threat',
         'risk_category' => 'Financial Risks',
         'specific_risk' => 'Advance Payment Delay (Client)',
         'detailed_risk_explanation' => 'A delay in receiving the client advance payment.',
@@ -81,6 +82,7 @@ it('renders the spreadsheet editor for an admin creating risks', function () {
         ->assertSee('Save All')
         ->assertSee('Add Row')
         ->assertSee('Manage Categories')
+        ->assertSee('Risk Type')
         ->assertSee('Risk Category')
         ->assertSee('Specific Risk');
 });
@@ -98,6 +100,7 @@ it('creates a risk via ajax as an admin', function () {
 
     $risk = ProjectRiskPool::firstOrFail();
     expect($risk->risk_id)->toBe('1.01')
+        ->and($risk->risk_type)->toBe('Threat')
         ->and($risk->specific_risk)->toBe('Advance Payment Delay (Client)')
         ->and($risk->created_by)->toBe($admin->id);
 });
@@ -121,6 +124,7 @@ it('updates an existing risk via ajax as an admin', function () {
     $this->actingAs($admin)
         ->putJson(route('admin.projects.risk-pool.update', $risk), validRiskData([
             'specific_risk' => 'Updated Risk Title',
+            'risk_type' => 'Opportunity',
             'overall_impact_level' => 'Medium',
         ]))
         ->assertOk()
@@ -128,6 +132,7 @@ it('updates an existing risk via ajax as an admin', function () {
 
     $risk->refresh();
     expect($risk->specific_risk)->toBe('Updated Risk Title')
+        ->and($risk->risk_type)->toBe('Opportunity')
         ->and($risk->overall_impact_level)->toBe('Medium');
 });
 
@@ -139,6 +144,7 @@ it('renders the spreadsheet editor for an admin editing a risk', function () {
         ->get(route('admin.projects.risk-pool.edit-modal', $risk))
         ->assertOk()
         ->assertSee('Save All')
+        ->assertSee('Risk Type')
         ->assertSee('specific_risk')
         ->assertSee('Advance Payment Delay (Client)');
 });
@@ -153,6 +159,7 @@ it('renders the view modal content for a risk', function () {
         ->assertSee('Detailed Risk Explanation')
         ->assertSee('A delay in receiving the client advance payment.')
         ->assertSee('Stakeholder')
+        ->assertSee('Threat')
         ->assertSee('1.01');
 });
 
@@ -193,6 +200,8 @@ it('returns partial summary and table as json', function () {
         ->assertOk()
         ->assertJsonStructure(['html'])
         ->assertSee('Risk ID', false)
+        ->assertSee('Risk Type', false)
+        ->assertSee('Threat', false)
         ->assertSee('Advance Payment Delay (Client)', false);
 });
 
@@ -381,6 +390,7 @@ it('bulk store updates existing records and skips unchanged ones', function () {
                 [
                     'id'               => $existing->id,
                     'risk_id'          => '1.01',
+                    'risk_type'        => 'Threat',
                     'risk_category'    => 'Financial Risks',
                     'specific_risk'    => 'Updated Title',
                     'overall_impact_level' => 'Medium',

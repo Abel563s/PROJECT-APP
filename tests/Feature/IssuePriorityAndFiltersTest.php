@@ -17,11 +17,44 @@ it('calculates issue priorities from the resolution date and status', function (
             ->and((new Issue(['status' => 'Open', 'planned_resolution_date' => '2026-10-29']))->priority)->toBe('High')
             ->and((new Issue(['status' => 'Open', 'planned_resolution_date' => '2026-11-05']))->priority)->toBe('Medium')
             ->and((new Issue(['status' => 'Open', 'planned_resolution_date' => '2026-11-06']))->priority)->toBe('Low')
-            ->and((new Issue(['status' => 'Closed', 'planned_resolution_date' => '2026-10-22']))->priority)->toBe('Done')
+            ->and((new Issue(['issue_closed_date' => '2026-10-23', 'planned_resolution_date' => '2026-10-22']))->priority)->toBe('Done')
             ->and((new Issue(['status' => 'Open']))->priority)->toBe('Unscheduled');
     } finally {
         Carbon::setTestNow();
     }
+});
+
+it('derives and persists issue status from the planned and closed dates', function () {
+    $issue = Issue::create([
+        'issue' => 'Date-driven status issue',
+        'date' => '2026-11-03',
+        'status' => 'Closed',
+    ]);
+
+    expect($issue->status)->toBe('Raised')
+        ->and($issue->getRawOriginal('status'))->toBe('Raised');
+
+    $issue->planned_resolution_date = '2026-11-10';
+    $issue->save();
+    $issue->refresh();
+
+    expect($issue->status)->toBe('Open')
+        ->and($issue->getRawOriginal('status'))->toBe('Open');
+
+    $issue->issue_closed_date = '2026-11-12';
+    $issue->save();
+    $issue->refresh();
+
+    expect($issue->status)->toBe('Closed')
+        ->and($issue->getRawOriginal('status'))->toBe('Closed');
+
+    $issue->issue_closed_date = null;
+    $issue->planned_resolution_date = null;
+    $issue->save();
+    $issue->refresh();
+
+    expect($issue->status)->toBe('Raised')
+        ->and($issue->getRawOriginal('status'))->toBe('Raised');
 });
 
 it('filters the project issue table by priority and displays the requested columns', function () {
@@ -63,6 +96,7 @@ it('filters the project issue table by priority and displays the requested colum
             ->assertOk()
             ->assertSee('Due soon')
             ->assertDontSee('Due later')
+            ->assertSee('Raised')
             ->assertSee('Planned Action Date')
             ->assertSee('Priority')
             ->assertSee('Total Issues')
@@ -91,11 +125,17 @@ it('filters the project issue table by priority and displays the requested colum
 
         $this->get(route('admin.projects.issues.create-modal', $project).'?partial=1')
             ->assertOk()
+            ->assertDontSee('name="status"', false)
+            ->assertSee('data-issue-status', false)
+            ->assertSee('name="issue_closed_date"', false)
             ->assertDontSee('value="In Progress"', false)
             ->assertDontSee('value="Cancelled"', false);
 
         $this->get(route('admin.projects.issues.edit', $issue).'?partial=1')
             ->assertOk()
+            ->assertDontSee('name="status"', false)
+            ->assertSee('data-issue-status', false)
+            ->assertSee('name="issue_closed_date"', false)
             ->assertDontSee('value="In Progress"', false)
             ->assertDontSee('value="Cancelled"', false);
     } finally {
@@ -149,8 +189,8 @@ it('shows status and priority issue counts in the project registry and filters b
         Issue::create([
             'project_id' => $project->id,
             'issue' => 'Closed issue',
-            'status' => 'Closed',
             'planned_resolution_date' => '2026-10-20',
+            'issue_closed_date' => '2026-10-22',
         ]);
         Issue::create([
             'project_id' => $project->id,
@@ -175,6 +215,7 @@ it('shows status and priority issue counts in the project registry and filters b
             ->get(route('admin.projects.issues.index'))
             ->assertOk()
             ->assertSee('Status')
+            ->assertSee('Raised')
             ->assertSee('Priority')
             ->assertSee('Overdue')
             ->assertSee('High')
@@ -185,6 +226,7 @@ it('shows status and priority issue counts in the project registry and filters b
             $listedProject = $projects->first();
 
             return $listedProject->total_issues === 5
+                && $listedProject->raised_issues === 0
                 && $listedProject->open_issues === 4
                 && $listedProject->closed_issues === 1
                 && $listedProject->overdue_issues === 1

@@ -130,6 +130,7 @@ class RiskPoolController extends Controller
             'rows' => ['required', 'array', 'min:1'],
             'rows.*.id' => ['nullable', 'integer', 'exists:project_risk_pools,id'],
             'rows.*.risk_id' => ['required', 'string', 'max:255'],
+            'rows.*.risk_type' => ['nullable', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'rows.*.risk_category' => ['required', 'string', 'max:255', function ($attr, $val, $fail) {
                 $allowed = ProjectRiskPool::availableCategories();
                 if (! in_array($val, $allowed, true)) {
@@ -146,6 +147,16 @@ class RiskPoolController extends Controller
         ]);
 
         $rows = $data['rows'];
+        $riskTypeErrors = [];
+        foreach ($rows as $index => $row) {
+            if (empty($row['id']) && empty($row['risk_type'])) {
+                $riskTypeErrors["rows.{$index}.risk_type"][] = 'The risk type field is required.';
+            }
+        }
+        if ($riskTypeErrors !== []) {
+            throw ValidationException::withMessages($riskTypeErrors);
+        }
+
         foreach ($rows as $row) {
             $action = !empty($row['id']) ? 'edit' : 'create';
             abort_unless($request->user()->canManageRiskPool($action), 403, 'You do not have permission to '.$action.' risk pool records.');
@@ -195,6 +206,7 @@ class RiskPoolController extends Controller
 
                 $payload = [
                     'risk_id' => $row['risk_id'] ?? null,
+                    'risk_type' => $row['risk_type'] ?? null,
                     'risk_category' => $row['risk_category'] ?? null,
                     'specific_risk' => $row['specific_risk'] ?? null,
                     'detailed_risk_explanation' => $row['detailed_risk_explanation'] ?? null,
@@ -312,6 +324,7 @@ class RiskPoolController extends Controller
 
         return $request->validate([
             'risk_id' => ['required', 'string', 'max:255', $uniqueRule],
+            'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'risk_category' => ['required', 'string', Rule::in(ProjectRiskPool::availableCategories())],
             'specific_risk' => 'required|string|max:255',
             'detailed_risk_explanation' => 'nullable|string',

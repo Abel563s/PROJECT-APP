@@ -95,7 +95,7 @@
                                         <td class="px-6 py-3 text-center">
                                             <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $loop->iteration }}</span>
                                         </td>
-                                        <td class="px-6 py-3 text-sm font-medium text-slate-700">{{ $log->date }}</td>
+                                        <td class="px-6 py-3 text-sm font-medium text-slate-700">{{ \Carbon\Carbon::parse($log->date)->format('d-M-y') }}</td>
                                         <td class="px-6 py-3 text-sm text-slate-600">{{ $log->original_length }}mm</td>
                                         <td class="px-6 py-3 text-sm font-bold text-rose-600">-{{ $log->cut_length }}mm</td>
                                         <td class="px-6 py-3 text-sm font-bold text-emerald-600">

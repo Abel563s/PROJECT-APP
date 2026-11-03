@@ -29,6 +29,9 @@
                         <span class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-600 shadow-sm">
                             {{ $risk->risk_category ?: '—' }}
                         </span>
+                        <span class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-600 shadow-sm">
+                            {{ $risk->risk_type ?: '—' }}
+                        </span>
                         @if($overall)
                             <span class="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$overall] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
                                 <i data-lucide="{{ $impactIcons[$overall] ?? 'circle' }}" class="w-3 h-3"></i>
@@ -55,7 +58,7 @@
 
                     <div class="grid grid-cols-1 gap-2.5 pt-1 sm:grid-cols-3">
                         <div>
-                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Timeline</p>
+                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Time</p>
                             <span class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-[9px] font-black text-slate-700">
                                 {{ $risk->impact_on_timeline ?: '—' }}
                             </span>
@@ -67,7 +70,7 @@
                             </span>
                         </div>
                         <div>
-                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Quality</p>
+                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
                             <span class="mt-1 inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$overall] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
                                 @if($overall)<i data-lucide="{{ $impactIcons[$overall] ?? 'circle' }}" class="w-3 h-3"></i>@endif
                                 {{ $overall ?: '—' }}

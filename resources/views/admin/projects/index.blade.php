@@ -44,8 +44,8 @@
                 $hasAdvancedFilters = request()->anyFilled(['delivery_method', 'consultant_type', 'budget_performance', 'cost_performance', 'schedule_performance', 'project_status']);
                 $selectedBusinessUnitFilterId = \App\Support\ProjectOrganizationFilters::effectiveBusinessUnitId(request());
             @endphp
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
-                <label class="space-y-1 xl:col-span-2">
+            <div class="admin-filter-grid gap-3">
+                <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
@@ -77,17 +77,6 @@
                     </select>
                 </label>
 
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Sector</span>
-                    <select name="project_sector" onchange="this.form.requestSubmit()"
-                        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All Sectors</option>
-                        @foreach(['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'] as $sector)
-                            <option value="{{ $sector }}" {{ request('project_sector') == $sector ? 'selected' : '' }}>{{ $sector }}</option>
-                        @endforeach
-                    </select>
-                </label>
-
                 <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
                     <button type="button" aria-controls="projectAdvancedFilters" aria-expanded="{{ $hasAdvancedFilters ? 'true' : 'false' }}"
                         onclick="toggleProjectAdvancedFilters(this)"
@@ -103,8 +92,18 @@
                     @endif
                 </div>
 
-                <div id="projectAdvancedFilters" class="{{ $hasAdvancedFilters ? '' : 'hidden' }} col-span-full rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+                <div id="projectAdvancedFilters" class="admin-filter-advanced-panel {{ $hasAdvancedFilters ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="admin-filter-advanced-grid gap-3">
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Sector</span>
+                    <select name="project_sector" onchange="this.form.requestSubmit()"
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Sectors</option>
+                        @foreach(['Building', 'Fit-Out', 'Infrastructure', 'Water & Energy'] as $sector)
+                            <option value="{{ $sector }}" {{ request('project_sector') == $sector ? 'selected' : '' }}>{{ $sector }}</option>
+                        @endforeach
+                    </select>
+                </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Delivery Method</span>
                     <select name="delivery_method" onchange="this.form.requestSubmit()"
@@ -227,12 +226,12 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                                        {{ $project->baseline_start_date ? $project->baseline_start_date->format('M d, Y') : '---' }}
+                                        {{ $project->baseline_start_date ? $project->baseline_start_date->format('d-M-y') : '---' }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                                        {{ $project->baseline_finish_date ? $project->baseline_finish_date->format('M d, Y') : '---' }}
+                                        {{ $project->baseline_finish_date ? $project->baseline_finish_date->format('d-M-y') : '---' }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">

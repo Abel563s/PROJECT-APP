@@ -6,9 +6,9 @@
         'Extreme' => 'bg-rose-50 text-rose-700 border-rose-200',
     ];
     $statusClasses = [
-        'Open'       => 'bg-sky-50 text-sky-700 border-sky-200',
-        'Inprogress' => 'bg-amber-50 text-amber-700 border-amber-200',
-        'Closed'     => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        'Risk'     => 'bg-sky-50 text-sky-700 border-sky-200',
+        'Issue'    => 'bg-amber-50 text-amber-700 border-amber-200',
+        'Resolved' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
     ];
     $typeClasses = [
         'Threat'      => 'bg-rose-50 text-rose-700 border-rose-200',
@@ -26,6 +26,18 @@
 @endphp
 
 <div class="space-y-4">
+    <div class="rounded-xl border border-cyan-100 bg-gradient-to-r from-cyan-50/80 to-slate-50 p-4">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="min-w-0">
+                <p class="text-sm font-black tracking-wide text-slate-900">{{ $risk->project?->project_code ?? '---' }}</p>
+                <p class="mt-1 text-[10px] font-semibold text-slate-500">{{ $risk->project?->project_name ?? '---' }}</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-cyan-200 bg-white px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-cyan-800 shadow-sm">
+                <i data-lucide="clock-3" class="h-3 w-3"></i>
+                Last updated {{ $risk->updated_at?->format('M d, Y') ?? '---' }}
+            </span>
+        </div>
+    </div>
     <!-- Lead summary -->
     <div class="bg-slate-50 rounded-xl p-4">
         <div class="flex items-start justify-between gap-3 mb-3">
@@ -58,7 +70,7 @@
         @if($risk->pool_risk_id && ($poolTimeline || $poolCost || $poolQuality))
             <div class="mt-3 grid grid-cols-3 gap-2">
                 <div>
-                    <p class="{{ $labelClass }}">Impact on Timeline</p>
+                    <p class="{{ $labelClass }}">Impact on Time</p>
                     <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolTimeline] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
                         {{ $poolTimeline ?: '—' }}
                     </span>
@@ -70,7 +82,7 @@
                     </span>
                 </div>
                 <div>
-                    <p class="{{ $labelClass }}">Quality</p>
+                    <p class="{{ $labelClass }}">Impact on Quality</p>
                     <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolQuality] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
                         {{ $poolQuality ?: '—' }}
                     </span>
@@ -83,6 +95,18 @@
     <div class="bg-white border border-slate-100 rounded-xl p-4 space-y-3">
         <h4 class="text-sm font-black text-slate-900">1. Risk Identification</h4>
         <div class="grid grid-cols-2 gap-3">
+            <div>
+                <p class="{{ $labelClass }}">Risk Type</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->risk_type ?: '---' }}</p>
+            </div>
+            <div>
+                <p class="{{ $labelClass }}">Pool Risk Category</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->pool_risk_category ?: '---' }}</p>
+            </div>
+            <div>
+                <p class="{{ $labelClass }}">Pool Risk ID</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->pool_risk_id ?: '---' }}</p>
+            </div>
             <div class="col-span-2">
                 <p class="{{ $labelClass }}">Activity Related to the Risk</p>
                 <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->activity ?: '---' }}</p>
@@ -122,6 +146,20 @@
                     {{ $risk->intent_to_claim ? 'Yes' : 'No' }}
                 </span>
             </div>
+            @if($risk->eotEntry)
+                <div>
+                    <p class="{{ $labelClass }}">Base of Risk</p>
+                    <p class="text-xs font-black text-slate-900">{{ $risk->eotEntry->baseOfRisk?->name ?: '---' }}</p>
+                </div>
+                <div>
+                    <p class="{{ $labelClass }}">EOT ID</p>
+                    <p class="text-xs font-black text-slate-900">{{ $risk->eotEntry->eot_id }}</p>
+                </div>
+                <div class="col-span-2">
+                    <p class="{{ $labelClass }}">Detail Reason of EOT</p>
+                    <p class="truncate rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[10px] font-bold text-slate-700" title="{{ $risk->eotEntry->detail_reason }}">{{ $risk->eotEntry->detail_reason }}</p>
+                </div>
+            @endif
             <div>
                 <p class="{{ $labelClass }}">Most Likely Cost Impact (METB)</p>
                 <p class="text-xs font-black text-slate-900">{{ $risk->most_likely_cost_impact ? number_format($risk->most_likely_cost_impact, 2) : '---' }}</p>
@@ -131,11 +169,15 @@
                 <p class="text-xs font-black text-slate-900">{{ $risk->most_likely_time_impact ?? '---' }}</p>
             </div>
             <div>
-                <p class="{{ $labelClass }}">Stakeholder</p>
-                <p class="text-xs font-black text-slate-900">{{ $risk->stakeholder ?: '---' }}</p>
+                <p class="{{ $labelClass }}">Most Likely Quality Impact (Days)</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->most_likely_quality_impact ?? '---' }}</p>
             </div>
             <div>
-                <p class="{{ $labelClass }}">Impact Date</p>
+                <p class="{{ $labelClass }}">Resolution by</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->resolution_by ?: '---' }}</p>
+            </div>
+            <div>
+                <p class="{{ $labelClass }}">Assumed Impact Date</p>
                 <p class="text-xs font-black text-slate-900">{{ $risk->impact_date ? $risk->impact_date->format('M d, Y') : '---' }}</p>
             </div>
         </div>
@@ -167,10 +209,6 @@
                 <p class="{{ $labelClass }}">Contingency Plan</p>
                 <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->contingency_plan ?: '---' }}</p>
             </div>
-            <div>
-                <p class="{{ $labelClass }}">Risk Owner</p>
-                <p class="text-xs font-black text-slate-900">{{ $risk->risk_owner ?: '---' }}</p>
-            </div>
         </div>
     </div>
 
@@ -185,8 +223,8 @@
                 </span>
             </div>
             <div>
-                <p class="{{ $labelClass }}">Date Last Updated</p>
-                <p class="text-xs font-black text-slate-900">{{ $risk->date_last_updated ? $risk->date_last_updated->format('M d, Y') : '---' }}</p>
+                <p class="{{ $labelClass }}">Materialized Date</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->materialized_date?->format('M d, Y') ?: '---' }}</p>
             </div>
             <div>
                 <p class="{{ $labelClass }}">Name of Owner</p>

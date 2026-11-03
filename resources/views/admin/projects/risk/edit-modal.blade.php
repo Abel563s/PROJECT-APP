@@ -1,10 +1,17 @@
 <form action="{{ route('admin.projects.risk.update', $risk->id) }}" method="POST" id="editRiskForm" class="space-y-4" novalidate>
     @csrf
     @method('PUT')
-    <div class="rounded-xl border border-cyan-100 bg-cyan-50/60 p-4">
-        <p class="text-[9px] font-black uppercase tracking-widest text-cyan-700">Project Name</p>
-        <p class="mt-1 text-sm font-black text-slate-900">{{ $risk->project?->project_name ?? '---' }}</p>
-        <p class="text-[10px] font-bold text-slate-500">{{ $risk->project?->project_code ?? '---' }}</p>
+    <div class="rounded-xl border border-cyan-100 bg-gradient-to-r from-cyan-50/80 to-slate-50 p-4">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="min-w-0">
+                <p class="text-sm font-black tracking-wide text-slate-900">{{ $risk->project?->project_code ?? '---' }}</p>
+                <p class="mt-1 text-[10px] font-semibold text-slate-500">{{ $risk->project?->project_name ?? '---' }}</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-cyan-200 bg-white px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-cyan-800 shadow-sm">
+                <i data-lucide="clock-3" class="h-3 w-3"></i>
+                Last updated {{ $risk->updated_at?->format('M d, Y') ?? '---' }}
+            </span>
+        </div>
         @php
             $poolTimeline = $poolRisk?->impact_on_timeline ?? '';
             $poolCost = $poolRisk?->impact_on_cost ?? '';
@@ -15,7 +22,7 @@
             <p class="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">From Risk Repository</p>
             <div class="grid grid-cols-3 gap-2">
                 <div>
-                    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Timeline</p>
+                    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Time</p>
                     <span id="poolImpactTimeline" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700">{{ $poolTimeline ?: '---' }}</span>
                 </div>
                 <div>
@@ -23,7 +30,7 @@
                     <span id="poolImpactCost" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700">{{ $poolCost ?: '---' }}</span>
                 </div>
                 <div>
-                    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Quality</p>
+                    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
                     <span id="poolImpactQuality" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700">{{ $poolQuality ?: '---' }}</span>
                 </div>
             </div>
@@ -59,14 +66,20 @@
     <section class="step-panel hidden" data-step="1">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div>
-                <label class="{{ $labelClass }}" for="pool_risk_category">Pool Risk Category</label>
-                <select id="pool_risk_category" name="risk_category" class="{{ $fieldClass }}">
-                    <option value="">Select pool category</option>
-                    @foreach(($poolCategories ?? []) as $pcat)
-                        <option value="{{ $pcat }}" @selected(($risk->pool_risk_category ?? $risk->risk_category) === $pcat)>{{ $pcat }}</option>
+                <label class="{{ $labelClass }}" for="risk_type">Risk Type</label>
+                <select id="risk_type" name="risk_type" required class="{{ $fieldClass }}">
+                    <option value="">Select opportunity or threat</option>
+                    @foreach($poolTypes as $type)
+                        <option value="{{ $type }}" @selected(old('risk_type', $risk->risk_type) === $type)>{{ $type }}</option>
                     @endforeach
                 </select>
-                <input type="hidden" name="pool_risk_category" id="pool_risk_category_hidden" value="{{ $risk->pool_risk_category ?? '' }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="pool_risk_category">Pool Risk Category</label>
+                <select id="pool_risk_category" name="risk_category" class="{{ $fieldClass }}" disabled data-selected-category="{{ old('pool_risk_category', $risk->pool_risk_category ?? $risk->risk_category) }}">
+                    <option value="">Select risk type first</option>
+                </select>
+                <input type="hidden" name="pool_risk_category" id="pool_risk_category_hidden" value="{{ old('pool_risk_category', $risk->pool_risk_category ?? '') }}">
             </div>
             <div>
                 <label class="{{ $labelClass }}" for="pool_risk_id">Pool Risk ID</label>
@@ -82,15 +95,6 @@
             <div class="md:col-span-2">
                 <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">From Risk Repository</p>
                 <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Select a category, then a risk, to auto-fill Risk Name and Risk Description.</p>
-            </div>
-            <div>
-                <label class="{{ $labelClass }}" for="risk_type">Risk Type</label>
-                <select id="risk_type" name="risk_type" required class="{{ $fieldClass }}">
-                    <option value="">Select opportunity or threat</option>
-                    @foreach(['Opportunity', 'Threat'] as $type)
-                        <option value="{{ $type }}" @selected(old('risk_type', $risk->risk_type) === $type)>{{ $type }}</option>
-                    @endforeach
-                </select>
             </div>
             <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="activity">Activity Related to the Risk</label>
@@ -164,6 +168,27 @@
                     <option value="0" @selected(old('intent_to_claim', $risk->intent_to_claim) == '0')>No</option>
                 </select>
             </div>
+            <div id="eotClaimFields" class="hidden md:col-span-2 grid grid-cols-1 gap-3 md:grid-cols-2">
+                <div>
+                    <label class="{{ $labelClass }}" for="eot_base_of_risk">Base of Risk</label>
+                    <select id="eot_base_of_risk" name="eot_category_id" class="{{ $fieldClass }}" data-selected-category="{{ old('eot_category_id', $risk->eotEntry?->eot_category_id) }}">
+                        <option value="">Select base of risk</option>
+                        @foreach($eotOptions['categories'] as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="{{ $labelClass }}" for="eot_entry_id">EOT ID</label>
+                    <select id="eot_entry_id" name="eot_entry_id" class="{{ $fieldClass }}" disabled data-selected-entry="{{ old('eot_entry_id', $risk->eot_entry_id) }}">
+                        <option value="">Select base of risk first</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="{{ $labelClass }}" for="eot_detail_reason">Detail Reason of EOT</label>
+                    <input id="eot_detail_reason" type="text" readonly value="{{ old('eot_detail_reason', $risk->eotEntry?->detail_reason) }}" class="{{ $fieldClass }} py-1.5 text-[10px]">
+                </div>
+            </div>
             <div>
                 <label class="{{ $labelClass }}" for="most_likely_cost_impact">Most Likely Cost Impact (METB)</label>
                 <input id="most_likely_cost_impact" name="most_likely_cost_impact" type="number" min="0" step="0.01" value="{{ old('most_likely_cost_impact', $risk->most_likely_cost_impact) }}" class="{{ $fieldClass }}">
@@ -173,11 +198,15 @@
                 <input id="most_likely_time_impact" name="most_likely_time_impact" type="number" min="0" step="1" value="{{ old('most_likely_time_impact', $risk->most_likely_time_impact) }}" class="{{ $fieldClass }}">
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="stakeholder">Stakeholder</label>
-                <input id="stakeholder" name="stakeholder" type="text" value="{{ old('stakeholder', $risk->stakeholder) }}" class="{{ $fieldClass }}">
+                <label class="{{ $labelClass }}" for="most_likely_quality_impact">Most Likely Quality Impact (Days)</label>
+                <input id="most_likely_quality_impact" name="most_likely_quality_impact" type="number" min="0" step="1" value="{{ old('most_likely_quality_impact', $risk->most_likely_quality_impact) }}" class="{{ $fieldClass }}">
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="impact_date">Impact Date</label>
+                <label class="{{ $labelClass }}" for="resolution_by">Resolution by</label>
+                <input id="resolution_by" name="resolution_by" type="text" value="{{ old('resolution_by', $risk->resolution_by) }}" class="{{ $fieldClass }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="impact_date">Assumed Impact Date</label>
                 <input id="impact_date" name="impact_date" type="date" value="{{ old('impact_date', $risk->impact_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
             </div>
         </div>
@@ -211,10 +240,6 @@
                 <label class="{{ $labelClass }}" for="contingency_plan">Risk Contingency Plan</label>
                 <textarea id="contingency_plan" name="contingency_plan" rows="3" class="{{ $areaClass }}">{{ old('contingency_plan', $risk->contingency_plan) }}</textarea>
             </div>
-            <div>
-                <label class="{{ $labelClass }}" for="risk_owner">Risk Owner</label>
-                <input id="risk_owner" name="risk_owner" type="text" value="{{ old('risk_owner', $risk->risk_owner) }}" class="{{ $fieldClass }}">
-            </div>
         </div>
     </section>
 
@@ -224,14 +249,14 @@
             <div>
                 <label class="{{ $labelClass }}" for="action_status">Risk Action Status</label>
                 <select id="action_status" name="action_status" required class="{{ $fieldClass }}">
-                    @foreach(['Open', 'Inprogress', 'Closed'] as $status)
+                    @foreach(\App\Models\ProjectRisk::ACTION_STATUSES as $status)
                         <option value="{{ $status }}" @selected(old('action_status', $risk->action_status) === $status)>{{ $status }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="date_last_updated">Date Last Updated</label>
-                <input id="date_last_updated" name="date_last_updated" type="date" value="{{ old('date_last_updated', $risk->date_last_updated?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
+                <label class="{{ $labelClass }}" for="materialized_date">Materialized Date</label>
+                <input id="materialized_date" name="materialized_date" type="date" value="{{ old('materialized_date', $risk->materialized_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
             </div>
             <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="tracking_comments">Tracking Comments</label>
@@ -268,3 +293,4 @@
         </div>
     </div>
 </form>
+<script type="application/json" id="eotPoolState">{!! json_encode($eotOptions, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!}</script>

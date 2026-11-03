@@ -6,7 +6,7 @@
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Issue</p>
                 <p class="text-lg font-black text-slate-900">{{ $issue->issue }}</p>
             </div>
-            <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $issue->status === 'Open' ? 'bg-sky-50 text-sky-600 border-sky-200' : ($issue->status === 'In Progress' ? 'bg-amber-50 text-amber-600 border-amber-200' : ($issue->status === 'Closed' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200')) }} border shadow-sm">
+            <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $issue->status === 'Open' ? 'bg-sky-50 text-sky-600 border-sky-200' : ($issue->status === 'Closed' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-200') }} border shadow-sm">
                 {{ $issue->status }}
             </span>
         </div>
@@ -104,6 +104,10 @@
                 <p class="text-xs font-black text-slate-900">{{ $issue->planned_resolution_date ? $issue->planned_resolution_date->format('M d, Y') : '---' }}</p>
             </div>
             <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Issue Closed Date</p>
+                <p class="text-xs font-black text-slate-900">{{ $issue->issue_closed_date ? $issue->issue_closed_date->format('M d, Y') : '---' }}</p>
+            </div>
+            <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Days Left</p>
                 <p class="text-xs font-black {{ $issue->days_left !== null && $issue->days_left < 0 && $issue->status !== 'Closed' ? 'text-rose-600' : 'text-slate-900' }}">
                     @if($issue->days_left === null)
@@ -118,10 +122,6 @@
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Action By</p>
                 <p class="text-xs font-black text-slate-900">{{ $issue->action_by ?? '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Issue Closed Date</p>
-                <p class="text-xs font-black text-slate-900">{{ $issue->issue_closed_date ? $issue->issue_closed_date->format('M d, Y') : '---' }}</p>
             </div>
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Last Updated</p>

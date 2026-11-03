@@ -38,11 +38,11 @@
         <!-- Search & Filter -->
         @php
             $materialFiltersActive = request()->anyFilled(['search', 'project_id', 'project_client', 'project_type', 'consultancy_sector', 'business_unit_id', 'sector_id']);
-            $materialAdvancedFiltersActive = request()->anyFilled(['project_id', 'project_client', 'consultancy_sector']);
+            $materialAdvancedFiltersActive = request()->anyFilled(['project_type', 'project_id', 'project_client', 'consultancy_sector']);
         @endphp
         <form action="{{ route('admin.material.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
-                <label class="space-y-1 xl:col-span-2">
+            <div class="admin-filter-grid gap-3">
+                <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Materials</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
@@ -51,15 +51,6 @@
                     </span>
                 </label>
                 @include('admin.partials.project-organization-filters')
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Discipline</span>
-                    <select name="project_type" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All Disciplines</option>
-                        @foreach(['Civil','MEP'] as $type)
-                            <option value="{{ $type }}" {{ request('project_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
-                        @endforeach
-                    </select>
-                </label>
                 <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
                     <button type="button" aria-controls="materialAdvancedFilters" aria-expanded="{{ $materialAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'materialAdvancedFilters')"
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
@@ -70,8 +61,17 @@
                         <a href="{{ route('admin.material.index') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white"><i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters</a>
                     @endif
                 </div>
-                <div id="materialAdvancedFilters" class="{{ $materialAdvancedFiltersActive ? '' : 'hidden' }} col-span-full rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div id="materialAdvancedFilters" class="admin-filter-advanced-panel {{ $materialAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="admin-filter-advanced-grid gap-3">
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Discipline</span>
+                    <select name="project_type" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Disciplines</option>
+                        @foreach(['Civil','MEP'] as $type)
+                            <option value="{{ $type }}" {{ request('project_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
+                        @endforeach
+                    </select>
+                </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project</span>
                     <select name="project_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">

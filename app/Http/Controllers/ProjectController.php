@@ -6,6 +6,8 @@ use App\Models\Issue;
 use App\Models\Project;
 use App\Models\ProjectRisk;
 use App\Models\ProjectRiskPool;
+use App\Models\EotCategory;
+use App\Models\EotEntry;
 use App\Models\BusinessUnit;
 use App\Models\Sector;
 use App\Support\ProjectOrganizationFilters;
@@ -631,9 +633,9 @@ class ProjectController extends Controller
     {
         $query = Project::query()->where('status', 'in progress')
             ->withCount('risks as total_risk')
-            ->withCount(['risks as open_risk' => fn ($q) => $q->where('action_status', 'Open')])
-            ->withCount(['risks as in_progress_risk' => fn ($q) => $q->where('action_status', 'Inprogress')])
-            ->withCount(['risks as closed_risk' => fn ($q) => $q->where('action_status', 'Closed')]);
+            ->withCount(['risks as open_risk' => fn ($q) => $q->where('action_status', 'Risk')])
+            ->withCount(['risks as in_progress_risk' => fn ($q) => $q->where('action_status', 'Issue')])
+            ->withCount(['risks as closed_risk' => fn ($q) => $q->where('action_status', 'Resolved')]);
         ProjectOrganizationFilters::apply($query, $request, true);
 
         if ($request->filled('search')) {
@@ -730,8 +732,9 @@ class ProjectController extends Controller
         $risks = $risks->latest()->paginate(15)->withQueryString();
         $stats = [
             'total' => ProjectRisk::where('project_id', $project->id)->count(),
-            'open' => ProjectRisk::where('project_id', $project->id)->where('action_status', 'Open')->count(),
-            'closed' => ProjectRisk::where('project_id', $project->id)->where('action_status', 'Closed')->count(),
+            'risk' => ProjectRisk::where('project_id', $project->id)->where('action_status', 'Risk')->count(),
+            'issue' => ProjectRisk::where('project_id', $project->id)->where('action_status', 'Issue')->count(),
+            'resolved' => ProjectRisk::where('project_id', $project->id)->where('action_status', 'Resolved')->count(),
             'extreme' => ProjectRisk::where('project_id', $project->id)->whereRaw('likelihood * severity >= 17')->count(),
             'high' => ProjectRisk::where('project_id', $project->id)->whereRaw('likelihood * severity >= 10 AND likelihood * severity < 17')->count(),
             'medium' => ProjectRisk::where('project_id', $project->id)->whereRaw('likelihood * severity >= 5 AND likelihood * severity < 10')->count(),
@@ -750,27 +753,29 @@ class ProjectController extends Controller
     {
         abort_unless(auth()->user()->canManageProject($project), 403);
 
-        $poolCategories = ProjectRiskPool::availableCategories();
+        $poolTypes = ProjectRiskPool::RISK_TYPES;
+        $eotOptions = $this->riskEotOptions();
 
-        return view('admin.projects.risk.create-modal', compact('project', 'poolCategories'))->render();
+        return view('admin.projects.risk.create-modal', compact('project', 'poolTypes', 'eotOptions'))->render();
     }
 
     /**
-     * Return the risks from the centralized risk pool for a given category,
-     * so the New Risk modal can populate Risk ID + Specific Risk after a
-     * category is selected.
+     * Return type-specific categories or the risks for a selected type/category.
      */
     public function poolRisksByCategory(Request $request, Project $project)
     {
         abort_unless(auth()->user()->canManageProject($project), 403);
 
-        $category = $request->query('category');
-
-        if (!$category) {
-            return response()->json([]);
+        $validated = $request->validate([
+            'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
+            'category' => ['nullable', 'string', 'max:255'],
+        ]);
+        $query = ProjectRiskPool::query()->where('risk_type', $validated['risk_type']);
+        if (empty($validated['category'])) {
+            return response()->json($query->distinct()->orderBy('risk_category')->pluck('risk_category')->values());
         }
 
-        $risks = ProjectRiskPool::where('risk_category', $category)->ordered()->get();
+        $risks = $query->where('risk_category', $validated['category'])->ordered()->get();
 
         return response()->json($risks->map(fn ($r) => [
             'risk_id'                      => $r->risk_id,
@@ -780,6 +785,7 @@ class ProjectController extends Controller
             'impact_on_cost'                => $r->impact_on_cost,
             'overall_impact_level'          => $r->overall_impact_level,
             'risk_category'                 => $r->risk_category,
+            'risk_type'                     => $r->risk_type,
         ])->values());
     }
 
@@ -791,9 +797,23 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'risk_category' => ['nullable', 'string', 'max:255'],
             'pool_risk_category' => ['nullable', 'string', 'max:255'],
-            'pool_risk_id' => ['nullable', 'string', 'max:255'],
+            'pool_risk_id' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::exists('project_risk_pools', 'risk_id')
+                    ->where('risk_type', $request->input('risk_type'))
+                    ->where('risk_category', $request->input('pool_risk_category')),
+            ],
+            'eot_category_id' => ['nullable', 'required_if:intent_to_claim,1', 'integer', Rule::exists('eot_categories', 'id')],
+            'eot_entry_id' => [
+                'nullable',
+                'required_if:intent_to_claim,1',
+                'integer',
+                Rule::exists('eot_entries', 'id')->where('eot_category_id', $request->input('eot_category_id')),
+            ],
             'activity' => 'required|string',
-            'risk_type' => ['required', Rule::in(['Opportunity', 'Threat'])],
+            'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'risk_name' => 'required|string|max:255',
             'risk_description' => 'required|string',
             'likelihood' => 'required|integer|between:1,5',
@@ -801,8 +821,9 @@ class ProjectController extends Controller
             'intent_to_claim' => 'required|boolean',
             'most_likely_cost_impact' => 'nullable|numeric|min:0',
             'most_likely_time_impact' => 'nullable|integer|min:0',
+            'most_likely_quality_impact' => 'nullable|integer|min:0',
             'time_impact_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
-            'stakeholder' => 'nullable|string|max:255',
+            'resolution_by' => 'nullable|string|max:255',
             'risk_frequency' => ['nullable', Rule::in(['One Time', 'Fixed Duration', 'Recurring'])],
             'impact_date' => 'nullable|date',
             'risk_urgency' => ['nullable', Rule::in(['Very Urgent', 'Urgent', 'Moderate', 'Low'])],
@@ -811,13 +832,12 @@ class ProjectController extends Controller
             'response_strategy' => ['nullable', Rule::in(['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate', 'Enhance', 'Eliminate'])],
             'mitigation_plan' => 'nullable|string',
             'contingency_plan' => 'nullable|string',
-            'risk_owner' => 'nullable|string|max:255',
             'owner_name' => 'nullable|string|max:255',
             'planned_action_date' => 'nullable|date',
-            'date_last_updated' => 'nullable|date',
             'tracking_comments' => 'nullable|string',
-            'action_status' => ['required', Rule::in(['Open', 'Inprogress', 'Closed'])],
+            'action_status' => ['required', Rule::in(ProjectRisk::ACTION_STATUSES)],
             'actual_action_date' => 'nullable|date',
+            'materialized_date' => 'nullable|date',
             'exposure' => 'nullable|integer|min:0',
             'exposure_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
             'recommendation' => 'nullable|string',
@@ -825,6 +845,11 @@ class ProjectController extends Controller
 
         $validated['project_id'] = $project->id;
         $validated['created_by'] = $request->user()->id;
+        $validated['date_last_updated'] = now()->toDateString();
+        if (!$validated['intent_to_claim']) {
+            $validated['eot_entry_id'] = null;
+        }
+        unset($validated['eot_category_id']);
         ProjectRisk::create($validated);
 
         return redirect()->route('admin.projects.risk.manage', $project)->with('success', 'Risk created successfully.');
@@ -832,6 +857,7 @@ class ProjectController extends Controller
 
     public function riskViewModal(ProjectRisk $risk)
     {
+        $risk->load('eotEntry.baseOfRisk');
         $poolRisk = $risk->pool_risk_id
             ? ProjectRiskPool::where('risk_id', $risk->pool_risk_id)->first()
             : null;
@@ -842,12 +868,14 @@ class ProjectController extends Controller
     public function riskEditModal(ProjectRisk $risk)
     {
         $this->authorizeRiskMutation($risk);
-        $poolCategories = ProjectRiskPool::availableCategories();
+        $poolTypes = ProjectRiskPool::RISK_TYPES;
+        $eotOptions = $this->riskEotOptions($risk);
+        $risk->load('eotEntry');
         $poolRisk = $risk->pool_risk_id
             ? ProjectRiskPool::where('risk_id', $risk->pool_risk_id)->first()
             : null;
 
-        return view('admin.projects.risk.edit-modal', compact('risk', 'poolCategories', 'poolRisk'))->render();
+        return view('admin.projects.risk.edit-modal', compact('risk', 'poolTypes', 'eotOptions', 'poolRisk'))->render();
     }
 
     public function riskUpdate(Request $request, ProjectRisk $risk)
@@ -857,9 +885,23 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'risk_category' => ['nullable', 'string', 'max:255'],
             'pool_risk_category' => ['nullable', 'string', 'max:255'],
-            'pool_risk_id' => ['nullable', 'string', 'max:255'],
+            'pool_risk_id' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::exists('project_risk_pools', 'risk_id')
+                    ->where('risk_type', $request->input('risk_type'))
+                    ->where('risk_category', $request->input('pool_risk_category')),
+            ],
+            'eot_category_id' => ['nullable', 'required_if:intent_to_claim,1', 'integer', Rule::exists('eot_categories', 'id')],
+            'eot_entry_id' => [
+                'nullable',
+                'required_if:intent_to_claim,1',
+                'integer',
+                Rule::exists('eot_entries', 'id')->where('eot_category_id', $request->input('eot_category_id')),
+            ],
             'activity' => 'required|string',
-            'risk_type' => ['required', Rule::in(['Opportunity', 'Threat'])],
+            'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'risk_name' => 'required|string|max:255',
             'risk_description' => 'required|string',
             'likelihood' => 'required|integer|between:1,5',
@@ -867,8 +909,9 @@ class ProjectController extends Controller
             'intent_to_claim' => 'required|boolean',
             'most_likely_cost_impact' => 'nullable|numeric|min:0',
             'most_likely_time_impact' => 'nullable|integer|min:0',
+            'most_likely_quality_impact' => 'nullable|integer|min:0',
             'time_impact_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
-            'stakeholder' => 'nullable|string|max:255',
+            'resolution_by' => 'nullable|string|max:255',
             'risk_frequency' => ['nullable', Rule::in(['One Time', 'Fixed Duration', 'Recurring'])],
             'impact_date' => 'nullable|date',
             'risk_urgency' => ['nullable', Rule::in(['Very Urgent', 'Urgent', 'Moderate', 'Low'])],
@@ -877,21 +920,51 @@ class ProjectController extends Controller
             'response_strategy' => ['nullable', Rule::in(['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate', 'Enhance', 'Eliminate'])],
             'mitigation_plan' => 'nullable|string',
             'contingency_plan' => 'nullable|string',
-            'risk_owner' => 'nullable|string|max:255',
             'owner_name' => 'nullable|string|max:255',
             'planned_action_date' => 'nullable|date',
-            'date_last_updated' => 'nullable|date',
             'tracking_comments' => 'nullable|string',
-            'action_status' => ['required', Rule::in(['Open', 'Inprogress', 'Closed'])],
+            'action_status' => ['required', Rule::in(ProjectRisk::ACTION_STATUSES)],
             'actual_action_date' => 'nullable|date',
+            'materialized_date' => 'nullable|date',
             'exposure' => 'nullable|integer|min:0',
             'exposure_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
             'recommendation' => 'nullable|string',
         ]);
 
+        $validated['date_last_updated'] = now()->toDateString();
+        if (!$validated['intent_to_claim']) {
+            $validated['eot_entry_id'] = null;
+        }
+        unset($validated['eot_category_id']);
         $risk->update($validated);
 
         return redirect()->route('admin.projects.risk.manage', $risk->project)->with('success', 'Risk updated successfully.');
+    }
+
+    private function riskEotOptions(?ProjectRisk $risk = null): array
+    {
+        $categories = EotCategory::active()->ordered()->get(['id', 'name']);
+        $categoryIds = $categories->pluck('id');
+        $entries = EotEntry::query()
+            ->whereIn('eot_category_id', $categoryIds)
+            ->orderBy('eot_category_id')
+            ->orderBy('eot_id')
+            ->get(['id', 'eot_category_id', 'eot_id', 'detail_reason']);
+
+        if ($risk?->eot_entry_id && !$entries->contains('id', $risk->eot_entry_id)) {
+            $selectedEntry = EotEntry::with('baseOfRisk')->find($risk->eot_entry_id);
+            if ($selectedEntry) {
+                if (!$categories->contains('id', $selectedEntry->eot_category_id)) {
+                    $categories->push($selectedEntry->baseOfRisk);
+                }
+                $entries->push($selectedEntry->only(['id', 'eot_category_id', 'eot_id', 'detail_reason']));
+            }
+        }
+
+        return [
+            'categories' => $categories->values(),
+            'entries' => $entries->values(),
+        ];
     }
 
     public function riskDestroy(ProjectRisk $risk)
@@ -1060,7 +1133,6 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'area_affected' => 'nullable|string',
             'impact' => 'nullable|in:Low,Medium,High',
-            'status' => 'nullable|in:Open,Closed,In Progress,Cancelled',
             'date' => 'required|date',
             'raised_date' => 'nullable|date',
             'raised_by' => 'nullable|string|max:255',
@@ -1093,7 +1165,6 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'area_affected' => 'nullable|string',
             'impact' => 'nullable|in:Low,Medium,High',
-            'status' => 'nullable|in:Open,Closed,In Progress,Cancelled',
             'raised_date' => 'nullable|date',
             'raised_by' => 'nullable|string|max:255',
             'action_plan' => 'nullable|string',
@@ -1167,10 +1238,9 @@ class ProjectController extends Controller
         $allIssues = $query->get();
 
         $total = $allIssues->count();
+        $raised = $allIssues->where('status', 'Raised')->count();
         $open = $allIssues->where('status', 'Open')->count();
-        $inProgress = $allIssues->where('status', 'In Progress')->count();
         $closed = $allIssues->where('status', 'Closed')->count();
-        $cancelled = $allIssues->where('status', 'Cancelled')->count();
 
         $today = Carbon::today();
         $overdue = $allIssues->filter(function ($issue) use ($today) {
@@ -1189,10 +1259,9 @@ class ProjectController extends Controller
         $lowImpact = $allIssues->where('impact', 'Low')->count();
 
         $statusCounts = [
+            'Raised' => $raised,
             'Open' => $open,
-            'In Progress' => $inProgress,
             'Closed' => $closed,
-            'Cancelled' => $cancelled,
         ];
 
         $impactCounts = [

@@ -38,6 +38,27 @@ class Issue extends Model
         'date' => 'date',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (Issue $issue): void {
+            $issue->setAttribute('status', $issue->derivedStatus());
+        });
+    }
+
+    public function getStatusAttribute($value): string
+    {
+        return $this->derivedStatus();
+    }
+
+    private function derivedStatus(): string
+    {
+        if ($this->issue_closed_date) {
+            return 'Closed';
+        }
+
+        return $this->planned_resolution_date ? 'Open' : 'Raised';
+    }
+
     public function getDaysLeftAttribute(): ?int
     {
         if (!$this->planned_resolution_date) {

@@ -8,7 +8,7 @@
 
         @php($eotFiltersActive = request()->anyFilled(['search', 'category_id']))
         <form id="eotFilters" action="{{ route('admin.projects.risk-pool.eot') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-3 shadow-sm">
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.8fr)_minmax(260px,1fr)_auto]">
+            <div class="admin-filter-grid gap-3">
                 <label class="min-w-0 space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search EOTs</span>
                     <span class="relative block">
@@ -53,7 +53,7 @@
                                 <td class="whitespace-nowrap px-4 py-3"><span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm tabular-nums">{{ $entry->eot_id }}</span></td>
                                 <td class="px-4 py-3"><span class="inline-flex rounded-lg border border-cyan-100 bg-cyan-50 px-2.5 py-1 text-[9px] font-black text-cyan-800">{{ $entry->baseOfRisk?->name ?? 'Category removed' }}</span></td>
                                 <td class="max-w-2xl px-4 py-3"><p class="text-xs font-semibold leading-5 text-slate-700">{{ \Illuminate\Support\Str::limit($entry->detail_reason, 190) }}</p></td>
-                                <td class="whitespace-nowrap px-4 py-3 text-xs font-semibold text-slate-500">{{ $entry->created_at?->format('M d, Y') }}</td>
+                                <td class="whitespace-nowrap px-4 py-3 text-xs font-semibold text-slate-500">{{ $entry->created_at?->format('d-M-y') }}</td>
                                 <td class="px-4 py-3 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
                                         <button type="button" onclick="openEotViewModal({{ $entry->id }})" class="rounded-md border border-slate-200 bg-white p-1.5 text-slate-400 transition hover:border-sky-500 hover:text-sky-500" title="View"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>

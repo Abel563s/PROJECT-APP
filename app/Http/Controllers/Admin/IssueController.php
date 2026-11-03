@@ -19,7 +19,7 @@ class IssueController extends Controller
         $request->validate([
             'search' => 'nullable|string|max:255',
             'status' => 'nullable|in:all,in progress,completed',
-            'issue_status' => 'nullable|in:Open,Closed',
+            'issue_status' => 'nullable|in:Raised,Open,Closed',
             'priority' => 'nullable|in:Overdue,High,Medium,Low',
         ]);
 
@@ -32,6 +32,7 @@ class IssueController extends Controller
 
         $query = Project::query()
             ->withCount('issues as total_issues')
+            ->withCount(['issues as raised_issues' => fn ($issues) => $issues->where('status', 'Raised')])
             ->withCount(['issues as open_issues' => fn ($issues) => $issues->where('status', 'Open')])
             ->withCount(['issues as closed_issues' => fn ($issues) => $issues->where('status', 'Closed')])
             ->withCount(['issues as overdue_issues' => function ($issues) use ($today, $priorityScope) {
@@ -122,7 +123,7 @@ class IssueController extends Controller
             'issue_owner' => 'nullable|string|max:255',
             'issue_search' => 'nullable|string|max:255',
             'impact' => 'nullable|in:Low,Medium,High',
-            'status' => 'nullable|in:Open,Closed',
+            'status' => 'nullable|in:Raised,Open,Closed',
             'priority' => 'nullable|in:Done,Overdue,High,Medium,Low,Unscheduled',
         ]);
 
@@ -188,6 +189,7 @@ class IssueController extends Controller
         });
         $stats = [
             'total' => (clone $projectIssues)->count(),
+            'raised' => (clone $projectIssues)->where('status', 'Raised')->count(),
             'open' => (clone $projectIssues)->where('status', 'Open')->count(),
             'closed' => (clone $projectIssues)->where('status', 'Closed')->count(),
             'done' => (clone $projectIssues)->where('status', 'Closed')->count(),
@@ -229,7 +231,6 @@ class IssueController extends Controller
             'description' => 'nullable|string',
             'area_affected' => 'nullable|string',
             'impact' => 'nullable|in:Low,Medium,High',
-            'status' => 'nullable|in:Open,Closed,In Progress,Cancelled',
             'date' => 'required|date',
             'raised_date' => 'nullable|date',
             'raised_by' => 'nullable|string|max:255',
@@ -299,7 +300,6 @@ class IssueController extends Controller
             'description' => 'nullable|string',
             'area_affected' => 'nullable|string',
             'impact' => 'nullable|in:Low,Medium,High',
-            'status' => 'nullable|in:Open,Closed,In Progress,Cancelled',
             'raised_date' => 'nullable|date',
             'raised_by' => 'nullable|string|max:255',
             'action_plan' => 'nullable|string',
@@ -405,6 +405,7 @@ class IssueController extends Controller
 
         $stats = [
             'total' => (clone $query)->count(),
+            'raised' => (clone $query)->where('status', 'Raised')->count(),
             'open' => (clone $query)->where('status', 'Open')->count(),
             'closed' => (clone $query)->where('status', 'Closed')->count(),
             'overdue' => (clone $query)->where($notClosed)->whereNotNull('planned_resolution_date')

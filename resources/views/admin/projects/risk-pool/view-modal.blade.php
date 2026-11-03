@@ -44,7 +44,7 @@
             </div>
             <div>
                 <h4 class="text-sm font-black text-slate-900">Risk Identity</h4>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Identifier, category and title</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Identifier, type, category and title</p>
             </div>
         </div>
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -55,6 +55,10 @@
             <div>
                 <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Category</p>
                 <span class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">{{ $risk->risk_category ?: '—' }}</span>
+            </div>
+            <div>
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Type</p>
+                <span class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">{{ $risk->risk_type ?: '—' }}</span>
             </div>
             <div class="sm:col-span-2">
                 <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Specific Risk</p>
@@ -96,7 +100,7 @@
         </div>
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div>
-                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Timeline</p>
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Time</p>
                 <span class="mt-1 inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$risk->impact_on_timeline] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
                     @if($risk->impact_on_timeline)<i data-lucide="{{ $impactIcons[$risk->impact_on_timeline] ?? 'circle' }}" class="w-3 h-3"></i>@endif
                     {{ $risk->impact_on_timeline ?: 'Unassigned' }}
@@ -110,10 +114,10 @@
                 </span>
             </div>
             <div>
-                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Quality</p>
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
                 <span class="mt-1 inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$risk->overall_impact_level] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
-                    @if($risk->overall_impact_level)<i data-lucide="{{ $impactIcons[$risk->overall_impact_level] ?? 'circle' }}" class="w-3 h-3"></i>@endif
-                    {{ $risk->overall_impact_level ?: 'Unassigned' }}
+                    @if($risk->impact_impact_level)<i data-lucide="{{ $impactIcons[$risk->impact_on_quality] ?? 'circle' }}" class="w-3 h-3"></i>@endif
+                    {{ $risk->impact_on_quality ?: 'Unassigned' }}
                 </span>
             </div>
         </div>

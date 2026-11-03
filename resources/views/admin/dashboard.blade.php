@@ -119,8 +119,8 @@
 
         <!-- Filters -->
         <form id="dashboardFilterForm" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div id="dashboardFilterGrid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6" style="display:grid; gap:0.75rem;">
-                <label class="space-y-1 xl:col-span-2">
+            <div id="dashboardFilterGrid" class="admin-filter-grid gap-3">
+                <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
@@ -150,13 +150,6 @@
                     </select>
                 </label>
 
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Sector</span>
-                    <select id="filterSector" onchange="applyFilters()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="all">All Sectors</option>
-                    </select>
-                </label>
-
                 <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
                     <button type="button" aria-controls="dashboardAdvancedFilters" aria-expanded="false" onclick="toggleDashboardAdvancedFilters(this)"
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
@@ -168,8 +161,14 @@
                     </a>
                 </div>
 
-                <div id="dashboardAdvancedFilters" class="hidden col-span-full rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div id="dashboardAdvancedFilters" class="admin-filter-advanced-panel hidden rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="admin-filter-advanced-grid gap-3">
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Sector</span>
+                    <select id="filterSector" onchange="applyFilters()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="all">All Sectors</option>
+                    </select>
+                </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Delivery Method</span>
                     <select id="filterDeliveryMethod" onchange="applyFilters()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">

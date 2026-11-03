@@ -27,11 +27,11 @@
         <!-- Search & Filter -->
         @php
             $issuesFiltersActive = request()->anyFilled(['search', 'status', 'issue_status', 'priority', 'impact', 'business_unit_id', 'sector_id']);
-            $issuesAdvancedFiltersActive = request()->anyFilled(['status', 'priority', 'impact']);
+            $issuesAdvancedFiltersActive = request()->anyFilled(['issue_status', 'status', 'priority', 'impact']);
         @endphp
         <form action="{{ route('admin.projects.issues.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
-                <label class="space-y-1 xl:col-span-2">
+            <div class="admin-filter-grid gap-3">
+                <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
@@ -40,14 +40,6 @@
                     </span>
                 </label>
                 @include('admin.partials.project-organization-filters')
-                <label class="space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Issue Status</span>
-                    <select name="issue_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All Statuses</option>
-                        <option value="Open" @selected(request('issue_status') === 'Open')>Open</option>
-                        <option value="Closed" @selected(request('issue_status') === 'Closed')>Closed</option>
-                    </select>
-                </label>
                 <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
                     <button type="button" aria-controls="issuesAdvancedFilters" aria-expanded="{{ $issuesAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'issuesAdvancedFilters')"
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
@@ -58,8 +50,17 @@
                         <a href="{{ route('admin.projects.issues.index') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white"><i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters</a>
                     @endif
                 </div>
-                <div id="issuesAdvancedFilters" class="{{ $issuesAdvancedFiltersActive ? '' : 'hidden' }} col-span-full rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div id="issuesAdvancedFilters" class="admin-filter-advanced-panel {{ $issuesAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="admin-filter-advanced-grid gap-3">
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Issue Status</span>
+                    <select name="issue_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Statuses</option>
+                        <option value="Raised" @selected(request('issue_status') === 'Raised')>Raised</option>
+                        <option value="Open" @selected(request('issue_status') === 'Open')>Open</option>
+                        <option value="Closed" @selected(request('issue_status') === 'Closed')>Closed</option>
+                    </select>
+                </label>
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project Status</span>
                     <select name="status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
@@ -101,7 +102,7 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">#</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Total Issues</th>
-                            <th colspan="2" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Status</th>
+                            <th colspan="3" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Status</th>
                             <th colspan="4" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Priority</th>
                             <th colspan="3" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Impact</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Actions</th>
@@ -110,6 +111,7 @@
                             <th></th>
                             <th></th>
                             <th></th>
+                            <th class="px-3 py-2 text-center">Raised</th>
                             <th class="px-3 py-2 text-center">Open</th>
                             <th class="px-3 py-2 text-center">Closed</th>
                             <th class="px-3 py-2 text-center">Overdue</th>
@@ -134,6 +136,11 @@
                                 <td class="px-6 py-4 text-center">
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-slate-100 text-slate-900 border border-slate-200 shadow-sm">
                                         {{ $project->total_issues }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200 shadow-sm">
+                                        {{ $project->raised_issues }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">

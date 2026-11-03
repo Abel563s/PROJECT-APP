@@ -32,7 +32,8 @@
                     <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">Project Overview & Financial Balance</p>
                 </div>
             </div>
-            <form action="{{ route('admin.projects.analytics') }}" method="GET" class="flex flex-wrap items-center gap-2">
+            @php($analyticsAdvancedFiltersActive = request()->anyFilled(['project_id', 'sector']))
+            <form action="{{ route('admin.projects.analytics') }}" method="GET" class="admin-filter-grid gap-2">
                 <div class="flex flex-col gap-1">
                     <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Data Date</label>
                     <div class="flex items-center gap-2 bg-white border border-slate-100 rounded-xl px-3 py-2 shadow-sm">
@@ -44,39 +45,12 @@
 
                 @include('admin.partials.project-organization-filters')
 
-                <div class="flex flex-col gap-1">
-                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project</label>
-                    <div class="relative">
-                        <select name="project_id" onchange="this.form.submit()"
-                            class="appearance-none pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
-                            <option value="">All Projects</option>
-                            @foreach($allProjectsWithUpdates as $project)
-                                <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
-                                    {{ $project->project_code }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
-                    </div>
-                </div>
-
-                <div class="flex flex-col gap-1">
-                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Sector</label>
-                    <div class="relative">
-                        <select name="sector" onchange="this.form.submit()"
-                            class="appearance-none pl-4 pr-10 py-2.5 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[180px]">
-                            <option value="">All Sectors</option>
-                            <option value="Building" {{ request('sector') == 'Building' ? 'selected' : '' }}>Building</option>
-                            <option value="Fit-Out" {{ request('sector') == 'Fit-Out' ? 'selected' : '' }}>Fit-Out</option>
-                            <option value="Infrastructure" {{ request('sector') == 'Infrastructure' ? 'selected' : '' }}>Infrastructure</option>
-                            <option value="Water & Energy" {{ request('sector') == 'Water & Energy' ? 'selected' : '' }}>Water & Energy</option>
-                        </select>
-                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none"></i>
-                    </div>
-                </div>
-
-                <div class="flex flex-col gap-1">
-                    <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">&nbsp;</label>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" aria-controls="analyticsAdvancedFilters" aria-expanded="{{ $analyticsAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'analyticsAdvancedFilters')"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
+                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>More filters
+                        <i data-lucide="chevron-down" class="filter-panel-chevron h-3.5 w-3.5 transition-transform {{ $analyticsAdvancedFiltersActive ? 'rotate-180' : '' }}"></i>
+                    </button>
                     <div class="flex items-center gap-2">
                         @if(request()->anyFilled(['data_date', 'project_id', 'sector', 'business_unit_id', 'sector_id']))
                             <a href="{{ route('admin.projects.analytics') }}"
@@ -87,8 +61,40 @@
                         @endif
                     </div>
                 </div>
+                <div id="analyticsAdvancedFilters" class="admin-filter-advanced-panel {{ $analyticsAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="admin-filter-advanced-grid gap-2">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project</label>
+                            <div class="relative">
+                                <select name="project_id" onchange="this.form.submit()"
+                                    class="w-full appearance-none rounded-xl border-2 border-transparent bg-white px-4 py-2.5 pr-10 text-[9px] font-black uppercase tracking-widest text-slate-500 transition-all hover:bg-slate-100 focus:bg-white focus:ring-2 focus:ring-slate-100">
+                                    <option value="">All Projects</option>
+                                    @foreach($allProjectsWithUpdates as $project)
+                                        <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->project_code }}</option>
+                                    @endforeach
+                                </select>
+                                <i data-lucide="chevron-down" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"></i>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Project Sector</label>
+                            <div class="relative">
+                                <select name="sector" onchange="this.form.submit()"
+                                    class="w-full appearance-none rounded-xl border-2 border-transparent bg-white px-4 py-2.5 pr-10 text-[9px] font-black uppercase tracking-widest text-slate-500 transition-all hover:bg-slate-100 focus:bg-white focus:ring-2 focus:ring-slate-100">
+                                    <option value="">All Sectors</option>
+                                    <option value="Building" {{ request('sector') == 'Building' ? 'selected' : '' }}>Building</option>
+                                    <option value="Fit-Out" {{ request('sector') == 'Fit-Out' ? 'selected' : '' }}>Fit-Out</option>
+                                    <option value="Infrastructure" {{ request('sector') == 'Infrastructure' ? 'selected' : '' }}>Infrastructure</option>
+                                    <option value="Water & Energy" {{ request('sector') == 'Water & Energy' ? 'selected' : '' }}>Water & Energy</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
+        @include('admin.partials.filter-panel-toggle-script')
 
         <!-- Enhanced KPI Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">

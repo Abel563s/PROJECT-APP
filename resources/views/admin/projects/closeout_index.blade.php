@@ -18,7 +18,7 @@
 
         <!-- Search & Filter -->
         <form action="{{ route('admin.projects.closeout.index') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
+            <div class="admin-filter-grid bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 gap-3 w-full">
                 <div class="min-w-[220px] max-w-[320px] relative group shrink-0">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
                     <input type="text" name="search" value="{{ request('search') }}"

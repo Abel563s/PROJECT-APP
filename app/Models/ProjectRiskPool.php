@@ -9,6 +9,7 @@ class ProjectRiskPool extends Model
 {
     protected $fillable = [
         'risk_id',
+        'risk_type',
         'risk_category',
         'specific_risk',
         'detailed_risk_explanation',
@@ -21,6 +22,8 @@ class ProjectRiskPool extends Model
     ];
 
     public const IMPACT_LEVELS = ['High', 'Medium', 'Low'];
+
+    public const RISK_TYPES = ['Opportunity', 'Threat'];
 
     public const CATEGORIES = [
         'Financial Risks',

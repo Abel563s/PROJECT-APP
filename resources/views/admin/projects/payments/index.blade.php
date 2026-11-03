@@ -25,8 +25,9 @@
         </div>
 
         <!-- Search & Filter -->
+        @php($paymentAdvancedFiltersActive = request()->filled('status'))
         <form action="{{ route('admin.projects.payments.index') }}" method="GET" class="space-y-4">
-            <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 flex flex-wrap items-center justify-center gap-3 w-fit mx-auto">
+            <div class="admin-filter-grid bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 gap-3 w-full">
                 <div class="min-w-[220px] max-w-[320px] relative group shrink-0">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-[#00ADC5] transition-colors"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
@@ -36,24 +37,32 @@
 
                 @include('admin.partials.project-organization-filters')
 
-                <div class="relative group/select">
-                    <select name="status" onchange="this.form.submit()"
-                        class="appearance-none pl-4 pr-10 py-3 bg-slate-50 border-2 border-transparent rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-slate-100 focus:bg-white min-w-[150px]">
-                        <option value="in progress" {{ request('status', 'in progress') == 'in progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none transition-transform group-hover/select:translate-y-[-40%]"></i>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" aria-controls="paymentAdvancedFilters" aria-expanded="{{ $paymentAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'paymentAdvancedFilters')"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
+                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>More filters
+                        <i data-lucide="chevron-down" class="filter-panel-chevron h-3.5 w-3.5 transition-transform {{ $paymentAdvancedFiltersActive ? 'rotate-180' : '' }}"></i>
+                    </button>
+                    @if(request()->anyFilled(['search', 'status', 'business_unit_id', 'sector_id']))
+                        <a href="{{ route('admin.projects.payments.index') }}" class="inline-flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 p-2 text-rose-500 transition hover:bg-rose-500 hover:text-white" title="Clear Filters">
+                            <i data-lucide="x" class="h-4 w-4"></i>
+                        </a>
+                    @endif
                 </div>
-
-                @if(request()->anyFilled(['search', 'status', 'business_unit_id', 'sector_id']))
-                    <a href="{{ route('admin.projects.payments.index') }}"
-                        class="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-sm"
-                        title="Clear Filters">
-                        <i data-lucide="x" class="w-4 h-4"></i>
-                    </a>
-                @endif
+                <div id="paymentAdvancedFilters" class="admin-filter-advanced-panel {{ $paymentAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                    <div class="admin-filter-advanced-grid gap-3">
+                        <div class="relative group/select">
+                            <select name="status" onchange="this.form.submit()" class="w-full appearance-none rounded-xl border-2 border-transparent bg-white px-4 py-3 pr-10 text-[9px] font-black uppercase tracking-widest text-slate-500 transition-all hover:bg-slate-100 focus:bg-white focus:ring-2 focus:ring-slate-100">
+                                <option value="in progress" {{ request('status', 'in progress') == 'in progress' ? 'selected' : '' }}>In Progress</option>
+                                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 transition-transform group-hover/select:translate-y-[-40%]"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
+        @include('admin.partials.filter-panel-toggle-script')
 
         <!-- Data Table -->
         <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-50 overflow-hidden">

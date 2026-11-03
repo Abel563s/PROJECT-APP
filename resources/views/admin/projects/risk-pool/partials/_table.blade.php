@@ -13,10 +13,11 @@
                 <tr class="border-b border-[#00515f]/30 bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black uppercase tracking-widest text-white">
                     <th class="px-4 py-3">Risk ID</th>
                     <th class="px-4 py-3">Risk Category</th>
+                    <th class="px-4 py-3">Risk Type</th>
                     <th class="px-4 py-3">Specific Risk</th>
-                    <th class="px-4 py-3 text-center">Impact on Timeline</th>
+                    <th class="px-4 py-3 text-center">Impact on Time</th>
                     <th class="px-4 py-3 text-center">Impact on Cost</th>
-                    <th class="px-4 py-3 text-center">Quality</th>
+                    <th class="px-4 py-3 text-center">Impact on Quality</th>
                     <th class="px-4 py-3">Stakeholder</th>
                     <th class="px-4 py-3 text-right">Actions</th>
                 </tr>
@@ -29,6 +30,9 @@
                         </td>
                         <td class="px-4 py-3">
                             <span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">{{ $risk->risk_category }}</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">{{ $risk->risk_type ?: '—' }}</span>
                         </td>
                         <td class="max-w-xs px-4 py-3">
                             <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $risk->specific_risk }}</p>
@@ -45,7 +49,7 @@
                         </td>
                         <td class="px-4 py-3 text-center">
                             <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$risk->overall_impact_level] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
-                                {{ $risk->overall_impact_level ?: '—' }}
+                                {{ $risk->impact_on_quality ?: '—' }}
                             </span>
                         </td>
                         <td class="max-w-xs px-4 py-3">
@@ -77,7 +81,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-16 text-center">
+                        <td colspan="9" class="px-4 py-16 text-center">
                             <div class="flex flex-col items-center gap-4">
                                 <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50 text-slate-200">
                                     <i data-lucide="triangle-alert" class="h-8 w-8"></i>

@@ -72,11 +72,8 @@
             </div>
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Status</label>
-                <select name="status" required
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-rose-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                    <option value="Open">Open</option>
-                    <option value="Closed">Closed</option>
-                </select>
+                <p data-issue-status class="inline-flex rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-[10px] font-bold text-slate-600">Raised</p>
+                <p class="text-[8px] font-medium text-slate-400">Automatically set from the planned action and issue closed dates.</p>
             </div>
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Issue</label>
@@ -131,6 +128,11 @@
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Planned Action Date</label>
                 <input type="date" name="planned_resolution_date"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Issue Closed Date</label>
+                <input type="date" name="issue_closed_date"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">

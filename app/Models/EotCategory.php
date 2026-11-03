@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EotCategory extends Model
 {
@@ -25,5 +26,10 @@ class EotCategory extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function entries(): HasMany
+    {
+        return $this->hasMany(EotEntry::class, 'eot_category_id');
     }
 }

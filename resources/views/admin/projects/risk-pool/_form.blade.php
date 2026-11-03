@@ -54,6 +54,15 @@
                 <p class="mt-1 text-[8px] font-black uppercase tracking-widest text-slate-400">Use the sparkle to suggest the next available ID.</p>
             </div>
             <div>
+                <label class="{{ $labelClass }}" for="risk_type">Risk Type</label>
+                <select id="risk_type" name="risk_type" required class="{{ $fieldClass }}">
+                    <option value="">Select type</option>
+                    @foreach(\App\Models\ProjectRiskPool::RISK_TYPES as $type)
+                        <option value="{{ $type }}" @selected(old('risk_type', $risk->risk_type ?? '') === $type)>{{ $type }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
                 <label class="{{ $labelClass }}" for="specific_risk">Specific Risk</label>
                 <input id="specific_risk" name="specific_risk" type="text" required value="{{ old('specific_risk', $risk->specific_risk ?? '') }}" placeholder="Short risk title" class="{{ $fieldClass }}">
             </div>
@@ -64,11 +73,11 @@
                     class="{{ $areaClass }}">{{ old('detailed_risk_explanation', $risk->detailed_risk_explanation ?? '') }}</textarea>
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="impact_on_timeline">Impact on Timeline</label>
-                <select id="impact_on_timeline" name="impact_on_timeline" class="{{ $fieldClass }}">
+                <label class="{{ $labelClass }}" for="impact_on_time">Impact on Time</label>
+                <select id="impact_on_time" name="impact_on_time class="{{ $fieldClass }}">
                     <option value="">Select impact</option>
                     @foreach($impactLevels as $level)
-                        <option value="{{ $level }}" @selected(old('impact_on_timeline', $risk->impact_on_timeline ?? '') === $level)>{{ $level }}</option>
+                        <option value="{{ $level }}" @selected(old('impact_on_time', $risk->impact_on_time ?? '') === $level)>{{ $level }}</option>
                     @endforeach
                 </select>
             </div>
@@ -82,11 +91,11 @@
                 </select>
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="overall_impact_level">Quality</label>
-                <select id="overall_impact_level" name="overall_impact_level" class="{{ $fieldClass }}">
+                <label class="{{ $labelClass }}" for="impact_on_quality">Impact on Quality</label>
+                <select id="impact_on_quality" name="impact_on_quality" class="{{ $fieldClass }}">
                     <option value="">Select level</option>
                     @foreach($impactLevels as $level)
-                        <option value="{{ $level }}" @selected(old('overall_impact_level', $risk->overall_impact_level ?? '') === $level)>{{ $level }}</option>
+                        <option value="{{ $level }}" @selected(old('impact_on_quality', $risk->impact_on_quality ?? '') === $level)>{{ $level }}</option>
                     @endforeach
                 </select>
             </div>

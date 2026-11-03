@@ -12,6 +12,7 @@
     $emptyRow = [
         'id'                            => null,
         'risk_id'                       => '',
+        'risk_type'                     => '',
         'risk_category'                 => '',
         'specific_risk'                 => '',
         'impact_on_timeline'            => '',
@@ -37,6 +38,7 @@
         'permissions' => ['create' => $canCreateRiskPool, 'edit' => $canEditRiskPool],
         'categories'  => $categories,
         'impactLevels' => \App\Models\ProjectRiskPool::IMPACT_LEVELS,
+        'riskTypes'   => \App\Models\ProjectRiskPool::RISK_TYPES,
         'rows'        => $initialRows,
         'routes'      => [
             'suggestId'   => route('admin.projects.risk-pool.suggest-id'),
@@ -83,6 +85,7 @@
             <thead>
                 <tr class="bg-slate-50/80">
                     <th class="ss-th ss-col-id border-b border-slate-200 px-2 py-2 text-left">Risk ID</th>
+                    <th class="ss-th ss-col-type border-b border-slate-200 px-2 py-2 text-left">Risk Type</th>
                     <th class="ss-th ss-col-category border-b border-slate-200 px-2 py-2 text-left">Risk Category</th>
                     <th class="ss-th ss-col-specific border-b border-slate-200 px-2 py-2 text-left">Specific Risk</th>
                     <th class="ss-th ss-col-timeline border-b border-slate-200 px-2 py-2 text-left">Timeline</th>
