@@ -584,8 +584,8 @@
             try {
                 const response = await fetch(riskPoolBulkRoute, {
                     method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json', 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ rows: rows }),
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': state.csrf || csrfToken, Accept: 'application/json', 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ _token: state.csrf || csrfToken, rows: rows }),
                 });
                 const data = await response.json().catch(() => ({}));
                 if (response.status === 422) {
@@ -715,45 +715,76 @@
 
         function renderCatError(message) {
             if (!errorsBox) return;
-            errorsBox.innerHTML = '<p class="mb-2">' + message + '</p>';
+            errorsBox.textContent = message;
             errorsBox.classList.remove('hidden');
-            renderIcons();
+        }
+
+        container.querySelectorAll('.cat-edit, .cat-order').forEach(input => {
+            input.dataset.initialValue = input.value;
+        });
+
+        async function saveCategoryField(input) {
+            const id = input.dataset.id;
+            const field = input.dataset.field;
+            const value = input.value;
+            if (!id || !field || value === input.dataset.initialValue) return false;
+            if (input.categorySavePromise) return input.categorySavePromise;
+
+            const payload = { [field]: field === 'display_order' ? Number(value) : value };
+            const token = state.csrf || csrfToken;
+            input.categorySavePromise = (async () => {
+                const response = await fetch(state.routes.update.replace('__ID__', id), {
+                    method: 'PUT',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token, Accept: 'application/json', 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...payload, _token: token }),
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.message || 'Unable to update category.');
+                input.dataset.initialValue = value;
+                return true;
+            })();
+
+            try {
+                return await input.categorySavePromise;
+            } finally {
+                input.categorySavePromise = null;
+            }
         }
 
         addForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(addForm);
+            const submitButton = addForm.querySelector('button[type="submit"]');
+            const originalButtonContent = submitButton?.innerHTML;
+            const token = state.csrf || csrfToken;
+            formData.set('_token', token);
+            if (submitButton) submitButton.disabled = true;
             try {
                 const response = await fetch(state.routes.store, {
                     method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json' },
-                    body: new URLSearchParams(formData),
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token, Accept: 'application/json' },
+                    body: formData,
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.message || 'Unable to add category.');
                 addForm.reset();
                 showNotification('Category added.');
                 await reloadCategoryManager();
-            } catch (error) { renderCatError(error.message); }
+            } catch (error) {
+                renderCatError(error.message);
+            } finally {
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonContent;
+                }
+            }
         });
 
         // Inline rename / code / order: save on blur.
         container.querySelectorAll('.cat-edit, .cat-order').forEach(inp => {
             inp.addEventListener('blur', async () => {
-                const id = inp.dataset.id;
-                const field = inp.dataset.field;
-                const value = inp.value;
-                const payload = {};
-                payload[field] = field === 'display_order' ? Number(value) : value;
                 try {
-                    const response = await fetch(state.routes.update.replace('__ID__', id), {
-                        method: 'PUT',
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json', 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload),
-                    });
-                    const data = await response.json().catch(() => ({}));
-                    if (!response.ok) throw new Error(data.message || 'Unable to update category.');
-                    showNotification('Category updated.');
+                    if (await saveCategoryField(inp)) showNotification('Category updated.');
                 } catch (error) { renderCatError(error.message); }
             });
         });
@@ -764,11 +795,12 @@
                 const id = toggle.dataset.id;
                 const wasChecked = toggle.checked;
                 toggle.disabled = true;
+                const token = state.csrf || csrfToken;
                 try {
                     const response = await fetch(state.routes.update.replace('__ID__', id), {
                         method: 'PUT',
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json', 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ is_active: wasChecked ? 1 : 0 }),
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token, Accept: 'application/json', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ is_active: wasChecked ? 1 : 0, _token: token }),
                     });
                     const data = await response.json().catch(() => ({}));
                     if (!response.ok) {
@@ -789,10 +821,12 @@
             btn.addEventListener('click', async () => {
                 const id = btn.dataset.id;
                 if (!confirm('Remove this category? Existing risk records referencing it will be preserved.')) return;
+                const token = state.csrf || csrfToken;
                 try {
                     const response = await fetch(state.routes.destroy.replace('__ID__', id), {
                         method: 'DELETE',
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json' },
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token, Accept: 'application/json' },
+                        body: new URLSearchParams({ _token: token }),
                     });
                     const data = await response.json().catch(() => ({}));
                     if (!response.ok) throw new Error(data.message || 'Unable to remove category.');
@@ -806,31 +840,15 @@
         const saveAllBtn = container.querySelector('#catSaveAll');
         saveAllBtn?.addEventListener('click', async () => {
             const inputs = container.querySelectorAll('.cat-edit, .cat-order');
-            const saves = [];
-            inputs.forEach(inp => {
-                const id = inp.dataset.id;
-                const field = inp.dataset.field;
-                const value = inp.value;
-                if (!id || !field) return;
-                const payload = {};
-                payload[field] = field === 'display_order' ? Number(value) : value;
-                saves.push(
-                    fetch(state.routes.update.replace('__ID__', id), {
-                        method: 'PUT',
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json', 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload),
-                    }).then(r => {
-                        if (!r.ok) throw new Error('Unable to update category.');
-                        return r.json().catch(() => ({}));
-                    })
-                );
-            });
+            const saves = [...inputs].map(saveCategoryField);
             try {
                 saveAllBtn.disabled = true;
                 saveAllBtn.innerHTML = '<span class="flex items-center gap-1.5"><span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>Saving...</span>';
-                await Promise.all(saves);
-                await reloadCategoryManager();
-                showNotification('Categories saved.');
+                const results = await Promise.all(saves);
+                if (results.some(Boolean)) {
+                    await reloadCategoryManager();
+                    showNotification('Categories saved.');
+                }
             } catch (error) { renderCatError(error.message || 'Some categories failed to save.'); }
             finally {
                 if (saveAllBtn) {
@@ -842,20 +860,19 @@
         });
 
         async function reloadCategoryManager(refreshPool = true) {
-            try {
-                const response = await fetch(riskPoolCategoryRoute);
-                const html = await response.text();
-                const content = document.getElementById('categoryModalContent');
-                if (content) {
-                    content.innerHTML = html;
-                    initCategoryManager(content);
-                    renderIcons();
-                }
-                if (refreshPool) {
-                    refreshSummary();
-                    refreshView();
-                }
-            } catch (e) { console.error(e); }
+            const response = await fetch(riskPoolCategoryRoute, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            if (!response.ok) throw new Error('Unable to reload categories.');
+            const html = await response.text();
+            const content = document.getElementById('categoryModalContent');
+            if (content) {
+                content.innerHTML = html;
+                initCategoryManager(content);
+                renderIcons();
+            }
+            if (refreshPool) {
+                refreshSummary();
+                refreshView();
+            }
         }
     }
 

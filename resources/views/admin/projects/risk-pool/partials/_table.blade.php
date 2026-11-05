@@ -49,7 +49,7 @@
                         </td>
                         <td class="px-4 py-3 text-center">
                             <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$risk->overall_impact_level] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
-                                {{ $risk->impact_on_quality ?: '—' }}
+                                {{ $risk->overall_impact_level ?: '—' }}
                             </span>
                         </td>
                         <td class="max-w-xs px-4 py-3">

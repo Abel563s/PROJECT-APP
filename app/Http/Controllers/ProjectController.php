@@ -796,7 +796,7 @@ class ProjectController extends Controller
 
         $validated = $request->validate([
             'risk_category' => ['nullable', 'string', 'max:255'],
-            'pool_risk_category' => ['nullable', 'string', 'max:255'],
+            'pool_risk_category' => ['nullable', 'string', 'max:255', 'required_with:pool_risk_id'],
             'pool_risk_id' => [
                 'nullable',
                 'string',
@@ -814,14 +814,14 @@ class ProjectController extends Controller
             ],
             'activity' => 'required|string',
             'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
-            'risk_name' => 'required|string|max:255',
+            'risk_name' => 'nullable|string|max:255',
             'risk_description' => 'required|string',
             'likelihood' => 'required|integer|between:1,5',
             'severity' => 'required|integer|between:1,5',
             'intent_to_claim' => 'required|boolean',
             'most_likely_cost_impact' => 'nullable|numeric|min:0',
             'most_likely_time_impact' => 'nullable|integer|min:0',
-            'most_likely_quality_impact' => 'nullable|integer|min:0',
+            'most_likely_quality_impact_description' => 'nullable|string',
             'time_impact_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
             'resolution_by' => 'nullable|string|max:255',
             'risk_frequency' => ['nullable', Rule::in(['One Time', 'Fixed Duration', 'Recurring'])],
@@ -829,7 +829,7 @@ class ProjectController extends Controller
             'risk_urgency' => ['nullable', Rule::in(['Very Urgent', 'Urgent', 'Moderate', 'Low'])],
             'existing_control' => 'nullable|string',
             'residual_risk' => 'nullable|string',
-            'response_strategy' => ['nullable', Rule::in(['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate', 'Enhance', 'Eliminate'])],
+            'response_strategy' => ['nullable', Rule::in(ProjectRisk::RESPONSE_STRATEGIES[$request->input('risk_type')] ?? [])],
             'mitigation_plan' => 'nullable|string',
             'contingency_plan' => 'nullable|string',
             'owner_name' => 'nullable|string|max:255',
@@ -838,7 +838,6 @@ class ProjectController extends Controller
             'action_status' => ['required', Rule::in(ProjectRisk::ACTION_STATUSES)],
             'actual_action_date' => 'nullable|date',
             'materialized_date' => 'nullable|date',
-            'exposure' => 'nullable|integer|min:0',
             'exposure_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
             'recommendation' => 'nullable|string',
         ]);
@@ -846,6 +845,17 @@ class ProjectController extends Controller
         $validated['project_id'] = $project->id;
         $validated['created_by'] = $request->user()->id;
         $validated['date_last_updated'] = now()->toDateString();
+        $validated['risk_name'] = !empty($validated['pool_risk_id'])
+            ? ProjectRiskPool::query()
+                ->where('risk_id', $validated['pool_risk_id'])
+                ->where('risk_type', $validated['risk_type'])
+                ->where('risk_category', $validated['pool_risk_category'])
+                ->value('specific_risk')
+            : ($validated['risk_name'] ?: \Illuminate\Support\Str::limit($validated['activity'], 255));
+        $validated['exposure'] = ProjectRisk::calculateExposureDays(
+            $validated['materialized_date'] ?? null,
+            $validated['actual_action_date'] ?? null
+        );
         if (!$validated['intent_to_claim']) {
             $validated['eot_entry_id'] = null;
         }
@@ -902,14 +912,14 @@ class ProjectController extends Controller
             ],
             'activity' => 'required|string',
             'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
-            'risk_name' => 'required|string|max:255',
+            'risk_name' => 'nullable|string|max:255',
             'risk_description' => 'required|string',
             'likelihood' => 'required|integer|between:1,5',
             'severity' => 'required|integer|between:1,5',
             'intent_to_claim' => 'required|boolean',
             'most_likely_cost_impact' => 'nullable|numeric|min:0',
             'most_likely_time_impact' => 'nullable|integer|min:0',
-            'most_likely_quality_impact' => 'nullable|integer|min:0',
+            'most_likely_quality_impact_description' => 'nullable|string',
             'time_impact_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
             'resolution_by' => 'nullable|string|max:255',
             'risk_frequency' => ['nullable', Rule::in(['One Time', 'Fixed Duration', 'Recurring'])],
@@ -917,7 +927,7 @@ class ProjectController extends Controller
             'risk_urgency' => ['nullable', Rule::in(['Very Urgent', 'Urgent', 'Moderate', 'Low'])],
             'existing_control' => 'nullable|string',
             'residual_risk' => 'nullable|string',
-            'response_strategy' => ['nullable', Rule::in(['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate', 'Enhance', 'Eliminate'])],
+            'response_strategy' => ['nullable', Rule::in(ProjectRisk::RESPONSE_STRATEGIES[$request->input('risk_type')] ?? [])],
             'mitigation_plan' => 'nullable|string',
             'contingency_plan' => 'nullable|string',
             'owner_name' => 'nullable|string|max:255',
@@ -926,12 +936,22 @@ class ProjectController extends Controller
             'action_status' => ['required', Rule::in(ProjectRisk::ACTION_STATUSES)],
             'actual_action_date' => 'nullable|date',
             'materialized_date' => 'nullable|date',
-            'exposure' => 'nullable|integer|min:0',
             'exposure_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
             'recommendation' => 'nullable|string',
         ]);
 
         $validated['date_last_updated'] = now()->toDateString();
+        $validated['risk_name'] = !empty($validated['pool_risk_id'])
+            ? ProjectRiskPool::query()
+                ->where('risk_id', $validated['pool_risk_id'])
+                ->where('risk_type', $validated['risk_type'])
+                ->where('risk_category', $validated['pool_risk_category'])
+                ->value('specific_risk')
+            : ($validated['risk_name'] ?: $risk->risk_name);
+        $validated['exposure'] = ProjectRisk::calculateExposureDays(
+            $validated['materialized_date'] ?? null,
+            $validated['actual_action_date'] ?? null
+        );
         if (!$validated['intent_to_claim']) {
             $validated['eot_entry_id'] = null;
         }

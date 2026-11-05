@@ -55,11 +55,19 @@
     @endphp
 
     <!-- Step indicator -->
-    <div class="mb-4 flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-slate-400">
-        <span class="step-indicator py-1 text-cyan-700">1. Risk Identification</span>
-        <span class="step-indicator py-1">2. Risk Assessment</span>
-        <span class="step-indicator py-1">3. Risk Response</span>
-        <span class="step-indicator py-1">4. Risk Evaluation</span>
+    <div class="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4" role="navigation" aria-label="Risk form steps">
+        <button type="button" class="step-indicator group flex min-w-0 items-center gap-2 rounded-xl border border-cyan-200 bg-cyan-50 px-3 py-2 text-left text-cyan-800 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow" data-step-target="1" aria-current="step">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-cyan-700 text-[10px] font-black text-white">1</span><span class="text-[8px] font-black uppercase tracking-wider sm:text-[9px]">Identification</span>
+        </button>
+        <button type="button" class="step-indicator group flex min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-slate-500 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:text-cyan-800 hover:shadow" data-step-target="2">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-black text-slate-600">2</span><span class="text-[8px] font-black uppercase tracking-wider sm:text-[9px]">Assessment</span>
+        </button>
+        <button type="button" class="step-indicator group flex min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-slate-500 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:text-cyan-800 hover:shadow" data-step-target="3">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-black text-slate-600">3</span><span class="text-[8px] font-black uppercase tracking-wider sm:text-[9px]">Response</span>
+        </button>
+        <button type="button" class="step-indicator group flex min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-slate-500 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:text-cyan-800 hover:shadow" data-step-target="4">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-black text-slate-600">4</span><span class="text-[8px] font-black uppercase tracking-wider sm:text-[9px]">Evaluation</span>
+        </button>
     </div>
 
     <!-- Step 1 - Risk Identification -->
@@ -82,7 +90,7 @@
                 <input type="hidden" name="pool_risk_category" id="pool_risk_category_hidden" value="{{ old('pool_risk_category', $risk->pool_risk_category ?? '') }}">
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="pool_risk_id">Pool Risk ID</label>
+                <label class="{{ $labelClass }}" for="pool_risk_id">Risk ID &amp; Name</label>
                 <select id="pool_risk_id" class="{{ $fieldClass }}" disabled data-selected-id="{{ $risk->pool_risk_id ?? '' }}">
                     @if($risk->pool_risk_id)
                         <option value="{{ $risk->pool_risk_id }}" selected>{{ $risk->pool_risk_id }}</option>
@@ -91,18 +99,15 @@
                     @endif
                 </select>
                 <input type="hidden" name="pool_risk_id" id="pool_risk_id_hidden" value="{{ $risk->pool_risk_id ?? '' }}">
+                <input type="hidden" name="risk_name" id="risk_name" value="{{ old('risk_name', $risk->risk_name) }}">
             </div>
             <div class="md:col-span-2">
                 <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">From Risk Repository</p>
-                <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Select a category, then a risk, to auto-fill Risk Name and Risk Description.</p>
+                <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Select a category and Risk ID &amp; Name to auto-fill the risk details.</p>
             </div>
             <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="activity">Activity Related to the Risk</label>
                 <textarea id="activity" name="activity" rows="3" required class="{{ $areaClass }}">{{ old('activity', $risk->activity) }}</textarea>
-            </div>
-            <div>
-                <label class="{{ $labelClass }}" for="risk_name">Risk Name</label>
-                <input id="risk_name" name="risk_name" type="text" required value="{{ old('risk_name', $risk->risk_name) }}" class="{{ $fieldClass }}">
             </div>
             <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="risk_description">Risk Description</label>
@@ -118,7 +123,7 @@
                 <label class="{{ $labelClass }}" for="likelihood">Likelihood of Occurrence (P)</label>
                 <div class="flex items-center gap-3">
                     <span class="text-[9px] font-bold text-slate-400">Low</span>
-                    <input id="likelihood" name="likelihood" type="range" min="1" max="5" step="1" value="{{ old('likelihood', $risk->likelihood) }}" class="w-full accent-cyan-600" oninput="updateRiskRating()">
+                    <input id="likelihood" name="likelihood" type="range" min="1" max="5" step="1" value="{{ old('likelihood', $risk->likelihood) }}" class="w-full accent-cyan-600" oninput="updateRiskRating(this.closest('#editModalContent'))">
                     <span class="text-[9px] font-bold text-slate-400">High</span>
                     <output id="likelihoodValue" class="w-7 text-center text-sm font-black text-slate-900">{{ old('likelihood', $risk->likelihood) }}</output>
                 </div>
@@ -127,7 +132,7 @@
                 <label class="{{ $labelClass }}" for="severity">Severity of the Impact (I)</label>
                 <div class="flex items-center gap-3">
                     <span class="text-[9px] font-bold text-slate-400">Low</span>
-                    <input id="severity" name="severity" type="range" min="1" max="5" step="1" value="{{ old('severity', $risk->severity) }}" class="w-full accent-cyan-600" oninput="updateRiskRating()">
+                    <input id="severity" name="severity" type="range" min="1" max="5" step="1" value="{{ old('severity', $risk->severity) }}" class="w-full accent-cyan-600" oninput="updateRiskRating(this.closest('#editModalContent'))">
                     <span class="text-[9px] font-bold text-slate-400">High</span>
                     <output id="severityValue" class="w-7 text-center text-sm font-black text-slate-900">{{ old('severity', $risk->severity) }}</output>
                 </div>
@@ -170,7 +175,7 @@
             </div>
             <div id="eotClaimFields" class="hidden md:col-span-2 grid grid-cols-1 gap-3 md:grid-cols-2">
                 <div>
-                    <label class="{{ $labelClass }}" for="eot_base_of_risk">Base of Risk</label>
+                    <label class="{{ $labelClass }}" for="eot_base_of_risk">Base of EOT</label>
                     <select id="eot_base_of_risk" name="eot_category_id" class="{{ $fieldClass }}" data-selected-category="{{ old('eot_category_id', $risk->eotEntry?->eot_category_id) }}">
                         <option value="">Select base of risk</option>
                         @foreach($eotOptions['categories'] as $category)
@@ -183,10 +188,7 @@
                     <select id="eot_entry_id" name="eot_entry_id" class="{{ $fieldClass }}" disabled data-selected-entry="{{ old('eot_entry_id', $risk->eot_entry_id) }}">
                         <option value="">Select base of risk first</option>
                     </select>
-                </div>
-                <div class="md:col-span-2">
-                    <label class="{{ $labelClass }}" for="eot_detail_reason">Detail Reason of EOT</label>
-                    <input id="eot_detail_reason" type="text" readonly value="{{ old('eot_detail_reason', $risk->eotEntry?->detail_reason) }}" class="{{ $fieldClass }} py-1.5 text-[10px]">
+                    <p id="eot_entry_preview" class="mt-1 hidden whitespace-pre-wrap [overflow-wrap:anywhere] rounded-lg border border-cyan-100 bg-cyan-50/60 px-3 py-2 text-[10px] font-medium leading-5 text-slate-700" aria-live="polite"></p>
                 </div>
             </div>
             <div>
@@ -198,8 +200,8 @@
                 <input id="most_likely_time_impact" name="most_likely_time_impact" type="number" min="0" step="1" value="{{ old('most_likely_time_impact', $risk->most_likely_time_impact) }}" class="{{ $fieldClass }}">
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="most_likely_quality_impact">Most Likely Quality Impact (Days)</label>
-                <input id="most_likely_quality_impact" name="most_likely_quality_impact" type="number" min="0" step="1" value="{{ old('most_likely_quality_impact', $risk->most_likely_quality_impact) }}" class="{{ $fieldClass }}">
+                <label class="{{ $labelClass }}" for="most_likely_quality_impact_description">Most Likely Quality Impact (Description)</label>
+                <textarea id="most_likely_quality_impact_description" name="most_likely_quality_impact_description" rows="2" class="{{ $areaClass }}">{{ old('most_likely_quality_impact_description', $risk->most_likely_quality_impact_description) }}</textarea>
             </div>
             <div>
                 <label class="{{ $labelClass }}" for="resolution_by">Resolution by</label>
@@ -225,11 +227,8 @@
             </div>
             <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="response_strategy">Risk Response Strategy</label>
-                <select id="response_strategy" name="response_strategy" class="{{ $fieldClass }}">
+                <select id="response_strategy" name="response_strategy" class="{{ $fieldClass }}" data-selected-strategy="{{ old('response_strategy', $risk->response_strategy) }}">
                     <option value="">Select strategy</option>
-                    @foreach(['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate', 'Enhance', 'Eliminate'] as $strategy)
-                        <option value="{{ $strategy }}" @selected(old('response_strategy', $risk->response_strategy) === $strategy)>{{ $strategy }}</option>
-                    @endforeach
                 </select>
             </div>
             <div class="md:col-span-2">
@@ -275,8 +274,8 @@
                 <input id="actual_action_date" name="actual_action_date" type="date" value="{{ old('actual_action_date', $risk->actual_action_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="exposure">Exposure (Estimated Delay in Days)</label>
-                <input id="exposure" name="exposure" type="number" min="0" step="1" value="{{ old('exposure', $risk->exposure) }}" class="{{ $fieldClass }}">
+                <label class="{{ $labelClass }}" for="exposure_display">Exposure (Days)</label>
+                <output id="exposure_display" class="{{ $fieldClass }} block min-h-9" data-today="{{ now()->toDateString() }}" data-materialized-date="{{ old('materialized_date', $risk->materialized_date?->format('Y-m-d')) }}" data-actual-action-date="{{ old('actual_action_date', $risk->actual_action_date?->format('Y-m-d')) }}">—</output>
             </div>
             <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="recommendation">Recommendation / Lesson Learned</label>
@@ -285,11 +284,12 @@
         </div>
     </section>
 
-    <div class="flex items-center justify-between border-t border-slate-100 pt-4">
+    <div class="sticky bottom-0 z-10 flex items-center justify-between border-t border-slate-100 bg-white/95 py-3 pt-4 backdrop-blur">
         <button type="button" id="riskStepBack" class="rounded-lg border border-slate-200 px-4 py-2 text-xs font-black text-slate-600 hover:bg-slate-50">Back</button>
         <div class="flex items-center gap-2">
             <button type="button" onclick="closeEditModal()" class="rounded-lg border border-slate-200 px-4 py-2 text-xs font-black text-slate-600 hover:bg-slate-50">Cancel</button>
-            <button type="button" id="riskStepNext" data-submit-label="Update Risk" class="rounded-lg bg-slate-900 px-5 py-2 text-xs font-black text-white hover:bg-cyan-700">Next</button>
+            <button type="button" id="riskStepNext" class="rounded-lg border border-cyan-200 bg-cyan-50 px-4 py-2 text-xs font-black text-cyan-800 hover:bg-cyan-100">Next step</button>
+            <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-5 py-2 text-xs font-black text-white shadow-sm transition hover:bg-cyan-700"><i data-lucide="save" class="h-3.5 w-3.5"></i>Update Risk</button>
         </div>
     </div>
 </form>

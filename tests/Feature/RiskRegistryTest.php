@@ -29,6 +29,13 @@ it('creates a project risk with a calculated rating', function () {
         'status' => 'in progress',
     ]);
     $baseOfRisk = EotCategory::create(['name' => 'Design Delay', 'display_order' => 1, 'is_active' => true]);
+    ProjectRiskPool::create([
+        'risk_id' => '4.01',
+        'risk_type' => 'Threat',
+        'risk_category' => 'Operational',
+        'specific_risk' => 'Late subcontract award',
+        'detailed_risk_explanation' => 'A late subcontract award may delay the critical path.',
+    ]);
     $eot = EotEntry::create([
         'eot_id' => '1.01',
         'eot_category_id' => $baseOfRisk->id,
@@ -39,6 +46,9 @@ it('creates a project risk with a calculated rating', function () {
         ->post(route('admin.projects.risk.store', $project), [
             'activity' => 'Awarding the subcontract',
             'risk_type' => 'Threat',
+            'risk_category' => 'Operational',
+            'pool_risk_category' => 'Operational',
+            'pool_risk_id' => '4.01',
             'risk_name' => 'Late subcontract award',
             'risk_description' => 'A late award may delay the critical path.',
             'likelihood' => 4,
@@ -46,11 +56,12 @@ it('creates a project risk with a calculated rating', function () {
             'intent_to_claim' => '1',
             'eot_category_id' => $baseOfRisk->id,
             'eot_entry_id' => $eot->id,
-            'most_likely_quality_impact' => 5,
+            'most_likely_quality_impact_description' => 'May reduce durability.',
             'resolution_by' => 'Project Manager',
             'impact_date' => '2026-11-03',
             'materialized_date' => '2026-11-04',
             'action_status' => 'Issue',
+            'response_strategy' => 'Mitigate',
         ])
         ->assertRedirect(route('admin.projects.risk.manage', $project));
 
@@ -59,10 +70,11 @@ it('creates a project risk with a calculated rating', function () {
         ->and($risk->risk_level)->toBe('Extreme')
         ->and($risk->project_id)->toBe($project->id)
         ->and($risk->eot_entry_id)->toBe($eot->id)
-        ->and($risk->most_likely_quality_impact)->toBe(5)
+        ->and($risk->most_likely_quality_impact_description)->toBe('May reduce durability.')
         ->and($risk->resolution_by)->toBe('Project Manager')
         ->and($risk->materialized_date->format('Y-m-d'))->toBe('2026-11-04')
-        ->and($risk->date_last_updated)->not->toBeNull();
+        ->and($risk->date_last_updated)->not->toBeNull()
+        ->and($risk->exposure)->toBe(ProjectRisk::calculateExposureDays('2026-11-04', null));
 
     $this->get(route('admin.projects.risk.manage', $project))
         ->assertOk()
@@ -75,7 +87,7 @@ it('creates a project risk with a calculated rating', function () {
         ->assertSee($project->project_name)
         ->assertSee('Last updated')
         ->assertSee('Late design approval')
-        ->assertSee('Most Likely Quality Impact (Days)')
+        ->assertSee('Most Likely Quality Impact (Description)')
         ->assertSee('Resolution by')
         ->assertSee('Assumed Impact Date')
         ->assertSee('Materialized Date')
@@ -88,6 +100,10 @@ it('creates a project risk with a calculated rating', function () {
         ->assertSee($project->project_name)
         ->assertSee('Last updated')
         ->assertSee('Late design approval')
+        ->assertSee('data-step-target="1"', false)
+        ->assertSee('data-step-target="4"', false)
+        ->assertSee('Update Risk')
+        ->assertSee('eot_entry_preview')
         ->assertSee('Materialized Date')
         ->assertDontSee('Date Last Updated')
         ->assertDontSee('Risk Owner');
@@ -172,11 +188,18 @@ it('renders the project risk dashboard and create modal', function () {
         ->assertSee('Last updated')
         ->assertSee('Risk Type')
         ->assertSee('Pool Risk Category')
-        ->assertSee('Base of Risk')
+        ->assertSee('Risk ID & Name')
+        ->assertSee('Base of EOT')
         ->assertSee('EOT ID')
-        ->assertSee('Detail Reason of EOT')
         ->assertSee('Materialized Date')
-        ->assertSee('Most Likely Quality Impact (Days)')
+        ->assertSee('Most Likely Quality Impact (Description)')
+        ->assertSee('Exposure (Days)')
+        ->assertSee('data-step-target="1"', false)
+        ->assertSee('data-step-target="4"', false)
+        ->assertSee('Save Risk')
+        ->assertSee('eot_entry_preview')
+        ->assertDontSee('Most Likely Quality Impact (Days)')
+        ->assertDontSee('Risk Name')
         ->assertDontSee('Risk Owner');
 });
 

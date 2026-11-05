@@ -12,7 +12,7 @@
         </div>
         <div class="grid grid-cols-2 gap-3">
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Issue Owner</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Issue Type</p>
                 <p class="text-xs font-black text-slate-900">{{ $issue->issue_type ?? '---' }}</p>
             </div>
             <div>

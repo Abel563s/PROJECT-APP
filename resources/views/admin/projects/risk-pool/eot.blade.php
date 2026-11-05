@@ -13,7 +13,7 @@
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search EOTs</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
-                        <input type="search" name="search" value="{{ request('search') }}" placeholder="EOT ID, reason, or base of risk"
+                        <input type="search" name="search" value="{{ request('search') }}" placeholder="EOT ID, contract reference, reason, or base of risk"
                             class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                     </span>
                 </label>
@@ -37,11 +37,12 @@
 
         <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
             <div class="overflow-x-auto">
-                <table class="w-full min-w-[850px] text-left">
+                <table class="w-full min-w-[980px] text-left">
                     <thead>
                         <tr class="border-b border-[#00515f]/30 bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black uppercase tracking-widest text-white">
                             <th class="px-4 py-3">EOT ID</th>
                             <th class="px-4 py-3">Base of Risk</th>
+                            <th class="px-4 py-3">Contract Reference ID</th>
                             <th class="px-4 py-3">Detail Reason of EOT</th>
                             <th class="px-4 py-3">Created</th>
                             <th class="px-4 py-3 text-right">Actions</th>
@@ -52,6 +53,7 @@
                             <tr class="transition-colors hover:bg-slate-50/80">
                                 <td class="whitespace-nowrap px-4 py-3"><span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm tabular-nums">{{ $entry->eot_id }}</span></td>
                                 <td class="px-4 py-3"><span class="inline-flex rounded-lg border border-cyan-100 bg-cyan-50 px-2.5 py-1 text-[9px] font-black text-cyan-800">{{ $entry->baseOfRisk?->name ?? 'Category removed' }}</span></td>
+                                <td class="px-4 py-3 text-xs font-semibold text-slate-700">{{ $entry->contract_reference_id ?: '—' }}</td>
                                 <td class="max-w-2xl px-4 py-3"><p class="text-xs font-semibold leading-5 text-slate-700">{{ \Illuminate\Support\Str::limit($entry->detail_reason, 190) }}</p></td>
                                 <td class="whitespace-nowrap px-4 py-3 text-xs font-semibold text-slate-500">{{ $entry->created_at?->format('d-M-y') }}</td>
                                 <td class="px-4 py-3 text-right">
@@ -67,7 +69,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="px-4 py-16 text-center"><div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-200"><i data-lucide="calendar-clock" class="h-7 w-7"></i></div><h3 class="mt-3 text-sm font-black text-slate-800">No EOT records found</h3><p class="mt-1 text-xs text-slate-500">Add an EOT or adjust the filters.</p></td></tr>
+                            <tr><td colspan="6" class="px-4 py-16 text-center"><div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-200"><i data-lucide="calendar-clock" class="h-7 w-7"></i></div><h3 class="mt-3 text-sm font-black text-slate-800">No EOT records found</h3><p class="mt-1 text-xs text-slate-500">Add an EOT or adjust the filters.</p></td></tr>
                         @endforelse
                     </tbody>
                 </table>

@@ -339,9 +339,11 @@
                  .then(html => {
                     document.getElementById('createModalContent').innerHTML = html;
                     if (window.lucide) lucide.createIcons();
-                    updateRiskRating();
+                    updateRiskRating(document.getElementById('createModalContent'));
+                    initRiskResponseStrategies(document.getElementById('createModalContent'));
                     initPoolRiskPicker(document.getElementById('createModalContent'));
                     initEotPicker(document.getElementById('createModalContent'));
+                    initRiskExposure(document.getElementById('createModalContent'));
                     initRiskStepper(document.getElementById('createModalContent'));
                 })
                 .catch(error => {
@@ -358,9 +360,9 @@
             document.body.style.overflow = '';
         }
 
-        function updateRiskRating() {
-            const likelihoodInput = document.getElementById('likelihood');
-            const severityInput = document.getElementById('severity');
+        function updateRiskRating(container = document) {
+            const likelihoodInput = container.querySelector('#likelihood');
+            const severityInput = container.querySelector('#severity');
             if (!likelihoodInput || !severityInput) return;
 
             const likelihood = Number(likelihoodInput.value);
@@ -378,11 +380,11 @@
             const level = score >= 17 ? 'Extreme' : score >= 10 ? 'High' : score >= 5 ? 'Medium' : 'Low';
             const colors = { Low: 'text-emerald-600', Medium: 'text-amber-600', High: 'text-orange-600', Extreme: 'text-rose-600' };
 
-            document.getElementById('likelihoodValue').textContent = likelihood;
-            document.getElementById('severityValue').textContent = severity;
-            document.getElementById('riskRatingScore').textContent = score;
-            document.getElementById('riskRatingLevel').textContent = level;
-            document.getElementById('riskRatingLevel').className = `text-[9px] font-black uppercase tracking-widest ${colors[level]}`;
+            container.querySelector('#likelihoodValue').textContent = likelihood;
+            container.querySelector('#severityValue').textContent = severity;
+            container.querySelector('#riskRatingScore').textContent = score;
+            container.querySelector('#riskRatingLevel').textContent = level;
+            container.querySelector('#riskRatingLevel').className = `text-[9px] font-black uppercase tracking-widest ${colors[level]}`;
         }
 
         function initPoolRiskPicker(container) {
@@ -429,6 +431,7 @@
             function clearImpact() {
                 showImpact('', '', '');
                 if (poolRiskIdHidden) poolRiskIdHidden.value = '';
+                if (riskName) riskName.value = '';
             }
 
             async function loadRisks(category, riskType, selectedId = '') {
@@ -502,7 +505,7 @@
             idSelect.addEventListener('change', () => {
                 const opt = idSelect.options[idSelect.selectedIndex];
                 if (!opt || !opt.value) { clearImpact(); return; }
-                if (riskName && !riskName.value) riskName.value = opt.dataset.specific || '';
+                if (riskName) riskName.value = opt.dataset.specific || '';
                 if (riskDesc && !riskDesc.value) riskDesc.value = opt.dataset.detail || '';
                 if (poolRiskIdHidden) poolRiskIdHidden.value = opt.value;
                 showImpact(opt.dataset.timeline, opt.dataset.cost, opt.dataset.quality);
@@ -515,33 +518,65 @@
             );
         }
 
+        function initRiskResponseStrategies(container) {
+            const type = container.querySelector('#risk_type');
+            const strategy = container.querySelector('#response_strategy');
+            if (!type || !strategy) return;
+
+            const strategiesByType = @json(\App\Models\ProjectRisk::RESPONSE_STRATEGIES);
+            const initialStrategy = strategy.dataset.selectedStrategy || strategy.value;
+
+            function updateStrategies(selectedStrategy = '') {
+                const options = strategiesByType[type.value] || [];
+                strategy.innerHTML = '<option value="">Select strategy</option>';
+                options.forEach(value => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = value;
+                    strategy.appendChild(option);
+                });
+                if (options.includes(selectedStrategy)) {
+                    strategy.value = selectedStrategy;
+                }
+            }
+
+            updateStrategies(initialStrategy);
+            type.addEventListener('change', () => updateStrategies());
+        }
+
         function initEotPicker(container) {
             const state = container.querySelector('#eotPoolState');
             const intent = container.querySelector('#intent_to_claim');
             const fields = container.querySelector('#eotClaimFields');
             const base = container.querySelector('#eot_base_of_risk');
             const entry = container.querySelector('#eot_entry_id');
-            const detail = container.querySelector('#eot_detail_reason');
-            if (!state || !intent || !fields || !base || !entry || !detail) return;
+            if (!state || !intent || !fields || !base || !entry) return;
 
             const options = JSON.parse(state.textContent);
             const allEntries = options.entries || [];
             const selectedEntry = entry.dataset.selectedEntry || '';
             const selectedCategory = base.dataset.selectedCategory || '';
+            const preview = container.querySelector('#eot_entry_preview');
+
+            function updateEntryPreview() {
+                const selectedOption = entry.options[entry.selectedIndex];
+                const hasSelection = Boolean(selectedOption?.value);
+                if (!preview) return;
+                preview.textContent = hasSelection ? selectedOption.textContent : '';
+                preview.classList.toggle('hidden', !hasSelection);
+            }
 
             function loadEntries(categoryId, selectedId = '') {
                 entry.innerHTML = '<option value="">Select EOT ID</option>';
-                detail.value = '';
                 entry.disabled = !categoryId;
                 allEntries.filter(item => String(item.eot_category_id) === String(categoryId)).forEach(item => {
                     const option = document.createElement('option');
                     option.value = item.id;
-                    option.textContent = item.eot_id;
-                    option.dataset.reason = item.detail_reason || '';
+                    option.textContent = item.eot_id + ' — ' + (item.detail_reason || '');
                     entry.appendChild(option);
                 });
                 if (selectedId) entry.value = selectedId;
-                if (entry.value) detail.value = entry.options[entry.selectedIndex].dataset.reason || '';
+                updateEntryPreview();
             }
 
             function updateIntentVisibility() {
@@ -553,14 +588,12 @@
                     base.value = '';
                     entry.value = '';
                     entry.disabled = true;
-                    detail.value = '';
                 }
+                updateEntryPreview();
             }
 
             base.addEventListener('change', () => loadEntries(base.value));
-            entry.addEventListener('change', () => {
-                detail.value = entry.options[entry.selectedIndex]?.dataset.reason || '';
-            });
+            entry.addEventListener('change', updateEntryPreview);
             intent.addEventListener('change', updateIntentVisibility);
             if (selectedCategory) {
                 base.value = selectedCategory;
@@ -569,12 +602,43 @@
             updateIntentVisibility();
         }
 
+        function initRiskExposure(container) {
+            const materializedDate = container.querySelector('#materialized_date');
+            const actualActionDate = container.querySelector('#actual_action_date');
+            const display = container.querySelector('#exposure_display');
+            if (!materializedDate || !actualActionDate || !display) return;
+
+            function updateExposure() {
+                if (!materializedDate.value) {
+                    display.textContent = '—';
+                    return;
+                }
+
+                const localToday = new Date();
+                const browserToday = new Date(localToday.getTime() - localToday.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+                const today = display.dataset.today || browserToday;
+                const endDate = actualActionDate.value || today;
+                const startTime = Date.parse(materializedDate.value + 'T00:00:00Z');
+                const endTime = Date.parse(endDate + 'T00:00:00Z');
+                display.textContent = Number.isFinite(startTime) && Number.isFinite(endTime)
+                    ? Math.trunc((endTime - startTime) / 86400000).toLocaleString()
+                    : '—';
+            }
+
+            materializedDate.addEventListener('input', updateExposure);
+            actualActionDate.addEventListener('input', updateExposure);
+            materializedDate.addEventListener('change', updateExposure);
+            actualActionDate.addEventListener('change', updateExposure);
+            updateExposure();
+        }
+
         function initRiskStepper(container) {
             const panels = container.querySelectorAll('.step-panel');
             if (!panels.length) return;
             const indicator = container.querySelectorAll('.step-indicator');
             const backBtn = container.querySelector('#riskStepBack');
             const nextBtn = container.querySelector('#riskStepNext');
+            const form = container.querySelector('form');
             let step = 1;
 
             function render() {
@@ -582,28 +646,62 @@
                     const s = Number(p.dataset.step);
                     p.classList.toggle('hidden', s !== step);
                 });
-                if (indicator.length) {
-                    indicator.forEach((ind, i) => {
-                        ind.classList.toggle('text-cyan-700', i === step - 1);
-                        ind.classList.toggle('text-slate-400', i !== step - 1);
-                    });
+                indicator.forEach(button => {
+                    const targetStep = Number(button.dataset.stepTarget);
+                    const active = targetStep === step;
+                    const number = button.querySelector('span');
+                    button.classList.toggle('border-cyan-200', active);
+                    button.classList.toggle('bg-cyan-50', active);
+                    button.classList.toggle('text-cyan-800', active);
+                    button.classList.toggle('border-slate-200', !active);
+                    button.classList.toggle('bg-white', !active);
+                    button.classList.toggle('text-slate-500', !active);
+                    if (number) {
+                        number.classList.toggle('bg-cyan-700', active);
+                        number.classList.toggle('text-white', active);
+                        number.classList.toggle('bg-slate-100', !active);
+                        number.classList.toggle('text-slate-600', !active);
+                    }
+                    if (active) {
+                        button.setAttribute('aria-current', 'step');
+                    } else {
+                        button.removeAttribute('aria-current');
+                    }
+                });
+                if (backBtn) {
+                    backBtn.disabled = step <= 1;
+                    backBtn.classList.toggle('cursor-not-allowed', backBtn.disabled);
+                    backBtn.classList.toggle('opacity-50', backBtn.disabled);
                 }
-                if (backBtn) backBtn.style.display = step <= 1 ? 'none' : 'inline-flex';
                 if (nextBtn) {
-                    const isLast = step >= panels.length;
-                    nextBtn.textContent = isLast ? (nextBtn.dataset.submitLabel || 'Save Risk') : 'Next';
+                    nextBtn.hidden = step >= panels.length;
+                    nextBtn.textContent = 'Next step';
                 }
-                if (step === 2) updateRiskRating();
+                const scrollContainer = container.closest('.overflow-y-auto');
+                if (scrollContainer) {
+                    scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                if (step === 2) updateRiskRating(container);
             }
 
-            if (backBtn) backBtn.addEventListener('click', () => { if (step > 1) { step--; render(); } });
-            if (nextBtn) nextBtn.addEventListener('click', () => {
-                if (step < panels.length) { step++; render(); }
-                else {
-                    const form = container.querySelector('form');
-                    if (form) form.submit();
-                }
+            indicator.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetStep = Number(button.dataset.stepTarget);
+                    if (targetStep >= 1 && targetStep <= panels.length) {
+                        step = targetStep;
+                        render();
+                    }
+                });
             });
+            if (backBtn) backBtn.addEventListener('click', () => { if (step > 1) { step--; render(); } });
+            if (nextBtn) nextBtn.addEventListener('click', () => { if (step < panels.length) { step++; render(); } });
+            if (form) {
+                form.addEventListener('submit', () => {
+                    if (nextBtn) nextBtn.disabled = true;
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    if (submitButton) submitButton.disabled = true;
+                });
+            }
             render();
         }
 
@@ -651,9 +749,11 @@
                     modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
                     if (window.lucide) lucide.createIcons();
-                    updateRiskRating();
+                    updateRiskRating(document.getElementById('editModalContent'));
+                    initRiskResponseStrategies(document.getElementById('editModalContent'));
                     initPoolRiskPicker(document.getElementById('editModalContent'));
                     initEotPicker(document.getElementById('editModalContent'));
+                    initRiskExposure(document.getElementById('editModalContent'));
                     initRiskStepper(document.getElementById('editModalContent'));
                 })
                 .catch(error => {

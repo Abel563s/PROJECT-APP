@@ -202,6 +202,7 @@ it('returns partial summary and table as json', function () {
         ->assertSee('Risk ID', false)
         ->assertSee('Risk Type', false)
         ->assertSee('Threat', false)
+        ->assertSee('High', false)
         ->assertSee('Advance Payment Delay (Client)', false);
 });
 

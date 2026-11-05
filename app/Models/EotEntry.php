@@ -10,6 +10,7 @@ class EotEntry extends Model
     protected $fillable = [
         'eot_id',
         'eot_category_id',
+        'contract_reference_id',
         'detail_reason',
         'created_by',
     ];

@@ -36,6 +36,7 @@ class EotPoolController extends Controller
             $search = trim($request->string('search')->toString());
             $query->where(function ($builder) use ($search) {
                 $builder->where('eot_id', 'like', '%'.$search.'%')
+                    ->orWhere('contract_reference_id', 'like', '%'.$search.'%')
                     ->orWhere('detail_reason', 'like', '%'.$search.'%')
                     ->orWhereHas('baseOfRisk', fn ($category) => $category->where('name', 'like', '%'.$search.'%'));
             });
@@ -92,6 +93,7 @@ class EotPoolController extends Controller
             'rows.*.id' => ['nullable', 'integer', 'exists:eot_entries,id'],
             'rows.*.eot_id' => ['required', 'string', 'max:50'],
             'rows.*.eot_category_id' => ['required', 'integer', Rule::exists('eot_categories', 'id')],
+            'rows.*.contract_reference_id' => ['nullable', 'string', 'max:255'],
             'rows.*.detail_reason' => ['required', 'string', 'max:20000'],
         ]);
 
@@ -135,6 +137,7 @@ class EotPoolController extends Controller
                 $payload = [
                     'eot_id' => $row['eot_id'],
                     'eot_category_id' => $row['eot_category_id'],
+                    'contract_reference_id' => $row['contract_reference_id'] ?? null,
                     'detail_reason' => $row['detail_reason'],
                 ];
                 if ($recordId) {
@@ -189,6 +192,7 @@ class EotPoolController extends Controller
         $validated = $request->validate([
             'eot_id' => ['required', 'string', 'max:50', Rule::unique('eot_entries', 'eot_id')->ignore($eot->id)],
             'eot_category_id' => ['required', 'integer', Rule::exists('eot_categories', 'id')],
+            'contract_reference_id' => ['nullable', 'string', 'max:255'],
             'detail_reason' => ['required', 'string', 'max:20000'],
         ]);
         $eot->update($validated);

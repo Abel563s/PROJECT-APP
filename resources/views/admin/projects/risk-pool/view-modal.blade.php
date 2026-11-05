@@ -116,8 +116,8 @@
             <div>
                 <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
                 <span class="mt-1 inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$risk->overall_impact_level] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
-                    @if($risk->impact_impact_level)<i data-lucide="{{ $impactIcons[$risk->impact_on_quality] ?? 'circle' }}" class="w-3 h-3"></i>@endif
-                    {{ $risk->impact_on_quality ?: 'Unassigned' }}
+                    @if($risk->overall_impact_level)<i data-lucide="{{ $impactIcons[$risk->overall_impact_level] ?? 'circle' }}" class="w-3 h-3"></i>@endif
+                    {{ $risk->overall_impact_level ?: 'Unassigned' }}
                 </span>
             </div>
         </div>

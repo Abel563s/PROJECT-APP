@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -25,6 +26,7 @@ class ProjectRisk extends Model
         'most_likely_cost_impact',
         'most_likely_time_impact',
         'most_likely_quality_impact',
+        'most_likely_quality_impact_description',
         'time_impact_unit',
         'resolution_by',
         'risk_frequency',
@@ -79,6 +81,29 @@ class ProjectRisk extends Model
     }
 
     public const ACTION_STATUSES = ['Risk', 'Issue', 'Resolved'];
+    public const RESPONSE_STRATEGIES = [
+        'Threat' => ['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate', 'Eliminate'],
+        'Opportunity' => ['Exploit', 'Enhance', 'Share'],
+    ];
+
+    public static function calculateExposureDays(mixed $materializedDate, mixed $actualActionDate): ?int
+    {
+        if (!$materializedDate) {
+            return null;
+        }
+
+        $start = Carbon::parse($materializedDate)->startOfDay();
+        $end = $actualActionDate
+            ? Carbon::parse($actualActionDate)->startOfDay()
+            : Carbon::today();
+
+        return (int) $start->diffInDays($end, false);
+    }
+
+    public function getCalculatedExposureDaysAttribute(): ?int
+    {
+        return static::calculateExposureDays($this->materialized_date, $this->actual_action_date);
+    }
 
     public function getRiskScoreAttribute(): int
     {

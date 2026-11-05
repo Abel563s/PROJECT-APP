@@ -13,6 +13,7 @@
             @endforeach
         </select>
     </td>
+    <td class="border-r border-slate-100 p-2"><input type="text" data-field="contract_reference_id" value="{{ $entry->contract_reference_id }}" {{ $editable ? '' : 'disabled' }} maxlength="255" placeholder="Contract reference ID (optional)" class="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2.5 text-[10px] font-bold text-slate-700 disabled:bg-slate-100 disabled:text-slate-500 focus:border-cyan-300 focus:ring-cyan-100"></td>
     <td class="p-2"><textarea data-field="detail_reason" rows="2" {{ $editable ? 'required' : 'disabled' }} maxlength="20000" class="min-h-[42px] w-full resize-y rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-[10px] font-medium leading-5 text-slate-700 disabled:bg-slate-100 disabled:text-slate-500 focus:border-cyan-300 focus:ring-cyan-100">{{ $entry->detail_reason }}</textarea></td>
     @if(!$isEdit)
         <td class="p-2 text-center"><span class="text-[8px] font-black uppercase tracking-wider text-slate-400">Saved</span></td>
