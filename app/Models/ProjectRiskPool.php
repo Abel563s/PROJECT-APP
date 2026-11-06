@@ -84,21 +84,30 @@ class ProjectRiskPool extends Model
             ?: self::CATEGORIES;
     }
 
-    public static function categoryPrefix(string $category): ?int
+    public static function categoryPrefix(string $category): ?string
     {
-        return RiskCategory::resolvePrefix($category);
+        $prefix = RiskCategory::resolvePrefix($category);
+
+        return $prefix !== null ? (string) $prefix : null;
     }
 
-    public static function suggestNextRiskId(string $category): string
+    public static function suggestNextRiskId(string $category): ?string
     {
-        $prefix = self::categoryPrefix($category) ?? 1;
+        $prefix = self::categoryPrefix($category);
+        if ($prefix === null) {
+            return null;
+        }
 
         $maxSuffix = self::where('risk_id', 'like', $prefix . '.%')
             ->pluck('risk_id')
-            ->reduce(function ($carry, $id) {
-                $parts = explode('.', $id);
-                $suffix = isset($parts[1]) ? (int) $parts[1] : 0;
-                return $suffix > $carry ? $suffix : $carry;
+            ->reduce(function (int $carry, string $id) use ($prefix): int {
+                if (! preg_match('/^' . preg_quote($prefix, '/') . '\.(\d+)$/', $id, $matches)) {
+                    return $carry;
+                }
+
+                $suffix = (int) $matches[1];
+
+                return max($carry, $suffix);
             }, 0);
 
         return $prefix . '.' . str_pad((string) ($maxSuffix + 1), 2, '0', STR_PAD_LEFT);
@@ -155,6 +164,12 @@ class ProjectRiskPool extends Model
 
         if (!empty($filters['overall_impact_level']) && $filters['overall_impact_level'] !== 'all') {
             $query->where('overall_impact_level', $filters['overall_impact_level']);
+        }
+
+        foreach (['impact_on_timeline', 'impact_on_cost'] as $field) {
+            if (!empty($filters[$field]) && $filters[$field] !== 'all') {
+                $query->where($field, $filters[$field]);
+            }
         }
 
         return $query;

@@ -42,7 +42,7 @@
     <div class="bg-slate-50 rounded-xl p-4">
         <div class="flex items-start justify-between gap-3 mb-3">
             <div class="flex-1 min-w-0">
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Risk ID &amp; Name</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Risk ID &amp; Sub Category</p>
                 <p class="text-lg font-black text-slate-900 leading-snug">{{ $risk->pool_risk_id ? $risk->pool_risk_id.' — ' : '' }}{{ $risk->risk_name }}</p>
             </div>
             <div class="flex items-center gap-2 flex-shrink-0">
@@ -104,12 +104,12 @@
                 <p class="text-xs font-black text-slate-900">{{ $risk->pool_risk_category ?: '---' }}</p>
             </div>
             <div class="col-span-2">
-                <p class="{{ $labelClass }}">Activity Related to the Risk</p>
-                <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->activity ?: '---' }}</p>
+                <p class="{{ $labelClass }}">Project-Specific Risk Statement</p>
+                <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->risk_description ?: '---' }}</p>
             </div>
             <div class="col-span-2">
-                <p class="{{ $labelClass }}">Risk Description</p>
-                <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->risk_description ?: '---' }}</p>
+                <p class="{{ $labelClass }}">Affected Project Objective/ Activity</p>
+                <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->activity ?: '---' }}</p>
             </div>
         </div>
     </div>
@@ -180,18 +180,18 @@
         <h4 class="text-sm font-black text-slate-900">3. Risk Response</h4>
         <div class="grid grid-cols-2 gap-3">
             <div class="col-span-2">
+                <p class="{{ $labelClass }}">Risk Response Strategy</p>
+                <span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">
+                    {{ $risk->response_strategy ?: '---' }}
+                </span>
+            </div>
+            <div class="col-span-2">
                 <p class="{{ $labelClass }}">Existing Control</p>
                 <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->existing_control ?: '---' }}</p>
             </div>
             <div class="col-span-2">
                 <p class="{{ $labelClass }}">Residual Risk</p>
                 <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->residual_risk ?: '---' }}</p>
-            </div>
-            <div class="col-span-2">
-                <p class="{{ $labelClass }}">Response Strategy</p>
-                <span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700 shadow-sm">
-                    {{ $risk->response_strategy ?: '---' }}
-                </span>
             </div>
             <div class="col-span-2">
                 <p class="{{ $labelClass }}">Mitigation Plan</p>
@@ -219,8 +219,16 @@
                 <p class="text-xs font-black text-slate-900">{{ $risk->materialized_date?->format('M d, Y') ?: '---' }}</p>
             </div>
             <div>
-                <p class="{{ $labelClass }}">Name of Owner</p>
+                <p class="{{ $labelClass }}">Last Review Date</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->last_review_date?->format('M d, Y') ?: '---' }}</p>
+            </div>
+            <div>
+                <p class="{{ $labelClass }}">Risk Owner</p>
                 <p class="text-xs font-black text-slate-900">{{ $risk->owner_name ?: '---' }}</p>
+            </div>
+            <div>
+                <p class="{{ $labelClass }}">Action Owner</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->action_owner ?: '---' }}</p>
             </div>
             <div>
                 <p class="{{ $labelClass }}">Planned Action Date</p>
@@ -234,6 +242,57 @@
                 <p class="{{ $labelClass }}">Exposure (Days)</p>
                 <p class="text-xs font-black text-slate-900">{{ $risk->calculated_exposure_days ?? '---' }}</p>
             </div>
+            @if($risk->intent_to_claim)
+                <div class="col-span-2 rounded-xl border border-cyan-100 bg-cyan-50/40 p-3">
+                    <h5 class="mb-3 text-[9px] font-black uppercase tracking-widest text-cyan-900">EOT Claim Details</h5>
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div class="sm:col-span-2">
+                            <p class="{{ $labelClass }}">Detail Reason for EOT</p>
+                            <p class="whitespace-pre-wrap break-words text-xs font-bold text-slate-800">{{ $risk->detail_reason_for_eot ?: '---' }}</p>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <p class="{{ $labelClass }}">Project Case Event Description</p>
+                            <p class="whitespace-pre-wrap break-words text-xs font-bold text-slate-800">{{ $risk->project_case_event_description ?: '---' }}</p>
+                        </div>
+                        <div>
+                            <p class="{{ $labelClass }}">Reference Contract Clause No.</p>
+                            <p class="break-words text-xs font-bold text-slate-800">{{ $risk->reference_contract_clause_no ?: '---' }}</p>
+                        </div>
+                        <div>
+                            <p class="{{ $labelClass }}">Affected Activities</p>
+                            <p class="whitespace-pre-wrap break-words text-xs font-bold text-slate-800">{{ $risk->affected_activities ?: '---' }}</p>
+                        </div>
+                        <div>
+                            <p class="{{ $labelClass }}">ITC/Notification</p>
+                            <p class="text-xs font-bold text-slate-800">{{ $risk->itc_notification_status ?: '---' }}</p>
+                        </div>
+                        <div>
+                            <p class="{{ $labelClass }}">ITC/Notification Date</p>
+                            <p class="text-xs font-bold text-slate-800">{{ $risk->itc_notification_date?->format('d-M-y') ?: '---' }}</p>
+                        </div>
+                        <div>
+                            <p class="{{ $labelClass }}">EOT Status</p>
+                            <p class="text-xs font-bold text-slate-800">{{ $risk->eot_status ?: '---' }}</p>
+                        </div>
+                        <div>
+                            <p class="{{ $labelClass }}">EOT Submitted Date</p>
+                            <p class="text-xs font-bold text-slate-800">{{ $risk->eot_submitted_date?->format('d-M-y') ?: '---' }}</p>
+                        </div>
+                        <div>
+                            <p class="{{ $labelClass }}">EOT Response Date</p>
+                            <p class="text-xs font-bold text-slate-800">{{ $risk->eot_response_date?->format('d-M-y') ?: '---' }}</p>
+                        </div>
+                        <div>
+                            <p class="{{ $labelClass }}">EOT Requested (Days)</p>
+                            <p class="text-xs font-bold text-slate-800">{{ $risk->eot_requested_days ?? '---' }}</p>
+                        </div>
+                        <div>
+                            <p class="{{ $labelClass }}">EOT Approved (Days)</p>
+                            <p class="text-xs font-bold text-slate-800">{{ $risk->eot_approved_days ?? '---' }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
             <div class="col-span-2">
                 <p class="{{ $labelClass }}">Tracking Comments</p>
                 <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->tracking_comments ?: '---' }}</p>

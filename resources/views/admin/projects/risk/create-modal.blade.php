@@ -83,7 +83,7 @@
                 <input type="hidden" name="pool_risk_category" id="pool_risk_category_hidden" value="{{ old('pool_risk_category') }}">
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="pool_risk_id">Risk ID &amp; Name</label>
+                <label class="{{ $labelClass }}" for="pool_risk_id">Risk ID &amp; Sub Category</label>
                 <select id="pool_risk_id" class="{{ $fieldClass }}" disabled data-selected-id="{{ old('pool_risk_id') }}">
                     <option value="">Select category first</option>
                 </select>
@@ -92,15 +92,15 @@
             </div>
             <div class="md:col-span-2">
                 <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">From Risk Repository</p>
-                <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Select a category and Risk ID &amp; Name to auto-fill the risk details.</p>
+                <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Select a category and Risk ID &amp; Sub Category to auto-fill the risk details.</p>
             </div>
             <div class="md:col-span-2">
-                <label class="{{ $labelClass }}" for="activity">Activity Related to the Risk</label>
-                <textarea id="activity" name="activity" rows="3" required class="{{ $areaClass }}">{{ old('activity') }}</textarea>
-            </div>
-            <div class="md:col-span-2">
-                <label class="{{ $labelClass }}" for="risk_description">Risk Description</label>
+                <label class="{{ $labelClass }}" for="risk_description">Project-Specific Risk Statement</label>
                 <textarea id="risk_description" name="risk_description" rows="3" required class="{{ $areaClass }}">{{ old('risk_description') }}</textarea>
+            </div>
+            <div class="md:col-span-2">
+                <label class="{{ $labelClass }}" for="activity">Affected Project Objective/ Activity</label>
+                <textarea id="activity" name="activity" rows="3" required class="{{ $areaClass }}">{{ old('activity') }}</textarea>
             </div>
         </div>
     </section>
@@ -207,18 +207,18 @@
     <section class="step-panel hidden" data-step="3">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div class="md:col-span-2">
+                <label class="{{ $labelClass }}" for="response_strategy">Risk Response Strategy</label>
+                <select id="response_strategy" name="response_strategy" class="{{ $fieldClass }}" data-selected-strategy="{{ old('response_strategy') }}">
+                    <option value="">Select strategy</option>
+                </select>
+            </div>
+            <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="existing_control">Existing Control, If the Risk is Materialized</label>
                 <textarea id="existing_control" name="existing_control" rows="3" class="{{ $areaClass }}">{{ old('existing_control') }}</textarea>
             </div>
             <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="residual_risk">Residual Risk, If Risk is Materialized</label>
                 <textarea id="residual_risk" name="residual_risk" rows="3" class="{{ $areaClass }}">{{ old('residual_risk') }}</textarea>
-            </div>
-            <div class="md:col-span-2">
-                <label class="{{ $labelClass }}" for="response_strategy">Risk Response Strategy</label>
-                <select id="response_strategy" name="response_strategy" class="{{ $fieldClass }}" data-selected-strategy="{{ old('response_strategy') }}">
-                    <option value="">Select strategy</option>
-                </select>
             </div>
             <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="mitigation_plan">Response / Mitigation Plan / Risk Treatment (Additional if Residual Risk Remains)</label>
@@ -246,13 +246,21 @@
                 <label class="{{ $labelClass }}" for="materialized_date">Materialized Date</label>
                 <input id="materialized_date" name="materialized_date" type="date" value="{{ old('materialized_date') }}" class="{{ $fieldClass }}">
             </div>
+            <div>
+                <label class="{{ $labelClass }}" for="last_review_date">Last Review Date</label>
+                <input id="last_review_date" name="last_review_date" type="date" value="{{ old('last_review_date') }}" class="{{ $fieldClass }}">
+            </div>
             <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="tracking_comments">Tracking Comments</label>
                 <textarea id="tracking_comments" name="tracking_comments" rows="3" class="{{ $areaClass }}">{{ old('tracking_comments') }}</textarea>
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="owner_name">Name of Owner</label>
+                <label class="{{ $labelClass }}" for="owner_name">Risk Owner</label>
                 <input id="owner_name" name="owner_name" type="text" value="{{ old('owner_name') }}" class="{{ $fieldClass }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="action_owner">Action Owner</label>
+                <input id="action_owner" name="action_owner" type="text" value="{{ old('action_owner') }}" class="{{ $fieldClass }}">
             </div>
             <div>
                 <label class="{{ $labelClass }}" for="planned_action_date">Planned Action Date</label>
@@ -269,6 +277,65 @@
             <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="recommendation">Recommendation / Lesson Learned</label>
                 <textarea id="recommendation" name="recommendation" rows="3" class="{{ $areaClass }}">{{ old('recommendation') }}</textarea>
+            </div>
+            <div id="eotClaimEvaluationFields" class="hidden md:col-span-2 rounded-xl border border-cyan-100 bg-cyan-50/40 p-4">
+                <h4 class="mb-3 text-xs font-black uppercase tracking-wider text-cyan-900">EOT Claim Details</h4>
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                    <div class="md:col-span-2">
+                        <label class="{{ $labelClass }}" for="detail_reason_for_eot">Detail Reason for EOT</label>
+                        <textarea id="detail_reason_for_eot" name="detail_reason_for_eot" rows="2" class="{{ $areaClass }}">{{ old('detail_reason_for_eot') }}</textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="{{ $labelClass }}" for="project_case_event_description">Project Case Event Description</label>
+                        <textarea id="project_case_event_description" name="project_case_event_description" rows="2" class="{{ $areaClass }}">{{ old('project_case_event_description') }}</textarea>
+                    </div>
+                    <div>
+                        <label class="{{ $labelClass }}" for="reference_contract_clause_no">Reference Contract Clause No.</label>
+                        <input id="reference_contract_clause_no" name="reference_contract_clause_no" type="text" value="{{ old('reference_contract_clause_no') }}" class="{{ $fieldClass }}">
+                    </div>
+                    <div>
+                        <label class="{{ $labelClass }}" for="affected_activities">Affected Activities</label>
+                        <textarea id="affected_activities" name="affected_activities" rows="2" class="{{ $areaClass }}">{{ old('affected_activities') }}</textarea>
+                    </div>
+                    <div>
+                        <label class="{{ $labelClass }}" for="itc_notification_status">ITC/Notification</label>
+                        <select id="itc_notification_status" name="itc_notification_status" class="{{ $fieldClass }}">
+                            <option value="">Select status</option>
+                            @foreach(['Submitted', 'Not Submitted'] as $status)
+                                <option value="{{ $status }}" @selected(old('itc_notification_status') === $status)>{{ $status }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div id="itcNotificationDateField" class="hidden">
+                        <label class="{{ $labelClass }}" for="itc_notification_date">ITC/Notification Date <span class="normal-case tracking-normal">(required when submitted)</span></label>
+                        <input id="itc_notification_date" name="itc_notification_date" type="date" value="{{ old('itc_notification_date') }}" class="{{ $fieldClass }}">
+                    </div>
+                    <div>
+                        <label class="{{ $labelClass }}" for="eot_status">EOT Status</label>
+                        <select id="eot_status" name="eot_status" class="{{ $fieldClass }}">
+                            <option value="">Select EOT status</option>
+                            @foreach(['Submitted', 'Not Submitted', 'Agreed', 'Rejected', 'Approved'] as $status)
+                                <option value="{{ $status }}" @selected(old('eot_status') === $status)>{{ $status }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div id="eotSubmittedDateField" class="hidden">
+                        <label class="{{ $labelClass }}" for="eot_submitted_date">EOT Submitted Date <span class="normal-case tracking-normal">(required when submitted)</span></label>
+                        <input id="eot_submitted_date" name="eot_submitted_date" type="date" value="{{ old('eot_submitted_date') }}" class="{{ $fieldClass }}">
+                    </div>
+                    <div>
+                        <label class="{{ $labelClass }}" for="eot_response_date">EOT Response Date</label>
+                        <input id="eot_response_date" name="eot_response_date" type="date" value="{{ old('eot_response_date') }}" class="{{ $fieldClass }}">
+                    </div>
+                    <div>
+                        <label class="{{ $labelClass }}" for="eot_requested_days">EOT Requested (Days)</label>
+                        <input id="eot_requested_days" name="eot_requested_days" type="number" min="0" step="1" value="{{ old('eot_requested_days') }}" class="{{ $fieldClass }}">
+                    </div>
+                    <div>
+                        <label class="{{ $labelClass }}" for="eot_approved_days">EOT Approved (Days)</label>
+                        <input id="eot_approved_days" name="eot_approved_days" type="number" min="0" step="1" value="{{ old('eot_approved_days') }}" class="{{ $fieldClass }}">
+                    </div>
+                </div>
             </div>
         </div>
     </section>

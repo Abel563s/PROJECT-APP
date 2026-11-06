@@ -6,6 +6,7 @@ use App\Models\Issue;
 use App\Models\Project;
 use App\Models\ProjectRisk;
 use App\Models\ProjectRiskPool;
+use App\Models\RiskCategory;
 use App\Models\EotCategory;
 use App\Models\EotEntry;
 use App\Models\BusinessUnit;
@@ -772,8 +773,49 @@ class ProjectController extends Controller
         ]);
         $query = ProjectRiskPool::query()->where('risk_type', $validated['risk_type']);
         if (empty($validated['category'])) {
-            return response()->json($query->distinct()->orderBy('risk_category')->pluck('risk_category')->values());
+            $eligibleCategoryNames = RiskCategory::query()
+                ->active()
+                ->where(function ($categoryQuery) use ($validated) {
+                    $categoryQuery->whereNull('risk_type')
+                        ->orWhere('risk_type', $validated['risk_type']);
+                })
+                ->pluck('name');
+            $assignedCategories = RiskCategory::query()
+                ->active()
+                ->where('risk_type', $validated['risk_type'])
+                ->ordered()
+                ->pluck('name')
+                ->all();
+            $poolCategories = ProjectRiskPool::query()
+                ->where('risk_type', $validated['risk_type'])
+                ->whereIn('risk_category', $eligibleCategoryNames)
+                ->distinct()
+                ->pluck('risk_category')
+                ->all();
+
+            $categoryNames = collect($assignedCategories)
+                ->merge($poolCategories)
+                ->unique()
+                ->values();
+
+            return response()->json(RiskCategory::query()
+                ->active()
+                ->whereIn('name', $categoryNames)
+                ->ordered()
+                ->pluck('name')
+                ->values());
         }
+
+        $category = RiskCategory::query()
+            ->active()
+            ->where('name', $validated['category'])
+            ->first();
+        abort_if(
+            ! $category
+                || ($category->risk_type !== null && $category->risk_type !== $validated['risk_type']),
+            422,
+            'The selected category is not available for this risk type.'
+        );
 
         $risks = $query->where('risk_category', $validated['category'])->ordered()->get();
 
@@ -812,6 +854,17 @@ class ProjectController extends Controller
                 'integer',
                 Rule::exists('eot_entries', 'id')->where('eot_category_id', $request->input('eot_category_id')),
             ],
+            'detail_reason_for_eot' => 'nullable|string',
+            'project_case_event_description' => 'nullable|string',
+            'reference_contract_clause_no' => 'nullable|string|max:255',
+            'affected_activities' => 'nullable|string',
+            'itc_notification_status' => ['nullable', Rule::in(['Submitted', 'Not Submitted'])],
+            'itc_notification_date' => ['nullable', Rule::requiredIf(fn () => $request->boolean('intent_to_claim') && $request->input('itc_notification_status') === 'Submitted'), 'date'],
+            'eot_status' => ['nullable', Rule::in(['Submitted', 'Not Submitted', 'Agreed', 'Rejected', 'Approved'])],
+            'eot_submitted_date' => ['nullable', Rule::requiredIf(fn () => $request->boolean('intent_to_claim') && $request->input('eot_status') === 'Submitted'), 'date'],
+            'eot_response_date' => 'nullable|date',
+            'eot_requested_days' => 'nullable|integer|min:0',
+            'eot_approved_days' => 'nullable|integer|min:0',
             'activity' => 'required|string',
             'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'risk_name' => 'nullable|string|max:255',
@@ -833,7 +886,9 @@ class ProjectController extends Controller
             'mitigation_plan' => 'nullable|string',
             'contingency_plan' => 'nullable|string',
             'owner_name' => 'nullable|string|max:255',
+            'action_owner' => 'nullable|string|max:255',
             'planned_action_date' => 'nullable|date',
+            'last_review_date' => 'nullable|date',
             'tracking_comments' => 'nullable|string',
             'action_status' => ['required', Rule::in(ProjectRisk::ACTION_STATUSES)],
             'actual_action_date' => 'nullable|date',
@@ -858,6 +913,9 @@ class ProjectController extends Controller
         );
         if (!$validated['intent_to_claim']) {
             $validated['eot_entry_id'] = null;
+            $validated = $this->clearEotClaimTracking($validated);
+        } else {
+            $validated = $this->clearUnavailableEotDates($validated);
         }
         unset($validated['eot_category_id']);
         ProjectRisk::create($validated);
@@ -910,6 +968,17 @@ class ProjectController extends Controller
                 'integer',
                 Rule::exists('eot_entries', 'id')->where('eot_category_id', $request->input('eot_category_id')),
             ],
+            'detail_reason_for_eot' => 'nullable|string',
+            'project_case_event_description' => 'nullable|string',
+            'reference_contract_clause_no' => 'nullable|string|max:255',
+            'affected_activities' => 'nullable|string',
+            'itc_notification_status' => ['nullable', Rule::in(['Submitted', 'Not Submitted'])],
+            'itc_notification_date' => ['nullable', Rule::requiredIf(fn () => $request->boolean('intent_to_claim') && $request->input('itc_notification_status') === 'Submitted'), 'date'],
+            'eot_status' => ['nullable', Rule::in(['Submitted', 'Not Submitted', 'Agreed', 'Rejected', 'Approved'])],
+            'eot_submitted_date' => ['nullable', Rule::requiredIf(fn () => $request->boolean('intent_to_claim') && $request->input('eot_status') === 'Submitted'), 'date'],
+            'eot_response_date' => 'nullable|date',
+            'eot_requested_days' => 'nullable|integer|min:0',
+            'eot_approved_days' => 'nullable|integer|min:0',
             'activity' => 'required|string',
             'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'risk_name' => 'nullable|string|max:255',
@@ -931,7 +1000,9 @@ class ProjectController extends Controller
             'mitigation_plan' => 'nullable|string',
             'contingency_plan' => 'nullable|string',
             'owner_name' => 'nullable|string|max:255',
+            'action_owner' => 'nullable|string|max:255',
             'planned_action_date' => 'nullable|date',
+            'last_review_date' => 'nullable|date',
             'tracking_comments' => 'nullable|string',
             'action_status' => ['required', Rule::in(ProjectRisk::ACTION_STATUSES)],
             'actual_action_date' => 'nullable|date',
@@ -954,11 +1025,47 @@ class ProjectController extends Controller
         );
         if (!$validated['intent_to_claim']) {
             $validated['eot_entry_id'] = null;
+            $validated = $this->clearEotClaimTracking($validated);
+        } else {
+            $validated = $this->clearUnavailableEotDates($validated);
         }
         unset($validated['eot_category_id']);
         $risk->update($validated);
 
         return redirect()->route('admin.projects.risk.manage', $risk->project)->with('success', 'Risk updated successfully.');
+    }
+
+    private function clearEotClaimTracking(array $validated): array
+    {
+        foreach ([
+            'detail_reason_for_eot',
+            'project_case_event_description',
+            'reference_contract_clause_no',
+            'affected_activities',
+            'itc_notification_status',
+            'itc_notification_date',
+            'eot_status',
+            'eot_submitted_date',
+            'eot_response_date',
+            'eot_requested_days',
+            'eot_approved_days',
+        ] as $field) {
+            $validated[$field] = null;
+        }
+
+        return $validated;
+    }
+
+    private function clearUnavailableEotDates(array $validated): array
+    {
+        if (($validated['itc_notification_status'] ?? null) !== 'Submitted') {
+            $validated['itc_notification_date'] = null;
+        }
+        if (($validated['eot_status'] ?? null) !== 'Submitted') {
+            $validated['eot_submitted_date'] = null;
+        }
+
+        return $validated;
     }
 
     private function riskEotOptions(?ProjectRisk $risk = null): array

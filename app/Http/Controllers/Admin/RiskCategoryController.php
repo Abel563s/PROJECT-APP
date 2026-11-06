@@ -27,9 +27,23 @@ class RiskCategoryController extends Controller
         }
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $this->authorizeRiskCategoryAction();
+
+        if ($request->query('format') === 'options') {
+            return response()->json([
+                'categories' => RiskCategory::active()
+                    ->ordered()
+                    ->get(['name', 'risk_type', 'code'])
+                    ->map(fn (RiskCategory $category) => [
+                        'name' => $category->name,
+                        'risk_type' => $category->risk_type,
+                        'code' => $category->code,
+                    ])
+                    ->values(),
+            ]);
+        }
 
         $active = RiskCategory::ordered()->get();
         $defaults = ProjectRiskPool::CATEGORIES;
@@ -46,11 +60,8 @@ class RiskCategoryController extends Controller
 
         $validated = $request->validate([
             'name'           => ['required', 'string', 'max:255', 'unique:risk_categories,name'],
-            'code'           => ['nullable', 'string', 'max:255', function ($attr, $val, $fail) {
-                if ($val !== null && $val !== '' && !ctype_digit((string) $val)) {
-                    $fail('The category code must be numeric (used as the Risk ID prefix).');
-                }
-            }],
+            'code'           => ['required', 'string', 'max:255', 'regex:/^\d+$/', 'unique:risk_categories,code'],
+            'risk_type'      => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'display_order'  => ['nullable', 'integer', 'min:0'],
             'is_active'      => ['sometimes', 'boolean'],
         ]);
@@ -74,11 +85,8 @@ class RiskCategoryController extends Controller
 
         $validated = $request->validate([
             'name'           => ['sometimes', 'required', 'string', 'max:255', Rule::unique('risk_categories', 'name')->ignore($risk_category->id)],
-            'code'           => ['nullable', 'string', 'max:255', function ($attr, $val, $fail) {
-                if ($val !== null && $val !== '' && !ctype_digit((string) $val)) {
-                    $fail('The category code must be numeric (used as the Risk ID prefix).');
-                }
-            }],
+            'code'           => ['sometimes', 'required', 'string', 'max:255', 'regex:/^\d+$/', Rule::unique('risk_categories', 'code')->ignore($risk_category->id)],
+            'risk_type'      => ['sometimes', 'required', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'display_order'  => ['nullable', 'integer', 'min:0'],
             'is_active'      => ['sometimes', 'boolean'],
         ]);
@@ -96,6 +104,11 @@ class RiskCategoryController extends Controller
             }
 
             $risk_category->update($validated);
+
+            if (array_key_exists('risk_type', $validated)) {
+                ProjectRiskPool::where('risk_category', $risk_category->name)
+                    ->update(['risk_type' => $validated['risk_type']]);
+            }
         });
 
         if ($request->expectsJson() || $request->isXmlHttpRequest()) {

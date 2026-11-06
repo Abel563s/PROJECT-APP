@@ -56,10 +56,24 @@ it('creates a project risk with a calculated rating', function () {
             'intent_to_claim' => '1',
             'eot_category_id' => $baseOfRisk->id,
             'eot_entry_id' => $eot->id,
+            'detail_reason_for_eot' => 'Late design approval delayed critical works.',
+            'project_case_event_description' => 'The design approval was received after the planned date.',
+            'reference_contract_clause_no' => 'Clause 8.4',
+            'affected_activities' => 'Foundation and structural works',
+            'itc_notification_status' => 'Submitted',
+            'itc_notification_date' => '2026-11-02',
+            'eot_status' => 'Submitted',
+            'eot_submitted_date' => '2026-11-04',
+            'eot_response_date' => '2026-11-05',
+            'eot_requested_days' => 14,
+            'eot_approved_days' => 10,
             'most_likely_quality_impact_description' => 'May reduce durability.',
             'resolution_by' => 'Project Manager',
             'impact_date' => '2026-11-03',
             'materialized_date' => '2026-11-04',
+            'last_review_date' => '2026-11-06',
+            'owner_name' => 'Risk Lead',
+            'action_owner' => 'Action Lead',
             'action_status' => 'Issue',
             'response_strategy' => 'Mitigate',
         ])
@@ -70,9 +84,23 @@ it('creates a project risk with a calculated rating', function () {
         ->and($risk->risk_level)->toBe('Extreme')
         ->and($risk->project_id)->toBe($project->id)
         ->and($risk->eot_entry_id)->toBe($eot->id)
+        ->and($risk->detail_reason_for_eot)->toBe('Late design approval delayed critical works.')
+        ->and($risk->project_case_event_description)->toBe('The design approval was received after the planned date.')
+        ->and($risk->reference_contract_clause_no)->toBe('Clause 8.4')
+        ->and($risk->affected_activities)->toBe('Foundation and structural works')
+        ->and($risk->itc_notification_status)->toBe('Submitted')
+        ->and($risk->itc_notification_date->format('Y-m-d'))->toBe('2026-11-02')
+        ->and($risk->eot_status)->toBe('Submitted')
+        ->and($risk->eot_submitted_date->format('Y-m-d'))->toBe('2026-11-04')
+        ->and($risk->eot_response_date->format('Y-m-d'))->toBe('2026-11-05')
+        ->and($risk->eot_requested_days)->toBe(14)
+        ->and($risk->eot_approved_days)->toBe(10)
         ->and($risk->most_likely_quality_impact_description)->toBe('May reduce durability.')
         ->and($risk->resolution_by)->toBe('Project Manager')
         ->and($risk->materialized_date->format('Y-m-d'))->toBe('2026-11-04')
+        ->and($risk->last_review_date->format('Y-m-d'))->toBe('2026-11-06')
+        ->and($risk->owner_name)->toBe('Risk Lead')
+        ->and($risk->action_owner)->toBe('Action Lead')
         ->and($risk->date_last_updated)->not->toBeNull()
         ->and($risk->exposure)->toBe(ProjectRisk::calculateExposureDays('2026-11-04', null));
 
@@ -87,12 +115,22 @@ it('creates a project risk with a calculated rating', function () {
         ->assertSee($project->project_name)
         ->assertSee('Last updated')
         ->assertSee('Late design approval')
+        ->assertSee('Risk ID & Sub Category')
+        ->assertSee('Project-Specific Risk Statement')
+        ->assertSee('Affected Project Objective/ Activity')
         ->assertSee('Most Likely Quality Impact (Description)')
         ->assertSee('Resolution by')
         ->assertSee('Assumed Impact Date')
         ->assertSee('Materialized Date')
-        ->assertDontSee('Date Last Updated')
-        ->assertDontSee('Risk Owner');
+        ->assertSee('Last Review Date')
+        ->assertSee('Risk Owner')
+        ->assertSee('Action Owner')
+        ->assertSee('Detail Reason for EOT')
+        ->assertSee('Late design approval delayed critical works.')
+        ->assertSee('Clause 8.4')
+        ->assertSee('ITC/Notification Date')
+        ->assertSee('EOT Approved (Days)')
+        ->assertDontSee('Date Last Updated');
 
     $this->get(route('admin.projects.risk.edit-modal', $risk))
         ->assertOk()
@@ -100,13 +138,58 @@ it('creates a project risk with a calculated rating', function () {
         ->assertSee($project->project_name)
         ->assertSee('Last updated')
         ->assertSee('Late design approval')
+        ->assertSee('Risk ID & Sub Category')
+        ->assertSee('Project-Specific Risk Statement')
+        ->assertSee('Affected Project Objective/ Activity')
         ->assertSee('data-step-target="1"', false)
         ->assertSee('data-step-target="4"', false)
         ->assertSee('Update Risk')
         ->assertSee('eot_entry_preview')
+        ->assertSee('Project Case Event Description')
+        ->assertSee('ITC/Notification')
+        ->assertSee('EOT Status')
+        ->assertSee('EOT Submitted Date')
         ->assertSee('Materialized Date')
-        ->assertDontSee('Date Last Updated')
-        ->assertDontSee('Risk Owner');
+        ->assertSee('Last Review Date')
+        ->assertSee('Risk Owner')
+        ->assertSee('Action Owner')
+        ->assertDontSee('Date Last Updated');
+});
+
+it('requires ITC and EOT submission dates only when their statuses are submitted', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $project = Project::create([
+        'custom_id' => 'PRJ-0110',
+        'project_code' => 'RISK-EOT-DATES',
+        'project_name' => 'Risk EOT Dates Project',
+        'status' => 'in progress',
+    ]);
+
+    $payload = [
+        'activity' => 'Submit the claim',
+        'risk_type' => 'Threat',
+        'risk_description' => 'A delay may affect scheduled work.',
+        'likelihood' => 3,
+        'severity' => 3,
+        'intent_to_claim' => '1',
+        'action_status' => 'Risk',
+        'itc_notification_status' => 'Submitted',
+        'eot_status' => 'Submitted',
+    ];
+
+    $this->actingAs($admin)
+        ->post(route('admin.projects.risk.store', $project), $payload)
+        ->assertSessionHasErrors(['itc_notification_date', 'eot_submitted_date']);
+
+    $this->post(route('admin.projects.risk.store', $project), array_merge($payload, [
+        'itc_notification_status' => 'Not Submitted',
+        'eot_status' => 'Approved',
+    ]))
+        ->assertRedirect(route('admin.projects.risk.manage', $project));
+
+    $risk = ProjectRisk::where('project_id', $project->id)->firstOrFail();
+    expect($risk->itc_notification_date)->toBeNull()
+        ->and($risk->eot_submitted_date)->toBeNull();
 });
 
 it('filters the risk registry by risk status', function () {
@@ -194,6 +277,11 @@ it('renders the project risk dashboard and create modal', function () {
         ->assertSee('Materialized Date')
         ->assertSee('Most Likely Quality Impact (Description)')
         ->assertSee('Exposure (Days)')
+        ->assertSee('Project Case Event Description')
+        ->assertSee('Reference Contract Clause No.')
+        ->assertSee('ITC/Notification')
+        ->assertSee('Not Submitted')
+        ->assertSee('Approved')
         ->assertSee('data-step-target="1"', false)
         ->assertSee('data-step-target="4"', false)
         ->assertSee('Save Risk')
@@ -212,6 +300,25 @@ it('filters repository categories and risks by the selected risk type', function
         'status' => 'in progress',
     ]);
 
+    \App\Models\RiskCategory::updateOrCreate(
+        ['name' => 'Financial Risks'],
+        ['risk_type' => null, 'is_active' => true]
+    );
+    \App\Models\RiskCategory::updateOrCreate(
+        ['name' => 'Procurement Risks'],
+        ['risk_type' => 'Opportunity', 'is_active' => true]
+    );
+    \App\Models\RiskCategory::updateOrCreate(
+        ['name' => 'Safety Risks'],
+        ['risk_type' => 'Threat', 'is_active' => true]
+    );
+
+    ProjectRiskPool::create([
+        'risk_id' => '1.02',
+        'risk_type' => 'Opportunity',
+        'risk_category' => 'Financial Risks',
+        'specific_risk' => 'Cost optimization',
+    ]);
     ProjectRiskPool::create([
         'risk_id' => '1.01',
         'risk_type' => 'Opportunity',
@@ -224,15 +331,25 @@ it('filters repository categories and risks by the selected risk type', function
         'risk_category' => 'Safety Risks',
         'specific_risk' => 'Workplace accident',
     ]);
+    ProjectRiskPool::create([
+        'risk_id' => '1.03',
+        'risk_type' => 'Threat',
+        'risk_category' => 'Financial Risks',
+        'specific_risk' => 'Cost overrun',
+    ]);
 
     $this->actingAs($admin)
         ->getJson(route('admin.projects.risk.pool-risks', [$project, 'risk_type' => 'Opportunity']))
         ->assertOk()
-        ->assertExactJson(['Financial Risks']);
+        ->assertExactJson(['Financial Risks', 'Procurement Risks']);
 
-    $this->getJson(route('admin.projects.risk.pool-risks', [$project, 'risk_type' => 'Threat', 'category' => 'Safety Risks']))
+    $this->getJson(route('admin.projects.risk.pool-risks', [$project, 'risk_type' => 'Threat']))
         ->assertOk()
-        ->assertJsonPath('0.risk_id', '5.01')
+        ->assertExactJson(['Financial Risks', 'Safety Risks']);
+
+    $this->getJson(route('admin.projects.risk.pool-risks', [$project, 'risk_type' => 'Threat', 'category' => 'Financial Risks']))
+        ->assertOk()
+        ->assertJsonPath('0.risk_id', '1.03')
         ->assertJsonPath('0.risk_type', 'Threat');
 });
 

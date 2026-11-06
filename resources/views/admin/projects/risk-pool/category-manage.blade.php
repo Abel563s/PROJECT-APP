@@ -15,11 +15,18 @@
         role="alert"></div>
 
     @if($canCreateRiskCategory)
-    <form id="catAddForm" class="grid grid-cols-1 gap-2 sm:grid-cols-4">
+    <form id="catAddForm" class="grid grid-cols-1 gap-2 sm:grid-cols-5">
         <input id="catName" name="name" type="text" required placeholder="New category name"
             class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-[#00ADC5] focus:bg-white focus:ring-cyan-100">
-        <input id="catCode" name="code" type="text" placeholder="ID prefix (e.g. 12)"
+        <input id="catCode" name="code" type="text" required inputmode="numeric" pattern="[0-9]+" placeholder="ID prefix (e.g. 12)"
             class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-[#00ADC5] focus:bg-white focus:ring-cyan-100">
+        <select id="catRiskType" name="risk_type" required
+            class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-[#00ADC5] focus:bg-white focus:ring-cyan-100">
+            <option value="">Assign risk type</option>
+            @foreach(\App\Models\ProjectRiskPool::RISK_TYPES as $type)
+                <option value="{{ $type }}">{{ $type }}</option>
+            @endforeach
+        </select>
         <input id="catOrder" name="display_order" type="number" min="0" placeholder="Display order"
             class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-[#00ADC5] focus:bg-white focus:ring-cyan-100">
         <button type="submit"
@@ -35,6 +42,7 @@
                 <tr class="bg-slate-50/80">
                     <th class="border-b border-slate-200 px-2 py-2 text-left">Name</th>
                     <th class="border-b border-slate-200 px-2 py-2 text-left">Code / Prefix</th>
+                    <th class="border-b border-slate-200 px-2 py-2 text-left">Risk Type</th>
                     <th class="border-b border-slate-200 px-2 py-2 text-left">Order</th>
                     <th class="border-b border-slate-200 px-2 py-2 text-left">Active</th>
                     <th class="border-b border-slate-200 px-2 py-2 text-center">Used By</th>
@@ -55,11 +63,21 @@
                                 style="width:100%">
                         </td>
                         <td class="border-b border-slate-100/60 px-2 py-2">
-                            <input data-field="code" data-id="{{ $cat->id }}"
+                            <input data-field="code" data-id="{{ $cat->id }}" type="text" inputmode="numeric" pattern="[0-9]+"
                                 value="{{ $cat->code }}"
                                 @disabled(!$canEditRiskCategory)
                                 placeholder="—"
                                 class="cat-edit rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-black text-slate-700 focus:border-[#00ADC5] focus:ring-cyan-100 w-20">
+                        </td>
+                        <td class="border-b border-slate-100/60 px-2 py-2">
+                            <select data-field="risk_type" data-id="{{ $cat->id }}"
+                                @disabled(!$canEditRiskCategory)
+                                class="cat-edit cat-type rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-black text-slate-700 focus:border-[#00ADC5] focus:ring-cyan-100">
+                                <option value="">Assign type</option>
+                                @foreach(\App\Models\ProjectRiskPool::RISK_TYPES as $type)
+                                    <option value="{{ $type }}" @selected($cat->risk_type === $type)>{{ $type }}</option>
+                                @endforeach
+                            </select>
                         </td>
                         <td class="border-b border-slate-100/60 px-2 py-2">
                             <input data-field="display_order" data-id="{{ $cat->id }}" type="number" min="0"
@@ -93,7 +111,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-2 py-8 text-center">
+                        <td colspan="7" class="px-2 py-8 text-center">
                             <p class="text-xs font-black text-slate-400">No active categories. Add one above.</p>
                         </td>
                     </tr>

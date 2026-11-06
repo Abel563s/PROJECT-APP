@@ -4,6 +4,15 @@
     $mode = $mode ?? 'create';
     $risk = $risk ?? null;
     $categories = $categories ?? \App\Models\ProjectRiskPool::availableCategories();
+    $categoryOptions = \App\Models\RiskCategory::active()
+        ->ordered()
+        ->get(['name', 'risk_type', 'code'])
+        ->map(fn ($category) => [
+            'name' => $category->name,
+            'risk_type' => $category->risk_type,
+            'code' => $category->code,
+        ])
+        ->values();
     $canCreateRiskPool = $canCreateRiskPool ?? auth()->user()->canManageRiskPool('create');
     $canEditRiskPool = $canEditRiskPool ?? auth()->user()->canManageRiskPool('edit');
     $canDeleteRiskPool = $canDeleteRiskPool ?? auth()->user()->canManageRiskPool('delete');
@@ -36,7 +45,7 @@
         'mode'        => $mode,
         'riskId'      => $risk ? $risk->id : null,
         'permissions' => ['create' => $canCreateRiskPool, 'edit' => $canEditRiskPool],
-        'categories'  => $categories,
+        'categories'  => $categoryOptions,
         'impactLevels' => \App\Models\ProjectRiskPool::IMPACT_LEVELS,
         'riskTypes'   => \App\Models\ProjectRiskPool::RISK_TYPES,
         'rows'        => $initialRows,

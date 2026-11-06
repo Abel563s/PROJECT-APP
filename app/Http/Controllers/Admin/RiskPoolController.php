@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProjectRiskPool;
+use App\Models\RiskCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -22,6 +23,8 @@ class RiskPoolController extends Controller
             'search' => 'nullable|string|max:255',
             'risk_category' => 'nullable|string',
             'overall_impact_level' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
+            'impact_on_timeline' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
+            'impact_on_cost' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
             'sort' => ['nullable', Rule::in(['risk_id', 'risk_category', 'specific_risk', 'overall_impact_level', 'impact_on_timeline', 'impact_on_cost', 'updated_at', 'created_at'])],
             'direction' => ['nullable', Rule::in(['asc', 'desc'])],
             'view' => ['nullable', Rule::in(['cards', 'table'])],
@@ -32,6 +35,8 @@ class RiskPoolController extends Controller
             'search' => $request->input('search'),
             'risk_category' => $request->input('risk_category'),
             'overall_impact_level' => $request->input('overall_impact_level'),
+            'impact_on_timeline' => $request->input('impact_on_timeline'),
+            'impact_on_cost' => $request->input('impact_on_cost'),
         ];
 
         $query = ProjectRiskPool::query();
@@ -149,8 +154,19 @@ class RiskPoolController extends Controller
         $rows = $data['rows'];
         $riskTypeErrors = [];
         foreach ($rows as $index => $row) {
-            if (empty($row['id']) && empty($row['risk_type'])) {
+            if (empty($row['risk_type'])) {
                 $riskTypeErrors["rows.{$index}.risk_type"][] = 'The risk type field is required.';
+                continue;
+            }
+
+            $categoryType = RiskCategory::query()
+                ->where('name', $row['risk_category'])
+                ->value('risk_type');
+
+            if (! $categoryType) {
+                $riskTypeErrors["rows.{$index}.risk_category"][] = 'Assign a risk type to this category before using it.';
+            } elseif ($categoryType !== $row['risk_type']) {
+                $riskTypeErrors["rows.{$index}.risk_category"][] = 'The selected category is not assigned to this risk type.';
             }
         }
         if ($riskTypeErrors !== []) {
@@ -306,11 +322,54 @@ class RiskPoolController extends Controller
             'You do not have permission to manage risk pool records.'
         );
 
-        $category = $request->query('category');
+        $validated = $request->validate([
+            'category' => ['required', 'string', 'exists:risk_categories,name'],
+            'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
+        ]);
+        $category = RiskCategory::query()
+            ->where('name', $validated['category'])
+            ->where('is_active', true)
+            ->first();
+
+        if (! $category || ! $category->risk_type) {
+            throw ValidationException::withMessages([
+                'category' => 'Assign a risk type to this category before suggesting a Risk ID.',
+            ]);
+        }
+        if ($category->risk_type !== $validated['risk_type']) {
+            throw ValidationException::withMessages([
+                'category' => 'The selected category is not assigned to this risk type.',
+            ]);
+        }
+
+        $riskId = ProjectRiskPool::suggestNextRiskId($category->name);
+        if ($riskId === null) {
+            throw ValidationException::withMessages([
+                'category' => 'This category does not have a valid numeric ID prefix.',
+            ]);
+        }
 
         return response()->json([
-            'risk_id' => ProjectRiskPool::suggestNextRiskId($category ?? ''),
+            'risk_id' => $riskId,
         ]);
+    }
+
+    private function validateCategoryRiskType(string $categoryName, string $riskType, string $field = 'risk_category'): void
+    {
+        $categoryType = RiskCategory::query()
+            ->where('name', $categoryName)
+            ->value('risk_type');
+
+        if (! $categoryType) {
+            throw ValidationException::withMessages([
+                $field => 'Assign a risk type to this category before using it.',
+            ]);
+        }
+        if ($categoryType !== $riskType) {
+            throw ValidationException::withMessages([
+                $field => 'The selected category is not assigned to this risk type.',
+            ]);
+        }
     }
 
     /**
@@ -322,7 +381,7 @@ class RiskPoolController extends Controller
             ? Rule::unique('project_risk_pools', 'risk_id')->ignore($ignoreId)
             : Rule::unique('project_risk_pools', 'risk_id');
 
-        return $request->validate([
+        $validated = $request->validate([
             'risk_id' => ['required', 'string', 'max:255', $uniqueRule],
             'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'risk_category' => ['required', 'string', Rule::in(ProjectRiskPool::availableCategories())],
@@ -334,5 +393,9 @@ class RiskPoolController extends Controller
             'stakeholder' => 'nullable|string',
             'recommended_mitigation_measures' => 'nullable|string',
         ]);
+
+        $this->validateCategoryRiskType($validated['risk_category'], $validated['risk_type']);
+
+        return $validated;
     }
 }

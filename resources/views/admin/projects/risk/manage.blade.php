@@ -252,7 +252,7 @@
     </div>
 
     <div id="createModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm" style="position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:1rem; background-color:rgba(15,23,42,0.4);">
-        <div class="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl" style="display:flex; flex-direction:column; max-height:92vh; width:100%; max-width:56rem; overflow:hidden; border-radius:1rem; background-color:white;">
+        <div class="risk-modal-dialog flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl" style="display:flex; flex-direction:column; max-height:92vh; width:100%; max-width:56rem; overflow:hidden; border-radius:1rem; background-color:white;">
             <div class="flex flex-shrink-0 items-center justify-between border-b border-[#00515f] bg-gradient-to-b from-[#00515f] to-black px-6 py-3">
                 <div>
                     <h3 class="text-base font-black text-white">New Risk</h3>
@@ -272,7 +272,7 @@
     <!-- View Modal -->
     <div id="viewModal"
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm hidden" style="position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:1rem; background-color:rgba(15,23,42,0.4);">
-        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" style="width:100%; max-width:48rem; overflow:hidden; display:flex; flex-direction:column; max-height:90vh; background-color:white; border-radius:1rem;">
+        <div class="risk-modal-dialog bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" style="width:100%; max-width:48rem; overflow:hidden; display:flex; flex-direction:column; max-height:90vh; background-color:white; border-radius:1rem;">
             <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
@@ -283,7 +283,7 @@
                         <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest">View risk information</p>
                     </div>
                 </div>
-                <button onclick="closeViewModal()"
+                <button type="button" onclick="closeViewModal()" aria-label="Close"
                     class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                     <i data-lucide="x" class="h-4 w-4"></i>
                 </button>
@@ -299,7 +299,7 @@
     <!-- Edit Modal -->
     <div id="editModal"
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm hidden" style="position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:1rem; background-color:rgba(15,23,42,0.4);">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" style="width:100%; max-width:56rem; overflow:hidden; display:flex; flex-direction:column; max-height:90vh; background-color:white; border-radius:1rem;">
+        <div class="risk-modal-dialog bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" style="width:100%; max-width:56rem; overflow:hidden; display:flex; flex-direction:column; max-height:90vh; background-color:white; border-radius:1rem;">
             <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-3 flex items-center justify-between rounded-t-2xl z-10 flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
@@ -310,7 +310,7 @@
                         <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Update risk details</p>
                     </div>
                 </div>
-                <button onclick="closeEditModal()"
+                <button type="button" onclick="closeEditModal()" aria-label="Close"
                     class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
                     <i data-lucide="x" class="h-4 w-4"></i>
                 </button>
@@ -329,7 +329,7 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            syncRiskModalBodyLock();
 
             fetch(@json(route('admin.projects.risk.create-modal', $project)))
                 .then(response => {
@@ -357,7 +357,15 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             modal.style.display = 'none';
-            document.body.style.overflow = '';
+            syncRiskModalBodyLock();
+        }
+
+        function syncRiskModalBodyLock() {
+            const isModalOpen = ['createModal', 'viewModal', 'editModal'].some(id => {
+                const modal = document.getElementById(id);
+                return modal && modal.style.display === 'flex';
+            });
+            document.body.style.overflow = isModalOpen ? 'hidden' : '';
         }
 
         function updateRiskRating(container = document) {
@@ -558,6 +566,35 @@
             const selectedCategory = base.dataset.selectedCategory || '';
             const preview = container.querySelector('#eot_entry_preview');
 
+            function updateClaimTracking(claiming = intent.value === '1') {
+                const evaluationFields = container.querySelector('#eotClaimEvaluationFields');
+                if (!evaluationFields) return;
+
+                evaluationFields.classList.toggle('hidden', !claiming);
+                evaluationFields.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.disabled = !claiming;
+                });
+
+                [
+                    {
+                        status: evaluationFields.querySelector('#itc_notification_status'),
+                        date: evaluationFields.querySelector('#itc_notification_date'),
+                        wrapper: evaluationFields.querySelector('#itcNotificationDateField'),
+                    },
+                    {
+                        status: evaluationFields.querySelector('#eot_status'),
+                        date: evaluationFields.querySelector('#eot_submitted_date'),
+                        wrapper: evaluationFields.querySelector('#eotSubmittedDateField'),
+                    },
+                ].forEach(({ status, date, wrapper }) => {
+                    if (!status || !date || !wrapper) return;
+                    const submitted = claiming && status.value === 'Submitted';
+                    wrapper.classList.toggle('hidden', !submitted);
+                    date.disabled = !submitted;
+                    date.required = submitted;
+                });
+            }
+
             function updateEntryPreview() {
                 const selectedOption = entry.options[entry.selectedIndex];
                 const hasSelection = Boolean(selectedOption?.value);
@@ -589,12 +626,15 @@
                     entry.value = '';
                     entry.disabled = true;
                 }
+                updateClaimTracking(claiming);
                 updateEntryPreview();
             }
 
             base.addEventListener('change', () => loadEntries(base.value));
             entry.addEventListener('change', updateEntryPreview);
             intent.addEventListener('change', updateIntentVisibility);
+            container.querySelector('#itc_notification_status')?.addEventListener('change', () => updateClaimTracking());
+            container.querySelector('#eot_status')?.addEventListener('change', () => updateClaimTracking());
             if (selectedCategory) {
                 base.value = selectedCategory;
                 loadEntries(selectedCategory, selectedEntry);
@@ -705,6 +745,10 @@
             render();
         }
 
+        document.querySelectorAll('#createModal, #viewModal, #editModal').forEach(modal => {
+            modal.querySelector('.risk-modal-dialog').addEventListener('click', event => event.stopPropagation());
+        });
+
         document.getElementById('createModal').addEventListener('click', function (event) {
             if (event.target === this) closeCreateModal();
         });
@@ -721,6 +765,7 @@
                     const modal = document.getElementById('viewModal');
                     modal.classList.remove('hidden');
                     modal.style.display = 'flex';
+                    syncRiskModalBodyLock();
                     if (window.lucide) lucide.createIcons();
                 })
                 .catch(error => {
@@ -733,6 +778,7 @@
             const modal = document.getElementById('viewModal');
             modal.classList.add('hidden');
             modal.style.display = 'none';
+            syncRiskModalBodyLock();
         }
 
         function openEditModal(id) {
@@ -747,7 +793,7 @@
                     const modal = document.getElementById('editModal');
                     modal.classList.remove('hidden');
                     modal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
+                    syncRiskModalBodyLock();
                     if (window.lucide) lucide.createIcons();
                     updateRiskRating(document.getElementById('editModalContent'));
                     initRiskResponseStrategies(document.getElementById('editModalContent'));
@@ -766,7 +812,7 @@
             const modal = document.getElementById('editModal');
             modal.classList.add('hidden');
             modal.style.display = 'none';
-            document.body.style.overflow = '';
+            syncRiskModalBodyLock();
         }
 
         document.getElementById('viewModal').addEventListener('click', function (event) {

@@ -9,6 +9,7 @@ class RiskCategory extends Model
     protected $fillable = [
         'name',
         'code',
+        'risk_type',
         'display_order',
         'is_active',
     ];
@@ -44,13 +45,15 @@ class RiskCategory extends Model
     /**
      * Resolve the numeric prefix used for Risk ID generation for a category.
      */
-    public static function resolvePrefix(string $category): ?int
+    public static function resolvePrefix(string $category): ?string
     {
         $code = self::where('name', $category)->value('code');
         if ($code !== null && $code !== '') {
-            return ctype_digit((string) $code) ? (int) $code : null;
+            return ctype_digit((string) $code) ? (string) $code : null;
         }
 
-        return ProjectRiskPool::CATEGORY_PREFIXES[$category] ?? null;
+        $fallback = ProjectRiskPool::CATEGORY_PREFIXES[$category] ?? null;
+
+        return $fallback !== null ? (string) $fallback : null;
     }
 }

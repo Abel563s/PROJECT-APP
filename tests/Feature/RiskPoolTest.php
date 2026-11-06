@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Artisan;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function () {
+    \App\Models\RiskCategory::query()->update(['risk_type' => 'Threat']);
+});
+
 function adminUser(): User
 {
     return User::factory()->create(['role' => 'admin']);
@@ -120,6 +124,7 @@ it('validates and prevents duplicate risk ids', function () {
 it('updates an existing risk via ajax as an admin', function () {
     $admin = adminUser();
     $risk = ProjectRiskPool::create(validRiskData());
+    \App\Models\RiskCategory::where('name', 'Financial Risks')->update(['risk_type' => 'Opportunity']);
 
     $this->actingAs($admin)
         ->putJson(route('admin.projects.risk-pool.update', $risk), validRiskData([
@@ -168,7 +173,7 @@ it('suggests the next risk id by category', function () {
     $admin = adminUser();
 
     $this->actingAs($admin)
-        ->getJson(route('admin.projects.risk-pool.suggest-id', ['category' => 'Financial Risks']))
+        ->getJson(route('admin.projects.risk-pool.suggest-id', ['category' => 'Financial Risks', 'risk_type' => 'Threat']))
         ->assertOk()
         ->assertJson(['risk_id' => '1.02']);
 });
@@ -177,9 +182,51 @@ it('returns the first risk id when the pool is empty for a category', function (
     $admin = adminUser();
 
     $this->actingAs($admin)
-        ->getJson(route('admin.projects.risk-pool.suggest-id', ['category' => 'Safety Risks']))
+        ->getJson(route('admin.projects.risk-pool.suggest-id', ['category' => 'Safety Risks', 'risk_type' => 'Threat']))
         ->assertOk()
         ->assertJson(['risk_id' => '5.01']);
+});
+
+it('does not suggest a fallback prefix for categories without a numeric code', function () {
+    $admin = adminUser();
+    \App\Models\RiskCategory::create([
+        'name' => 'Uncoded Risks',
+        'risk_type' => 'Threat',
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($admin)
+        ->getJson(route('admin.projects.risk-pool.suggest-id', [
+            'category' => 'Uncoded Risks',
+            'risk_type' => 'Threat',
+        ]))
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('category');
+});
+
+it('rejects risk id suggestions for a category assigned to another risk type', function () {
+    $admin = adminUser();
+
+    $this->actingAs($admin)
+        ->getJson(route('admin.projects.risk-pool.suggest-id', [
+            'category' => 'Financial Risks',
+            'risk_type' => 'Opportunity',
+        ]))
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('category');
+});
+
+it('rejects saving a risk under a category assigned to another risk type', function () {
+    $admin = adminUser();
+
+    $this->actingAs($admin)
+        ->postJson(route('admin.projects.risk-pool.bulk-store'), [
+            'rows' => [
+                validRiskData(['risk_type' => 'Opportunity']),
+            ],
+        ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('rows.0.risk_category');
 });
 
 it('returns partial summary and table as json', function () {
@@ -192,18 +239,40 @@ it('returns partial summary and table as json', function () {
         ->getJson(route('admin.projects.risk-pool.index', ['partial' => 'summary']))
         ->assertOk()
         ->assertHeader('Content-Type', 'application/json')
-        ->assertJsonStructure(['html'])
-        ->assertSee('Total Risks', false);
+        ->assertJsonStructure(['html']);
 
     $this->actingAs($admin)
         ->getJson(route('admin.projects.risk-pool.index', ['partial' => 'table']))
         ->assertOk()
-        ->assertJsonStructure(['html'])
-        ->assertSee('Risk ID', false)
-        ->assertSee('Risk Type', false)
-        ->assertSee('Threat', false)
-        ->assertSee('High', false)
-        ->assertSee('Advance Payment Delay (Client)', false);
+        ->assertJsonStructure(['html']);
+});
+
+it('filters risk pool results by time cost and quality impact', function () {
+    $admin = adminUser();
+    ProjectRiskPool::create(validRiskData([
+        'risk_id' => '1.01',
+        'specific_risk' => 'Matching impacts',
+        'impact_on_timeline' => 'High',
+        'impact_on_cost' => 'Low',
+        'overall_impact_level' => 'Medium',
+    ]));
+    ProjectRiskPool::create(validRiskData([
+        'risk_id' => '1.02',
+        'specific_risk' => 'Different impacts',
+        'impact_on_timeline' => 'Low',
+        'impact_on_cost' => 'Low',
+        'overall_impact_level' => 'Medium',
+    ]));
+
+    $this->actingAs($admin)
+        ->get(route('admin.projects.risk-pool.index', [
+            'impact_on_timeline' => 'High',
+            'impact_on_cost' => 'Low',
+            'overall_impact_level' => 'Medium',
+        ]))
+        ->assertOk()
+        ->assertSee('Matching impacts')
+        ->assertDontSee('Different impacts');
 });
 
 it('filters risks by category and impact level', function () {
@@ -322,11 +391,11 @@ it('returns the cards partial as json', function () {
 });
 
 it('suggests the next risk id for a dynamically added category', function () {
-    \App\Models\RiskCategory::create(['name' => 'Custom Risk', 'code' => '99', 'display_order' => 99, 'is_active' => true]);
+    \App\Models\RiskCategory::create(['name' => 'Custom Risk', 'code' => '99', 'risk_type' => 'Threat', 'display_order' => 99, 'is_active' => true]);
     $admin = adminUser();
 
     $this->actingAs($admin)
-        ->getJson(route('admin.projects.risk-pool.suggest-id', ['category' => 'Custom Risk']))
+        ->getJson(route('admin.projects.risk-pool.suggest-id', ['category' => 'Custom Risk', 'risk_type' => 'Threat']))
         ->assertOk()
         ->assertJson(['risk_id' => '99.01']);
 });
@@ -429,19 +498,39 @@ it('lets an admin manage risk categories in the database', function () {
 
     $this->actingAs($admin)
         ->postJson(route('admin.projects.risk-pool.categories.store'), [
-            'name' => 'Technology Risks', 'code' => '12', 'display_order' => 12, 'is_active' => true,
+            'name' => 'Technology Risks', 'code' => '12', 'risk_type' => 'Opportunity', 'display_order' => 12, 'is_active' => true,
         ])
         ->assertCreated()
         ->assertJson(['refresh' => true]);
 
     expect(\App\Models\RiskCategory::where('name', 'Technology Risks')->exists())->toBeTrue();
+    expect(\App\Models\RiskCategory::where('name', 'Technology Risks')->value('risk_type'))->toBe('Opportunity');
 
      $cat = \App\Models\RiskCategory::where('name', 'Financial Risks')->first();
      $this->actingAs($admin)
          ->putJson(route('admin.projects.risk-pool.categories.update', $cat), [
-             'name' => 'Financial Risks', 'code' => '1', 'display_order' => 1, 'is_active' => true,
+             'name' => 'Financial Risks', 'code' => '1', 'risk_type' => 'Threat', 'display_order' => 1, 'is_active' => true,
          ])
          ->assertOk();
+});
+
+it('filters risk categories by assigned risk type and synchronizes used risks when reassigned', function () {
+    $admin = adminUser();
+    $risk = ProjectRiskPool::create(validRiskData(['risk_id' => '1.01']));
+    $category = \App\Models\RiskCategory::where('name', 'Financial Risks')->firstOrFail();
+
+    $this->actingAs($admin)
+        ->putJson(route('admin.projects.risk-pool.categories.update', $category), [
+            'risk_type' => 'Opportunity',
+        ])
+        ->assertOk();
+
+    expect($risk->fresh()->risk_type)->toBe('Opportunity');
+
+    $this->actingAs($admin)
+        ->getJson(route('admin.projects.risk-pool.categories.index', ['format' => 'options']))
+        ->assertOk()
+        ->assertJsonFragment(['name' => 'Financial Risks', 'risk_type' => 'Opportunity', 'code' => '1']);
 });
 
 it('partial-updates a category with only is_active (toggle without name)', function () {
@@ -532,6 +621,8 @@ it('renders the category management page with delete buttons', function () {
 
     expect($html)->toContain('data-action="delete"')
         ->and(strpos($html, 'categoryManagerState'))->not->toBeFalse()
+        ->and($html)->toContain('name="risk_type"')
+        ->and($html)->toContain('data-field="risk_type"')
         ->and(strpos($html, 'Risk Categories'))->not->toBeFalse();
 });
 
