@@ -255,11 +255,10 @@
                                 </td>
                             </tr>
                             <tr class="description-row bg-slate-50/60">
-                                <td colspan="11" class="px-4 py-3">
-                                    <div class="flex items-start gap-2">
-                                        <span class="text-[8px] font-black text-[#00515f] uppercase tracking-widest mt-0.5 shrink-0">Description</span>
-                                        <p class="text-xs font-black text-slate-500 leading-relaxed">{{ $issue->description ?? 'No description' }}</p>
-                                    </div>
+                                <td class="px-4 py-3"></td>
+                                <td class="px-4 py-3"></td>
+                                <td class="px-4 py-3" colspan="9">
+                                    <p class="text-xs font-black text-slate-500 leading-relaxed break-words">{{ $issue->description ?? 'No description' }}</p>
                                 </td>
                             </tr>
                         @empty
