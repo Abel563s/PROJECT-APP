@@ -148,8 +148,8 @@
                                 <td class="px-4 py-3 text-center">
                                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $issues->firstItem() + $loop->index }}</span>
                                 </td>
-                                <td class="px-4 py-3">
-                                    <div class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm break-words">
+                                <td class="px-4 py-3 max-w-[120px]">
+                                    <div class="max-w-full px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm">
                                         {{ $issue->issue_type ?? '---' }}
                                     </div>
                                 </td>
