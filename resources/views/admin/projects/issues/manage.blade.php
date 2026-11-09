@@ -250,10 +250,10 @@
                                 </td>
                             </tr>
                             <tr class="description-row bg-slate-50/60">
-                                <td class="px-4 py-3"></td>
-                                <td class="px-4 py-3"></td>
-                                <td colspan="9" class="px-4 py-3">
-                                    <p class="text-xs font-black text-slate-500 leading-relaxed break-words">{{ $issue->description ?? 'No description' }}</p>
+                                <td class="px-4 py-2"></td>
+                                <td class="px-4 py-2"></td>
+                                <td colspan="9" class="px-4 py-2">
+                                    <p class="text-[9px] font-bold text-slate-500 leading-tight break-words">{{ $issue->description ?? 'No description' }}</p>
                                 </td>
                             </tr>
                         @empty
