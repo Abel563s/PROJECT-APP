@@ -115,7 +115,7 @@ class IssueController extends Controller
      */
     public function manage(Request $request, Project $project)
     {
-        abort_unless($request->user()->isAdmin() || $request->user()->isSuperadmin() || $request->user()->canManageProject($project), 403);
+        abort_unless($request->user()->isAdmin() || $request->user()->isSuperadmin() || $request->user()->isManager() || $request->user()->canManageProject($project), 403);
 
         $request->validate([
             'issue_owner' => 'nullable|string|max:255',
