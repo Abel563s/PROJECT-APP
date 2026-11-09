@@ -406,8 +406,11 @@
             const poolRiskIdHidden = container.querySelector('#pool_risk_id_hidden');
             const impactSummary = container.querySelector('#poolImpactSummary');
             const impactTimeline = container.querySelector('#poolImpactTimeline');
+            const impactTimelineDesc = container.querySelector('#poolImpactTimelineDesc');
             const impactCost = container.querySelector('#poolImpactCost');
+            const impactCostDesc = container.querySelector('#poolImpactCostDesc');
             const impactQuality = container.querySelector('#poolImpactQuality');
+            const impactQualityDesc = container.querySelector('#poolImpactQualityDesc');
             if (!type || !cat || !idSelect) return;
 
             const impactClasses = {
@@ -426,20 +429,35 @@
                 }
             }
 
-            function showImpact(timeline, cost, quality) {
+            function showImpact(timeline, cost, quality, timelineDesc = '', costDesc = '', qualityDesc = '') {
                 if (impactTimeline) applyImpact(impactTimeline, timeline);
                 if (impactCost) applyImpact(impactCost, cost);
                 if (impactQuality) applyImpact(impactQuality, quality);
+                if (impactTimelineDesc) {
+                    impactTimelineDesc.textContent = timelineDesc || '';
+                    impactTimelineDesc.classList.toggle('hidden', !timelineDesc);
+                }
+                if (impactCostDesc) {
+                    impactCostDesc.textContent = costDesc || '';
+                    impactCostDesc.classList.toggle('hidden', !costDesc);
+                }
+                if (impactQualityDesc) {
+                    impactQualityDesc.textContent = qualityDesc || '';
+                    impactQualityDesc.classList.toggle('hidden', !qualityDesc);
+                }
                 if (impactSummary) {
-                    const hasAny = timeline || cost || quality;
-                    impactSummary.classList.toggle('hidden', !hasAny);
+                    const hasSelected = Boolean(idSelect.value);
+                    impactSummary.classList.toggle('hidden', !hasSelected);
                 }
             }
 
             function clearImpact() {
-                showImpact('', '', '');
+                if (impactSummary) impactSummary.classList.add('hidden');
                 if (poolRiskIdHidden) poolRiskIdHidden.value = '';
                 if (riskName) riskName.value = '';
+                if (impactTimelineDesc) { impactTimelineDesc.textContent = ''; impactTimelineDesc.classList.add('hidden'); }
+                if (impactCostDesc) { impactCostDesc.textContent = ''; impactCostDesc.classList.add('hidden'); }
+                if (impactQualityDesc) { impactQualityDesc.textContent = ''; impactQualityDesc.classList.add('hidden'); }
             }
 
             async function loadRisks(category, riskType, selectedId = '') {
@@ -458,8 +476,11 @@
                         o.dataset.specific = r.specific_risk || '';
                         o.dataset.detail = r.detailed_risk_explanation || '';
                         o.dataset.timeline = r.impact_on_timeline || '';
+                        o.dataset.timelineDesc = r.impact_on_timeline_description || '';
                         o.dataset.cost = r.impact_on_cost || '';
+                        o.dataset.costDesc = r.impact_on_cost_description || '';
                         o.dataset.quality = r.overall_impact_level || '';
+                        o.dataset.qualityDesc = r.impact_on_quality_description || '';
                         idSelect.appendChild(o);
                     });
                     if (selectedId && [...idSelect.options].some(option => option.value === selectedId)) {
@@ -516,7 +537,14 @@
                 if (riskName) riskName.value = opt.dataset.specific || '';
                 if (riskDesc && !riskDesc.value) riskDesc.value = opt.dataset.detail || '';
                 if (poolRiskIdHidden) poolRiskIdHidden.value = opt.value;
-                showImpact(opt.dataset.timeline, opt.dataset.cost, opt.dataset.quality);
+                showImpact(
+                    opt.dataset.timeline,
+                    opt.dataset.cost,
+                    opt.dataset.quality,
+                    opt.dataset.timelineDesc,
+                    opt.dataset.costDesc,
+                    opt.dataset.qualityDesc
+                );
             });
 
             loadCategories(

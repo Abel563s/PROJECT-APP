@@ -21,8 +21,11 @@
     ];
     $labelClass = 'block text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1';
     $poolTimeline = $poolRisk?->impact_on_timeline ?? '';
+    $poolTimelineDesc = $poolRisk?->impact_on_timeline_description ?? '';
     $poolCost = $poolRisk?->impact_on_cost ?? '';
+    $poolCostDesc = $poolRisk?->impact_on_cost_description ?? '';
     $poolQuality = $poolRisk?->overall_impact_level ?? '';
+    $poolQualityDesc = $poolRisk?->impact_on_quality_description ?? '';
 @endphp
 
 <div class="space-y-4">
@@ -37,6 +40,40 @@
                 Last updated {{ $risk->updated_at?->format('M d, Y') ?? '---' }}
             </span>
         </div>
+        @if($risk->pool_risk_id)
+            <div id="poolImpactSummary" class="mt-3">
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">From Risk Repository</p>
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Time</p>
+                        <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolTimeline] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
+                            {{ $poolTimeline ?: '—' }}
+                        </span>
+                        @if($poolTimelineDesc)
+                            <p class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words">{{ $poolTimelineDesc }}</p>
+                        @endif
+                    </div>
+                    <div>
+                        <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Cost</p>
+                        <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolCost] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
+                            {{ $poolCost ?: '—' }}
+                        </span>
+                        @if($poolCostDesc)
+                            <p class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words">{{ $poolCostDesc }}</p>
+                        @endif
+                    </div>
+                    <div>
+                        <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
+                        <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolQuality] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
+                            {{ $poolQuality ?: '—' }}
+                        </span>
+                        @if($poolQualityDesc)
+                            <p class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words">{{ $poolQualityDesc }}</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
     <!-- Lead summary -->
     <div class="bg-slate-50 rounded-xl p-4">
@@ -67,28 +104,6 @@
                 <p class="text-xs font-black text-slate-900">{{ $risk->risk_urgency ?: '---' }}</p>
             </div>
         </div>
-        @if($risk->pool_risk_id && ($poolTimeline || $poolCost || $poolQuality))
-            <div class="mt-3 grid grid-cols-3 gap-2">
-                <div>
-                    <p class="{{ $labelClass }}">Impact on Time</p>
-                    <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolTimeline] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
-                        {{ $poolTimeline ?: '—' }}
-                    </span>
-                </div>
-                <div>
-                    <p class="{{ $labelClass }}">Impact on Cost</p>
-                    <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolCost] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
-                        {{ $poolCost ?: '—' }}
-                    </span>
-                </div>
-                <div>
-                    <p class="{{ $labelClass }}">Impact on Quality</p>
-                    <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolQuality] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
-                        {{ $poolQuality ?: '—' }}
-                    </span>
-                </div>
-            </div>
-        @endif
     </div>
 
     <!-- Step 1 - Risk Identification -->

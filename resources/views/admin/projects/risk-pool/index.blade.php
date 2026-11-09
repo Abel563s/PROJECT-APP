@@ -4,6 +4,7 @@
        <!-- Search & Filter -->
     @php
         $riskPoolFiltersActive = trim((string) request('search')) !== ''
+            || request('risk_type', 'all') !== 'all'
             || request('risk_category', 'all') !== 'all'
             || request('overall_impact_level', 'all') !== 'all'
             || request('impact_on_timeline', 'all') !== 'all'
@@ -21,6 +22,16 @@
                     
                         class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                 </span>
+            </label>
+            <label class="space-y-1">
+                <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Type</span>
+                <select id="riskPoolType" name="risk_type" onchange="riskPoolRefresh()"
+                    class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                    <option value="all" @selected(request('risk_type', 'all') === 'all')>All Types</option>
+                    @foreach(\App\Models\ProjectRiskPool::RISK_TYPES as $type)
+                        <option value="{{ $type }}" @selected(request('risk_type') === $type)>{{ $type }}</option>
+                    @endforeach
+                </select>
             </label>
             <label class="space-y-1">
                 <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Category</span>
@@ -91,10 +102,10 @@
 
 <!-- Spreadsheet Editor Modal -->
 <div id="riskPoolEditorModal"
-    class="fixed inset-0 z-50 hidden items-start justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
+    class="fixed inset-0 z-50 hidden items-start justify-center bg-slate-900/40 p-2 sm:p-4 backdrop-blur-sm"
     style="position:fixed; inset:0; z-index:50; display:none; align-items:flex-start; justify-content:center; padding:1rem; background-color:rgba(15,23,42,0.4);">
-    <div class="flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
-        style="display:flex; flex-direction:column; max-height:92vh; width:100%; max-width:80rem; overflow:hidden; border-radius:1rem; background-color:white;">
+    <div class="flex max-h-[94vh] w-full max-w-[96vw] xl:max-w-[1580px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        style="display:flex; flex-direction:column; max-height:94vh; width:100%; max-width:96vw; overflow:hidden; border-radius:1rem; background-color:white;">
         <div class="flex flex-shrink-0 items-center justify-between border-b border-[#00515f] bg-gradient-to-b from-[#00515f] to-black px-6 py-3">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
@@ -194,6 +205,7 @@
 
     const riskPoolState = {
         search:       @json(request('search')),
+        riskType:     @json(request('risk_type')),
         category:     @json(request('risk_category')),
         impact:       @json(request('overall_impact_level')),
         timelineImpact: @json(request('impact_on_timeline')),
@@ -203,10 +215,11 @@
         view:         @json($viewMode),
         page:         @json(request('page')),
         perPage:      @json(request('per_page', 15)),
-        filtersActive: {{ (request()->filled('search') || request('risk_category','all') !== 'all' || request('overall_impact_level','all') !== 'all' || request('impact_on_timeline','all') !== 'all' || request('impact_on_cost','all') !== 'all') ? 'true' : 'false' }},
+        filtersActive: {{ (request()->filled('search') || request('risk_type','all') !== 'all' || request('risk_category','all') !== 'all' || request('overall_impact_level','all') !== 'all' || request('impact_on_timeline','all') !== 'all' || request('impact_on_cost','all') !== 'all') ? 'true' : 'false' }},
     };
 
     const riskPoolSearch   = document.getElementById('riskPoolSearch');
+    const riskPoolType     = document.getElementById('riskPoolType');
     const riskPoolCategory = document.getElementById('riskPoolCategory');
     const riskPoolImpact   = document.getElementById('riskPoolImpact');
     const riskPoolTimelineImpact = document.getElementById('riskPoolTimelineImpact');
@@ -219,6 +232,7 @@
     function riskPoolBuildQS(extra = {}) {
         const params = new URLSearchParams();
         if (riskPoolState.search) params.set('search', riskPoolState.search);
+        if (riskPoolState.riskType && riskPoolState.riskType !== 'all') params.set('risk_type', riskPoolState.riskType);
         if (riskPoolState.category && riskPoolState.category !== 'all') params.set('risk_category', riskPoolState.category);
         if (riskPoolState.impact && riskPoolState.impact !== 'all') params.set('overall_impact_level', riskPoolState.impact);
         if (riskPoolState.timelineImpact && riskPoolState.timelineImpact !== 'all') params.set('impact_on_timeline', riskPoolState.timelineImpact);
@@ -314,8 +328,9 @@
     }
 
      function riskPoolClearFilters() {
-        riskPoolState.search = ''; riskPoolState.category = ''; riskPoolState.impact = ''; riskPoolState.timelineImpact = ''; riskPoolState.costImpact = ''; riskPoolState.page = '';
+        riskPoolState.search = ''; riskPoolState.riskType = ''; riskPoolState.category = ''; riskPoolState.impact = ''; riskPoolState.timelineImpact = ''; riskPoolState.costImpact = ''; riskPoolState.page = '';
         if (riskPoolSearch) riskPoolSearch.value = '';
+        if (riskPoolType) riskPoolType.value = 'all';
         if (riskPoolCategory) riskPoolCategory.value = 'all';
         if (riskPoolImpact) riskPoolImpact.value = 'all';
         if (riskPoolTimelineImpact) riskPoolTimelineImpact.value = 'all';
@@ -329,6 +344,7 @@
         const wrap = document.getElementById('riskPoolClearWrap');
         if (!wrap) return;
         const active = (riskPoolState.search && riskPoolState.search.trim() !== '')
+            || (riskPoolState.riskType && riskPoolState.riskType !== 'all')
             || (riskPoolState.category && riskPoolState.category !== 'all')
             || (riskPoolState.impact && riskPoolState.impact !== 'all')
             || (riskPoolState.timelineImpact && riskPoolState.timelineImpact !== 'all')
@@ -338,6 +354,7 @@
 
     function riskPoolRefresh() {
         if (riskPoolSearch) riskPoolState.search = riskPoolSearch.value;
+        if (riskPoolType) riskPoolState.riskType = riskPoolType.value;
         if (riskPoolCategory) riskPoolState.category = riskPoolCategory.value;
         if (riskPoolImpact) riskPoolState.impact = riskPoolImpact.value;
         if (riskPoolTimelineImpact) riskPoolState.timelineImpact = riskPoolTimelineImpact.value;
@@ -385,7 +402,7 @@
     /* ===================== Spreadsheet Editor ===================== */
     let spreadsheetDirty = false;
     let spreadsheetContainer = null;
-    const COLS = ['risk_id', 'risk_type', 'risk_category', 'specific_risk', 'impact_on_timeline', 'impact_on_cost', 'overall_impact_level', 'stakeholder'];
+    const COLS = ['risk_id', 'risk_type', 'risk_category', 'specific_risk', 'impact_on_timeline', 'impact_on_timeline_description', 'impact_on_cost', 'impact_on_cost_description', 'overall_impact_level', 'impact_on_quality_description', 'stakeholder'];
 
     function openSpreadsheetModal() {
         const modal = document.getElementById('riskPoolEditorModal');
@@ -597,9 +614,34 @@
             });
             tr.appendChild(categoryCell);
             tr.appendChild(elWrap(elInput('specific_risk', row.specific_risk, ri)));
-            tr.appendChild(elWrap(elSelect('impact_on_timeline', state.impactLevels, row.impact_on_timeline, ri, 'Select impact')));
-            tr.appendChild(elWrap(elSelect('impact_on_cost', state.impactLevels, row.impact_on_cost, ri, 'Select impact')));
-            tr.appendChild(elWrap(elSelect('overall_impact_level', state.impactLevels, row.overall_impact_level, ri, 'Select impact')));
+
+            // Timeline (Select + Textbox below)
+            const timelineBox = document.createElement('div');
+            timelineBox.className = 'flex flex-col gap-1.5 min-w-[140px]';
+            timelineBox.appendChild(elSelect('impact_on_timeline', state.impactLevels, row.impact_on_timeline, ri, 'Select impact'));
+            const timelineDesc = elInput('impact_on_timeline_description', row.impact_on_timeline_description, ri);
+            timelineDesc.placeholder = 'Timeline details...';
+            timelineBox.appendChild(timelineDesc);
+            tr.appendChild(elWrap(timelineBox, true));
+
+            // Cost (Select + Textbox below)
+            const costBox = document.createElement('div');
+            costBox.className = 'flex flex-col gap-1.5 min-w-[140px]';
+            costBox.appendChild(elSelect('impact_on_cost', state.impactLevels, row.impact_on_cost, ri, 'Select impact'));
+            const costDesc = elInput('impact_on_cost_description', row.impact_on_cost_description, ri);
+            costDesc.placeholder = 'Cost details...';
+            costBox.appendChild(costDesc);
+            tr.appendChild(elWrap(costBox, true));
+
+            // Quality (Select + Textbox below)
+            const qualityBox = document.createElement('div');
+            qualityBox.className = 'flex flex-col gap-1.5 min-w-[140px]';
+            qualityBox.appendChild(elSelect('overall_impact_level', state.impactLevels, row.overall_impact_level, ri, 'Select impact'));
+            const qualityDesc = elInput('impact_on_quality_description', row.impact_on_quality_description, ri);
+            qualityDesc.placeholder = 'Quality details...';
+            qualityBox.appendChild(qualityDesc);
+            tr.appendChild(elWrap(qualityBox, true));
+
             tr.appendChild(elWrap(elTextarea('stakeholder', row.stakeholder, ri, 2)));
             tr.appendChild(actionCell(row, ri));
             return tr;
@@ -693,7 +735,20 @@
             tbody.querySelectorAll('tr.ss-row').forEach(tr => {
                 const ri = parseInt(tr.dataset.rowIndex, 10);
                 const row = (state.rows[ri] || {});
-                const collected = { id: row.id || null, risk_id: '', risk_type: '', risk_category: '', specific_risk: '', impact_on_timeline: '', impact_on_cost: '', overall_impact_level: '', stakeholder: '' };
+                const collected = {
+                    id: row.id || null,
+                    risk_id: '',
+                    risk_type: '',
+                    risk_category: '',
+                    specific_risk: '',
+                    impact_on_timeline: '',
+                    impact_on_timeline_description: '',
+                    impact_on_cost: '',
+                    impact_on_cost_description: '',
+                    overall_impact_level: '',
+                    impact_on_quality_description: '',
+                    stakeholder: ''
+                };
                 tr.querySelectorAll('input.ss-input, select.ss-select, textarea.ss-textarea').forEach(el => { if (el.dataset.field) collected[el.dataset.field] = el.value; });
                 rows.push(collected);
             });

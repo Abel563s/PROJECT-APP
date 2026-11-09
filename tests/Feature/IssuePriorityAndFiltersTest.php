@@ -383,3 +383,26 @@ it('shows only in-progress projects by default on the issue registry', function 
         ->assertSee('ISSUE-IN-PROGRESS')
         ->assertSee('ISSUE-COMPLETED');
 });
+
+it('renders the issues report without unused status variables', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $project = Project::create([
+        'project_name' => 'Report Project',
+        'project_code' => 'ISSUE-REPORT',
+    ]);
+
+    Issue::create([
+        'project_id' => $project->id,
+        'created_by' => $admin->id,
+        'issue' => 'Report issue',
+        'impact' => 'High',
+        'raised_date' => '2026-11-01',
+        'planned_resolution_date' => '2026-11-20',
+    ]);
+
+    $this->actingAs($admin)
+        ->get(route('admin.projects.issues.report'))
+        ->assertOk()
+        ->assertSee('ISSUE-REPORT')
+        ->assertSee('Report issue');
+});

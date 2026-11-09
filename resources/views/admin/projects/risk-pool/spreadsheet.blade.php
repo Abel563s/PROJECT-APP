@@ -25,8 +25,11 @@
         'risk_category'                 => '',
         'specific_risk'                 => '',
         'impact_on_timeline'            => '',
+        'impact_on_timeline_description'=> '',
         'impact_on_cost'                => '',
+        'impact_on_cost_description'    => '',
         'overall_impact_level'          => '',
+        'impact_on_quality_description' => '',
         'stakeholder'                   => '',
     ];
 
@@ -97,9 +100,9 @@
                     <th class="ss-th ss-col-type border-b border-slate-200 px-2 py-2 text-left">Risk Type</th>
                     <th class="ss-th ss-col-category border-b border-slate-200 px-2 py-2 text-left">Risk Category</th>
                     <th class="ss-th ss-col-specific border-b border-slate-200 px-2 py-2 text-left">Specific Risk</th>
-                    <th class="ss-th ss-col-timeline border-b border-slate-200 px-2 py-2 text-left">Timeline</th>
-                    <th class="ss-th ss-col-cost border-b border-slate-200 px-2 py-2 text-left">Cost</th>
-                    <th class="ss-th ss-col-overall border-b border-slate-200 px-2 py-2 text-left">Quality</th>
+                    <th class="ss-th ss-col-timeline border-b border-slate-200 px-2 py-2 text-left min-w-[140px]">Timeline</th>
+                    <th class="ss-th ss-col-cost border-b border-slate-200 px-2 py-2 text-left min-w-[140px]">Cost</th>
+                    <th class="ss-th ss-col-overall border-b border-slate-200 px-2 py-2 text-left min-w-[140px]">Quality</th>
                     <th class="ss-th ss-col-stakeholder border-b border-slate-200 px-2 py-2 text-left">Stakeholder</th>
                     <th class="ss-th ss-col-actions border-b border-slate-200 px-2 py-2 text-center">Actions</th>
                 </tr>

@@ -21,7 +21,7 @@ it('calculates risk exposure from materialized date to actual date or today', fu
 
 it('offers response strategies for the selected risk type', function () {
     expect(ProjectRisk::RESPONSE_STRATEGIES)->toBe([
-        'Threat' => ['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate', 'Eliminate'],
+        'Threat' => ['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate'],
         'Opportunity' => ['Exploit', 'Enhance', 'Share'],
     ]);
 });

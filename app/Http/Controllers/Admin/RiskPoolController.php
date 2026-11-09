@@ -21,6 +21,7 @@ class RiskPoolController extends Controller
     {
         $validated = $request->validate([
             'search' => 'nullable|string|max:255',
+            'risk_type' => ['nullable', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'risk_category' => 'nullable|string',
             'overall_impact_level' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
             'impact_on_timeline' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
@@ -33,6 +34,7 @@ class RiskPoolController extends Controller
 
         $filters = [
             'search' => $request->input('search'),
+            'risk_type' => $request->input('risk_type'),
             'risk_category' => $request->input('risk_category'),
             'overall_impact_level' => $request->input('overall_impact_level'),
             'impact_on_timeline' => $request->input('impact_on_timeline'),
@@ -145,8 +147,11 @@ class RiskPoolController extends Controller
             'rows.*.specific_risk' => ['required', 'string', 'max:255'],
             'rows.*.detailed_risk_explanation' => ['nullable', 'string'],
             'rows.*.impact_on_timeline' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
+            'rows.*.impact_on_timeline_description' => ['nullable', 'string'],
             'rows.*.impact_on_cost' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
+            'rows.*.impact_on_cost_description' => ['nullable', 'string'],
             'rows.*.overall_impact_level' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
+            'rows.*.impact_on_quality_description' => ['nullable', 'string'],
             'rows.*.stakeholder' => ['nullable', 'string'],
             'rows.*.recommended_mitigation_measures' => ['nullable', 'string'],
         ]);
@@ -156,6 +161,7 @@ class RiskPoolController extends Controller
         foreach ($rows as $index => $row) {
             if (empty($row['risk_type'])) {
                 $riskTypeErrors["rows.{$index}.risk_type"][] = 'The risk type field is required.';
+
                 continue;
             }
 
@@ -174,7 +180,7 @@ class RiskPoolController extends Controller
         }
 
         foreach ($rows as $row) {
-            $action = !empty($row['id']) ? 'edit' : 'create';
+            $action = ! empty($row['id']) ? 'edit' : 'create';
             abort_unless($request->user()->canManageRiskPool($action), 403, 'You do not have permission to '.$action.' risk pool records.');
         }
 
@@ -227,8 +233,11 @@ class RiskPoolController extends Controller
                     'specific_risk' => $row['specific_risk'] ?? null,
                     'detailed_risk_explanation' => $row['detailed_risk_explanation'] ?? null,
                     'impact_on_timeline' => $row['impact_on_timeline'] ?? null,
+                    'impact_on_timeline_description' => $row['impact_on_timeline_description'] ?? null,
                     'impact_on_cost' => $row['impact_on_cost'] ?? null,
+                    'impact_on_cost_description' => $row['impact_on_cost_description'] ?? null,
                     'overall_impact_level' => $row['overall_impact_level'] ?? null,
+                    'impact_on_quality_description' => $row['impact_on_quality_description'] ?? null,
                     'stakeholder' => $row['stakeholder'] ?? null,
                     'recommended_mitigation_measures' => $row['recommended_mitigation_measures'] ?? null,
                 ];
@@ -275,6 +284,7 @@ class RiskPoolController extends Controller
         $this->authorizeRiskPoolAction('edit');
 
         $canEditRiskPool = true;
+
         return view('admin.projects.risk-pool.edit-modal', compact('risk', 'canEditRiskPool'))->render();
     }
 
@@ -388,8 +398,11 @@ class RiskPoolController extends Controller
             'specific_risk' => 'required|string|max:255',
             'detailed_risk_explanation' => 'nullable|string',
             'impact_on_timeline' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
+            'impact_on_timeline_description' => 'nullable|string',
             'impact_on_cost' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
+            'impact_on_cost_description' => 'nullable|string',
             'overall_impact_level' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
+            'impact_on_quality_description' => 'nullable|string',
             'stakeholder' => 'nullable|string',
             'recommended_mitigation_measures' => 'nullable|string',
         ]);

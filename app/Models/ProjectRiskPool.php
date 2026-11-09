@@ -14,8 +14,11 @@ class ProjectRiskPool extends Model
         'specific_risk',
         'detailed_risk_explanation',
         'impact_on_timeline',
+        'impact_on_timeline_description',
         'impact_on_cost',
+        'impact_on_cost_description',
         'overall_impact_level',
+        'impact_on_quality_description',
         'stakeholder',
         'recommended_mitigation_measures',
         'created_by',
@@ -40,17 +43,17 @@ class ProjectRiskPool extends Model
     ];
 
     public const CATEGORY_PREFIXES = [
-        'Financial Risks'             => 1,
-        'Procurement Risks'           => 2,
-        'Labor Risks'                 => 3,
-        'Design & Technical Risks'    => 4,
-        'Safety Risks'                => 5,
-        'Environmental Risks'         => 6,
-        'Legal & Regulatory Risks'    => 7,
-        'Operational/Fuel Risks'      => 8,
-        'Force Majure'                => 9,
-        'Schedule'                    => 10,
-        'Strategic/ Corporate Risks'  => 11,
+        'Financial Risks' => 1,
+        'Procurement Risks' => 2,
+        'Labor Risks' => 3,
+        'Design & Technical Risks' => 4,
+        'Safety Risks' => 5,
+        'Environmental Risks' => 6,
+        'Legal & Regulatory Risks' => 7,
+        'Operational/Fuel Risks' => 8,
+        'Force Majure' => 9,
+        'Schedule' => 10,
+        'Strategic/ Corporate Risks' => 11,
     ];
 
     public function creator(): BelongsTo
@@ -98,10 +101,10 @@ class ProjectRiskPool extends Model
             return null;
         }
 
-        $maxSuffix = self::where('risk_id', 'like', $prefix . '.%')
+        $maxSuffix = self::where('risk_id', 'like', $prefix.'.%')
             ->pluck('risk_id')
             ->reduce(function (int $carry, string $id) use ($prefix): int {
-                if (! preg_match('/^' . preg_quote($prefix, '/') . '\.(\d+)$/', $id, $matches)) {
+                if (! preg_match('/^'.preg_quote($prefix, '/').'\.(\d+)$/', $id, $matches)) {
                     return $carry;
                 }
 
@@ -110,16 +113,16 @@ class ProjectRiskPool extends Model
                 return max($carry, $suffix);
             }, 0);
 
-        return $prefix . '.' . str_pad((string) ($maxSuffix + 1), 2, '0', STR_PAD_LEFT);
+        return $prefix.'.'.str_pad((string) ($maxSuffix + 1), 2, '0', STR_PAD_LEFT);
     }
 
     public static function stats(): array
     {
         return [
-            'total'  => self::count(),
-            'high'   => self::where('overall_impact_level', 'High')->count(),
+            'total' => self::count(),
+            'high' => self::where('overall_impact_level', 'High')->count(),
             'medium' => self::where('overall_impact_level', 'Medium')->count(),
-            'low'    => self::where('overall_impact_level', 'Low')->count(),
+            'low' => self::where('overall_impact_level', 'Low')->count(),
         ];
     }
 
@@ -147,10 +150,14 @@ class ProjectRiskPool extends Model
 
         $query->where(function ($q) use ($term) {
             $q->where('risk_id', 'like', "%{$term}%")
+                ->orWhere('risk_type', 'like', "%{$term}%")
                 ->orWhere('specific_risk', 'like', "%{$term}%")
                 ->orWhere('risk_category', 'like', "%{$term}%")
                 ->orWhere('stakeholder', 'like', "%{$term}%")
-                ->orWhere('detailed_risk_explanation', 'like', "%{$term}%");
+                ->orWhere('detailed_risk_explanation', 'like', "%{$term}%")
+                ->orWhere('impact_on_timeline_description', 'like', "%{$term}%")
+                ->orWhere('impact_on_cost_description', 'like', "%{$term}%")
+                ->orWhere('impact_on_quality_description', 'like', "%{$term}%");
         });
 
         return $query;
@@ -158,16 +165,20 @@ class ProjectRiskPool extends Model
 
     public function scopeApplyFilters($query, array $filters)
     {
-        if (!empty($filters['risk_category']) && $filters['risk_category'] !== 'all') {
+        if (! empty($filters['risk_type']) && $filters['risk_type'] !== 'all') {
+            $query->where('risk_type', $filters['risk_type']);
+        }
+
+        if (! empty($filters['risk_category']) && $filters['risk_category'] !== 'all') {
             $query->where('risk_category', $filters['risk_category']);
         }
 
-        if (!empty($filters['overall_impact_level']) && $filters['overall_impact_level'] !== 'all') {
+        if (! empty($filters['overall_impact_level']) && $filters['overall_impact_level'] !== 'all') {
             $query->where('overall_impact_level', $filters['overall_impact_level']);
         }
 
         foreach (['impact_on_timeline', 'impact_on_cost'] as $field) {
-            if (!empty($filters[$field]) && $filters[$field] !== 'all') {
+            if (! empty($filters[$field]) && $filters[$field] !== 'all') {
                 $query->where($field, $filters[$field]);
             }
         }
@@ -181,7 +192,7 @@ class ProjectRiskPool extends Model
 
         $allowed = ['risk_id', 'risk_category', 'specific_risk', 'overall_impact_level', 'impact_on_timeline', 'impact_on_cost', 'updated_at', 'created_at'];
 
-        if (!in_array($sort, $allowed, true)) {
+        if (! in_array($sort, $allowed, true)) {
             $sort = 'risk_id';
         }
 

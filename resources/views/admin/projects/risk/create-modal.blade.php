@@ -17,14 +17,17 @@
                 <div>
                     <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Time</p>
                     <span id="poolImpactTimeline" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700"></span>
+                    <p id="poolImpactTimelineDesc" class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words hidden"></p>
                 </div>
                 <div>
                     <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Cost</p>
                     <span id="poolImpactCost" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700"></span>
+                    <p id="poolImpactCostDesc" class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words hidden"></p>
                 </div>
                 <div>
                     <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
                     <span id="poolImpactQuality" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700"></span>
+                    <p id="poolImpactQualityDesc" class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words hidden"></p>
                 </div>
             </div>
         </div>

@@ -100,14 +100,15 @@ class ProjectRisk extends Model
     }
 
     public const ACTION_STATUSES = ['Risk', 'Issue', 'Resolved'];
+
     public const RESPONSE_STRATEGIES = [
-        'Threat' => ['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate', 'Eliminate'],
+        'Threat' => ['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate'],
         'Opportunity' => ['Exploit', 'Enhance', 'Share'],
     ];
 
     public static function calculateExposureDays(mixed $materializedDate, mixed $actualActionDate): ?int
     {
-        if (!$materializedDate) {
+        if (! $materializedDate) {
             return null;
         }
 

@@ -26,7 +26,7 @@
     <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table class="w-full min-w-[1250px] border-collapse text-left text-[10px] font-bold text-slate-800">
             <thead><tr class="bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black uppercase tracking-widest text-white">
-                <th class="w-16 border-r border-white/10 px-2 py-3">Row #</th>
+                <th class="w-36 border-r border-white/10 px-2 py-3">Contract Reference ID</th>
                 <th class="w-48 border-r border-white/10 px-2 py-3">Item</th>
                 <th class="w-28 border-r border-white/10 px-2 py-3">PPA</th>
                 <th class="w-28 border-r border-white/10 px-2 py-3">FIDIC Red</th>

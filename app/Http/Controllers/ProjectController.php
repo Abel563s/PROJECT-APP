@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BusinessUnit;
+use App\Models\EotCategory;
+use App\Models\EotEntry;
 use App\Models\Issue;
 use App\Models\Project;
 use App\Models\ProjectRisk;
 use App\Models\ProjectRiskPool;
 use App\Models\RiskCategory;
-use App\Models\EotCategory;
-use App\Models\EotEntry;
-use App\Models\BusinessUnit;
 use App\Models\Sector;
 use App\Support\ProjectOrganizationFilters;
 use Carbon\Carbon;
@@ -89,7 +89,7 @@ class ProjectController extends Controller
             } elseif ($request->schedule_performance === 'On Schedule') {
                 $query->where(function ($q) {
                     $q->whereNotNull('actual_start_date')->whereNull('baseline_finish_date')
-                      ->orWhereNotNull('actual_start_date')->whereNotNull('baseline_finish_date')->whereNotNull('baseline_start_date')->whereRaw('ABS(DATEDIFF(IFNULL(actual_finish_date, NOW()), actual_start_date)) - ABS(DATEDIFF(baseline_finish_date, baseline_start_date)) = 0');
+                        ->orWhereNotNull('actual_start_date')->whereNotNull('baseline_finish_date')->whereNotNull('baseline_start_date')->whereRaw('ABS(DATEDIFF(IFNULL(actual_finish_date, NOW()), actual_start_date)) - ABS(DATEDIFF(baseline_finish_date, baseline_start_date)) = 0');
                 });
             }
         }
@@ -129,6 +129,7 @@ class ProjectController extends Controller
         if (request()->has('partial')) {
             return view('admin.projects.create-modal', compact('coordinators', 'businessUnits', 'sectors', 'selectedBusinessUnitId'));
         }
+
         return view('admin.projects.create', compact('coordinators', 'businessUnits', 'sectors', 'selectedBusinessUnitId'));
     }
 
@@ -183,7 +184,7 @@ class ProjectController extends Controller
             // An explicit In Progress selection clears completion data, even when
             // the edit modal submits an existing Actual Finish value.
             $validated['actual_finish_date'] = null;
-        } elseif (!empty($validated['actual_finish_date'])) {
+        } elseif (! empty($validated['actual_finish_date'])) {
             $validated['status'] = 'completed';
         }
 
@@ -211,18 +212,18 @@ class ProjectController extends Controller
         }
 
         $effectiveDataDate = $dataDate;
-        if (!$effectiveDataDate || !(clone $availableUpdates)->whereDate('data_date', $effectiveDataDate)->exists()) {
+        if (! $effectiveDataDate || ! (clone $availableUpdates)->whereDate('data_date', $effectiveDataDate)->exists()) {
             $effectiveDataDate = (clone $availableUpdates)->whereNotNull('data_date')->max('data_date');
         }
 
         $progressQueryDataDate = \App\Models\ProjectProgressUpdate::query()
             ->whereDate('project_progress_updates.data_date', $effectiveDataDate);
         ProjectOrganizationFilters::apply($progressQueryDataDate, $request);
-        
+
         if ($selectedProjectId) {
             $progressQueryDataDate->where('project_progress_updates.project_id', $selectedProjectId);
         }
-        
+
         $projectIdsWithUpdates = $progressQueryDataDate->distinct('project_id')->pluck('project_id');
 
         $allProjectUpdatesQuery = \App\Models\ProjectProgressUpdate::query();
@@ -241,32 +242,32 @@ class ProjectController extends Controller
         }
         $projects = $projectsQuery->get();
 
-        $totalPortfolioValue = $projects->sum(fn($p) => (float) $p->total_project_value);
-        $totalAllowableCost = $projects->sum(fn($p) => (float) $p->total_allowable_cost);
-        $totalCostAtCompletion = $projects->sum(fn($p) => (float) $p->cost_at_completion);
-        $totalVariations = $projects->sum(fn($p) => (float) $p->variation);
+        $totalPortfolioValue = $projects->sum(fn ($p) => (float) $p->total_project_value);
+        $totalAllowableCost = $projects->sum(fn ($p) => (float) $p->total_allowable_cost);
+        $totalCostAtCompletion = $projects->sum(fn ($p) => (float) $p->cost_at_completion);
+        $totalVariations = $projects->sum(fn ($p) => (float) $p->variation);
 
         $costVariance = $totalPortfolioValue - $totalCostAtCompletion;
-        $avgScheduleVariance = $projects->count() > 0 ? $projects->avg(fn($p) => $p->schedule_variance) : 0;
+        $avgScheduleVariance = $projects->count() > 0 ? $projects->avg(fn ($p) => $p->schedule_variance) : 0;
 
         $projectTypes = Project::whereIn('id', $allProjectIdsWithUpdates)
-            ->when($selectedSector, fn($q) => $q->where('project_type', $selectedSector))
-            ->when($selectedProjectId, fn($q) => $q->where('id', $selectedProjectId))
+            ->when($selectedSector, fn ($q) => $q->where('project_type', $selectedSector))
+            ->when($selectedProjectId, fn ($q) => $q->where('id', $selectedProjectId))
             ->groupBy('project_type')
             ->selectRaw('project_type, count(*) as count')
             ->pluck('count', 'project_type');
 
         $clientValues = Project::whereIn('id', $allProjectIdsWithUpdates)
-            ->when($selectedSector, fn($q) => $q->where('project_type', $selectedSector))
-            ->when($selectedProjectId, fn($q) => $q->where('id', $selectedProjectId))
+            ->when($selectedSector, fn ($q) => $q->where('project_type', $selectedSector))
+            ->when($selectedProjectId, fn ($q) => $q->where('id', $selectedProjectId))
             ->whereNotNull('project_client')
             ->selectRaw('project_client, sum(contract_budget + variation + supplementary) as total_value')
             ->groupBy('project_client')
             ->pluck('total_value', 'project_client');
 
         $sectorValues = Project::whereIn('id', $allProjectIdsWithUpdates)
-            ->when($selectedSector, fn($q) => $q->where('project_type', $selectedSector))
-            ->when($selectedProjectId, fn($q) => $q->where('id', $selectedProjectId))
+            ->when($selectedSector, fn ($q) => $q->where('project_type', $selectedSector))
+            ->when($selectedProjectId, fn ($q) => $q->where('id', $selectedProjectId))
             ->whereNotNull('project_type')
             ->groupBy('project_type')
             ->selectRaw('project_type, count(*) as project_count')
@@ -283,8 +284,9 @@ class ProjectController extends Controller
             if ($selectedProjectId) {
                 $q->where('project_progress_updates.project_id', $selectedProjectId);
             } elseif ($selectedSector) {
-                $q->whereHas('project', fn($pq) => $pq->where('project_type', $selectedSector));
+                $q->whereHas('project', fn ($pq) => $pq->where('project_type', $selectedSector));
             }
+
             return $q;
         };
 
@@ -331,9 +333,10 @@ class ProjectController extends Controller
             ->get()
             ->groupBy('data_date')
             ->map(function ($updates) {
-                $spiValues = $updates->filter(fn($u) => $u->progress_planned > 0)->map(fn($u) => ($u->progress_actual / $u->progress_planned) * 100);
-                $cpiValues = $updates->filter(fn($u) => $u->cost_actual > 0)->map(fn($u) => $u->cost_planned / $u->cost_actual);
+                $spiValues = $updates->filter(fn ($u) => $u->progress_planned > 0)->map(fn ($u) => ($u->progress_actual / $u->progress_planned) * 100);
+                $cpiValues = $updates->filter(fn ($u) => $u->cost_actual > 0)->map(fn ($u) => $u->cost_planned / $u->cost_actual);
                 $dateSource = $updates->first()->data_date ?: $updates->first()->created_at;
+
                 return [
                     'date' => $dateSource ? \Carbon\Carbon::parse($dateSource)->format('M d, Y') : null,
                     'spi' => $spiValues->isNotEmpty() ? round($spiValues->avg(), 2) : 0,
@@ -356,28 +359,34 @@ class ProjectController extends Controller
                 $latestCpi = $latest['cpi'];
 
                 if ($previous) {
-                    if ($latestSpi > $previous['spi']) $spiTrend = 'improving';
-                    elseif ($latestSpi < $previous['spi']) $spiTrend = 'declining';
+                    if ($latestSpi > $previous['spi']) {
+                        $spiTrend = 'improving';
+                    } elseif ($latestSpi < $previous['spi']) {
+                        $spiTrend = 'declining';
+                    }
 
-                    if ($latestCpi > $previous['cpi']) $cpiTrend = 'improving';
-                    elseif ($latestCpi < $previous['cpi']) $cpiTrend = 'declining';
+                    if ($latestCpi > $previous['cpi']) {
+                        $cpiTrend = 'improving';
+                    } elseif ($latestCpi < $previous['cpi']) {
+                        $cpiTrend = 'declining';
+                    }
                 }
             }
         }
 
         $latestProgressUpdates = $puBase()->select(
-                'project_progress_updates.project_id',
-                'projects.project_type',
-                'projects.revised_budget_amount',
-                'projects.contract_budget',
-                'projects.variation',
-                'projects.supplementary',
-                'projects.consultancy_sector',
-                'project_progress_updates.progress_planned',
-                'project_progress_updates.progress_actual',
-                'project_progress_updates.cost_planned',
-                'project_progress_updates.cost_actual'
-            )
+            'project_progress_updates.project_id',
+            'projects.project_type',
+            'projects.revised_budget_amount',
+            'projects.contract_budget',
+            'projects.variation',
+            'projects.supplementary',
+            'projects.consultancy_sector',
+            'project_progress_updates.progress_planned',
+            'project_progress_updates.progress_actual',
+            'project_progress_updates.cost_planned',
+            'project_progress_updates.cost_actual'
+        )
             ->join('projects', 'project_progress_updates.project_id', '=', 'projects.id')
             ->orderByDesc('project_progress_updates.created_at')
             ->get()
@@ -391,6 +400,7 @@ class ProjectController extends Controller
                         + (float) ($item->variation ?? 0)
                         + (float) ($item->supplementary ?? 0);
                 $item->budget_amount = $budget;
+
                 return $item;
             });
 
@@ -400,7 +410,7 @@ class ProjectController extends Controller
         $sectorWeightedCpi = collect();
 
         if ($latestProgressUpdates->isNotEmpty()) {
-            $totalBudget = $latestProgressUpdates->sum(fn($u) => $u->budget_amount);
+            $totalBudget = $latestProgressUpdates->sum(fn ($u) => $u->budget_amount);
 
             if ($totalBudget > 0) {
                 $weightedSpiSum = 0;
@@ -434,13 +444,13 @@ class ProjectController extends Controller
         }
 
         $schedulePerformanceData = $puBase()->select(
-                'project_progress_updates.project_id',
-                'projects.project_code',
-                'projects.project_name',
-                'project_progress_updates.progress_planned',
-                'project_progress_updates.progress_actual',
-                'project_progress_updates.created_at as latest_update'
-            )
+            'project_progress_updates.project_id',
+            'projects.project_code',
+            'projects.project_name',
+            'project_progress_updates.progress_planned',
+            'project_progress_updates.progress_actual',
+            'project_progress_updates.created_at as latest_update'
+        )
             ->join('projects', 'project_progress_updates.project_id', '=', 'projects.id')
             ->whereIn('projects.status', ['in progress', 'in_progress'])
             ->orderByDesc('project_progress_updates.created_at')
@@ -451,6 +461,7 @@ class ProjectController extends Controller
                 $planned = round($item->progress_planned, 1);
                 $actual = round($item->progress_actual, 1);
                 $variance = $actual - $planned;
+
                 return [
                     'project_code' => $item->project_code,
                     'project_name' => $item->project_name,
@@ -498,6 +509,7 @@ class ProjectController extends Controller
         if (request()->has('partial')) {
             return view('admin.projects.show-modal', compact('project'));
         }
+
         return view('admin.projects.show', compact('project'));
     }
 
@@ -516,6 +528,7 @@ class ProjectController extends Controller
         if (request()->has('partial')) {
             return view('admin.projects.edit-modal', compact('project', 'coordinators', 'businessUnits', 'sectors', 'selectedBusinessUnitId'));
         }
+
         return view('admin.projects.edit', compact('project', 'coordinators', 'businessUnits', 'sectors', 'selectedBusinessUnitId'));
     }
 
@@ -523,7 +536,7 @@ class ProjectController extends Controller
     {
         $this->authorize('update', $project);
 
-        if ($request->exists('coordinator_ids') && !$request->user()->isAdmin()) {
+        if ($request->exists('coordinator_ids') && ! $request->user()->isAdmin()) {
             abort(403, 'Only Admin can change project assignments.');
         }
 
@@ -572,7 +585,7 @@ class ProjectController extends Controller
 
         if (($validated['status'] ?? null) === 'in progress') {
             $validated['actual_finish_date'] = null;
-        } elseif (!empty($validated['actual_finish_date'])) {
+        } elseif (! empty($validated['actual_finish_date'])) {
             $validated['status'] = 'completed';
         }
 
@@ -612,6 +625,7 @@ class ProjectController extends Controller
         }
 
         $projects = $query->latest()->paginate(15)->withQueryString();
+
         return view('admin.projects.closeout_index', compact('projects') + ProjectOrganizationFilters::options($request));
     }
 
@@ -820,14 +834,17 @@ class ProjectController extends Controller
         $risks = $query->where('risk_category', $validated['category'])->ordered()->get();
 
         return response()->json($risks->map(fn ($r) => [
-            'risk_id'                      => $r->risk_id,
-            'specific_risk'                 => $r->specific_risk,
-            'detailed_risk_explanation'     => $r->detailed_risk_explanation,
-            'impact_on_timeline'            => $r->impact_on_timeline,
-            'impact_on_cost'                => $r->impact_on_cost,
-            'overall_impact_level'          => $r->overall_impact_level,
-            'risk_category'                 => $r->risk_category,
-            'risk_type'                     => $r->risk_type,
+            'risk_id' => $r->risk_id,
+            'specific_risk' => $r->specific_risk,
+            'detailed_risk_explanation' => $r->detailed_risk_explanation,
+            'impact_on_timeline' => $r->impact_on_timeline,
+            'impact_on_timeline_description' => $r->impact_on_timeline_description,
+            'impact_on_cost' => $r->impact_on_cost,
+            'impact_on_cost_description' => $r->impact_on_cost_description,
+            'overall_impact_level' => $r->overall_impact_level,
+            'impact_on_quality_description' => $r->impact_on_quality_description,
+            'risk_category' => $r->risk_category,
+            'risk_type' => $r->risk_type,
         ])->values());
     }
 
@@ -900,7 +917,7 @@ class ProjectController extends Controller
         $validated['project_id'] = $project->id;
         $validated['created_by'] = $request->user()->id;
         $validated['date_last_updated'] = now()->toDateString();
-        $validated['risk_name'] = !empty($validated['pool_risk_id'])
+        $validated['risk_name'] = ! empty($validated['pool_risk_id'])
             ? ProjectRiskPool::query()
                 ->where('risk_id', $validated['pool_risk_id'])
                 ->where('risk_type', $validated['risk_type'])
@@ -911,7 +928,7 @@ class ProjectController extends Controller
             $validated['materialized_date'] ?? null,
             $validated['actual_action_date'] ?? null
         );
-        if (!$validated['intent_to_claim']) {
+        if (! $validated['intent_to_claim']) {
             $validated['eot_entry_id'] = null;
             $validated = $this->clearEotClaimTracking($validated);
         } else {
@@ -1012,7 +1029,7 @@ class ProjectController extends Controller
         ]);
 
         $validated['date_last_updated'] = now()->toDateString();
-        $validated['risk_name'] = !empty($validated['pool_risk_id'])
+        $validated['risk_name'] = ! empty($validated['pool_risk_id'])
             ? ProjectRiskPool::query()
                 ->where('risk_id', $validated['pool_risk_id'])
                 ->where('risk_type', $validated['risk_type'])
@@ -1023,7 +1040,7 @@ class ProjectController extends Controller
             $validated['materialized_date'] ?? null,
             $validated['actual_action_date'] ?? null
         );
-        if (!$validated['intent_to_claim']) {
+        if (! $validated['intent_to_claim']) {
             $validated['eot_entry_id'] = null;
             $validated = $this->clearEotClaimTracking($validated);
         } else {
@@ -1078,10 +1095,10 @@ class ProjectController extends Controller
             ->orderBy('eot_id')
             ->get(['id', 'eot_category_id', 'eot_id', 'detail_reason']);
 
-        if ($risk?->eot_entry_id && !$entries->contains('id', $risk->eot_entry_id)) {
+        if ($risk?->eot_entry_id && ! $entries->contains('id', $risk->eot_entry_id)) {
             $selectedEntry = EotEntry::with('baseOfRisk')->find($risk->eot_entry_id);
             if ($selectedEntry) {
-                if (!$categories->contains('id', $selectedEntry->eot_category_id)) {
+                if (! $categories->contains('id', $selectedEntry->eot_category_id)) {
                     $categories->push($selectedEntry->baseOfRisk);
                 }
                 $entries->push($selectedEntry->only(['id', 'eot_category_id', 'eot_id', 'detail_reason']));
@@ -1099,6 +1116,7 @@ class ProjectController extends Controller
         abort_unless((auth()->user()->isAdmin() || auth()->user()->isSuperadmin()) && auth()->user()->canManageProject($risk->project), 403);
         $project = $risk->project;
         $risk->delete();
+
         return redirect()->route('admin.projects.risk.manage', $project)->with('success', 'Risk deleted successfully.');
     }
 
@@ -1137,7 +1155,7 @@ class ProjectController extends Controller
         return response()->json($projects->map(function ($project) {
             return [
                 'id' => $project->id,
-                'text' => $project->project_code . ' - ' . $project->project_name,
+                'text' => $project->project_code.' - '.$project->project_name,
                 'project_code' => $project->project_code,
                 'project_name' => $project->project_name,
             ];
@@ -1162,6 +1180,7 @@ class ProjectController extends Controller
         $this->authorize('delete', $project);
 
         $project->delete();
+
         return redirect()->route('admin.projects.index')->with('success', 'Project deleted successfully.');
     }
 
@@ -1181,7 +1200,7 @@ class ProjectController extends Controller
         }
 
         return response()->json([
-            'code' => sprintf('%s-%03d', $prefix, $nextSequence)
+            'code' => sprintf('%s-%03d', $prefix, $nextSequence),
         ]);
     }
 
@@ -1218,6 +1237,7 @@ class ProjectController extends Controller
 
         if ($request->has('partial') && $request->get('action') === 'create') {
             $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name', 'project_type', 'consultancy_sector']);
+
             return view('admin.projects.issues.create-modal', compact('projects'))->render();
         }
 
@@ -1234,6 +1254,7 @@ class ProjectController extends Controller
     {
         if ($request->has('partial')) {
             $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name', 'project_type', 'consultancy_sector']);
+
             return view('admin.projects.issues.edit-modal', compact('issue', 'projects'))->render();
         }
 
@@ -1416,6 +1437,7 @@ class ProjectController extends Controller
         $topProjects = $allIssues->groupBy('project_id')
             ->map(function ($group) {
                 $project = $group->first()->project;
+
                 return [
                     'project_name' => $project?->project_name ?? 'Unknown',
                     'project_code' => $project?->project_code ?? 'N/A',
@@ -1440,8 +1462,8 @@ class ProjectController extends Controller
             return $issue->raised_date->diffInDays($issue->issue_closed_date);
         })->sort()->values()->all();
 
-        $p50 = !empty($resolutionTimesArray) ? $resolutionTimesArray[max(0, floor((count($resolutionTimesArray) - 1) * 0.5))] : 0;
-        $p90 = !empty($resolutionTimesArray) ? $resolutionTimesArray[max(0, floor((count($resolutionTimesArray) - 1) * 0.9))] : 0;
+        $p50 = ! empty($resolutionTimesArray) ? $resolutionTimesArray[max(0, floor((count($resolutionTimesArray) - 1) * 0.5))] : 0;
+        $p90 = ! empty($resolutionTimesArray) ? $resolutionTimesArray[max(0, floor((count($resolutionTimesArray) - 1) * 0.9))] : 0;
 
         $projectOptionsQuery = Project::orderBy('project_name');
         ProjectOrganizationFilters::apply($projectOptionsQuery, $request, true);
@@ -1468,9 +1490,7 @@ class ProjectController extends Controller
             'projects',
             'total',
             'open',
-            'inProgress',
             'closed',
-            'cancelled',
             'overdue',
             'highPriority',
             'mediumPriority',

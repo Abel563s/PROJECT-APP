@@ -1,6 +1,6 @@
 <div class="space-y-4">
     <div class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
-        <div><p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Row Number</p><p class="mt-1 text-lg font-black text-slate-900">{{ $clause->row_number }}</p></div>
+        <div><p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Contract Reference ID</p><p class="mt-1 text-lg font-black text-slate-900">{{ $clause->row_number }}</p></div>
         <span class="rounded-lg border border-cyan-100 bg-cyan-50 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-cyan-800">Contract Clause</span>
     </div>
     <div class="overflow-hidden rounded-xl border border-slate-100">

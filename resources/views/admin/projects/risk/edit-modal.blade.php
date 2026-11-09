@@ -13,25 +13,36 @@
             </span>
         </div>
         @php
+            $impactClasses = [
+                'High'   => 'bg-rose-50 text-rose-700 border-rose-200',
+                'Medium' => 'bg-amber-50 text-amber-700 border-amber-200',
+                'Low'    => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            ];
             $poolTimeline = $poolRisk?->impact_on_timeline ?? '';
+            $poolTimelineDesc = $poolRisk?->impact_on_timeline_description ?? '';
             $poolCost = $poolRisk?->impact_on_cost ?? '';
+            $poolCostDesc = $poolRisk?->impact_on_cost_description ?? '';
             $poolQuality = $poolRisk?->overall_impact_level ?? '';
-            $showPoolImpact = $risk->pool_risk_id && ($poolTimeline || $poolCost || $poolQuality);
+            $poolQualityDesc = $poolRisk?->impact_on_quality_description ?? '';
+            $showPoolImpact = (bool) $risk->pool_risk_id;
         @endphp
         <div id="poolImpactSummary" class="{{ $showPoolImpact ? '' : 'hidden' }} mt-3">
             <p class="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">From Risk Repository</p>
             <div class="grid grid-cols-3 gap-2">
                 <div>
                     <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Time</p>
-                    <span id="poolImpactTimeline" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700">{{ $poolTimeline ?: '---' }}</span>
+                    <span id="poolImpactTimeline" class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolTimeline] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">{{ $poolTimeline ?: '—' }}</span>
+                    <p id="poolImpactTimelineDesc" class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words {{ $poolTimelineDesc ? '' : 'hidden' }}">{{ $poolTimelineDesc }}</p>
                 </div>
                 <div>
                     <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Cost</p>
-                    <span id="poolImpactCost" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700">{{ $poolCost ?: '---' }}</span>
+                    <span id="poolImpactCost" class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolCost] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">{{ $poolCost ?: '—' }}</span>
+                    <p id="poolImpactCostDesc" class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words {{ $poolCostDesc ? '' : 'hidden' }}">{{ $poolCostDesc }}</p>
                 </div>
                 <div>
                     <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
-                    <span id="poolImpactQuality" class="mt-1 inline-flex rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-black text-slate-700">{{ $poolQuality ?: '---' }}</span>
+                    <span id="poolImpactQuality" class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolQuality] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">{{ $poolQuality ?: '—' }}</span>
+                    <p id="poolImpactQualityDesc" class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words {{ $poolQualityDesc ? '' : 'hidden' }}">{{ $poolQualityDesc }}</p>
                 </div>
             </div>
         </div>

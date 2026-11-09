@@ -16,7 +16,8 @@
         <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Project</label>
-                <select name="project_id" required
+                <select name="project_id" id="editProjectId" required
+                    onchange="document.getElementById('editProjectIssuesLink').href = `/admin/projects/${this.value}/issues`"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
                     @foreach($projects as $project)
                         <option value="{{ $project->id }}" {{ $update->project_id == $project->id ? 'selected' : '' }}>{{ $project->project_code }}</option>
@@ -204,7 +205,12 @@
         </div>
     </div>
 
-    <div class="flex justify-end pt-2">
+    <div class="flex items-center justify-between gap-3 pt-2">
+        <a id="editProjectIssuesLink" href="{{ route('admin.projects.issues.manage', $update->project_id) }}"
+            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-700 transition hover:border-[#00ADC5] hover:text-[#00ADC5]">
+            <i data-lucide="list-checks" class="h-3.5 w-3.5"></i>
+            Project Issues
+        </a>
         <button type="submit" form="editModalForm"
             class="px-6 py-2 bg-[#00ADC5] text-white rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-[#00ADC5]/90 transition-all shadow-lg shadow-cyan-500/20">
             Update

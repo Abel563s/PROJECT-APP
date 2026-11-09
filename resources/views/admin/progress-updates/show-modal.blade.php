@@ -10,9 +10,16 @@
                 <p class="text-[9px] font-black text-[#00ADC5] uppercase tracking-widest">{{ $update->project->custom_id }}</p>
             </div>
         </div>
-        <div class="text-right">
-            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Data Date</p>
-            <p class="text-xs font-black text-slate-900">{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('M d, Y') : '---' }}</p>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.projects.issues.manage', $update->project_id) }}"
+                class="inline-flex items-center gap-1.5 rounded-lg bg-[#00ADC5] px-3 py-2 text-[9px] font-black uppercase tracking-widest text-white transition hover:bg-[#0097ad]">
+                <i data-lucide="list-checks" class="h-3.5 w-3.5"></i>
+                Project Issues
+            </a>
+            <div class="text-right">
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Data Date</p>
+                <p class="text-xs font-black text-slate-900">{{ $update->data_date ? \Carbon\Carbon::parse($update->data_date)->format('M d, Y') : '---' }}</p>
+            </div>
         </div>
     </div>
 

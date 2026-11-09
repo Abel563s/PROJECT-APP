@@ -10,7 +10,7 @@
             <div class="admin-filter-grid gap-3">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Contract Clauses</span>
-                    <span class="relative block"><i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i><input type="search" name="search" value="{{ request('search') }}" placeholder="Row number, item, standard, or explanation" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100"></span>
+                    <span class="relative block"><i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i><input type="search" name="search" value="{{ request('search') }}" placeholder="Contract Reference ID, item, standard, or explanation" class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100"></span>
                 </label>
                 <div class="flex items-end gap-2"><button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-4 py-2 text-[9px] font-black uppercase tracking-widest text-white transition hover:bg-[#00515f]"><i data-lucide="search" class="h-3.5 w-3.5"></i>Search</button>@if(request()->filled('search'))<a href="{{ route('admin.projects.risk-pool.contract-clauses') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white"><i data-lucide="x" class="h-3.5 w-3.5"></i>Clear</a>@endif</div>
             </div>
@@ -20,7 +20,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[1120px] table-fixed text-left">
                     <thead><tr class="border-b border-[#00515f]/30 bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black uppercase tracking-widest text-white">
-                        <th class="w-16 px-2 py-3">Row #</th><th class="w-44 px-2 py-3">Item</th><th class="w-64 px-2 py-3">Explanation for Planners</th><th class="w-28 px-2 py-3">PPA</th><th class="w-28 px-2 py-3">FIDIC Red</th><th class="w-28 px-2 py-3">FIDIC Yellow</th><th class="w-28 px-2 py-3">FIDIC Silver</th><th class="w-28 px-2 py-3 text-right">Actions</th>
+                        <th class="w-36 px-2 py-3">Contract Reference ID</th><th class="w-44 px-2 py-3">Item</th><th class="w-64 px-2 py-3">Explanation for Planners</th><th class="w-28 px-2 py-3">PPA</th><th class="w-28 px-2 py-3">FIDIC Red</th><th class="w-28 px-2 py-3">FIDIC Yellow</th><th class="w-28 px-2 py-3">FIDIC Silver</th><th class="w-28 px-2 py-3 text-right">Actions</th>
                     </tr></thead>
                     <tbody class="divide-y divide-slate-50">
                         @forelse($clauses as $clause)

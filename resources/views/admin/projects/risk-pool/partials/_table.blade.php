@@ -41,16 +41,25 @@
                             <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$risk->impact_on_timeline] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
                                 {{ $risk->impact_on_timeline ?: '—' }}
                             </span>
+                            @if($risk->impact_on_timeline_description)
+                                <p class="mt-1 text-[9px] text-slate-500 line-clamp-2 max-w-[140px] mx-auto leading-tight break-words" title="{{ $risk->impact_on_timeline_description }}">{{ $risk->impact_on_timeline_description }}</p>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-center">
                             <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$risk->impact_on_cost] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
                                 {{ $risk->impact_on_cost ?: '—' }}
                             </span>
+                            @if($risk->impact_on_cost_description)
+                                <p class="mt-1 text-[9px] text-slate-500 line-clamp-2 max-w-[140px] mx-auto leading-tight break-words" title="{{ $risk->impact_on_cost_description }}">{{ $risk->impact_on_cost_description }}</p>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-center">
                             <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$risk->overall_impact_level] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
                                 {{ $risk->overall_impact_level ?: '—' }}
                             </span>
+                            @if($risk->impact_on_quality_description)
+                                <p class="mt-1 text-[9px] text-slate-500 line-clamp-2 max-w-[140px] mx-auto leading-tight break-words" title="{{ $risk->impact_on_quality_description }}">{{ $risk->impact_on_quality_description }}</p>
+                            @endif
                         </td>
                         <td class="max-w-xs px-4 py-3">
                             <p class="text-xs font-bold text-slate-600 leading-tight break-words">{{ $risk->stakeholder ?: '—' }}</p>

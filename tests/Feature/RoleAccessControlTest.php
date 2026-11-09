@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\BusinessUnit;
 use App\Models\Issue;
 use App\Models\Project;
 use App\Models\ProjectPayment;
@@ -422,9 +423,11 @@ it('requires Management and Project Coordinators to replace the temporary passwo
 });
 
 it('allows admin role to view and edit data_date in progress update edit modal while non-admin cannot change it', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
+    $businessUnit = BusinessUnit::create(['name' => 'Data Date Unit', 'code' => 'DDU']);
+    $admin = User::factory()->create(['role' => 'admin', 'business_unit_id' => $businessUnit->id]);
     $coordinator = User::factory()->create(['role' => 'user']);
     $project = makeAccessProject('Data Date Project');
+    $project->update(['business_unit_id' => $businessUnit->id]);
     $project->coordinators()->attach($coordinator);
     $update = ProjectProgressUpdate::create([
         'project_id' => $project->id,
@@ -433,13 +436,23 @@ it('allows admin role to view and edit data_date in progress update edit modal w
         'data_date' => '2026-10-15',
     ]);
 
-    // Admin view edit modal has editable input
+    $issuesUrl = route('admin.projects.issues.manage', $project);
+
+    // Admin view edit modal has editable input and a link to the project's issues
     $this->actingAs($admin)
         ->get(route('admin.progress-updates.edit', $update).'?partial=1')
         ->assertOk()
         ->assertSee('name="data_date"', false)
         ->assertSee('value="2026-10-15"', false)
-        ->assertDontSee('disabled readonly', false);
+        ->assertDontSee('disabled readonly', false)
+        ->assertSee('Project Issues', false)
+        ->assertSee($issuesUrl, false);
+
+    $this->actingAs($admin)
+        ->get(route('admin.progress-updates.show', $update).'?partial=1')
+        ->assertOk()
+        ->assertSee('Project Issues', false)
+        ->assertSee($issuesUrl, false);
 
     // Coordinator view edit modal has disabled input
     $this->actingAs($coordinator)

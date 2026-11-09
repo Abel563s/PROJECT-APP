@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\User;
 use App\Models\ProjectRiskPool;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 
@@ -13,7 +13,7 @@ beforeEach(function () {
 
 function adminUser(): User
 {
-    return User::factory()->create(['role' => 'admin']);
+    return User::factory()->create(['role' => 'superadmin']);
 }
 
 function managerUser(): User
@@ -458,11 +458,11 @@ it('bulk store updates existing records and skips unchanged ones', function () {
         ->postJson(route('admin.projects.risk-pool.bulk-store'), [
             'rows' => [
                 [
-                    'id'               => $existing->id,
-                    'risk_id'          => '1.01',
-                    'risk_type'        => 'Threat',
-                    'risk_category'    => 'Financial Risks',
-                    'specific_risk'    => 'Updated Title',
+                    'id' => $existing->id,
+                    'risk_id' => '1.01',
+                    'risk_type' => 'Threat',
+                    'risk_category' => 'Financial Risks',
+                    'specific_risk' => 'Updated Title',
                     'overall_impact_level' => 'Medium',
                 ],
             ],
@@ -491,10 +491,10 @@ it('lets an admin manage risk categories in the database', function () {
     $admin = adminUser();
 
     $this->actingAs($admin)
-            ->get(route('admin.projects.risk-pool.categories.index'))
-            ->assertOk()
-            ->assertSee('Risk Categories')
-            ->assertSee('Financial Risks');
+        ->get(route('admin.projects.risk-pool.categories.index'))
+        ->assertOk()
+        ->assertSee('Risk Categories')
+        ->assertSee('Financial Risks');
 
     $this->actingAs($admin)
         ->postJson(route('admin.projects.risk-pool.categories.store'), [
@@ -506,12 +506,12 @@ it('lets an admin manage risk categories in the database', function () {
     expect(\App\Models\RiskCategory::where('name', 'Technology Risks')->exists())->toBeTrue();
     expect(\App\Models\RiskCategory::where('name', 'Technology Risks')->value('risk_type'))->toBe('Opportunity');
 
-     $cat = \App\Models\RiskCategory::where('name', 'Financial Risks')->first();
-     $this->actingAs($admin)
-         ->putJson(route('admin.projects.risk-pool.categories.update', $cat), [
-             'name' => 'Financial Risks', 'code' => '1', 'risk_type' => 'Threat', 'display_order' => 1, 'is_active' => true,
-         ])
-         ->assertOk();
+    $cat = \App\Models\RiskCategory::where('name', 'Financial Risks')->first();
+    $this->actingAs($admin)
+        ->putJson(route('admin.projects.risk-pool.categories.update', $cat), [
+            'name' => 'Financial Risks', 'code' => '1', 'risk_type' => 'Threat', 'display_order' => 1, 'is_active' => true,
+        ])
+        ->assertOk();
 });
 
 it('filters risk categories by assigned risk type and synchronizes used risks when reassigned', function () {

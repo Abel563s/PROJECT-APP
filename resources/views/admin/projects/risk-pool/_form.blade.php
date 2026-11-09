@@ -73,13 +73,16 @@
                     class="{{ $areaClass }}">{{ old('detailed_risk_explanation', $risk->detailed_risk_explanation ?? '') }}</textarea>
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="impact_on_time">Impact on Time</label>
-                <select id="impact_on_time" name="impact_on_time class="{{ $fieldClass }}">
+                <label class="{{ $labelClass }}" for="impact_on_timeline">Impact on Time</label>
+                <select id="impact_on_timeline" name="impact_on_timeline" class="{{ $fieldClass }}">
                     <option value="">Select impact</option>
                     @foreach($impactLevels as $level)
-                        <option value="{{ $level }}" @selected(old('impact_on_time', $risk->impact_on_time ?? '') === $level)>{{ $level }}</option>
+                        <option value="{{ $level }}" @selected(old('impact_on_timeline', $risk->impact_on_timeline ?? '') === $level)>{{ $level }}</option>
                     @endforeach
                 </select>
+                <input id="impact_on_timeline_description" name="impact_on_timeline_description" type="text"
+                    value="{{ old('impact_on_timeline_description', $risk->impact_on_timeline_description ?? '') }}"
+                    placeholder="Timeline impact details..." class="mt-1.5 {{ $fieldClass }}">
             </div>
             <div>
                 <label class="{{ $labelClass }}" for="impact_on_cost">Impact on Cost</label>
@@ -89,15 +92,21 @@
                         <option value="{{ $level }}" @selected(old('impact_on_cost', $risk->impact_on_cost ?? '') === $level)>{{ $level }}</option>
                     @endforeach
                 </select>
+                <input id="impact_on_cost_description" name="impact_on_cost_description" type="text"
+                    value="{{ old('impact_on_cost_description', $risk->impact_on_cost_description ?? '') }}"
+                    placeholder="Cost impact details..." class="mt-1.5 {{ $fieldClass }}">
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="impact_on_quality">Impact on Quality</label>
-                <select id="impact_on_quality" name="impact_on_quality" class="{{ $fieldClass }}">
+                <label class="{{ $labelClass }}" for="overall_impact_level">Impact on Quality</label>
+                <select id="overall_impact_level" name="overall_impact_level" class="{{ $fieldClass }}">
                     <option value="">Select level</option>
                     @foreach($impactLevels as $level)
-                        <option value="{{ $level }}" @selected(old('impact_on_quality', $risk->impact_on_quality ?? '') === $level)>{{ $level }}</option>
+                        <option value="{{ $level }}" @selected(old('overall_impact_level', $risk->overall_impact_level ?? '') === $level)>{{ $level }}</option>
                     @endforeach
                 </select>
+                <input id="impact_on_quality_description" name="impact_on_quality_description" type="text"
+                    value="{{ old('impact_on_quality_description', $risk->impact_on_quality_description ?? '') }}"
+                    placeholder="Quality impact details..." class="mt-1.5 {{ $fieldClass }}">
             </div>
             <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="stakeholder">Stakeholder</label>

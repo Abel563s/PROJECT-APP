@@ -105,6 +105,9 @@
                     @if($risk->impact_on_timeline)<i data-lucide="{{ $impactIcons[$risk->impact_on_timeline] ?? 'circle' }}" class="w-3 h-3"></i>@endif
                     {{ $risk->impact_on_timeline ?: 'Unassigned' }}
                 </span>
+                @if($risk->impact_on_timeline_description)
+                    <p class="mt-1.5 text-xs font-semibold text-slate-700 whitespace-pre-wrap break-words">{{ $risk->impact_on_timeline_description }}</p>
+                @endif
             </div>
             <div>
                 <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Cost</p>
@@ -112,6 +115,9 @@
                     @if($risk->impact_on_cost)<i data-lucide="{{ $impactIcons[$risk->impact_on_cost] ?? 'circle' }}" class="w-3 h-3"></i>@endif
                     {{ $risk->impact_on_cost ?: 'Unassigned' }}
                 </span>
+                @if($risk->impact_on_cost_description)
+                    <p class="mt-1.5 text-xs font-semibold text-slate-700 whitespace-pre-wrap break-words">{{ $risk->impact_on_cost_description }}</p>
+                @endif
             </div>
             <div>
                 <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
@@ -119,6 +125,9 @@
                     @if($risk->overall_impact_level)<i data-lucide="{{ $impactIcons[$risk->overall_impact_level] ?? 'circle' }}" class="w-3 h-3"></i>@endif
                     {{ $risk->overall_impact_level ?: 'Unassigned' }}
                 </span>
+                @if($risk->impact_on_quality_description)
+                    <p class="mt-1.5 text-xs font-semibold text-slate-700 whitespace-pre-wrap break-words">{{ $risk->impact_on_quality_description }}</p>
+                @endif
             </div>
         </div>
     </div>
