@@ -777,10 +777,6 @@
             modal.querySelector('.risk-modal-dialog').addEventListener('click', event => event.stopPropagation());
         });
 
-        document.getElementById('createModal').addEventListener('click', function (event) {
-            if (event.target === this) closeCreateModal();
-        });
-
         function openViewModal(id) {
             const url = `{{ route('admin.projects.risk.view-modal', ['risk' => '__RISK__']) }}`.replace('__RISK__', encodeURIComponent(id));
             fetch(`${url}?partial=1`)

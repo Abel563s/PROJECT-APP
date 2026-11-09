@@ -18,7 +18,7 @@
             <div class="flex justify-center">
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-b from-[#00515f] to-black rounded-lg shadow-sm border border-white/10">
                     <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-white/90"></i>
-                    <span class="text-base font-black text-white tracking-tight">{{ $projects->total() }}</span>
+                    <span class="text-base font-black text-white tracking-tight">{{ $projects->count() }}</span>
                     <span class="text-[9px] font-black text-white/80 uppercase tracking-wider">Projects Registered</span>
                 </div>
             </div>
@@ -99,7 +99,7 @@
                 <table class="w-full text-left">
                     <thead>
                         <tr class="bg-gradient-to-b from-[#00515f] to-black">
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">#</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Project Code</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Total Issues</th>
                             <th colspan="3" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Status</th>
@@ -128,7 +128,7 @@
                         @forelse($projects as $project)
                             <tr class="group hover:bg-slate-50/80 transition-all duration-300 odd:bg-white even:bg-slate-50/20">
                                 <td class="px-6 py-4 text-center">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $projects->firstItem() + $loop->index }}</span>
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $project->project_code }}</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">{{ $project->project_code }}</span>
@@ -218,24 +218,8 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- Footer -->
-            <div class="p-6 border-t border-slate-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50/30">
-                <div class="flex items-center gap-2">
-                    <div class="flex items-center gap-1.5 px-3 h-10 bg-white border border-slate-100 rounded-xl">
-                        <span class="text-[9px] font-black text-slate-900 tracking-widest">{{ $projects->firstItem() ?: 0 }}</span>
-                        <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">to</span>
-                        <span class="text-[9px] font-black text-slate-400 tracking-widest">{{ $projects->lastItem() ?: 0 }}</span>
-                        <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">of</span>
-                        <span class="text-[9px] font-black text-slate-400 tracking-widest">{{ $projects->total() }}</span>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    {{ $projects->links() }}
-                </div>
-            </div>
         </div>
+
     </div>
 
     <script>

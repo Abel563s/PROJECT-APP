@@ -102,7 +102,7 @@ class IssueController extends Controller
             });
         }
 
-        $projects = $query->orderByDesc('baseline_start_date')->paginate(15)->withQueryString();
+        $projects = $query->orderByDesc('baseline_start_date')->get();
 
         return view('admin.projects.issues.index', array_merge(
             compact('projects'),

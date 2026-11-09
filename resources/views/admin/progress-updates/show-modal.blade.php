@@ -6,7 +6,7 @@
                 {{ $update->project->project_code }}
             </div>
             <div>
-                <h4 class="text-base font-black text-slate-900 leading-tight">{{ $update->project->project_name }}</h4>
+                <h4 class="text-base font-black text-slate-900 leading-tight">{{ $update->project->project_code }}</h4>
                 <p class="text-[9px] font-black text-[#00ADC5] uppercase tracking-widest">{{ $update->project->custom_id }}</p>
             </div>
         </div>

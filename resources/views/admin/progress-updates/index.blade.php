@@ -43,8 +43,8 @@
                 <div class="relative flex items-center justify-between gap-4">
                     <div>
                         <p class="text-[9px] font-black uppercase tracking-[0.18em] text-emerald-100">Revenue Planned</p>
-                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-emerald-100">ETB</span>{{ number_format($totalRevenuePlanned, 2) }}</p>
-                        <p class="mt-1 text-[9px] font-semibold text-emerald-100/90">Total for current filters</p>
+                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-emerald-100">ETB</span>{{ number_format($totalRevenuePlannedWeekly, 2) }}</p>
+                        <p class="mt-1 text-[9px] font-semibold text-emerald-100/90">Weekly · Data Date: {{ $latestDataDate ? \Carbon\Carbon::parse($latestDataDate)->format('d-M-Y') : '---' }}</p>
                     </div>
                     <span class="progress-revenue-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/15 shadow-inner"><i data-lucide="banknote" class="h-5 w-5"></i></span>
                 </div>
@@ -54,8 +54,8 @@
                 <div class="relative flex items-center justify-between gap-4">
                     <div>
                         <p class="text-[9px] font-black uppercase tracking-[0.18em] text-sky-100">Revenue Actual</p>
-                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-sky-100">ETB</span>{{ number_format($totalRevenueActual, 2) }}</p>
-                        <p class="mt-1 text-[9px] font-semibold text-sky-100/90">Total for current filters</p>
+                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-sky-100">ETB</span>{{ number_format($totalRevenueActualWeekly, 2) }}</p>
+                        <p class="mt-1 text-[9px] font-semibold text-sky-100/90">Weekly · Data Date: {{ $latestDataDate ? \Carbon\Carbon::parse($latestDataDate)->format('d-M-Y') : '---' }}</p>
                     </div>
                     <span class="progress-revenue-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/15 shadow-inner"><i data-lucide="circle-dollar-sign" class="h-5 w-5"></i></span>
                 </div>

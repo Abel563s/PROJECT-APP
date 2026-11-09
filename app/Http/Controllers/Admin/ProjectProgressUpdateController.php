@@ -43,16 +43,22 @@ class ProjectProgressUpdateController extends Controller
             ->reorder()
             ->selectRaw('
                 COALESCE(SUM(revenue_planned), 0) as total_revenue_planned,
-                COALESCE(SUM(revenue_actual), 0) as total_revenue_actual
+                COALESCE(SUM(revenue_actual), 0) as total_revenue_actual,
+                COALESCE(SUM(revenue_planned_weekly), 0) as total_revenue_planned_weekly,
+                COALESCE(SUM(revenue_actual_weekly), 0) as total_revenue_actual_weekly
             ')
             ->first();
 
         $totalRevenuePlanned = (float) $revenueTotals->total_revenue_planned;
         $totalRevenueActual = (float) $revenueTotals->total_revenue_actual;
+        $totalRevenuePlannedWeekly = (float) $revenueTotals->total_revenue_planned_weekly;
+        $totalRevenueActualWeekly = (float) $revenueTotals->total_revenue_actual_weekly;
+
+        $latestDataDate = (clone $query)->latest('data_date')->value('data_date');
         $updates = $query->latest()->paginate(15)->withQueryString();
         $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
         return view('admin.progress-updates.index', array_merge(
-            compact('updates', 'projects', 'totalRevenuePlanned', 'totalRevenueActual'),
+            compact('updates', 'projects', 'totalRevenuePlanned', 'totalRevenueActual', 'totalRevenuePlannedWeekly', 'totalRevenueActualWeekly', 'latestDataDate'),
             ProjectOrganizationFilters::options($request)
         ));
     }

@@ -12,7 +12,7 @@
                     <h2 class="text-xl font-bold text-slate-900 tracking-tight font-outfit leading-none">
                         Issues <span class="font-black text-slate-900">Log</span>
                     </h2>
-                    <p class="text-[8px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">{{ $project->project_name }} - {{ $project->custom_id }}</p>
+                    <p class="text-[10px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">{{ $project->project_code }}</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -143,6 +143,7 @@
                             <th class="px-4 py-3 text-center">#</th>
                             <th class="px-4 py-3">Issue Owner</th>
                             <th class="px-4 py-3">Issue</th>
+                            <th class="px-4 py-3">Issue Description</th>
                             <th class="px-4 py-3 text-center">Impact</th>
                             <th class="px-4 py-3 text-center">Status</th>
                             <th class="px-4 py-3 text-center">Priority</th>
@@ -167,6 +168,9 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $issue->issue }}</p>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $issue->description ?? '---' }}</p>
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     @php
@@ -268,7 +272,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="12" class="px-4 py-16 text-center">
+                                <td colspan="13" class="px-4 py-16 text-center">
                                     <div class="flex flex-col items-center gap-4">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="alert-circle" class="w-8 h-8"></i>
