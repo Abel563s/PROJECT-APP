@@ -132,11 +132,11 @@
                             <th class="px-4 py-3 text-center">#</th>
                             <th class="px-4 py-3">Issue Type</th>
                             <th class="px-4 py-3">Issue</th>
-                            <th class="px-4 py-3 text-center">Status / Impact</th>
+                            <th class="px-4 py-3 text-center">Status</th>
+                            <th class="px-4 py-3 text-center">Impact</th>
                             <th class="px-4 py-3 text-center">Priority</th>
                             <th class="px-4 py-3">Raised Date</th>
                             <th class="px-4 py-3">Planned Action Date</th>
-                            <th class="px-4 py-3">Action By</th>
                             <th class="px-4 py-3">Data Date</th>
                             <th class="px-4 py-3">Last Updated</th>
                             <th class="px-4 py-3 text-right">Action</th>
@@ -157,30 +157,30 @@
                                     <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $issue->issue }}</p>
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <div class="flex items-center justify-center gap-2">
-                                        @php
-                                            $statusColors = [
-                                                'Raised' => 'bg-slate-100 text-slate-600 border-slate-200',
-                                                'Open' => 'bg-sky-50 text-sky-600 border-sky-200',
-                                                'Closed' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
-                                            ];
-                                            $statusColor = $statusColors[$issue->status] ?? 'bg-slate-100 text-slate-400 border-slate-200';
-                                        @endphp
-                                        <span class="inline-flex px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider {{ $statusColor }} border shadow-sm">
-                                            {{ $issue->status ?? '---' }}
-                                        </span>
-                                        @php
-                                            $impactColors = [
-                                                'Low' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
-                                                'Medium' => 'bg-amber-50 text-amber-600 border-amber-200',
-                                                'High' => 'bg-rose-50 text-rose-600 border-rose-200',
-                                            ];
-                                            $impactColor = $impactColors[$issue->impact] ?? 'bg-slate-100 text-slate-400 border-slate-200';
-                                        @endphp
-                                        <span class="inline-flex px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider {{ $impactColor }} border shadow-sm">
-                                            {{ $issue->impact ?? '---' }}
-                                        </span>
-                                    </div>
+                                    @php
+                                        $statusColors = [
+                                            'Raised' => 'bg-slate-100 text-slate-600 border-slate-200',
+                                            'Open' => 'bg-sky-50 text-sky-600 border-sky-200',
+                                            'Closed' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
+                                        ];
+                                        $statusColor = $statusColors[$issue->status] ?? 'bg-slate-100 text-slate-400 border-slate-200';
+                                    @endphp
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $statusColor }} border shadow-sm">
+                                        {{ $issue->status ?? '---' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    @php
+                                        $impactColors = [
+                                            'Low' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
+                                            'Medium' => 'bg-amber-50 text-amber-600 border-amber-200',
+                                            'High' => 'bg-rose-50 text-rose-600 border-rose-200',
+                                        ];
+                                        $impactColor = $impactColors[$issue->impact] ?? 'bg-slate-100 text-slate-400 border-slate-200';
+                                    @endphp
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $impactColor }} border shadow-sm">
+                                        {{ $issue->impact ?? '---' }}
+                                    </span>
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     @php
@@ -208,11 +208,6 @@
                                 <td class="whitespace-nowrap px-4 py-3">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                                         {{ $issue->planned_resolution_date ? $issue->planned_resolution_date->format('d-M-y') : '---' }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                                        {{ $issue->action_by ?? '---' }}
                                     </span>
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-3">
@@ -257,7 +252,7 @@
                             <tr class="description-row bg-slate-50/60">
                                 <td class="px-4 py-3"></td>
                                 <td class="px-4 py-3"></td>
-                                <td class="px-4 py-3" colspan="9">
+                                <td colspan="9" class="px-4 py-3">
                                     <p class="text-xs font-black text-slate-500 leading-relaxed break-words">{{ $issue->description ?? 'No description' }}</p>
                                 </td>
                             </tr>
