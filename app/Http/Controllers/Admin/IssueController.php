@@ -102,7 +102,7 @@ class IssueController extends Controller
             });
         }
 
-        $projects = $query->orderByDesc('baseline_start_date')->get();
+        $projects = $query->orderBy('custom_id')->get();
 
         return view('admin.projects.issues.index', array_merge(
             compact('projects'),
@@ -168,6 +168,7 @@ class IssueController extends Controller
         }
 
         $issues = $issueQuery
+            ->orderByRaw("CASE WHEN status = 'Closed' THEN 1 ELSE 0 END ASC")
             ->orderByDesc('raised_date')
             ->paginate(15)
             ->withQueryString();

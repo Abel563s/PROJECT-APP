@@ -73,7 +73,7 @@
                 $projectIssueAdvancedFiltersActive = request()->anyFilled(['impact', 'status', 'priority']);
                 $projectIssueFiltersActive = request()->anyFilled(['issue_owner', 'issue_search', 'impact', 'status', 'priority']);
             @endphp
-            <div class="admin-filter-grid gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Issue Owner</span>
                     <select name="issue_owner" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
@@ -87,50 +87,39 @@
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Issue</span>
                     <input type="search" name="issue_search" value="{{ request('issue_search') }}" placeholder="Search issues..." class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                 </label>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" aria-controls="projectIssueAdvancedFilters" aria-expanded="{{ $projectIssueAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'projectIssueAdvancedFilters')"
-                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
-                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>More filters
-                        <i data-lucide="chevron-down" class="filter-panel-chevron h-3.5 w-3.5 transition-transform {{ $projectIssueAdvancedFiltersActive ? 'rotate-180' : '' }}"></i>
-                    </button>
-                    @if($projectIssueFiltersActive)
-                        <a href="{{ route('admin.projects.issues.manage', $project) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white">
-                            <i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters
-                        </a>
-                    @endif
-                </div>
-                <div id="projectIssueAdvancedFilters" class="admin-filter-advanced-panel {{ $projectIssueAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                    <div class="admin-filter-advanced-grid">
-                        <label class="space-y-1">
-                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact</span>
-                            <select name="impact" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                                <option value="">All impacts</option>
-                                @foreach(['Low', 'Medium', 'High'] as $impact)
-                                    <option value="{{ $impact }}" @selected(request('impact') === $impact)>{{ $impact }}</option>
-                                @endforeach
-                            </select>
-                        </label>
-                        <label class="space-y-1">
-                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
-                            <select name="status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                                <option value="">All statuses</option>
-                                @foreach(['Raised', 'Open', 'Closed'] as $status)
-                                    <option value="{{ $status }}" @selected(request('status') === $status)>{{ $status }}</option>
-                                @endforeach
-                            </select>
-                        </label>
-                        <label class="space-y-1">
-                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Priority</span>
-                            <select name="priority" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                                <option value="">All priorities</option>
-                                @foreach(['Done', 'Overdue', 'High', 'Medium', 'Low', 'Unscheduled'] as $priority)
-                                    <option value="{{ $priority }}" @selected(request('priority') === $priority)>{{ $priority }}</option>
-                                @endforeach
-                            </select>
-                        </label>
-                    </div>
-                </div>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact</span>
+                    <select name="impact" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All impacts</option>
+                        @foreach(['Low', 'Medium', 'High'] as $impact)
+                            <option value="{{ $impact }}" @selected(request('impact') === $impact)>{{ $impact }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
+                    <select name="status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All statuses</option>
+                        @foreach(['Raised', 'Open', 'Closed'] as $status)
+                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ $status }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="space-y-1">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Priority</span>
+                    <select name="priority" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All priorities</option>
+                        @foreach(['Done', 'Overdue', 'High', 'Medium', 'Low', 'Unscheduled'] as $priority)
+                            <option value="{{ $priority }}" @selected(request('priority') === $priority)>{{ $priority }}</option>
+                        @endforeach
+                    </select>
+                </label>
             </div>
+            @if($projectIssueFiltersActive)
+                <a href="{{ route('admin.projects.issues.manage', $project) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white mt-3 lg:mt-0">
+                    <i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters
+                </a>
+            @endif
         </form>
         @include('admin.partials.filter-panel-toggle-script')
 
@@ -141,11 +130,10 @@
                     <thead>
                         <tr class="bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">
                             <th class="px-4 py-3 text-center">#</th>
-                            <th class="px-4 py-3">Issue Owner</th>
+                            <th class="px-4 py-3">Issue Type</th>
                             <th class="px-4 py-3">Issue</th>
-                            <th class="px-4 py-3">Issue Description</th>
-                            <th class="px-4 py-3 text-center">Impact</th>
                             <th class="px-4 py-3 text-center">Status</th>
+                            <th class="px-4 py-3 text-center">Impact</th>
                             <th class="px-4 py-3 text-center">Priority</th>
                             <th class="px-4 py-3">Raised Date</th>
                             <th class="px-4 py-3">Planned Action Date</th>
@@ -167,23 +155,10 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $issue->issue }}</p>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $issue->description ?? '---' }}</p>
-                                </td>
-                                <td class="px-4 py-3 text-center">
-                                    @php
-                                        $impactColors = [
-                                            'Low' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
-                                            'Medium' => 'bg-amber-50 text-amber-600 border-amber-200',
-                                            'High' => 'bg-rose-50 text-rose-600 border-rose-200',
-                                        ];
-                                        $impactColor = $impactColors[$issue->impact] ?? 'bg-slate-100 text-slate-400 border-slate-200';
-                                    @endphp
-                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $impactColor }} border shadow-sm">
-                                        {{ $issue->impact ?? '---' }}
-                                    </span>
+                                    <div class="space-y-1">
+                                        <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $issue->issue }}</p>
+                                        <p class="text-[9px] font-bold text-slate-500 leading-tight break-words">{{ $issue->description ?? 'No description' }}</p>
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     @php
@@ -196,6 +171,19 @@
                                     @endphp
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $statusColor }} border shadow-sm">
                                         {{ $issue->status ?? '---' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    @php
+                                        $impactColors = [
+                                            'Low' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
+                                            'Medium' => 'bg-amber-50 text-amber-600 border-amber-200',
+                                            'High' => 'bg-rose-50 text-rose-600 border-rose-200',
+                                        ];
+                                        $impactColor = $impactColors[$issue->impact] ?? 'bg-slate-100 text-slate-400 border-slate-200';
+                                    @endphp
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $impactColor }} border shadow-sm">
+                                        {{ $issue->impact ?? '---' }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-center">
@@ -272,7 +260,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="13" class="px-4 py-16 text-center">
+                                <td colspan="12" class="px-4 py-16 text-center">
                                     <div class="flex flex-col items-center gap-4">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="alert-circle" class="w-8 h-8"></i>

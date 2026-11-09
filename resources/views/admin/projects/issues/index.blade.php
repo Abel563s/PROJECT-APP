@@ -30,7 +30,7 @@
             $issuesAdvancedFiltersActive = request()->anyFilled(['issue_status', 'status', 'priority', 'impact']);
         @endphp
         <form action="{{ route('admin.projects.issues.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="admin-filter-grid gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-2">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">
@@ -40,18 +40,6 @@
                     </span>
                 </label>
                 @include('admin.partials.project-organization-filters')
-                <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
-                    <button type="button" aria-controls="issuesAdvancedFilters" aria-expanded="{{ $issuesAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'issuesAdvancedFilters')"
-                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
-                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>More filters
-                        <i data-lucide="chevron-down" class="filter-panel-chevron h-3.5 w-3.5 transition-transform {{ $issuesAdvancedFiltersActive ? 'rotate-180' : '' }}"></i>
-                    </button>
-                    @if($issuesFiltersActive)
-                        <a href="{{ route('admin.projects.issues.index') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white"><i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters</a>
-                    @endif
-                </div>
-                <div id="issuesAdvancedFilters" class="admin-filter-advanced-panel {{ $issuesAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                    <div class="admin-filter-advanced-grid gap-3">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Issue Status</span>
                     <select name="issue_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
@@ -87,9 +75,12 @@
                         @endforeach
                     </select>
                 </label>
-                    </div>
-                </div>
             </div>
+            @if($issuesFiltersActive)
+                <div class="mt-3 lg:mt-0">
+                    <a href="{{ route('admin.projects.issues.index') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white"><i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters</a>
+                </div>
+            @endif
         </form>
         @include('admin.partials.filter-panel-toggle-script')
 
@@ -99,36 +90,36 @@
                 <table class="w-full text-left">
                     <thead>
                         <tr class="bg-gradient-to-b from-[#00515f] to-black">
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Project Code</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Project ID</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Total Issues</th>
-                            <th colspan="3" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Status</th>
-                            <th colspan="4" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Priority</th>
-                            <th colspan="3" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-white/10 text-center">Impact</th>
+                            <th colspan="3" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Status</th>
+                            <th colspan="4" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Priority</th>
+                            <th colspan="3" class="px-6 py-2 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Impact</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Actions</th>
                         </tr>
                         <tr class="bg-slate-900 text-[8px] font-black uppercase tracking-widest text-white/80">
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th class="px-3 py-2 text-center">Raised</th>
-                            <th class="px-3 py-2 text-center">Open</th>
-                            <th class="px-3 py-2 text-center">Closed</th>
-                            <th class="px-3 py-2 text-center">Overdue</th>
-                            <th class="px-3 py-2 text-center">High</th>
-                            <th class="px-3 py-2 text-center">Medium</th>
-                            <th class="px-3 py-2 text-center">Low</th>
-                            <th class="px-3 py-2 text-center">High</th>
-                            <th class="px-3 py-2 text-center">Medium</th>
-                            <th class="px-3 py-2 text-center">Low</th>
-                            <th></th>
+                            <th class="bg-slate-900"></th>
+                            <th class="bg-slate-900"></th>
+                            <th class="bg-slate-900"></th>
+                            <th class="px-3 py-2 text-center bg-slate-900">Raised</th>
+                            <th class="px-3 py-2 text-center bg-slate-900">Open</th>
+                            <th class="px-3 py-2 text-center bg-slate-900">Closed</th>
+                            <th class="px-3 py-2 text-center bg-slate-900">Overdue</th>
+                            <th class="px-3 py-2 text-center bg-slate-900">High</th>
+                            <th class="px-3 py-2 text-center bg-slate-900">Medium</th>
+                            <th class="px-3 py-2 text-center bg-slate-900">Low</th>
+                            <th class="px-3 py-2 text-center bg-slate-900">High</th>
+                            <th class="px-3 py-2 text-center bg-slate-900">Medium</th>
+                            <th class="px-3 py-2 text-center bg-slate-900">Low</th>
+                            <th class="bg-slate-900"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50/50">
                         @forelse($projects as $project)
                             <tr class="group hover:bg-slate-50/80 transition-all duration-300 odd:bg-white even:bg-slate-50/20">
-                                <td class="px-6 py-4 text-center">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $project->project_code }}</span>
+                                <td class="px-6 py-4 text-center whitespace-nowrap">
+                                    <span class="text-[#00ADC5] text-[11px] font-black">{{ $project->custom_id }}</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="text-xs font-black text-slate-900 leading-tight group-hover:text-[#00ADC5] transition-colors">{{ $project->project_code }}</span>
@@ -198,7 +189,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="13" class="px-6 py-16 text-center">
+                                <td colspan="14" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center gap-4">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="database" class="w-8 h-8"></i>
