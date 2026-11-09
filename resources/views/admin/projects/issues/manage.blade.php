@@ -155,10 +155,7 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <div class="space-y-1">
-                                        <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $issue->issue }}</p>
-                                        <p class="text-[9px] font-bold text-slate-500 leading-tight break-words">{{ $issue->description ?? 'No description' }}</p>
-                                    </div>
+                                    <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $issue->issue }}</p>
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     @php
@@ -196,7 +193,7 @@
                                             'Low' => 'bg-sky-50 text-sky-700 border-sky-200',
                                             'Unscheduled' => 'bg-slate-100 text-slate-500 border-slate-200',
                                         ];
-                                    @endphp
+                                        @endphp
                                     <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $priorityColors[$issue->priority] }}">
                                         {{ $issue->priority }}
                                     </span>
@@ -209,42 +206,42 @@
                                         {{ $issue->raised_date ? $issue->raised_date->format('d-M-y') : '---' }}
                                     </span>
                                 </td>
-                <td class="whitespace-nowrap px-4 py-3">
-                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                        {{ $issue->planned_resolution_date ? $issue->planned_resolution_date->format('d-M-y') : '---' }}
-                    </span>
-                </td>
-                <td class="px-4 py-3">
-                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                        {{ $issue->action_by ?? '---' }}
-                    </span>
-                </td>
-                <td class="whitespace-nowrap px-4 py-3">
-                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                        {{ $issue->date ? $issue->date->format('d-M-y') : '---' }}
-                    </span>
-                </td>
-                <td class="whitespace-nowrap px-4 py-3">
-                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                        {{ $issue->last_updated_date ? $issue->last_updated_date->format('d-M-y') : '---' }}
-                    </span>
-                </td>
-                <td class="px-4 py-3 text-right">
+                                <td class="whitespace-nowrap px-4 py-3">
+                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                                        {{ $issue->planned_resolution_date ? $issue->planned_resolution_date->format('d-M-y') : '---' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                                        {{ $issue->action_by ?? '---' }}
+                                    </span>
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3">
+                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                                        {{ $issue->date ? $issue->date->format('d-M-y') : '---' }}
+                                    </span>
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3">
+                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                                        {{ $issue->last_updated_date ? $issue->last_updated_date->format('d-M-y') : '---' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <button onclick="openViewModal({{ $issue->id }})"
+                                        <button onclick="event.stopPropagation(); openViewModal({{ $issue->id }})"
                                             class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-sky-500 hover:border-sky-500 hover:shadow-sm transition-all"
                                             title="View">
                                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                         </button>
                                         @if($canManageProject && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin() || auth()->user()->isUser()))
-                                            <button onclick="openEditModal({{ $issue->id }})"
+                                            <button onclick="event.stopPropagation(); openEditModal({{ $issue->id }})"
                                                 class="p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-amber-500 hover:border-amber-500 hover:shadow-sm transition-all"
                                                 title="Edit">
                                                 <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                                             </button>
                                         @endif
                                         @if($canManageProject && (auth()->user()->isAdmin() || auth()->user()->isSuperadmin()))
-                                            <form action="{{ route('admin.projects.issues.destroy', $issue->id) }}" method="POST" class="inline"
+                                            <form action="{{ route('admin.projects.issues.destroy', $issue->id) }}" method="POST" class="inline" onclick="event.stopPropagation();"
                                                 onsubmit="return confirm('Are you sure you want to delete this issue?');">
                                                 @csrf
                                                 @method('DELETE')
@@ -255,6 +252,14 @@
                                                 </button>
                                             </form>
                                         @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="description-row bg-slate-50/60">
+                                <td colspan="12" class="px-4 py-3">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-[8px] font-black text-[#00515f] uppercase tracking-widest mt-0.5 shrink-0">Description</span>
+                                        <p class="text-xs font-black text-[#00515f] leading-relaxed">{{ $issue->description ?? 'No description' }}</p>
                                     </div>
                                 </td>
                             </tr>
