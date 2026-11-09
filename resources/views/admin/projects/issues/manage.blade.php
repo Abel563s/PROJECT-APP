@@ -253,7 +253,7 @@
                                 <td class="px-4 py-2"></td>
                                 <td class="px-4 py-2"></td>
                                 <td colspan="9" class="px-4 py-2">
-                                    <p class="text-[9px] font-bold text-slate-500 leading-tight break-words">{{ $issue->description ?? 'No description' }}</p>
+                                    <p class="text-[10px] font-bold text-slate-500 leading-tight break-words">{{ $issue->description ?? 'No description' }}</p>
                                 </td>
                             </tr>
                         @empty
