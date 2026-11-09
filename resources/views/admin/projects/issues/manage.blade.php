@@ -147,8 +147,10 @@
                                 <td class="px-3 py-3 text-center w-[40px]">
                                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $issues->firstItem() + $loop->index }}</span>
                                 </td>
-                                <td class="px-3 py-3 w-[100px]">
-                                    <span class="text-[9px] font-black uppercase tracking-wider text-slate-700">{{ $issue->issue_type ?? '---' }}</span>
+                                <td class="px-3 py-3 w-[96px]">
+                                    <div class="px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm">
+                                        {{ $issue->issue_type ?? '---' }}
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3">
                                     <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $issue->issue }}</p>
