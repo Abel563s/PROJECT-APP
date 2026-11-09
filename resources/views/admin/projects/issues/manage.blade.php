@@ -152,8 +152,8 @@
                                         {{ $issue->issue_type ?? '---' }}
                                     </div>
                                 </td>
-                                <td class="px-4 py-3">
-                                    <p class="text-xs font-black text-slate-900 leading-tight break-words">{{ $issue->issue }}</p>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <p class="text-xs font-black text-slate-900 leading-tight">{{ $issue->issue }}</p>
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     @php
