@@ -126,7 +126,7 @@
         <!-- Issues Table -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left">
+                <table class="w-full text-left table-fixed">
                     <thead>
                         <tr class="bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">
                             <th class="px-4 py-3 text-center">#</th>
@@ -148,8 +148,8 @@
                                 <td class="px-4 py-3 text-center">
                                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums">{{ $issues->firstItem() + $loop->index }}</span>
                                 </td>
-                                <td class="px-4 py-3 w-[140px] shrink-0">
-                                    <div class="w-full px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm break-all">
+                                <td class="px-4 py-3 w-[96px]">
+                                    <div class="max-w-full px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm break-all">
                                         {{ $issue->issue_type ?? '---' }}
                                     </div>
                                 </td>
