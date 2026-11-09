@@ -137,7 +137,6 @@
                             <th class="px-4 py-3 text-center">Priority</th>
                             <th class="px-4 py-3">Raised Date</th>
                             <th class="px-4 py-3">Planned Action Date</th>
-                            <th class="px-4 py-3">Data Date</th>
                             <th class="px-4 py-3">Last Updated</th>
                             <th class="px-4 py-3 text-right">Action</th>
                         </tr>
@@ -212,11 +211,6 @@
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-3">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
-                                        {{ $issue->date ? $issue->date->format('d-M-y') : '---' }}
-                                    </span>
-                                </td>
-                                <td class="whitespace-nowrap px-4 py-3">
-                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                                         {{ $issue->last_updated_date ? $issue->last_updated_date->format('d-M-y') : '---' }}
                                     </span>
                                 </td>
@@ -252,13 +246,13 @@
                             <tr class="description-row bg-slate-50/60">
                                 <td class="px-4 py-2"></td>
                                 <td class="px-4 py-2"></td>
-                                <td colspan="9" class="px-4 py-2">
+                                <td colspan="8" class="px-4 py-2">
                                     <p class="text-[10px] font-bold text-slate-500 leading-tight break-words">{{ $issue->description ?? 'No description' }}</p>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="11" class="px-4 py-16 text-center">
+                                <td colspan="10" class="px-4 py-16 text-center">
                                     <div class="flex flex-col items-center gap-4">
                                         <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-200">
                                             <i data-lucide="alert-circle" class="w-8 h-8"></i>
