@@ -259,7 +259,7 @@
                                 <td colspan="12" class="px-4 py-3">
                                     <div class="flex items-start gap-2">
                                         <span class="text-[8px] font-black text-slate-900 uppercase tracking-widest mt-0.5 shrink-0">Description</span>
-                                        <p class="text-xs font-black text-[#00ADC5] leading-relaxed">{{ $issue->description ?? 'No description' }}</p>
+                                        <p class="text-xs font-black text-[#00515f] leading-relaxed">{{ $issue->description ?? 'No description' }}</p>
                                     </div>
                                 </td>
                             </tr>
