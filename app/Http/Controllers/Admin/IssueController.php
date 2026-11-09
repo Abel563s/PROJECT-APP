@@ -142,6 +142,8 @@ class IssueController extends Controller
 
         if ($request->filled('status')) {
             $issueQuery->status($request->query('status'));
+        } else {
+            $issueQuery->where('status', '!=', 'Closed');
         }
 
         if ($request->filled('priority')) {
