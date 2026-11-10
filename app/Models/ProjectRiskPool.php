@@ -19,6 +19,7 @@ class ProjectRiskPool extends Model
         'impact_on_cost_description',
         'overall_impact_level',
         'impact_on_quality_description',
+        'other_potential_impact',
         'stakeholder',
         'recommended_mitigation_measures',
         'created_by',

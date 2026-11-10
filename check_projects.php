@@ -8,3 +8,5 @@ $projects = App\Models\Project::all();
 foreach ($projects as $p) {
     echo $p->project_code . ' | baseline: ' . ($p->baseline_start_date ? $p->baseline_start_date->format('Y-m-d') : 'null') . PHP_EOL;
 }
+$count = App\Models\ProjectRisk::where('response_strategy', 'Eliminate')->count();
+echo "Project risks with Eliminate: " . $count . PHP_EOL;
