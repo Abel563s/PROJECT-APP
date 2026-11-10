@@ -109,6 +109,12 @@
                     placeholder="Quality impact details..." class="mt-1.5 {{ $fieldClass }}">
             </div>
             <div class="md:col-span-2">
+                <label class="{{ $labelClass }}" for="other_potential_impact">Other Potential Impact</label>
+                <textarea id="other_potential_impact" name="other_potential_impact" rows="3"
+                    placeholder="Describe any other potential impacts of this risk..."
+                    class="{{ $areaClass }}">{{ old('other_potential_impact', $risk->other_potential_impact ?? '') }}</textarea>
+            </div>
+            <div class="md:col-span-2">
                 <label class="{{ $labelClass }}" for="stakeholder">Stakeholder</label>
                 <textarea id="stakeholder" name="stakeholder" rows="3"
                     placeholder="e.g. Client, Project Manager, Senior Management"

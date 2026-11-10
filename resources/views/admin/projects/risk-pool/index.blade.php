@@ -25,7 +25,7 @@
             </label>
             <label class="space-y-1">
                 <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Type</span>
-                <select id="riskPoolType" name="risk_type" onchange="riskPoolRefresh()"
+                <select id="riskPoolType" name="risk_type" onchange="riskPoolTypeChanged()"
                     class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                     <option value="all" @selected(request('risk_type', 'all') === 'all')>All Types</option>
                     @foreach(\App\Models\ProjectRiskPool::RISK_TYPES as $type)
@@ -38,9 +38,6 @@
                 <select id="riskPoolCategory" name="risk_category" onchange="riskPoolRefresh()"
                     class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                     <option value="all" @selected(request('risk_category', 'all') === 'all')>All Categories</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category }}" @selected(request('risk_category') === $category)>{{ $category }}</option>
-                    @endforeach
                 </select>
             </label>
             <div class="flex flex-wrap items-end gap-2">
@@ -229,6 +226,10 @@
         riskPoolRefresh();
     });
 
+    // Initialize category dropdown based on the currently selected risk type
+    const initialRiskType = riskPoolType ? riskPoolType.value : 'all';
+    loadRiskPoolCategories(initialRiskType);
+
     function riskPoolBuildQS(extra = {}) {
         const params = new URLSearchParams();
         if (riskPoolState.search) params.set('search', riskPoolState.search);
@@ -335,9 +336,11 @@
         if (riskPoolImpact) riskPoolImpact.value = 'all';
         if (riskPoolTimelineImpact) riskPoolTimelineImpact.value = 'all';
         if (riskPoolCostImpact) riskPoolCostImpact.value = 'all';
-        refreshAll();
-        riskPoolPushState();
-        updateClearFiltersVisibility();
+        loadRiskPoolCategories('all').then(function () {
+            refreshAll();
+            riskPoolPushState();
+            updateClearFiltersVisibility();
+        });
     }
 
     function updateClearFiltersVisibility() {
@@ -350,6 +353,47 @@
             || (riskPoolState.timelineImpact && riskPoolState.timelineImpact !== 'all')
             || (riskPoolState.costImpact && riskPoolState.costImpact !== 'all');
         wrap.classList.toggle('hidden', !active);
+    }
+
+    function riskPoolTypeChanged() {
+        riskPoolState.riskType = riskPoolType.value;
+        riskPoolState.category = 'all';
+        if (riskPoolCategory) {
+            riskPoolCategory.innerHTML = '<option value="all">Loading categories...</option>';
+            riskPoolCategory.value = 'all';
+        }
+        loadRiskPoolCategories(riskPoolType.value).then(function () {
+            riskPoolRefresh();
+        });
+    }
+
+    async function loadRiskPoolCategories(riskType) {
+        try {
+            const params = new URLSearchParams({ format: 'options' });
+            if (riskType && riskType !== 'all') {
+                params.set('risk_type', riskType);
+            }
+            const response = await fetch('/admin/projects/risk-pool/categories?' + params, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
+            });
+            if (!response.ok) throw new Error('Failed to load categories');
+            const data = await response.json();
+            const categories = data.categories || [];
+            if (riskPoolCategory) {
+                riskPoolCategory.innerHTML = '<option value="all">All Categories</option>';
+                categories.forEach(function (cat) {
+                    const option = document.createElement('option');
+                    option.value = cat.name;
+                    option.textContent = cat.name;
+                    riskPoolCategory.appendChild(option);
+                });
+            }
+        } catch (e) {
+            console.error(e);
+            if (riskPoolCategory) {
+                riskPoolCategory.innerHTML = '<option value="all">All Categories</option>';
+            }
+        }
     }
 
     function riskPoolRefresh() {
@@ -402,7 +446,7 @@
     /* ===================== Spreadsheet Editor ===================== */
     let spreadsheetDirty = false;
     let spreadsheetContainer = null;
-    const COLS = ['risk_id', 'risk_type', 'risk_category', 'specific_risk', 'impact_on_timeline', 'impact_on_timeline_description', 'impact_on_cost', 'impact_on_cost_description', 'overall_impact_level', 'impact_on_quality_description', 'stakeholder'];
+    const COLS = ['risk_id', 'risk_type', 'risk_category', 'specific_risk', 'impact_on_timeline', 'impact_on_timeline_description', 'impact_on_cost', 'impact_on_cost_description', 'overall_impact_level', 'impact_on_quality_description', 'other_potential_impact', 'stakeholder'];
 
     function openSpreadsheetModal() {
         const modal = document.getElementById('riskPoolEditorModal');
@@ -642,6 +686,9 @@
             qualityBox.appendChild(qualityDesc);
             tr.appendChild(elWrap(qualityBox, true));
 
+            // Other Potential Impact (textarea)
+            tr.appendChild(elWrap(elTextarea('other_potential_impact', row.other_potential_impact, ri, 2)));
+
             tr.appendChild(elWrap(elTextarea('stakeholder', row.stakeholder, ri, 2)));
             tr.appendChild(actionCell(row, ri));
             return tr;
@@ -747,6 +794,7 @@
                     impact_on_cost_description: '',
                     overall_impact_level: '',
                     impact_on_quality_description: '',
+                    other_potential_impact: '',
                     stakeholder: ''
                 };
                 tr.querySelectorAll('input.ss-input, select.ss-select, textarea.ss-textarea').forEach(el => { if (el.dataset.field) collected[el.dataset.field] = el.value; });

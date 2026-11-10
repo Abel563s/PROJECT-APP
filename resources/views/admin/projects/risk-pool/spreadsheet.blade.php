@@ -30,6 +30,7 @@
         'impact_on_cost_description'    => '',
         'overall_impact_level'          => '',
         'impact_on_quality_description' => '',
+        'other_potential_impact'        => '',
         'stakeholder'                   => '',
     ];
 
@@ -103,6 +104,7 @@
                     <th class="ss-th ss-col-timeline border-b border-slate-200 px-2 py-2 text-left min-w-[140px]">Timeline</th>
                     <th class="ss-th ss-col-cost border-b border-slate-200 px-2 py-2 text-left min-w-[140px]">Cost</th>
                     <th class="ss-th ss-col-overall border-b border-slate-200 px-2 py-2 text-left min-w-[140px]">Quality</th>
+                    <th class="ss-th ss-col-other border-b border-slate-200 px-2 py-2 text-left min-w-[140px]">Other Impact</th>
                     <th class="ss-th ss-col-stakeholder border-b border-slate-200 px-2 py-2 text-left">Stakeholder</th>
                     <th class="ss-th ss-col-actions border-b border-slate-200 px-2 py-2 text-center">Actions</th>
                 </tr>

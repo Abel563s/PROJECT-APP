@@ -129,6 +129,16 @@
                     <p class="mt-1.5 text-xs font-semibold text-slate-700 whitespace-pre-wrap break-words">{{ $risk->impact_on_quality_description }}</p>
                 @endif
             </div>
+            <div class="sm:col-span-3">
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Other Potential Impact</p>
+                <div class="bg-slate-50/50 rounded-lg border border-slate-100 p-3">
+                    @if($risk->other_potential_impact)
+                        <p class="whitespace-pre-wrap break-words text-xs font-black text-slate-900">{{ $risk->other_potential_impact }}</p>
+                    @else
+                        <p class="text-xs italic text-slate-400">No other potential impact has been provided.</p>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 

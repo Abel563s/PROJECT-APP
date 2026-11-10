@@ -157,7 +157,8 @@ class ProjectRiskPool extends Model
                 ->orWhere('detailed_risk_explanation', 'like', "%{$term}%")
                 ->orWhere('impact_on_timeline_description', 'like', "%{$term}%")
                 ->orWhere('impact_on_cost_description', 'like', "%{$term}%")
-                ->orWhere('impact_on_quality_description', 'like', "%{$term}%");
+                ->orWhere('impact_on_quality_description', 'like', "%{$term}%")
+                ->orWhere('other_potential_impact', 'like', "%{$term}%");
         });
 
         return $query;

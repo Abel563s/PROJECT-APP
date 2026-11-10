@@ -32,10 +32,12 @@ class RiskCategoryController extends Controller
         $this->authorizeRiskCategoryAction();
 
         if ($request->query('format') === 'options') {
+            $query = RiskCategory::active()->ordered();
+            if ($request->filled('risk_type') && $request->query('risk_type') !== 'all') {
+                $query->where('risk_type', $request->query('risk_type'));
+            }
             return response()->json([
-                'categories' => RiskCategory::active()
-                    ->ordered()
-                    ->get(['name', 'risk_type', 'code'])
+                'categories' => $query->get(['name', 'risk_type', 'code'])
                     ->map(fn (RiskCategory $category) => [
                         'name' => $category->name,
                         'risk_type' => $category->risk_type,

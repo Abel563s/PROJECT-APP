@@ -152,6 +152,7 @@ class RiskPoolController extends Controller
             'rows.*.impact_on_cost_description' => ['nullable', 'string'],
             'rows.*.overall_impact_level' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
             'rows.*.impact_on_quality_description' => ['nullable', 'string'],
+            'rows.*.other_potential_impact' => ['nullable', 'string'],
             'rows.*.stakeholder' => ['nullable', 'string'],
             'rows.*.recommended_mitigation_measures' => ['nullable', 'string'],
         ]);
@@ -238,6 +239,7 @@ class RiskPoolController extends Controller
                     'impact_on_cost_description' => $row['impact_on_cost_description'] ?? null,
                     'overall_impact_level' => $row['overall_impact_level'] ?? null,
                     'impact_on_quality_description' => $row['impact_on_quality_description'] ?? null,
+                    'other_potential_impact' => $row['other_potential_impact'] ?? null,
                     'stakeholder' => $row['stakeholder'] ?? null,
                     'recommended_mitigation_measures' => $row['recommended_mitigation_measures'] ?? null,
                 ];
@@ -403,6 +405,7 @@ class RiskPoolController extends Controller
             'impact_on_cost_description' => 'nullable|string',
             'overall_impact_level' => ['nullable', Rule::in(ProjectRiskPool::IMPACT_LEVELS)],
             'impact_on_quality_description' => 'nullable|string',
+            'other_potential_impact' => 'nullable|string',
             'stakeholder' => 'nullable|string',
             'recommended_mitigation_measures' => 'nullable|string',
         ]);
