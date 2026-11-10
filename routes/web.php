@@ -146,6 +146,7 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
             Route::resource('users', AdminUserController::class)->except(['index', 'show']);
             Route::get('/users/{user}/password-modal', [AdminUserController::class, 'passwordModal'])->name('users.password.modal');
             Route::get('/roles', [AdminUserController::class, 'roles'])->name('roles.index');
+            Route::get('/roles/coordinator-directory', [AdminUserController::class, 'coordinatorDirectory'])->name('roles.coordinator-directory');
         });
 
         // Business Unit & Sector Management (Superadmin only)

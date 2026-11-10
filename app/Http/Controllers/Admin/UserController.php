@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BusinessUnit;
 use App\Models\Project;
+use App\Models\ProjectProgressUpdate;
 use App\Models\Sector;
 use App\Models\User;
 use App\Support\ProjectOrganizationFilters;
@@ -29,6 +30,7 @@ class UserController extends Controller
             'status' => ['nullable', Rule::in(['active', 'inactive'])],
             'business_unit_id' => ['nullable', 'integer', 'exists:business_units,id'],
             'sector_id' => ['nullable', 'integer', 'exists:sectors,id'],
+            'project_id' => ['nullable', 'integer', 'exists:projects,id'],
         ]);
 
         $userQuery = User::with('assignedProjects', 'businessUnit', 'sector');
@@ -59,6 +61,12 @@ class UserController extends Controller
             $userQuery->where('sector_id', $filters['sector_id']);
         }
 
+        if (!empty($filters['project_id'])) {
+            $userQuery->whereHas('assignedProjects', function ($query) use ($filters) {
+                $query->where('projects.id', $filters['project_id']);
+            });
+        }
+
         $users = $userQuery->latest()->paginate(15)->withQueryString();
         $projects = $this->assignmentProjects();
         $businessUnits = BusinessUnit::active()->orderBy('name')->get(['id', 'name']);
@@ -67,6 +75,36 @@ class UserController extends Controller
             ->orderBy('name')->get(['id', 'business_unit_id', 'name']);
 
         return view('admin.roles.index', compact('roles', 'users', 'projects', 'businessUnits', 'sectors'));
+    }
+
+    public function coordinatorDirectory(Request $request)
+    {
+        $coordinators = User::with('assignedProjects', 'businessUnit')
+            ->where('role', 'user')
+            ->orderBy('name')
+            ->get();
+
+        $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
+
+        $coordinatorUpdates = [];
+        foreach ($coordinators as $coordinator) {
+            $projectIds = $coordinator->assignedProjects->pluck('id');
+            $updates = collect();
+            if ($projectIds->isNotEmpty()) {
+                $updates = ProjectProgressUpdate::with('project')
+                    ->whereIn('project_id', $projectIds)
+                    ->latest('data_date')
+                    ->limit(8)
+                    ->get();
+            }
+            $coordinatorUpdates[$coordinator->id] = $updates;
+        }
+
+        if ($request->has('partial')) {
+            return view('admin.partials.coordinator-directory-modal', compact('coordinators', 'coordinatorUpdates', 'projects'));
+        }
+
+        return redirect()->route('admin.roles.index');
     }
 
     public function edit(User $user)

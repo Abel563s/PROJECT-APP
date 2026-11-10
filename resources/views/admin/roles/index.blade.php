@@ -33,6 +33,14 @@
                          New Identity
                      </span>
                  </button>
+                 <button onclick="openCoordinatorDirectoryModal()"
+                    class="group/btn relative px-5 py-2.5 bg-[#00515f] text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#00515f]/20">
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#00ADC5] to-[#00515f] translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
+                    <span class="relative flex items-center gap-1.5">
+                        <i data-lucide="users" class="w-3 h-3"></i>
+                        Coordinator Directory
+                    </span>
+                </button>
              </div>
          </div>
 
@@ -127,7 +135,7 @@
 
         <section aria-label="Search and filter identities" class="bg-white rounded-2xl border border-slate-100 p-3 shadow-sm">
             @php
-                $identityAdvancedFiltersActive = request()->anyFilled(['business_unit_id', 'sector_id']);
+                $identityAdvancedFiltersActive = request()->anyFilled(['business_unit_id', 'sector_id', 'project_id']);
             @endphp
             <form method="GET" action="{{ route('admin.roles.index') }}" class="admin-filter-grid gap-2.5">
                 <div class="min-w-0">
@@ -157,6 +165,18 @@
                         <option value="">All statuses</option>
                         <option value="active" @selected(request('status') === 'active')>Active</option>
                         <option value="inactive" @selected(request('status') === 'inactive')>Offline</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="identityProjectFilter" class="mb-1 block text-[9px] font-bold uppercase tracking-wider text-slate-500">Assigned Projects</label>
+                    <select id="identityProjectFilter" name="project_id"
+                        class="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:border-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-100">
+                        <option value="">All projects</option>
+                        @foreach($projects as $project)
+                            <option value="{{ $project->id }}" @selected(request('project_id') == $project->id)>
+                                {{ $project->project_code ?: $project->project_name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
@@ -364,15 +384,35 @@
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeCreateModal()"></div>
             <div class="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
-                    <h3 class="text-base font-black text-slate-900">New Identity</h3>
-                    <button onclick="closeCreateModal()" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors">
+                <div class="sticky top-0 bg-gradient-to-r from-[#00ADC5] to-[#00515f] border-b border-[#00515f]/30 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
+                    <h3 class="text-base font-black text-white">New Identity</h3>
+                    <button onclick="closeCreateModal()" class="w-8 h-8 rounded-lg bg-white/20 text-white flex items-center justify-center transition hover:bg-white/30">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
                 <div id="createModalContent" class="p-6">
                     <div class="flex items-center justify-center py-12">
                         <div class="w-8 h-8 border-2 border-[#00ADC5] border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coordinator Directory Modal -->
+    <div id="coordinatorDirectoryModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeCoordinatorDirectoryModal()"></div>
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col">
+                <div class="sticky top-0 bg-gradient-to-r from-[#00ADC5] to-[#00515f] border-b border-[#00515f]/30 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
+                    <h3 class="text-base font-black text-white">Project Coordinator Directory</h3>
+                    <button type="button" onclick="closeCoordinatorDirectoryModal()" class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-white transition hover:bg-white/30" aria-label="Close coordinator directory">
+                        <i data-lucide="x" class="h-4 w-4"></i>
+                    </button>
+                </div>
+                <div id="coordinatorDirectoryModalContent" class="overflow-y-auto p-6">
+                    <div class="flex justify-center py-12">
+                        <div class="h-8 w-8 animate-spin rounded-full border-2 border-[#00ADC5] border-t-transparent"></div>
                     </div>
                 </div>
             </div>
@@ -421,6 +461,29 @@
 
         function closeOrgManagementModal() {
             document.getElementById('orgManagementModal').classList.add('hidden');
+        }
+
+        function openCoordinatorDirectoryModal() {
+            const content = document.getElementById('coordinatorDirectoryModalContent');
+            content.innerHTML = '<div class="flex justify-center py-12"><div class="h-8 w-8 animate-spin rounded-full border-2 border-[#00ADC5] border-t-transparent"></div></div>';
+            document.getElementById('coordinatorDirectoryModal').classList.remove('hidden');
+
+            fetch(`/admin/roles/coordinator-directory?partial=1`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Unable to load coordinator directory.');
+                    return response.text();
+                })
+                .then(html => {
+                    content.innerHTML = html;
+                    if (window.lucide) lucide.createIcons();
+                })
+                .catch(error => {
+                    content.innerHTML = `<p class="rounded-xl bg-rose-50 p-4 text-sm font-semibold text-rose-700">${error.message}</p>`;
+                });
+        }
+
+        function closeCoordinatorDirectoryModal() {
+            document.getElementById('coordinatorDirectoryModal').classList.add('hidden');
         }
 
         function openCreateModal() {
