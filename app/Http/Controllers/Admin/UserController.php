@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BusinessUnit;
+use App\Models\Issue;
 use App\Models\Project;
 use App\Models\ProjectProgressUpdate;
 use App\Models\Sector;
@@ -87,21 +88,30 @@ class UserController extends Controller
         $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
 
         $coordinatorUpdates = [];
+        $coordinatorIssues = [];
         foreach ($coordinators as $coordinator) {
             $projectIds = $coordinator->assignedProjects->pluck('id');
             $updates = collect();
+            $issues = collect();
             if ($projectIds->isNotEmpty()) {
                 $updates = ProjectProgressUpdate::with('project')
                     ->whereIn('project_id', $projectIds)
                     ->latest('data_date')
-                    ->limit(8)
+                    ->limit(6)
+                    ->get();
+
+                $issues = Issue::with('project')
+                    ->whereIn('project_id', $projectIds)
+                    ->latest('raised_date')
+                    ->limit(6)
                     ->get();
             }
             $coordinatorUpdates[$coordinator->id] = $updates;
+            $coordinatorIssues[$coordinator->id] = $issues;
         }
 
         if ($request->has('partial')) {
-            return view('admin.partials.coordinator-directory-modal', compact('coordinators', 'coordinatorUpdates', 'projects'));
+            return view('admin.partials.coordinator-directory-modal', compact('coordinators', 'coordinatorUpdates', 'coordinatorIssues', 'projects'));
         }
 
         return redirect()->route('admin.roles.index');

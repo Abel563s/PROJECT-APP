@@ -403,7 +403,7 @@
     <div id="coordinatorDirectoryModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeCoordinatorDirectoryModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col">
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
                 <div class="sticky top-0 bg-gradient-to-r from-[#00ADC5] to-[#00515f] border-b border-[#00515f]/30 px-6 py-3 flex items-center justify-between rounded-t-2xl z-10">
                     <h3 class="text-base font-black text-white">Project Coordinator Directory</h3>
                     <button type="button" onclick="closeCoordinatorDirectoryModal()" class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-white transition hover:bg-white/30" aria-label="Close coordinator directory">
