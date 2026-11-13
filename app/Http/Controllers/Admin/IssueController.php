@@ -126,6 +126,7 @@ class IssueController extends Controller
         ]);
 
         $canManageProject = auth()->user()->canManageProject($project);
+        $project->load('coordinators');
         $issueQuery = Issue::where('project_id', $project->id);
 
         if ($request->filled('issue_owner')) {

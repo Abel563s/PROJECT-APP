@@ -52,6 +52,14 @@
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Delivery Method</p>
                 <p class="text-xs font-black text-slate-900">{{ $project->delivery_method }}</p>
             </div>
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Contract Document Type</p>
+                <p class="text-xs font-black text-slate-900">{{ $project->contract_document_type ?: 'Not specified' }}</p>
+            </div>
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Payment Modality</p>
+                <p class="text-xs font-black text-slate-900">{{ $project->payment_modality ?: 'Not specified' }}</p>
+            </div>
         </div>
         <div class="col-span-2">
             <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Scope</p>
@@ -174,7 +182,7 @@ $scheduleStatus = 'On Schedule';
                     </div>
                     @if($project->status === 'completed')
                     <div>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Budget at Completion</p>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Actual Amount at Completion</p>
                         <p class="text-xs font-black text-slate-900">ETB {{ number_format($project->budget_at_completion) }}</p>
                     </div>
                     @endif
@@ -246,9 +254,11 @@ $scheduleStatus = 'On Schedule';
                 <p class="text-xs font-black text-slate-900">{{ $project->baseline_finish_date ? $project->baseline_finish_date->format('M d, Y') : '---' }}</p>
             </div>
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Baelineline Duration</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Baseline Duration</p>
                 <p class="text-xs font-black text-slate-900">
-                    @if($project->baseline_start_date && $project->baseline_finish_date)
+                    @if($project->approved_eot && $project->baseline_start_date)
+                        {{ abs($project->approved_eot->diffInDays($project->baseline_start_date)) }} days
+                    @elseif($project->baseline_start_date && $project->baseline_finish_date)
                         {{ abs($project->baseline_finish_date->diffInDays($project->baseline_start_date)) }} days
                     @else
                         ---
@@ -292,7 +302,7 @@ $scheduleStatus = 'On Schedule';
                 <p class="text-xs font-black text-slate-900">{{ $project->approved_eot ? $project->approved_eot->format('M d, Y') : '---' }}</p>
             </div>
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Approved EOT Duration</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Revised Finish Date</p>
                 <p class="text-xs font-black text-slate-900">
                     @if($project->approved_eot && $project->baseline_finish_date)
                         {{ $project->approved_eot->diffInDays($project->baseline_finish_date) + 1 }} days

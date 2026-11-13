@@ -2,7 +2,7 @@
     <div class="py-4 px-4 lg:px-6 space-y-4 w-full max-w-none font-inter">
 
         <!-- Compact Header -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-3 border-b border-slate-100 items-center">
             <div class="flex items-center gap-3">
                 <a href="{{ route('admin.projects.issues.index') }}"
                    class="w-9 h-9 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#00ADC5] hover:border-[#00ADC5]/20 transition-all shadow-sm">
@@ -15,7 +15,23 @@
                     <p class="text-[10px] font-black text-[#00ADC5] uppercase tracking-[0.3em] mt-1">{{ $project->project_code }}</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="hidden lg:flex justify-center">
+                @php
+                    $coordinators = $project->coordinators->map(fn ($c) => $c->name ?? $c->email ?? 'Coordinator');
+                @endphp
+                @if($coordinators->count())
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#00ADC5]/10 border border-[#00ADC5]/20 text-[#00515f] text-[9px] font-black uppercase tracking-widest shadow-sm">
+                        <i data-lucide="user" class="w-3 h-3"></i>
+                        {{ $coordinators->implode(', ') }}
+                    </span>
+                @else
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-500 text-[9px] font-black uppercase tracking-widest shadow-sm">
+                        <i data-lucide="user" class="w-3 h-3"></i>
+                        No Coordinator Assigned
+                    </span>
+                @endif
+            </div>
+            <div class="flex items-center gap-2 justify-end lg:justify-self-end">
                 @if($canManageProject)
                     <button onclick="openCreateModal()"
                        class="group/btn relative px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-lg shadow-slate-900/20">

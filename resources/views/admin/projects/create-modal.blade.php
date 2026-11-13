@@ -38,8 +38,33 @@
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Delivery Method</label>
                 <select name="delivery_method" required
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                    <option value="DB">DB</option>
                     <option value="DBB">DBB</option>
+                    <option value="DB">DB</option>
+                    <option value="EPC Turnkey">EPC Turnkey</option>
+                    <option value="PPP">PPP</option>
+                    <option value="BOT">BOT</option>
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Contract Document Type</label>
+                <select name="contract_document_type"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
+                    <option value="PPA">PPA</option>
+                    <option value="FIDIC Yellow">FIDIC Yellow</option>
+                    <option value="FIDIC Red">FIDIC Red</option>
+                    <option value="FIDIC Silver">FIDIC Silver</option>
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Payment Modality</label>
+                <select name="payment_modality"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
+                    <option value="Lump Sum">Lump Sum</option>
+                    <option value="Unit Rate">Unit Rate</option>
+                    <option value="Remeasurement">Remeasurement</option>
+                    <option value="Cost Plus">Cost Plus</option>
+                    <option value="Target Cost">Target Cost</option>
+                    <option value="Milestone">Milestone</option>
                 </select>
             </div>
             <div class="col-span-2 space-y-1">
@@ -124,7 +149,7 @@
                             class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                     </div>
                     <div class="space-y-1">
-                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Budget at Completion</label>
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Actual Amount at Completion</label>
                         <input type="number" step="0.01" name="budget_at_completion"
                             class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                     </div>
@@ -171,6 +196,11 @@
                     class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revised Finish Date</label>
+                <input type="date" name="approved_eot"
+                    class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+            </div>
+            <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Actual Start</label>
                 <input type="date" name="actual_start_date"
                     class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
@@ -181,12 +211,7 @@
                     class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Approved EOT</label>
-                <input type="date" name="approved_eot"
-                    class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revision</label>
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revision Number</label>
                 <input type="text" name="revision_number"
                     class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>

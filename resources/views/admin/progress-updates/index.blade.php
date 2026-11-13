@@ -231,34 +231,39 @@
                                 <td class="whitespace-nowrap px-6 py-4">
                                     <span class="whitespace-nowrap text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $update->updated_at->format('d-M-y') }}</span>
                                 </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-1.5">
-                                        <button onclick="event.stopPropagation(); openViewModal({{ $update->id }})"
-                                            class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-[#00ADC5] hover:text-white hover:border-[#00ADC5] transition-all duration-200"
-                                            title="View">
-                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                        </button>
-                                        @can('update', $update)
-                                        <button onclick="event.stopPropagation(); openEditModal({{ $update->id }})"
-                                            class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-200"
-                                            title="Edit">
-                                            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-                                        </button>
-                                        @endcan
-                                        @can('delete', $update)
-                                            <form action="{{ route('admin.progress-updates.destroy', $update->id) }}" method="POST" class="inline" onclick="event.stopPropagation();"
-                                                onsubmit="return confirm('Are you sure you want to delete this progress update?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all duration-200"
-                                                    title="Delete">
-                                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                                                </button>
-                                            </form>
-                                        @endcan
-                                    </div>
-                                </td>
+                                 <td class="px-6 py-4 text-right">
+                                     <div class="flex items-center justify-end gap-1.5">
+                                         <a href="{{ route('admin.projects.issues.manage', $update->project_id) }}"
+                                             class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-[#00515f] hover:text-white hover:border-[#00515f] transition-all duration-200"
+                                             title="Project Issues">
+                                             <i data-lucide="layout" class="w-3.5 h-3.5"></i>
+                                         </a>
+                                         <button onclick="event.stopPropagation(); openViewModal({{ $update->id }})"
+                                             class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-[#00ADC5] hover:text-white hover:border-[#00ADC5] transition-all duration-200"
+                                             title="View">
+                                             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                         </button>
+                                         @can('update', $update)
+                                         <button onclick="event.stopPropagation(); openEditModal({{ $update->id }})"
+                                             class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-200"
+                                             title="Edit">
+                                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                         </button>
+                                         @endcan
+                                         @can('delete', $update)
+                                             <form action="{{ route('admin.progress-updates.destroy', $update->id) }}" method="POST" class="inline" onclick="event.stopPropagation();"
+                                                 onsubmit="return confirm('Are you sure you want to delete this progress update?');">
+                                                 @csrf
+                                                 @method('DELETE')
+                                                 <button type="submit"
+                                                     class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all duration-200"
+                                                     title="Delete">
+                                                     <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                 </button>
+                                             </form>
+                                         @endcan
+                                     </div>
+                                 </td>
                             </tr>
                             <tr class="constraints-row bg-slate-50/60 hidden">
                                 <td colspan="12" class="px-6 py-3">
@@ -407,6 +412,42 @@
                 closeViewModal();
                 closeEditModal();
             }
+        });
+
+        // Revenue comma formatting for create/edit modals (loaded via innerHTML, so event delegation)
+        function formatRevenue(value) {
+            if (value === '') return '';
+            const parts = String(value).split('.');
+            const intPart = parts[0].replace(/[^0-9]/g, '');
+            const formattedInt = intPart === '' ? '' : intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            if (parts.length > 1) {
+                const decPart = parts[1].replace(/[^0-9]/g, '');
+                return decPart === '' ? formattedInt : formattedInt + '.' + decPart;
+            }
+            return formattedInt;
+        }
+
+        function stripCommas(value) {
+            return String(value).replace(/,/g, '');
+        }
+
+        document.addEventListener('input', function (e) {
+            if (e.target.classList.contains('revenue-input')) {
+                const cursorPos = e.target.selectionStart;
+                const beforeLen = e.target.value.length;
+                e.target.value = formatRevenue(e.target.value);
+                const afterLen = e.target.value.length;
+                e.target.setSelectionRange(cursorPos + (afterLen - beforeLen), cursorPos + (afterLen - beforeLen));
+            }
+        });
+
+        // Strip commas before submit so server receives clean numbers
+        document.addEventListener('submit', function (e) {
+            const form = e.target.closest('form');
+            if (!form) return;
+            form.querySelectorAll('.revenue-input').forEach(input => {
+                input.value = stripCommas(input.value);
+            });
         });
     </script>
 </x-app-layout>

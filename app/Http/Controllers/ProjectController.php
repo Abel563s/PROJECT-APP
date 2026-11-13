@@ -648,6 +648,8 @@ class ProjectController extends Controller
     {
         $query = Project::query()->where('status', 'in progress')
             ->withCount('risks as total_risk')
+            ->withCount(['risks as threat_risk' => fn ($q) => $q->where('risk_type', 'Threat')])
+            ->withCount(['risks as opportunity_risk' => fn ($q) => $q->where('risk_type', 'Opportunity')])
             ->withCount(['risks as open_risk' => fn ($q) => $q->where('action_status', 'Risk')])
             ->withCount(['risks as in_progress_risk' => fn ($q) => $q->where('action_status', 'Issue')])
             ->withCount(['risks as closed_risk' => fn ($q) => $q->where('action_status', 'Resolved')]);

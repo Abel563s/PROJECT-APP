@@ -34,6 +34,13 @@
                     </span>
                 </button>
                 @endif
+                <button onclick="openAcronymModal()"
+                    class="ml-2 relative px-3 py-2.5 bg-white border border-slate-200 rounded-xl font-black text-[9px] uppercase tracking-widest text-slate-600 transition-all hover:bg-slate-50 hover:text-[#00515f] hover:border-[#00515f]/30 shadow-sm">
+                    <span class="relative flex items-center gap-1.5">
+                        <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+                        Acronyms
+                    </span>
+                </button>
             </div>
         </div>
 
@@ -188,9 +195,9 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Baseline Start</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Baseline Finish</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project Duration</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Budget Performance</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Cost Performance</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Schedule Performance</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Budget</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Cost</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Schedule</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Project Status</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Actions</th>
                         </tr>
@@ -251,27 +258,27 @@
                                         $revisedBudget = $project->revised_budget_amount ?? 0;
                                         $contractBudget = $project->contract_budget ?? 0;
                                         $signedBudgetVariance = $revisedBudget - $contractBudget;
-                                        $budgetPerformance = $signedBudgetVariance > 0 ? 'Above Budget' : ($signedBudgetVariance < 0 ? 'Under Budget' : 'On Budget');
+                                        $budgetPerformance = $signedBudgetVariance > 0 ? 'AB' : ($signedBudgetVariance < 0 ? 'BB' : 'OB');
 
                                         $costVariance = ($project->total_allowable_cost ?? 0) - ($project->cost_at_completion ?? 0);
-                                        $costPerformance = $costVariance < 0 ? 'Above Allowable Cost' : ($costVariance > 0 ? 'Below Allowable Cost' : 'Within Allowable Cost');
+                                        $costPerformance = $costVariance < 0 ? 'AAC' : ($costVariance > 0 ? 'BAC' : 'WAC');
 
                                         if (!$project->actual_start_date) {
-                                            $scheduleStatus = 'Not Started';
+                                            $scheduleStatus = 'NS';
                                         } elseif ($project->baseline_start_date && $project->baseline_finish_date) {
                                             $baselineDuration = abs($project->baseline_finish_date->diffInDays($project->baseline_start_date));
                                             $actualFinish = $project->actual_finish_date ?: \Carbon\Carbon::today();
                                             $actualDuration = abs($actualFinish->diffInDays($project->actual_start_date));
                                             $sv2 = $actualDuration - $baselineDuration;
                                             if ($sv2 > 0) {
-                                                $scheduleStatus = 'Behind Schedule';
+                                                $scheduleStatus = 'BS';
                                             } elseif ($sv2 < 0) {
-                                                $scheduleStatus = 'Ahead of Schedule';
+                                                $scheduleStatus = 'AS';
                                             } else {
-                                                $scheduleStatus = 'On Schedule';
+                                                $scheduleStatus = 'OS';
                                             }
                                         } else {
-                                            $scheduleStatus = 'On Schedule';
+                                            $scheduleStatus = 'OS';
                                         }
                                     @endphp
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $signedBudgetVariance > 0 ? 'bg-rose-50 text-rose-600 border-rose-200' : ($signedBudgetVariance < 0 ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-900 border-slate-200') }} border shadow-sm group-hover:shadow-md transition-all">
@@ -284,7 +291,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $scheduleStatus === 'Behind Schedule' ? 'bg-rose-50 text-rose-600 border-rose-200' : ($scheduleStatus === 'Ahead of Schedule' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : ($scheduleStatus === 'Not Started' ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-[#00ADC5]/10 text-[#00ADC5] border-[#00ADC5]/20')) }} border shadow-sm group-hover:shadow-md transition-all">
+                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $scheduleStatus === 'BS' ? 'bg-rose-50 text-rose-600 border-rose-200' : ($scheduleStatus === 'AS' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : ($scheduleStatus === 'NS' ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-[#00ADC5]/10 text-[#00ADC5] border-[#00ADC5]/20')) }} border shadow-sm group-hover:shadow-md transition-all">
                                         {{ $scheduleStatus }}
                                     </span>
                                 </td>
@@ -426,7 +433,155 @@
         </div>
     </div>
 
+    <!-- Acronyms Modal -->
+    <div id="acronymModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeAcronymModal()"></div>
+            <div class="relative bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-100">
+                <div class="sticky top-0 bg-gradient-to-b from-[#00515f] to-black border-b border-[#00515f] px-6 py-4 flex items-center justify-between rounded-t-3xl z-10 flex-shrink-0">
+                    <div class="flex items-center gap-2">
+                        <div class="w-9 h-9 rounded-xl bg-[#00ADC5]/20 flex items-center justify-center text-[#00ADC5] shadow-lg shadow-[#00ADC5]/20">
+                            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        </div>
+                        <h3 class="text-base font-black text-white tracking-tight font-outfit leading-none">
+                            Performance <span class="font-black text-white">Acronyms</span>
+                        </h3>
+                    </div>
+                    <button onclick="closeAcronymModal()" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div id="acronymModalContent" class="p-6 overflow-y-auto flex-1 space-y-4">
+                    <!-- Budget Section -->
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100">
+                            <i data-lucide="banknote" class="w-3 h-3 text-[#00515f]"></i>
+                            <span class="text-xs font-black text-slate-900 uppercase tracking-widest">Budget Performance</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-emerald-700">OB</span>
+                                    <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-tighter">Good</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">On Contract Budget</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Revised budget is exactly equal to the contract budget — no variance.</p>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-emerald-700">BB</span>
+                                    <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-tighter">Favorable</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Below Contract Budget</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Revised budget is below the contract budget — cost savings realized.</p>
+                            </div>
+                            <div class="bg-rose-50 border border-rose-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-rose-700">AB</span>
+                                    <span class="text-[8px] font-bold text-rose-500 uppercase tracking-tighter">Adverse</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Above Contract Budget</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Revised budget exceeds the contract budget — cost overrun.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cost Section -->
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100">
+                            <i data-lucide="pound-sterling" class="w-3 h-3 text-[#00515f]"></i>
+                            <span class="text-xs font-black text-slate-900 uppercase tracking-widest">Cost Performance</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-emerald-700">WAC</span>
+                                    <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-tighter">Good</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Within Allowable Cost</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Actual cost is within the allowable cost limit.</p>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-emerald-700">BAC</span>
+                                    <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-tighter">Favorable</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Below Allowable Cost</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Actual cost is below the allowable cost limit — favorable variance.</p>
+                            </div>
+                            <div class="bg-rose-50 border border-rose-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-rose-700">AAC</span>
+                                    <span class="text-[8px] font-bold text-rose-500 uppercase tracking-tighter">Adverse</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Above Allowable Cost</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Actual cost exceeds the allowable cost limit — unfavorable variance.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Section -->
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100">
+                            <i data-lucide="clock" class="w-3 h-3 text-[#00515f]"></i>
+                            <span class="text-xs font-black text-slate-900 uppercase tracking-widest">Schedule Performance</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-rose-50 border border-rose-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-rose-700">BS</span>
+                                    <span class="text-[8px] font-bold text-rose-500 uppercase tracking-tighter">Late</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Behind Schedule</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Actual finish date extends beyond the baseline finish date.</p>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-emerald-700">AS</span>
+                                    <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-tighter">Early</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Ahead of Schedule</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Actual finish date is before the baseline finish date.</p>
+                            </div>
+                            <div class="bg-[#00ADC5]/10 border border-[#00ADC5]/20 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-[#00515f]">OS</span>
+                                    <span class="text-[8px] font-bold text-[#00ADC5] uppercase tracking-tighter">On Time</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">On Schedule</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Actual finish date matches the baseline finish date.</p>
+                            </div>
+                            <div class="bg-slate-100 border border-slate-200 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-slate-500">NS</span>
+                                    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Pending</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Not Started</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Project has not yet started — no actual start date recorded.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 text-center">
+                        <button onclick="closeAcronymModal()"
+                            class="w-full px-5 py-2 bg-[#00ADC5] text-white rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-[#00ADC5]/90 transition-all shadow-lg shadow-cyan-500/20">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        function openAcronymModal() {
+            document.getElementById('acronymModal').classList.remove('hidden');
+        }
+
+        function closeAcronymModal() {
+            document.getElementById('acronymModal').classList.add('hidden');
+        }
+
         function openViewModal(id, status) {
             const modalCard = document.getElementById('viewModalCard');
             if (modalCard) {
@@ -530,6 +685,7 @@
                 closeModal();
                 closeEditModal();
                 closeCreateModal();
+                closeAcronymModal();
             }
         });
     </script>

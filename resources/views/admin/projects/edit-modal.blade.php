@@ -44,12 +44,33 @@
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Delivery Method</label>
                 <select name="delivery_method" required
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
-                    <option value="DB" {{ $project->delivery_method == 'DB' ? 'selected' : '' }}>DB</option>
                     <option value="DBB" {{ $project->delivery_method == 'DBB' ? 'selected' : '' }}>DBB</option>
-                    <option value="DB-LS" {{ $project->delivery_method == 'DB-LS' ? 'selected' : '' }}>DB-LS</option>
-                    <option value="DB-ADM" {{ $project->delivery_method == 'DB-ADM' ? 'selected' : '' }}>DB-ADM</option>
-                    <option value="DBB-ADM" {{ $project->delivery_method == 'DBB-ADM' ? 'selected' : '' }}>DBB-ADM</option>
-                    <option value="DB-CP" {{ $project->delivery_method == 'DB-CP' ? 'selected' : '' }}>DB-CP</option>
+                    <option value="DB" {{ $project->delivery_method == 'DB' ? 'selected' : '' }}>DB</option>
+                    <option value="EPC Turnkey" {{ $project->delivery_method == 'EPC Turnkey' ? 'selected' : '' }}>EPC Turnkey</option>
+                    <option value="PPP" {{ $project->delivery_method == 'PPP' ? 'selected' : '' }}>PPP</option>
+                    <option value="BOT" {{ $project->delivery_method == 'BOT' ? 'selected' : '' }}>BOT</option>
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Contract Document Type</label>
+                <select name="contract_document_type"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
+                    <option value="PPA" {{ $project->contract_document_type == 'PPA' ? 'selected' : '' }}>PPA</option>
+                    <option value="FIDIC Yellow" {{ $project->contract_document_type == 'FIDIC Yellow' ? 'selected' : '' }}>FIDIC Yellow</option>
+                    <option value="FIDIC Red" {{ $project->contract_document_type == 'FIDIC Red' ? 'selected' : '' }}>FIDIC Red</option>
+                    <option value="FIDIC Silver" {{ $project->contract_document_type == 'FIDIC Silver' ? 'selected' : '' }}>FIDIC Silver</option>
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Payment Modality</label>
+                <select name="payment_modality"
+                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
+                    <option value="Lump Sum" {{ $project->payment_modality == 'Lump Sum' ? 'selected' : '' }}>Lump Sum</option>
+                    <option value="Unit Rate" {{ $project->payment_modality == 'Unit Rate' ? 'selected' : '' }}>Unit Rate</option>
+                    <option value="Remeasurement" {{ $project->payment_modality == 'Remeasurement' ? 'selected' : '' }}>Remeasurement</option>
+                    <option value="Cost Plus" {{ $project->payment_modality == 'Cost Plus' ? 'selected' : '' }}>Cost Plus</option>
+                    <option value="Target Cost" {{ $project->payment_modality == 'Target Cost' ? 'selected' : '' }}>Target Cost</option>
+                    <option value="Milestone" {{ $project->payment_modality == 'Milestone' ? 'selected' : '' }}>Milestone</option>
                 </select>
             </div>
             <div class="col-span-2 space-y-1">
@@ -134,7 +155,7 @@
                             class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                     </div>
                     <div class="space-y-1">
-                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Budget at Completion</label>
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Actual Amount at Completion</label>
                         <input type="number" step="0.01" name="budget_at_completion" value="{{ $project->budget_at_completion }}"
                             class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-black text-slate-900 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
                     </div>
@@ -181,6 +202,11 @@
                     class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revised Finish Date</label>
+                <input type="date" name="approved_eot" value="{{ $project->approved_eot ? $project->approved_eot->format('Y-m-d') : '' }}"
+                    class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+            </div>
+            <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Actual Start</label>
                 <input type="date" name="actual_start_date" value="{{ $project->actual_start_date ? $project->actual_start_date->format('Y-m-d') : '' }}"
                     class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
@@ -191,12 +217,7 @@
                     class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Last Approved EOT</label>
-                <input type="date" name="approved_eot" value="{{ $project->approved_eot ? $project->approved_eot->format('Y-m-d') : '' }}"
-                    class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revision</label>
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revision Number</label>
                 <input type="text" name="revision_number" value="{{ $project->revision_number }}"
                     class="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-amber-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>

@@ -50,23 +50,19 @@
         <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue Planned (PV)</label>
-                <input type="number" step="0.01" name="revenue_planned"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-emerald-600 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                <input type="text" inputmode="decimal" step="0.01" name="revenue_planned" class="revenue-input w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-emerald-600 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue Actual (EV)</label>
-                <input type="number" step="0.01" name="revenue_actual"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-emerald-600 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                <input type="text" inputmode="decimal" step="0.01" name="revenue_actual" class="revenue-input w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-emerald-600 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue Planned Weekly</label>
-                <input type="number" step="0.01" name="revenue_planned_weekly"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-emerald-600 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                <input type="text" inputmode="decimal" step="0.01" name="revenue_planned_weekly" class="revenue-input w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-emerald-600 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
             <div class="space-y-1">
                 <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Revenue Actual Weekly</label>
-                <input type="number" step="0.01" name="revenue_actual_weekly"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-emerald-600 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
+                <input type="text" inputmode="decimal" step="0.01" name="revenue_actual_weekly" class="revenue-input w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black text-emerald-600 focus:ring-2 focus:ring-emerald-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">
             </div>
         </div>
     </div>
