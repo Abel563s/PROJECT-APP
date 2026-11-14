@@ -62,7 +62,13 @@ class DashboardController extends Controller
         }
 
         if ($request->filled('project_status') && $request->project_status !== 'all') {
-            $query->where('closing_status', $request->project_status);
+            $query->where('closing_status', $request->project_status)
+                  ->where('status', 'completed');
+        }
+
+        if ($request->filled('closing_status') && $request->closing_status !== 'all') {
+            $query->where('closing_status', $request->closing_status)
+                  ->where('status', 'completed');
         }
 
         if ($request->filled('client') && $request->client !== 'all') {
@@ -485,7 +491,9 @@ class DashboardController extends Controller
         }
 
         $sectorTimeDatasets = [
-            ['name' => 'Average SPI %', 'values' => [], 'counts' => []],
+            ['name' => 'Behind Schedule', 'values' => [], 'counts' => []],
+            ['name' => 'Ahead of Schedule', 'values' => [], 'counts' => []],
+            ['name' => 'On Schedule', 'values' => [], 'counts' => []],
         ];
         $sectorTimeLabels = [];
         $sectorTimeGroupTotals = [];
@@ -494,13 +502,17 @@ class DashboardController extends Controller
             $sectorProjects = $completedProjects->where('consultancy_sector', $sector);
             $groupTotal = $sectorProjects->count();
             $sectorTimeGroupTotals[] = $groupTotal;
-            if ($groupTotal > 0) {
-                $avgSpi = round($sectorProjects->avg('schedule_performance_percent'), 1);
-                $sectorTimeDatasets[0]['values'][] = $avgSpi;
-                $sectorTimeDatasets[0]['counts'][] = $groupTotal;
-            } else {
-                $sectorTimeDatasets[0]['values'][] = 0;
-                $sectorTimeDatasets[0]['counts'][] = 0;
+            if ($groupTotal === 0) {
+                foreach ($sectorTimeDatasets as &$ds) {
+                    $ds['values'][] = 0;
+                    $ds['counts'][] = 0;
+                }
+                continue;
+            }
+            foreach ($scheduleStatuses as $i => $status) {
+                $count = $sectorProjects->where('schedule_status', $status)->count();
+                $sectorTimeDatasets[$i]['counts'][] = $count;
+                $sectorTimeDatasets[$i]['values'][] = $groupTotal > 0 ? round(($count / $groupTotal) * 100) : 0;
             }
         }
 
@@ -651,8 +663,8 @@ class DashboardController extends Controller
                 'icons' => ['🏢', '👷', '🏛'],
             ],
             'time_by_sector' => [
-                'title' => 'Time Performance by Consultancy Sector',
-                'description' => 'Average SPI % for completed projects by consultancy sector.',
+                'title' => 'Schedule Performance by Consultancy Sector',
+                'description' => 'Compare completed projects by schedule status across consultancy sectors.',
                 'xaxis' => $sectorTimeLabels,
                 'series' => $sectorTimeDatasets,
                 'summaries' => $buildSummary($sectorTimeGroupTotals, $sectorTimeDatasets),

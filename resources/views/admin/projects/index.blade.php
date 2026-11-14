@@ -220,9 +220,17 @@
                                             'Water & Energy' => 'bg-emerald-100/60 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-700',
                                         ];
                                         $typeColor = $typeColors[$project->project_type] ?? 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600';
+
+                                        $typeAcronyms = [
+                                            'Building' => 'B',
+                                            'Fit-Out' => 'FO',
+                                            'Infrastructure' => 'I',
+                                            'Water & Energy' => 'W&E',
+                                        ];
+                                        $typeAcronym = $typeAcronyms[$project->project_type] ?? $project->project_type;
                                     @endphp
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider {{ $typeColor }} border shadow-sm group-hover:shadow-md transition-all">
-                                        {{ $project->project_type }}
+                                        {{ $typeAcronym }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
@@ -296,8 +304,16 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
+                                    @php
+                                        $statusAcronyms = [
+                                            'in progress' => 'IP',
+                                            'completed' => 'C',
+                                            'suspended' => 'S',
+                                        ];
+                                        $statusAcronym = $statusAcronyms[$project->status] ?? $project->status;
+                                    @endphp
                                     <span class="inline-flex px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border {{ $project->status === 'in progress' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' : ($project->status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200') }}">
-                                        {{ ucfirst($project->status) }}
+                                        {{ $statusAcronym }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
@@ -551,13 +567,89 @@
                                 <p class="text-[9px] font-bold text-slate-700 mb-1">On Schedule</p>
                                 <p class="text-[8px] font-black text-slate-400 leading-relaxed">Actual finish date matches the baseline finish date.</p>
                             </div>
-                            <div class="bg-slate-100 border border-slate-200 rounded-xl p-3">
+                        <div class="bg-slate-100 border border-slate-200 rounded-xl p-3">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-black text-slate-500">NS</span>
+                                <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Pending</span>
+                            </div>
+                            <p class="text-[9px] font-bold text-slate-700 mb-1">Not Started</p>
+                            <p class="text-[8px] font-black text-slate-400 leading-relaxed">Project has not yet started — no actual start date recorded.</p>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Type Section -->
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100">
+                            <i data-lucide="building-2" class="w-3 h-3 text-[#00515f]"></i>
+                            <span class="text-xs font-black text-slate-900 uppercase tracking-widest">Project Type</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2">
+                            <div class="bg-cyan-50 border border-cyan-100 rounded-xl p-3">
                                 <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-black text-slate-500">NS</span>
-                                    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Pending</span>
+                                    <span class="text-xs font-black text-cyan-700">B</span>
+                                    <span class="text-[8px] font-bold text-cyan-500 uppercase tracking-tighter">Building</span>
                                 </div>
-                                <p class="text-[9px] font-bold text-slate-700 mb-1">Not Started</p>
-                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Project has not yet started — no actual start date recorded.</p>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Building</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Building construction projects.</p>
+                            </div>
+                            <div class="bg-violet-50 border border-violet-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-violet-700">FO</span>
+                                    <span class="text-[8px] font-bold text-violet-500 uppercase tracking-tighter">Fit-Out</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Fit-Out</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Interior fit-out projects.</p>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-amber-700">I</span>
+                                    <span class="text-[8px] font-bold text-amber-500 uppercase tracking-tighter">Infrastructure</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Infrastructure</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Infrastructure development projects.</p>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-emerald-700">W&E</span>
+                                    <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-tighter">Water &amp; Energy</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Water &amp; Energy</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Water supply and energy projects.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Status Section -->
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100">
+                            <i data-lucide="activity" class="w-3 h-3 text-[#00515f]"></i>
+                            <span class="text-xs font-black text-slate-900 uppercase tracking-widest">Project Status</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-yellow-700">IP</span>
+                                    <span class="text-[8px] font-bold text-yellow-500 uppercase tracking-tighter">In Progress</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">In Progress</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Project is currently active and ongoing.</p>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-emerald-700">C</span>
+                                    <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-tighter">Completed</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Completed</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Project has been completed.</p>
+                            </div>
+                            <div class="bg-rose-50 border border-rose-100 rounded-xl p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-black text-rose-700">S</span>
+                                    <span class="text-[8px] font-bold text-rose-500 uppercase tracking-tighter">Suspended</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">Suspended</p>
+                                <p class="text-[8px] font-black text-slate-400 leading-relaxed">Project is currently suspended.</p>
                             </div>
                         </div>
                     </div>

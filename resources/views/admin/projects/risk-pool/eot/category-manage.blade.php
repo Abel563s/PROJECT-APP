@@ -1,13 +1,13 @@
 <div class="space-y-4">
     <div>
-        <h4 class="text-sm font-black text-slate-900">Base of Risk Categories</h4>
+        <h4 class="text-sm font-black text-slate-900">Base of EOT Categories</h4>
         <p class="mt-1 text-[9px] font-black uppercase tracking-widest text-slate-400">Categories available on EOT records. Inactive categories are hidden from new entries.</p>
     </div>
     <div id="eotCategoryErrors" class="hidden rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-bold text-rose-700" role="alert"></div>
 
     @if($canCreateCategory)
         <form id="eotCategoryAddForm" class="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_140px_auto]">
-            <input name="name" type="text" required maxlength="255" placeholder="New base of risk"
+            <input name="name" type="text" required maxlength="255" placeholder="New base of EOT"
                 class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
             <input name="display_order" type="number" min="0" placeholder="Display order"
                 class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
@@ -17,7 +17,7 @@
 
     <div class="overflow-x-auto rounded-xl border border-slate-200">
         <table class="w-full min-w-[560px] text-left text-xs text-slate-700">
-            <thead><tr class="bg-slate-50 text-[9px] font-black uppercase tracking-widest text-slate-500"><th class="px-3 py-2">Base of Risk</th><th class="px-3 py-2">Order</th><th class="px-3 py-2">Active</th><th class="px-3 py-2 text-center">Used By</th><th class="px-3 py-2 text-right">Action</th></tr></thead>
+            <thead><tr class="bg-slate-50 text-[9px] font-black uppercase tracking-widest text-slate-500"><th class="px-3 py-2">Base of EOT</th><th class="px-3 py-2">Order</th><th class="px-3 py-2">Active</th><th class="px-3 py-2 text-center">Used By</th><th class="px-3 py-2 text-right">Action</th></tr></thead>
             <tbody>
             @forelse($categories as $category)
                 @php($usage = \App\Models\EotEntry::where('eot_category_id', $category->id)->count())

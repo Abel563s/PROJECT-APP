@@ -13,14 +13,14 @@
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search EOTs</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
-                        <input type="search" name="search" value="{{ request('search') }}" placeholder="EOT ID, contract reference, reason, or base of risk"
+                        <input type="search" name="search" value="{{ request('search') }}" placeholder="EOT ID, contract reference, reason, or base of EOT"
                             class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                     </span>
                 </label>
                 <label class="min-w-0 space-y-1">
-                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Base of Risk</span>
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Base of EOT</span>
                     <select name="category_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                        <option value="">All Bases of Risk</option>
+                        <option value="">All Bases of EOT</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" @selected(request('category_id') == $category->id)>{{ $category->name }}</option>
                         @endforeach
@@ -41,7 +41,7 @@
                     <thead>
                         <tr class="border-b border-[#00515f]/30 bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black uppercase tracking-widest text-white">
                             <th class="px-4 py-3">EOT ID</th>
-                            <th class="px-4 py-3">Base of Risk</th>
+                            <th class="px-4 py-3">Base of EOT</th>
                             <th class="px-4 py-3">Contract Reference ID</th>
                             <th class="px-4 py-3">Detail Reason of EOT</th>
                             <th class="px-4 py-3">Created</th>
@@ -275,7 +275,7 @@
             selects.forEach(select => {
                 const current = select.value;
                 const currentLabel = select.selectedOptions[0]?.textContent;
-                select.innerHTML = '<option value="">Select base of risk</option>';
+                select.innerHTML = '<option value="">Select base of EOT</option>';
                 categories.forEach(category => {
                     const option = document.createElement('option'); option.value = category.id; option.textContent = category.name; select.appendChild(option);
                 });

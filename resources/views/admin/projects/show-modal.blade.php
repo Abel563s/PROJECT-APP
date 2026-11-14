@@ -293,7 +293,7 @@ $scheduleStatus = 'On Schedule';
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Elapsed Days</p>
                 <p class="text-xs font-black text-slate-900">
-                    {{ \Carbon\Carbon::today()->diffInDays($project->actual_start_date) + 1 }} days
+                    {{ abs(\Carbon\Carbon::today()->diffInDays($project->actual_start_date)) + 1 }} days
                 </p>
             </div>
             @endif

@@ -152,9 +152,9 @@
                 <table class="w-full text-left">
                     <thead>
                         <tr class="border-b border-[#00515f]/30 bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black uppercase tracking-widest text-white">
-                            <th class="px-4 py-3 text-center">#</th>
-                            <th class="px-4 py-3">Risk Name</th>
+                            <th class="px-4 py-3 text-center"># / Risk ID</th>
                             <th class="px-4 py-3">Category</th>
+                            <th class="px-4 py-3">Risk Sub Category</th>
                             <th class="px-4 py-3 text-center">Type</th>
                             <th class="px-4 py-3 text-center">Rating (P × I)</th>
                             <th class="px-4 py-3 text-center">Urgency</th>
@@ -179,12 +179,12 @@
                                 ];
                             @endphp
                             <tr class="transition-colors hover:bg-slate-50/80">
-                                <td class="px-4 py-3 text-center"><span class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-[10px] font-black tabular-nums text-slate-900">{{ $risks->firstItem() + $loop->index }}</span></td>
+                                <td class="px-4 py-3 text-center"><span class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-[10px] font-black tabular-nums text-slate-900">{{ $risks->firstItem() + $loop->index }}<br><span class="text-[8px] font-bold text-slate-600">{{ $risk->pool_risk_id ?: '---' }}</span></span></td>
+                                <td class="px-4 py-3"><span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700">{{ $risk->risk_category }}</span></td>
                                 <td class="max-w-xs px-4 py-3">
                                     <p class="text-xs font-black leading-tight text-slate-900">{{ $risk->risk_name }}</p>
                                     <p class="mt-1 line-clamp-2 text-[10px] text-slate-500">{{ $risk->risk_description }}</p>
                                 </td>
-                                <td class="px-4 py-3"><span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700">{{ $risk->risk_category }}</span></td>
                                 <td class="px-4 py-3 text-center"><span class="text-[10px] font-bold text-slate-700">{{ $risk->risk_type }}</span></td>
                                 <td class="px-4 py-3 text-center">
                                     <span class="inline-flex flex-col items-center rounded-lg border px-2.5 py-1 {{ $ratingClasses[$risk->risk_level] }}">
@@ -614,12 +614,26 @@
                         date: evaluationFields.querySelector('#eot_submitted_date'),
                         wrapper: evaluationFields.querySelector('#eotSubmittedDateField'),
                     },
+                    {
+                        status: evaluationFields.querySelector('#eot_status'),
+                        wrapper: evaluationFields.querySelector('#eotResponseDateField'),
+                    },
+                    {
+                        status: evaluationFields.querySelector('#eot_status'),
+                        wrapper: evaluationFields.querySelector('#eotRequestedDaysField'),
+                    },
+                    {
+                        status: evaluationFields.querySelector('#eot_status'),
+                        wrapper: evaluationFields.querySelector('#eotApprovedDaysField'),
+                    },
                 ].forEach(({ status, date, wrapper }) => {
-                    if (!status || !date || !wrapper) return;
+                    if (!status || !wrapper) return;
                     const submitted = claiming && status.value === 'Submitted';
                     wrapper.classList.toggle('hidden', !submitted);
-                    date.disabled = !submitted;
-                    date.required = submitted;
+                    if (date) {
+                        date.disabled = !submitted;
+                        date.required = submitted;
+                    }
                 });
             }
 
@@ -841,10 +855,6 @@
 
         document.getElementById('viewModal').addEventListener('click', function (event) {
             if (event.target === this) closeViewModal();
-        });
-
-        document.getElementById('editModal').addEventListener('click', function (event) {
-            if (event.target === this) closeEditModal();
         });
 
         document.addEventListener('keydown', function (event) {

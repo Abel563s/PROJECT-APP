@@ -218,11 +218,15 @@ function initializeAnalyticsCharts(data = {}) {
 
     const evmRows = Array.isArray(data.evmData) ? data.evmData : [];
     if (document.getElementById('evmChart') && evmRows.length > 0) {
-        const evmSeries = summarizeChartSeries(evmRows, (item, index) => shortCodeLabel(item.project_code, item.project_name, index));
+        const evmSeries = evmRows.map((item, index) => ({
+            ...item,
+            label: shortCodeLabel(item.project_code, item.project_name, index),
+        }));
         const labels = evmSeries.map(item => item.label);
-        const pvData = evmSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (Number(entry.pv) || 0), 0) : (Number(item.pv) || 0));
-        const evData = evmSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (Number(entry.ev) || 0), 0) : (Number(item.ev) || 0));
-        const acData = evmSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (Number(entry.ac) || 0), 0) : (Number(item.ac) || 0));
+        const pvData = evmSeries.map(item => (Number(item.pv) || 0));
+        const evData = evmSeries.map(item => (Number(item.ev) || 0));
+        const acData = evmSeries.map(item => (Number(item.ac) || 0));
+        const cpData = evmSeries.map(item => (Number(item.cost_planned) || 0));
 
         const formatCurrency = (value) => {
             if (value >= 1_000_000_000) return 'ETB ' + (value / 1_000_000_000).toFixed(1) + 'B';
@@ -257,6 +261,14 @@ function initializeAnalyticsCharts(data = {}) {
                         data: acData,
                         backgroundColor: '#f59e0b',
                         borderColor: '#f59e0b',
+                        borderWidth: 1,
+                        borderRadius: 8,
+                    },
+                    {
+                        label: 'Cost Planned (CP)',
+                        data: cpData,
+                        backgroundColor: '#f43f5e',
+                        borderColor: '#f43f5e',
                         borderWidth: 1,
                         borderRadius: 8,
                     }
@@ -326,10 +338,13 @@ function initializeAnalyticsCharts(data = {}) {
     const scheduleCtx = document.getElementById('schedulePerformanceChart');
     const scheduleData = Array.isArray(data.schedulePerformanceData) ? data.schedulePerformanceData : [];
     if (scheduleCtx && scheduleData.length > 0) {
-        const scheduleSeries = summarizeChartSeries(scheduleData, (item, index) => shortCodeLabel(item.project_code, item.project_name, index));
+        const scheduleSeries = scheduleData.map((item, index) => ({
+            ...item,
+            label: shortCodeLabel(item.project_code, item.project_name, index),
+        }));
         const projectLabels = scheduleSeries.map(item => item.label);
-        const plannedValues = scheduleSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (parseFloat(entry.planned) || 0), 0) : (parseFloat(item.planned) || 0));
-        const actualValues = scheduleSeries.map(item => item.isSummary ? item.values.reduce((sum, entry) => sum + (parseFloat(entry.actual) || 0), 0) : (parseFloat(item.actual) || 0));
+        const plannedValues = scheduleSeries.map(item => (parseFloat(item.planned) || 0));
+        const actualValues = scheduleSeries.map(item => (parseFloat(item.actual) || 0));
 
         new ChartInstance(scheduleCtx, {
             type: 'bar',

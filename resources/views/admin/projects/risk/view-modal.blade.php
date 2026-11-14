@@ -269,13 +269,25 @@
                             <p class="{{ $labelClass }}">Project Case Event Description</p>
                             <p class="whitespace-pre-wrap break-words text-xs font-bold text-slate-800">{{ $risk->project_case_event_description ?: '---' }}</p>
                         </div>
-                        <div>
-                            <p class="{{ $labelClass }}">Reference Contract Clause No.</p>
-                            <p class="break-words text-xs font-bold text-slate-800">{{ $risk->reference_contract_clause_no ?: '---' }}</p>
+                        <div class="flex flex-col gap-3">
+                            <div class="w-full">
+                                <p class="{{ $labelClass }}">Contract Document Type</p>
+                                <p class="break-words text-xs font-bold text-slate-800 w-full">{{ $risk->contract_document_type ?: '---' }}</p>
+                            </div>
+                            <div class="w-full">
+                                <p class="{{ $labelClass }}">Project Contract Clause</p>
+                                <p class="break-words text-xs font-bold text-slate-800 w-full">{{ $risk->project_contract_clause ?: '---' }}</p>
+                            </div>
+                            <div class="w-full">
+                                <p class="{{ $labelClass }}">Reference Contract Clause No.</p>
+                                <p class="break-words text-xs font-bold text-slate-800 w-full">{{ $risk->reference_contract_clause_no ?: '---' }}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="{{ $labelClass }}">Affected Activities</p>
-                            <p class="whitespace-pre-wrap break-words text-xs font-bold text-slate-800">{{ $risk->affected_activities ?: '---' }}</p>
+                        <div class="flex flex-col gap-3 flex-1 mb-4">
+                            <div class="flex-1">
+                                <p class="{{ $labelClass }}">Affected Activities</p>
+                                <p class="whitespace-pre-wrap break-words text-xs font-bold text-slate-800 w-full">{{ $risk->affected_activities ?: '---' }}</p>
+                            </div>
                         </div>
                         <div>
                             <p class="{{ $labelClass }}">ITC/Notification</p>

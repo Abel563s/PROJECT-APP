@@ -149,15 +149,6 @@
                 </select>
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="risk_urgency">Risk Urgency</label>
-                <select id="risk_urgency" name="risk_urgency" class="{{ $fieldClass }}">
-                    <option value="">Select urgency</option>
-                    @foreach(['Very Urgent', 'Urgent', 'Moderate', 'Low'] as $urgency)
-                        <option value="{{ $urgency }}" @selected(old('risk_urgency') === $urgency)>{{ $urgency }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div>
                 <label class="{{ $labelClass }}" for="intent_to_claim">Intent to Claim</label>
                 <select id="intent_to_claim" name="intent_to_claim" required class="{{ $fieldClass }}">
                     <option value="">Select intent to claim</option>
@@ -238,6 +229,15 @@
     <section class="step-panel hidden" data-step="4">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div>
+                <label class="{{ $labelClass }}" for="risk_urgency">Risk Urgency</label>
+                <select id="risk_urgency" name="risk_urgency" class="{{ $fieldClass }}">
+                    <option value="">Select urgency</option>
+                    @foreach(['Very Urgent', 'Urgent', 'Moderate', 'Low'] as $urgency)
+                        <option value="{{ $urgency }}" @selected(old('risk_urgency') === $urgency)>{{ $urgency }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
                 <label class="{{ $labelClass }}" for="action_status">Risk Action Status</label>
                 <select id="action_status" name="action_status" required class="{{ $fieldClass }}">
                     @foreach(\App\Models\ProjectRisk::ACTION_STATUSES as $status)
@@ -292,13 +292,36 @@
                         <label class="{{ $labelClass }}" for="project_case_event_description">Project Case Event Description</label>
                         <textarea id="project_case_event_description" name="project_case_event_description" rows="2" class="{{ $areaClass }}">{{ old('project_case_event_description') }}</textarea>
                     </div>
-                    <div>
-                        <label class="{{ $labelClass }}" for="reference_contract_clause_no">Reference Contract Clause No.</label>
-                        <input id="reference_contract_clause_no" name="reference_contract_clause_no" type="text" value="{{ old('reference_contract_clause_no') }}" class="{{ $fieldClass }}">
+                    <div class="flex flex-col gap-3">
+                        <div class="w-full">
+                            <label class="{{ $labelClass }}" for="contract_document_type">Contract Document Type</label>
+                            <select id="contract_document_type" name="contract_document_type" class="{{ $fieldClass }} w-full">
+                                <option value="">Select document type</option>
+                                <option value="PPA" @selected(old('contract_document_type') === 'PPA')>PPA</option>
+                                <option value="FIDIC Yellow" @selected(old('contract_document_type') === 'FIDIC Yellow')>FIDIC Yellow</option>
+                                <option value="FIDIC Red" @selected(old('contract_document_type') === 'FIDIC Red')>FIDIC Red</option>
+                                <option value="FIDIC Silver" @selected(old('contract_document_type') === 'FIDIC Silver')>FIDIC Silver</option>
+                            </select>
+                        </div>
+                        <div class="w-full">
+                            <label class="{{ $labelClass }}" for="project_contract_clause">Project Contract Clause</label>
+                            <select id="project_contract_clause" name="project_contract_clause" class="{{ $fieldClass }} w-full">
+                                <option value="">Select contract clause</option>
+                                @foreach($contractClauses as $clause)
+                                    <option value="{{ $clause->item }}" @selected(old('project_contract_clause') === $clause->item)>[{{ $clause->row_number }}] {{ $clause->item }} - {{ $clause->planner_explanation }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="w-full">
+                            <label class="{{ $labelClass }}" for="reference_contract_clause_no">Reference Contract Clause No.</label>
+                            <input id="reference_contract_clause_no" name="reference_contract_clause_no" type="text" value="{{ old('reference_contract_clause_no') }}" class="{{ $fieldClass }} w-full">
+                        </div>
                     </div>
-                    <div>
-                        <label class="{{ $labelClass }}" for="affected_activities">Affected Activities</label>
-                        <textarea id="affected_activities" name="affected_activities" rows="2" class="{{ $areaClass }}">{{ old('affected_activities') }}</textarea>
+                    <div class="flex flex-col gap-3 flex-1 mb-4">
+                        <div class="flex-1">
+                            <label class="{{ $labelClass }}" for="affected_activities">Affected Activities</label>
+                            <textarea id="affected_activities" name="affected_activities" rows="2" class="{{ $areaClass }} h-full">{{ old('affected_activities') }}</textarea>
+                        </div>
                     </div>
                     <div>
                         <label class="{{ $labelClass }}" for="itc_notification_status">ITC/Notification</label>
@@ -326,15 +349,15 @@
                         <label class="{{ $labelClass }}" for="eot_submitted_date">EOT Submitted Date <span class="normal-case tracking-normal">(required when submitted)</span></label>
                         <input id="eot_submitted_date" name="eot_submitted_date" type="date" value="{{ old('eot_submitted_date') }}" class="{{ $fieldClass }}">
                     </div>
-                    <div>
+                    <div id="eotResponseDateField" class="hidden">
                         <label class="{{ $labelClass }}" for="eot_response_date">EOT Response Date</label>
                         <input id="eot_response_date" name="eot_response_date" type="date" value="{{ old('eot_response_date') }}" class="{{ $fieldClass }}">
                     </div>
-                    <div>
+                    <div id="eotRequestedDaysField" class="hidden">
                         <label class="{{ $labelClass }}" for="eot_requested_days">EOT Requested (Days)</label>
                         <input id="eot_requested_days" name="eot_requested_days" type="number" min="0" step="1" value="{{ old('eot_requested_days') }}" class="{{ $fieldClass }}">
                     </div>
-                    <div>
+                    <div id="eotApprovedDaysField" class="hidden">
                         <label class="{{ $labelClass }}" for="eot_approved_days">EOT Approved (Days)</label>
                         <input id="eot_approved_days" name="eot_approved_days" type="number" min="0" step="1" value="{{ old('eot_approved_days') }}" class="{{ $fieldClass }}">
                     </div>

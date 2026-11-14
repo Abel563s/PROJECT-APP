@@ -1493,20 +1493,12 @@
                 `;
                 container.appendChild(card);
 
-                const isTimeBySectorChart = config.key === 'time_by_sector';
                 const sourceSeries = chartData.series || [];
-                const sectorNames = ['Private Consultancy', 'Client Engineering Team', 'Government Consultancy'];
-                const categories = isTimeBySectorChart ? [''] : (chartData.xaxis || []);
-                const series = isTimeBySectorChart
-                    ? sectorNames.map((name, index) => ({
-                        name,
-                        data: [sourceSeries[0]?.values?.[index] || 0],
-                    }))
-                    : sourceSeries.map(ds => ({
-                        name: ds.name,
-                        data: ds.values || [],
-                    }));
-                const sectorColors = ['#06b6d4', '#6366f1', '#10b981'];
+                const categories = chartData.xaxis || [];
+                const series = sourceSeries.map(ds => ({
+                    name: ds.name,
+                    data: ds.values || [],
+                }));
 
                 const getColorForDataset = (name) => {
                     const normalized = (name || '').toLowerCase();
@@ -1516,9 +1508,7 @@
                     return '#00ADC5';
                 };
 
-                const colors = isTimeBySectorChart
-                    ? sectorColors
-                    : sourceSeries.map(ds => getColorForDataset(ds.name));
+                const colors = sourceSeries.map(ds => getColorForDataset(ds.name));
 
                 if (categories.length === 0 || series.length === 0) {
                     document.getElementById(chartId).innerHTML = `
@@ -1612,9 +1602,7 @@
                     dataLabels: {
                         enabled: true,
                         formatter: function(value, options) {
-                            const count = isTimeBySectorChart
-                                ? sourceSeries[0]?.counts?.[options.seriesIndex] ?? 0
-                                : sourceSeries[options.seriesIndex]?.counts?.[options.dataPointIndex] ?? 0;
+                            const count = sourceSeries[options.seriesIndex]?.counts?.[options.dataPointIndex] ?? 0;
                             return count > 0 ? String(count) : '';
                         },
                         offsetY: -10,

@@ -18,6 +18,8 @@ class ProjectRisk extends Model
         'detail_reason_for_eot',
         'project_case_event_description',
         'reference_contract_clause_no',
+        'contract_document_type',
+        'project_contract_clause',
         'affected_activities',
         'itc_notification_status',
         'itc_notification_date',

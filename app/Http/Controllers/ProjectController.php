@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BusinessUnit;
+use App\Models\ContractClause;
 use App\Models\EotCategory;
 use App\Models\EotEntry;
 use App\Models\Issue;
@@ -216,6 +217,8 @@ class ProjectController extends Controller
             $effectiveDataDate = (clone $availableUpdates)->whereNotNull('data_date')->max('data_date');
         }
 
+        $latestDataDate = (clone $availableUpdates)->whereNotNull('data_date')->latest('data_date')->value('data_date');
+
         $progressQueryDataDate = \App\Models\ProjectProgressUpdate::query()
             ->whereDate('project_progress_updates.data_date', $effectiveDataDate);
         ProjectOrganizationFilters::apply($progressQueryDataDate, $request);
@@ -309,6 +312,7 @@ class ProjectController extends Controller
         $totalRevenuePlanned = $puBase()->sum('revenue_planned');
         $totalRevenueActual = $puBase()->sum('revenue_actual');
         $totalCostActual = $puBase()->sum('cost_actual');
+        $totalCostPlanned = $puBase()->sum('cost_planned');
 
         $sectorBreakdown = $puBase()->select('projects.project_type')
             ->join('projects', 'project_progress_updates.project_id', '=', 'projects.id')
@@ -321,7 +325,8 @@ class ProjectController extends Controller
                 projects.project_name,
                 SUM(project_progress_updates.revenue_planned) as total_pv,
                 SUM(project_progress_updates.revenue_actual) as total_ev,
-                SUM(project_progress_updates.cost_actual) as total_ac
+                SUM(project_progress_updates.cost_actual) as total_ac,
+                SUM(project_progress_updates.cost_planned) as total_cost_planned
             ')
             ->join('projects', 'project_progress_updates.project_id', '=', 'projects.id')
             ->groupBy('project_progress_updates.project_id', 'projects.project_code', 'projects.project_name')
@@ -488,6 +493,7 @@ class ProjectController extends Controller
             'totalRevenuePlanned',
             'totalRevenueActual',
             'totalCostActual',
+            'totalCostPlanned',
             'sectorBreakdown',
             'evmData',
             'sCurveData',
@@ -498,6 +504,7 @@ class ProjectController extends Controller
             'sectorWeightedCpi',
             'dataDate',
             'effectiveDataDate',
+            'latestDataDate',
             'allProjectsWithUpdates',
             'selectedProjectId',
             'selectedSector'
@@ -772,8 +779,9 @@ class ProjectController extends Controller
 
         $poolTypes = ProjectRiskPool::RISK_TYPES;
         $eotOptions = $this->riskEotOptions();
+        $contractClauses = ContractClause::orderBy('row_number')->get(['id', 'item', 'planner_explanation', 'row_number']);
 
-        return view('admin.projects.risk.create-modal', compact('project', 'poolTypes', 'eotOptions'))->render();
+        return view('admin.projects.risk.create-modal', compact('project', 'poolTypes', 'eotOptions', 'contractClauses'))->render();
     }
 
     /**
@@ -866,31 +874,32 @@ class ProjectController extends Controller
                     ->where('risk_type', $request->input('risk_type'))
                     ->where('risk_category', $request->input('pool_risk_category')),
             ],
-            'eot_category_id' => ['nullable', 'required_if:intent_to_claim,1', 'integer', Rule::exists('eot_categories', 'id')],
+            'eot_category_id' => ['nullable', 'integer', Rule::exists('eot_categories', 'id')],
             'eot_entry_id' => [
                 'nullable',
-                'required_if:intent_to_claim,1',
                 'integer',
                 Rule::exists('eot_entries', 'id')->where('eot_category_id', $request->input('eot_category_id')),
             ],
             'detail_reason_for_eot' => 'nullable|string',
             'project_case_event_description' => 'nullable|string',
             'reference_contract_clause_no' => 'nullable|string|max:255',
+            'contract_document_type' => ['nullable', Rule::in(['PPA', 'FIDIC Yellow', 'FIDIC Red', 'FIDIC Silver'])],
+            'project_contract_clause' => 'nullable|string|max:255',
             'affected_activities' => 'nullable|string',
             'itc_notification_status' => ['nullable', Rule::in(['Submitted', 'Not Submitted'])],
-            'itc_notification_date' => ['nullable', Rule::requiredIf(fn () => $request->boolean('intent_to_claim') && $request->input('itc_notification_status') === 'Submitted'), 'date'],
+            'itc_notification_date' => ['nullable', 'date'],
             'eot_status' => ['nullable', Rule::in(['Submitted', 'Not Submitted', 'Agreed', 'Rejected', 'Approved'])],
-            'eot_submitted_date' => ['nullable', Rule::requiredIf(fn () => $request->boolean('intent_to_claim') && $request->input('eot_status') === 'Submitted'), 'date'],
+            'eot_submitted_date' => ['nullable', 'date'],
             'eot_response_date' => 'nullable|date',
             'eot_requested_days' => 'nullable|integer|min:0',
             'eot_approved_days' => 'nullable|integer|min:0',
-            'activity' => 'required|string',
-            'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
+            'activity' => 'nullable|string',
+            'risk_type' => ['nullable', 'string', 'max:255', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'risk_name' => 'nullable|string|max:255',
-            'risk_description' => 'required|string',
-            'likelihood' => 'required|integer|between:1,5',
-            'severity' => 'required|integer|between:1,5',
-            'intent_to_claim' => 'required|boolean',
+            'risk_description' => 'nullable|string',
+            'likelihood' => 'nullable|integer|between:1,5',
+            'severity' => 'nullable|integer|between:1,5',
+            'intent_to_claim' => 'nullable|boolean',
             'most_likely_cost_impact' => 'nullable|numeric|min:0',
             'most_likely_time_impact' => 'nullable|integer|min:0',
             'most_likely_quality_impact_description' => 'nullable|string',
@@ -909,7 +918,7 @@ class ProjectController extends Controller
             'planned_action_date' => 'nullable|date',
             'last_review_date' => 'nullable|date',
             'tracking_comments' => 'nullable|string',
-            'action_status' => ['required', Rule::in(ProjectRisk::ACTION_STATUSES)],
+            'action_status' => ['nullable', Rule::in(ProjectRisk::ACTION_STATUSES)],
             'actual_action_date' => 'nullable|date',
             'materialized_date' => 'nullable|date',
             'exposure_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
@@ -919,6 +928,7 @@ class ProjectController extends Controller
         $validated['project_id'] = $project->id;
         $validated['created_by'] = $request->user()->id;
         $validated['date_last_updated'] = now()->toDateString();
+        $validated['intent_to_claim'] = $validated['intent_to_claim'] ?? false;
         $validated['risk_name'] = ! empty($validated['pool_risk_id'])
             ? ProjectRiskPool::query()
                 ->where('risk_id', $validated['pool_risk_id'])
@@ -957,12 +967,13 @@ class ProjectController extends Controller
         $this->authorizeRiskMutation($risk);
         $poolTypes = ProjectRiskPool::RISK_TYPES;
         $eotOptions = $this->riskEotOptions($risk);
+        $contractClauses = ContractClause::orderBy('row_number')->get(['id', 'item', 'planner_explanation', 'row_number']);
         $risk->load('eotEntry');
         $poolRisk = $risk->pool_risk_id
             ? ProjectRiskPool::where('risk_id', $risk->pool_risk_id)->first()
             : null;
 
-        return view('admin.projects.risk.edit-modal', compact('risk', 'poolTypes', 'eotOptions', 'poolRisk'))->render();
+        return view('admin.projects.risk.edit-modal', compact('risk', 'poolTypes', 'eotOptions', 'contractClauses', 'poolRisk'))->render();
     }
 
     public function riskUpdate(Request $request, ProjectRisk $risk)
@@ -980,31 +991,32 @@ class ProjectController extends Controller
                     ->where('risk_type', $request->input('risk_type'))
                     ->where('risk_category', $request->input('pool_risk_category')),
             ],
-            'eot_category_id' => ['nullable', 'required_if:intent_to_claim,1', 'integer', Rule::exists('eot_categories', 'id')],
+            'eot_category_id' => ['nullable', 'integer', Rule::exists('eot_categories', 'id')],
             'eot_entry_id' => [
                 'nullable',
-                'required_if:intent_to_claim,1',
                 'integer',
                 Rule::exists('eot_entries', 'id')->where('eot_category_id', $request->input('eot_category_id')),
             ],
             'detail_reason_for_eot' => 'nullable|string',
             'project_case_event_description' => 'nullable|string',
             'reference_contract_clause_no' => 'nullable|string|max:255',
+            'contract_document_type' => ['nullable', Rule::in(['PPA', 'FIDIC Yellow', 'FIDIC Red', 'FIDIC Silver'])],
+            'project_contract_clause' => 'nullable|string|max:255',
             'affected_activities' => 'nullable|string',
             'itc_notification_status' => ['nullable', Rule::in(['Submitted', 'Not Submitted'])],
-            'itc_notification_date' => ['nullable', Rule::requiredIf(fn () => $request->boolean('intent_to_claim') && $request->input('itc_notification_status') === 'Submitted'), 'date'],
+            'itc_notification_date' => ['nullable', 'date'],
             'eot_status' => ['nullable', Rule::in(['Submitted', 'Not Submitted', 'Agreed', 'Rejected', 'Approved'])],
-            'eot_submitted_date' => ['nullable', Rule::requiredIf(fn () => $request->boolean('intent_to_claim') && $request->input('eot_status') === 'Submitted'), 'date'],
+            'eot_submitted_date' => ['nullable', 'date'],
             'eot_response_date' => 'nullable|date',
             'eot_requested_days' => 'nullable|integer|min:0',
             'eot_approved_days' => 'nullable|integer|min:0',
-            'activity' => 'required|string',
-            'risk_type' => ['required', Rule::in(ProjectRiskPool::RISK_TYPES)],
+            'activity' => 'nullable|string',
+            'risk_type' => ['nullable', 'string', 'max:255', Rule::in(ProjectRiskPool::RISK_TYPES)],
             'risk_name' => 'nullable|string|max:255',
-            'risk_description' => 'required|string',
-            'likelihood' => 'required|integer|between:1,5',
-            'severity' => 'required|integer|between:1,5',
-            'intent_to_claim' => 'required|boolean',
+            'risk_description' => 'nullable|string',
+            'likelihood' => 'nullable|integer|between:1,5',
+            'severity' => 'nullable|integer|between:1,5',
+            'intent_to_claim' => 'nullable|boolean',
             'most_likely_cost_impact' => 'nullable|numeric|min:0',
             'most_likely_time_impact' => 'nullable|integer|min:0',
             'most_likely_quality_impact_description' => 'nullable|string',
@@ -1023,7 +1035,7 @@ class ProjectController extends Controller
             'planned_action_date' => 'nullable|date',
             'last_review_date' => 'nullable|date',
             'tracking_comments' => 'nullable|string',
-            'action_status' => ['required', Rule::in(ProjectRisk::ACTION_STATUSES)],
+            'action_status' => ['nullable', Rule::in(ProjectRisk::ACTION_STATUSES)],
             'actual_action_date' => 'nullable|date',
             'materialized_date' => 'nullable|date',
             'exposure_unit' => ['nullable', Rule::in(['Day', 'Week', 'Month'])],
@@ -1031,6 +1043,7 @@ class ProjectController extends Controller
         ]);
 
         $validated['date_last_updated'] = now()->toDateString();
+        $validated['intent_to_claim'] = $validated['intent_to_claim'] ?? false;
         $validated['risk_name'] = ! empty($validated['pool_risk_id'])
             ? ProjectRiskPool::query()
                 ->where('risk_id', $validated['pool_risk_id'])
@@ -1060,6 +1073,8 @@ class ProjectController extends Controller
             'detail_reason_for_eot',
             'project_case_event_description',
             'reference_contract_clause_no',
+            'contract_document_type',
+            'project_contract_clause',
             'affected_activities',
             'itc_notification_status',
             'itc_notification_date',

@@ -45,7 +45,7 @@
                     <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">Data Date</label>
                     <div class="flex items-center gap-2 bg-white border border-slate-100 rounded-xl px-3 py-2 shadow-sm">
                         <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
-                        <input type="date" name="data_date" value="{{ request('data_date') }}" onchange="this.form.submit()"
+                        <input type="date" name="data_date" value="{{ request('data_date') ?: ($latestDataDate ? \Carbon\Carbon::parse($latestDataDate)->format('Y-m-d') : '') }}" onchange="this.form.submit()"
                             class="bg-transparent border-none text-[9px] font-black text-slate-600 uppercase tracking-widest focus:outline-none focus:ring-0 w-[160px]">
                     </div>
                 </div>
@@ -290,295 +290,321 @@
             </div>
         </div>
 
+        <!-- Sector Distribution & Project Type Distribution -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
+            <!-- Sector Distribution -->
+            <div class="relative bg-white rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50 overflow-hidden">
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-2xl bg-cyan-50 flex items-center justify-center text-[#00ADC5] shadow-md shadow-cyan-200/40">
+                            <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-black text-slate-900 tracking-tight">Project Sector Distribution</h3>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Projects by sector</p>
+                        </div>
+                    </div>
+                    <div class="relative h-[280px] w-full flex items-center justify-center">
+                        <canvas id="sectorDistributionChart"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Total</p>
+                            <p class="text-2xl font-black text-slate-900 tracking-tighter">{{ $sectorValues->sum() }}</p>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Projects</p>
+                        </div>
+                    </div>
+                    <div id="sectorLegend" class="mt-5 space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- Project Type Distribution -->
+            <div class="lg:col-span-2 relative bg-white rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50 overflow-hidden">
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 shadow-md shadow-emerald-200/40">
+                            <i data-lucide="zap" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-black text-slate-900 tracking-tight">Project Type Distribution</h3>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Active projects by delivery type</p>
+                        </div>
+                    </div>
+                    <div class="h-[320px] w-full">
+                        <canvas id="typePerformanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Charts Grid -->
         <div class="grid grid-cols-1 gap-4">
             <!-- EVM Chart -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <h3 class="text-base font-black text-slate-900 tracking-tight">Earned Value Management (EVM)</h3>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Revenue Planned vs Revenue Actual vs Actual Cost by Project</p>
+            <div class="relative bg-white rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50 overflow-hidden">
+                <div class="p-6 space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-400/30">
+                                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-black text-slate-900 tracking-tight">Earned Value Management (EVM)</h3>
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Revenue Planned vs Revenue Actual vs Actual Cost by Project</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-400"></span>
+                                <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">Revenue Planned (PV)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400"></span>
+                                <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">Revenue Actual (EV)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-400"></span>
+                                <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">Cost Actual (AC)</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-4">
+
+                    <div class="border-t border-slate-50 pt-4">
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em] mb-4">All projects included.</p>
+
+                        <!-- Summary KPI Cards -->
+                        <div class="grid grid-cols-4 gap-3 mb-6">
+                            <div class="relative p-4 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-blue-50/50 dark:from-blue-950 dark:to-slate-900 dark:border-blue-800 overflow-hidden group hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-600 transition-all duration-300">
+                                <div class="absolute top-0 right-0 w-14 h-14 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                                <div class="relative z-10 flex items-start gap-2">
+                                    <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
+                                        <i data-lucide="target" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[7px] font-black text-slate-500 dark:text-blue-200 uppercase tracking-widest">Total Planned Revenue</p>
+                                        <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
+                                            <span class="text-[8px] font-black text-slate-400 dark:text-blue-300 mr-0.5">ETB</span>{{ number_format($totalRevenuePlanned / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-blue-300 ml-0.5">M</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="relative p-4 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-emerald-50/50 dark:from-emerald-950 dark:to-slate-900 dark:border-emerald-800 overflow-hidden group hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-600 transition-all duration-300">
+                                <div class="absolute top-0 right-0 w-14 h-14 bg-emerald-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                                <div class="relative z-10 flex items-start gap-2">
+                                    <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 shrink-0">
+                                        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[7px] font-black text-slate-500 dark:text-emerald-200 uppercase tracking-widest">Total Earned Revenue</p>
+                                        <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
+                                            <span class="text-[8px] font-black text-slate-400 dark:text-emerald-300 mr-0.5">ETB</span>{{ number_format($totalRevenueActual / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-emerald-300 ml-0.5">M</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="relative p-4 rounded-2xl border border-rose-100 bg-gradient-to-br from-rose-50 to-rose-50/50 dark:from-rose-950 dark:to-slate-900 dark:border-rose-800 overflow-hidden group hover:shadow-lg hover:border-rose-200 dark:hover:border-rose-600 transition-all duration-300">
+                                <div class="absolute top-0 right-0 w-14 h-14 bg-rose-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                                <div class="relative z-10 flex items-start gap-2">
+                                    <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-rose-500/20 shrink-0">
+                                        <i data-lucide="credit-card" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[7px] font-black text-slate-500 dark:text-rose-200 uppercase tracking-widest">Total Planned Cost</p>
+                                        <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
+                                            <span class="text-[8px] font-black text-slate-400 dark:text-rose-300 mr-0.5">ETB</span>{{ number_format($totalCostPlanned / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-rose-300 ml-0.5">M</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="relative p-4 rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 to-amber-50/50 dark:from-amber-950 dark:to-slate-900 dark:border-amber-800 overflow-hidden group hover:shadow-lg hover:border-amber-200 dark:hover:border-amber-600 transition-all duration-300">
+                                <div class="absolute top-0 right-0 w-14 h-14 bg-amber-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                                <div class="relative z-10 flex items-start gap-2">
+                                    <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-amber-500/20 shrink-0">
+                                        <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[7px] font-black text-slate-500 dark:text-amber-200 uppercase tracking-widest">Total Actual Cost</p>
+                                        <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
+                                            <span class="text-[8px] font-black text-slate-400 dark:text-amber-300 mr-0.5">ETB</span>{{ number_format($totalCostActual / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-amber-300 ml-0.5">M</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="relative h-[400px] w-full">
+                        @if($evmData->count() > 0)
+                            <canvas id="evmChart"></canvas>
+                        @else
+                            <div class="flex flex-col items-center justify-center h-full text-slate-400 rounded-2xl border-2 border-dashed border-slate-100 bg-slate-50">
+                                <i data-lucide="bar-chart-3" class="w-12 h-12 mb-3 text-slate-300"></i>
+                                <p class="text-sm font-black text-slate-600 mb-1">No Earned Value Management data available.</p>
+                                <p class="text-[9px] font-black text-slate-400">Progress updates will appear here once project revenue and cost information has been submitted.</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Planned vs Actual Schedule Performance -->
+        <div class="relative bg-white rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50 overflow-hidden">
+            <div class="p-6 space-y-5">
+                <div class="flex flex-col xl:flex-row xl:items-start justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-400/30">
+                            <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-black text-slate-900 tracking-tight">Planned vs Actual Schedule Performance</h3>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Compare planned progress against actual progress for all active projects</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
                         <div class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-400"></span>
-                            <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">Revenue Planned (PV)</span>
+                            <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">Planned Progress</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400"></span>
-                            <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">Revenue Actual (EV)</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-400"></span>
-                            <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">Cost Actual (AC)</span>
+                            <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">Actual Progress</span>
                         </div>
                     </div>
                 </div>
 
-                <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em]">Showing the top 12 projects; the rest are summarized for readability.</p>
+                <div class="border-t border-slate-50 pt-4">
+                    <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em] mb-4">All projects included.</p>
 
-                <!-- Summary KPI Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div class="group relative bg-gradient-to-br from-blue-50 to-blue-50/50 dark:from-blue-950 dark:to-slate-900 rounded-xl border border-blue-100 dark:border-blue-800 p-3 overflow-hidden hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-600 transition-all duration-300">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                        <div class="relative z-10 flex items-start gap-2">
-                            <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
-                                <i data-lucide="target" class="w-3.5 h-3.5"></i>
+                    <!-- Chart -->
+                    <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-3 relative h-[360px] w-full">
+                        @php
+                            $scheduleData = collect($schedulePerformanceData ?? []);
+                        @endphp
+                        @if($scheduleData->count() > 0)
+                            <canvas id="schedulePerformanceChart"></canvas>
+                        @else
+                            <div class="flex flex-col items-center justify-center h-full text-slate-400 rounded-xl border-2 border-dashed border-slate-100 bg-slate-50">
+                                <i data-lucide="bar-chart-2" class="w-12 h-12 mb-3 text-slate-300"></i>
+                                <p class="text-sm font-black text-slate-600 mb-1">No schedule performance data available.</p>
+                                <p class="text-[9px] font-black text-slate-400">Active projects with submitted progress updates will appear here automatically.</p>
                             </div>
-                            <div class="min-w-0">
-                                <p class="text-[7px] font-black text-slate-500 dark:text-blue-200 uppercase tracking-widest">Total Planned Revenue</p>
-                                <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
-                                    <span class="text-[8px] font-black text-slate-400 dark:text-blue-300 mr-0.5">ETB</span>{{ number_format($totalRevenuePlanned / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-blue-300 ml-0.5">M</span>
-                                </p>
-                            </div>
-                        </div>
+                        @endif
                     </div>
-
-                    <div class="group relative bg-gradient-to-br from-emerald-50 to-emerald-50/50 dark:from-emerald-950 dark:to-slate-900 rounded-xl border border-emerald-100 dark:border-emerald-800 p-3 overflow-hidden hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-600 transition-all duration-300">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                        <div class="relative z-10 flex items-start gap-2">
-                            <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-600 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 shrink-0">
-                                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-[7px] font-black text-slate-500 dark:text-emerald-200 uppercase tracking-widest">Total Earned Revenue</p>
-                                <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
-                                    <span class="text-[8px] font-black text-slate-400 dark:text-emerald-300 mr-0.5">ETB</span>{{ number_format($totalRevenueActual / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-emerald-300 ml-0.5">M</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="group relative bg-gradient-to-br from-amber-50 to-amber-50/50 dark:from-amber-950 dark:to-slate-900 rounded-xl border border-amber-100 dark:border-amber-800 p-3 overflow-hidden hover:shadow-lg hover:border-amber-200 dark:hover:border-amber-600 transition-all duration-300">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-amber-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                        <div class="relative z-10 flex items-start gap-2">
-                            <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-amber-500/20 shrink-0">
-                                <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-[7px] font-black text-slate-500 dark:text-amber-200 uppercase tracking-widest">Total Actual Cost</p>
-                                <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
-                                    <span class="text-[8px] font-black text-slate-400 dark:text-amber-300 mr-0.5">ETB</span>{{ number_format($totalCostActual / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-amber-300 ml-0.5">M</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart -->
-                <div class="relative h-[400px] w-full">
-                    @if($evmData->count() > 0)
-                        <canvas id="evmChart"></canvas>
-                    @else
-                        <div class="flex flex-col items-center justify-center h-full text-slate-400">
-                            <i data-lucide="bar-chart-3" class="w-12 h-12 mb-3 text-slate-300"></i>
-                            <p class="text-sm font-black text-slate-600 mb-1">No Earned Value Management data available.</p>
-                            <p class="text-[9px] font-black text-slate-400">Progress updates will appear here once project revenue and cost information has been submitted.</p>
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>
 
         <!-- S-Curve Performance Analytics -->
-        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-blue-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
-                        <i data-lucide="trending-up" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-base font-black text-slate-900 tracking-tight">Performance S-Curve Analytics</h3>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Schedule Performance Index (SPI) and Cost Performance Index (CPI) Trend Over Time</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400"></span>
-                        <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">SPI</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-400"></span>
-                        <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">CPI</span>
-                    </div>
-                </div>
-            </div>
+        <div class="relative bg-white rounded-3xl border border-slate-100 shadow-sm shadow-slate-200/50 overflow-hidden">
+            <div class="p-6 space-y-5">
+                @php
+                    $latestSpi = null;
+                    $latestCpi = null;
+                    $spiTrend = 'stable';
+                    $cpiTrend = 'stable';
+                    if ($sCurveData->count() > 0) {
+                        $allUpdates = $sCurveData->sortBy('date');
+                        $latest = $allUpdates->last();
+                        $previous = $allUpdates->count() > 1 ? $allUpdates->slice(-2, 1)->first() : null;
 
-            @php
-                $latestSpi = null;
-                $latestCpi = null;
-                $spiTrend = 'stable';
-                $cpiTrend = 'stable';
-                if ($sCurveData->count() > 0) {
-                    $allUpdates = $sCurveData->sortBy('date');
-                    $latest = $allUpdates->last();
-                    $previous = $allUpdates->count() > 1 ? $allUpdates->slice(-2, 1)->first() : null;
-                    
-                    if ($latest) {
-                        $latestSpi = $latest['spi'];
-                        $latestCpi = $latest['cpi'];
-                        
-                        if ($previous) {
-                            if ($latestSpi > $previous['spi']) $spiTrend = 'improving';
-                            elseif ($latestSpi < $previous['spi']) $spiTrend = 'declining';
-                            
-                            if ($latestCpi > $previous['cpi']) $cpiTrend = 'improving';
-                            elseif ($latestCpi < $previous['cpi']) $cpiTrend = 'declining';
+                        if ($latest) {
+                            $latestSpi = $latest['spi'];
+                            $latestCpi = $latest['cpi'];
+
+                            if ($previous) {
+                                if ($latestSpi > $previous['spi']) $spiTrend = 'improving';
+                                elseif ($latestSpi < $previous['spi']) $spiTrend = 'declining';
+
+                                if ($latestCpi > $previous['cpi']) $cpiTrend = 'improving';
+                                elseif ($latestCpi < $previous['cpi']) $cpiTrend = 'declining';
+                            }
                         }
                     }
-                }
-            @endphp
-
-            <!-- Charts -->
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-                <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-4">
-                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
+                @endphp
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-blue-500 flex items-center justify-center text-white shadow-lg shadow-emerald-400/30">
+                            <i data-lucide="trending-up" class="w-5 h-5"></i>
+                        </div>
                         <div>
-                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-500">CPI Trend</p>
-                            <h4 class="text-sm font-black text-slate-900">Cost Performance Index</h4>
-                        </div>
-                        <div class="rounded-2xl border border-blue-100 bg-blue-50 px-3 py-2 min-w-[150px]">
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-                                    <i data-lucide="trending-down" class="w-4 h-4"></i>
-                                </div>
-                                <div>
-                                    <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Current CPI</p>
-                                    <p class="text-lg font-black text-slate-900 tracking-tighter">
-                                        {{ $latestCpi !== null ? number_format($latestCpi, 2) : '---' }}
-                                    </p>
-                                </div>
-                            </div>
+                            <h3 class="text-base font-black text-slate-900 tracking-tight">Performance S-Curve Analytics</h3>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Schedule Performance Index (SPI) and Cost Performance Index (CPI) Trend Over Time</p>
                         </div>
                     </div>
-                    <div class="relative h-[320px] w-full">
-                        @if($sCurveData->count() > 0)
-                            <canvas id="cpiChart"></canvas>
-                        @else
-                            <div class="flex flex-col items-center justify-center h-full text-slate-400">
-                                <i data-lucide="trending-up" class="w-10 h-10 mb-3 text-slate-300"></i>
-                                <p class="text-sm font-black text-slate-600 mb-1">No CPI data available.</p>
-                            </div>
-                        @endif
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400"></span>
+                            <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">SPI</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-400"></span>
+                            <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">CPI</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-4">
-                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
-                        <div>
-                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-500">SPI Trend</p>
-                            <h4 class="text-sm font-black text-slate-900">Schedule Performance Index</h4>
+                <div class="border-t border-slate-50 pt-4">
+                    <!-- KPI trend indicators -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+                        <div class="p-3 rounded-2xl border border-blue-100 bg-blue-50 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                                <i data-lucide="trending-down" class="w-4 h-4"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Current CPI</p>
+                                <p class="text-sm font-black text-slate-900 tracking-tighter">
+                                    {{ $latestCpi !== null ? number_format($latestCpi, 2) : '---' }}
+                                </p>
+                            </div>
                         </div>
-                        <div class="rounded-2xl border border-emerald-100 bg-emerald-50 px-3 py-2 min-w-[150px]">
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
-                                    <i data-lucide="trending-up" class="w-4 h-4"></i>
-                                </div>
-                                <div>
-                                    <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Current SPI</p>
-                                    <p class="text-lg font-black text-slate-900 tracking-tighter">
-                                        {{ $latestSpi !== null ? number_format($latestSpi, 2) : '---' }}
-                                    </p>
-                                </div>
+                        <div class="p-3 rounded-2xl border border-emerald-100 bg-emerald-50 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
+                                <i data-lucide="trending-up" class="w-4 h-4"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Current SPI</p>
+                                <p class="text-sm font-black text-slate-900 tracking-tighter">
+                                    {{ $latestSpi !== null ? number_format($latestSpi, 2) : '---' }}
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <div class="relative h-[320px] w-full">
-                        @if($sCurveData->count() > 0)
-                            <canvas id="spiChart"></canvas>
-                        @else
-                            <div class="flex flex-col items-center justify-center h-full text-slate-400">
-                                <i data-lucide="trending-up" class="w-10 h-10 mb-3 text-slate-300"></i>
-                                <p class="text-sm font-black text-slate-600 mb-1">No SPI data available.</p>
+
+                    <!-- Charts -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+                        <div class="relative h-[320px] w-full flex flex-col">
+                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">CPI Trend</p>
+                            <div class="flex-1 relative h-[260px] w-full">
+                                @if($sCurveData->count() > 0)
+                                    <canvas id="cpiChart"></canvas>
+                                @else
+                                    <div class="flex flex-col items-center justify-center h-full text-slate-400 rounded-xl border-2 border-dashed border-slate-100 bg-slate-50">
+                                        <i data-lucide="trending-up" class="w-10 h-10 mb-3 text-slate-300"></i>
+                                        <p class="text-sm font-black text-slate-600 mb-1">No CPI data available.</p>
+                                    </div>
+                                @endif
                             </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            </div>
-        </div>
-
-        <!-- Planned vs Actual Schedule Performance -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 space-y-4">
-            <div class="flex flex-col xl:flex-row xl:items-start justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                        <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-base font-black text-slate-900 tracking-tight">Planned vs Actual Schedule Performance</h3>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Compare planned progress against actual progress for all active projects</p>
-                    </div>
-                </div>
-                <div class="flex flex-wrap items-center gap-3">
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-400"></span>
-                        <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">Planned Progress</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400"></span>
-                        <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">Actual Progress</span>
-                    </div>
-                </div>
-            </div>
-
-            <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em]">Showing the top 12 projects; the rest are summarized for readability.</p>
-
-            @php
-                $scheduleData = collect($schedulePerformanceData ?? []);
-            @endphp
-
-            <!-- Chart -->
-            <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-3">
-                <div class="relative h-[360px] w-full">
-                    @if($scheduleData->count() > 0)
-                        <canvas id="schedulePerformanceChart"></canvas>
-                    @else
-                        <div class="flex flex-col items-center justify-center h-full text-slate-400">
-                            <i data-lucide="bar-chart-2" class="w-12 h-12 mb-3 text-slate-300"></i>
-                            <p class="text-sm font-black text-slate-600 mb-1">No schedule performance data available.</p>
-                            <p class="text-[9px] font-black text-slate-400">Active projects with submitted progress updates will appear here automatically.</p>
                         </div>
-                    @endif
+
+                        <div class="relative h-[320px] w-full flex flex-col">
+                            <p class="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">SPI Trend</p>
+                            <div class="flex-1 relative h-[260px] w-full">
+                                @if($sCurveData->count() > 0)
+                                    <canvas id="spiChart"></canvas>
+                                @else
+                                    <div class="flex flex-col items-center justify-center h-full text-slate-400 rounded-xl border-2 border-dashed border-slate-100 bg-slate-50">
+                                        <i data-lucide="trending-up" class="w-10 h-10 mb-3 text-slate-300"></i>
+                                        <p class="text-sm font-black text-slate-600 mb-1">No SPI data available.</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
-            <!-- Sector Distribution -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 space-y-4">
-                <div class="px-1">
-                    <h3 class="text-sm font-black text-slate-900 tracking-tight">Project Sector Distribution</h3>
-                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Projects by Project sector</p>
-                </div>
-                <div class="relative h-[280px] w-full flex items-center justify-center">
-                    <canvas id="sectorDistributionChart"></canvas>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Total</p>
-                        <p class="text-2xl font-black text-slate-900 tracking-tighter">{{ $sectorValues->sum() }}</p>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Projects</p>
-                    </div>
-                </div>
-                <div id="sectorLegend" class="space-y-2"></div>
-            </div>
-
-            <!-- Project Type Performance -->
-            <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 space-y-4">
-                <div class="flex items-center gap-3 px-1">
-                    <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                        <i data-lucide="zap" class="w-4 h-4"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-black text-slate-900 tracking-tight">Project Type Distribution</h3>
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Active projects by delivery type</p>
-                    </div>
-                </div>
-                <div class="h-[300px] w-full">
-                    <canvas id="typePerformanceChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
 
      @push('scripts')
          <script>
@@ -591,6 +617,7 @@
                              'pv' => (float) $item->total_pv,
                              'ev' => (float) $item->total_ev,
                              'ac' => (float) $item->total_ac,
+                             'cost_planned' => (float) $item->total_cost_planned,
                          ];
                      })->values()) !!},
                      sCurveData: {!! json_encode($sCurveData->all()) !!},

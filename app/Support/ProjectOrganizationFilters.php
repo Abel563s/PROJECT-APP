@@ -22,6 +22,20 @@ class ProjectOrganizationFilters
         return null;
     }
 
+    public static function effectiveSectorId(Request $request): ?int
+    {
+        if ($request->exists('sector_id')) {
+            return $request->filled('sector_id') ? (int) $request->input('sector_id') : null;
+        }
+
+        $user = $request->user();
+        if ($user && !$user->isSuperadmin()) {
+            return $user->sector_id ? (int) $user->sector_id : null;
+        }
+
+        return null;
+    }
+
     public static function options(Request $request): array
     {
         $businessUnitId = self::effectiveBusinessUnitId($request);

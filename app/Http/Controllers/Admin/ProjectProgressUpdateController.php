@@ -54,11 +54,22 @@ class ProjectProgressUpdateController extends Controller
         $totalRevenuePlannedWeekly = (float) $revenueTotals->total_revenue_planned_weekly;
         $totalRevenueActualWeekly = (float) $revenueTotals->total_revenue_actual_weekly;
 
+        $allUpdates = (clone $query)->getQuery()->reorder()->get();
+        $spiSum = 0.0;
+        $spiCount = 0;
+        foreach ($allUpdates as $u) {
+            if ((float) $u->progress_planned > 0) {
+                $spiSum += (float) $u->progress_actual / (float) $u->progress_planned;
+                $spiCount++;
+            }
+        }
+        $avgSpiWeekly = $spiCount > 0 ? ($spiSum / $spiCount) * 100 : 0;
+
         $latestDataDate = (clone $query)->latest('data_date')->value('data_date');
         $updates = $query->latest()->paginate(15)->withQueryString();
         $projects = Project::orderBy('project_name')->get(['id', 'project_code', 'project_name']);
         return view('admin.progress-updates.index', array_merge(
-            compact('updates', 'projects', 'totalRevenuePlanned', 'totalRevenueActual', 'totalRevenuePlannedWeekly', 'totalRevenueActualWeekly', 'latestDataDate'),
+            compact('updates', 'projects', 'totalRevenuePlanned', 'totalRevenueActual', 'totalRevenuePlannedWeekly', 'totalRevenueActualWeekly', 'avgSpiWeekly', 'latestDataDate'),
             ProjectOrganizationFilters::options($request)
         ));
     }
