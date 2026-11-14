@@ -111,7 +111,7 @@
                     placeholder="Search projects..."
                     class="mb-2 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 placeholder:text-slate-400 focus:border-[#00ADC5] focus:outline-none focus:ring-2 focus:ring-cyan-100">
                 <div class="max-h-40 overflow-y-auto">
-                @php($assignedProjectIds = old('assigned_project_ids', $user->assignedProjects->modelKeys()))
+                <?php $assignedProjectIds = old('assigned_project_ids', $user->assignedProjects->modelKeys()); ?>
                 @foreach($projects as $project)
                     <label data-project-option class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-cyan-50">
                         <input type="checkbox" name="assigned_project_ids[]" value="{{ $project->id }}"

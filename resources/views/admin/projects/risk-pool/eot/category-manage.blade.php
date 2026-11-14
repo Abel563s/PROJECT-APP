@@ -20,7 +20,7 @@
             <thead><tr class="bg-slate-50 text-[9px] font-black uppercase tracking-widest text-slate-500"><th class="px-3 py-2">Base of EOT</th><th class="px-3 py-2">Order</th><th class="px-3 py-2">Active</th><th class="px-3 py-2 text-center">Used By</th><th class="px-3 py-2 text-right">Action</th></tr></thead>
             <tbody>
             @forelse($categories as $category)
-                @php($usage = \App\Models\EotEntry::where('eot_category_id', $category->id)->count())
+                <?php $usage = \App\Models\EotEntry::where('eot_category_id', $category->id)->count(); ?>
                 <tr data-eot-cat-row data-id="{{ $category->id }}" data-name="{{ $category->name }}" data-active="{{ $category->is_active ? 1 : 0 }}" class="border-t border-slate-100">
                     <td class="px-3 py-2"><input data-eot-category-edit data-field="name" data-id="{{ $category->id }}" value="{{ $category->name }}" @disabled(!$canEditCategory) class="w-full rounded-md border border-slate-200 px-2 py-1 text-xs font-bold focus:border-cyan-300 focus:ring-cyan-100"></td>
                     <td class="px-3 py-2"><input data-eot-category-edit data-field="display_order" data-id="{{ $category->id }}" type="number" min="0" value="{{ $category->display_order }}" @disabled(!$canEditCategory) class="w-20 rounded-md border border-slate-200 px-2 py-1 text-xs font-bold focus:border-cyan-300 focus:ring-cyan-100"></td>

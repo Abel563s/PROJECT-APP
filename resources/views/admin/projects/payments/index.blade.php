@@ -25,7 +25,7 @@
         </div>
 
         <!-- Search & Filter -->
-        @php($paymentAdvancedFiltersActive = request()->filled('status'))
+        <?php $paymentAdvancedFiltersActive = request()->filled('status'); ?>
         <form action="{{ route('admin.projects.payments.index') }}" method="GET" class="space-y-4">
             <div class="admin-filter-grid bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/30 border border-slate-50 gap-3 w-full">
                 <div class="min-w-[220px] max-w-[320px] relative group shrink-0">

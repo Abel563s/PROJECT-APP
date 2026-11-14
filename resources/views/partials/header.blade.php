@@ -9,7 +9,7 @@
             @endif
         </h1>
         <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1.5 font-inter">
-            @php($roleLabel = Auth::user()->role_label)
+            <?php $roleLabel = Auth::user()->role_label; ?>
             EEC | PROJECTS • <span class="text-[#00ADC5]">{{ $roleLabel }}</span>
         </p>
     </div>

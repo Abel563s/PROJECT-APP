@@ -1,5 +1,5 @@
-@php($selectedBusinessUnitId = \App\Support\ProjectOrganizationFilters::effectiveBusinessUnitId(request()))
-@php($effectiveSectorId = \App\Support\ProjectOrganizationFilters::effectiveSectorId(request()))
+<?php $selectedBusinessUnitId = \App\Support\ProjectOrganizationFilters::effectiveBusinessUnitId(request()); ?>
+<?php $effectiveSectorId = \App\Support\ProjectOrganizationFilters::effectiveSectorId(request()); ?>
 
 <label class="min-w-[170px] flex-1 space-y-1">
     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Business Unit</span>

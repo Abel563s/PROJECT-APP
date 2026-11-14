@@ -6,7 +6,7 @@
             'canCreateEot' => $canCreateEot,
         ])
 
-        @php($eotFiltersActive = request()->anyFilled(['search', 'category_id']))
+        <?php $eotFiltersActive = request()->anyFilled(['search', 'category_id']); ?>
         <form id="eotFilters" action="{{ route('admin.projects.risk-pool.eot') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-3 shadow-sm">
             <div class="admin-filter-grid gap-3">
                 <label class="min-w-0 space-y-1">
