@@ -44,7 +44,9 @@ class ProjectOrganizationFilters
             'businessUnits' => BusinessUnit::active()->orderBy('name')->get(['id', 'name']),
             'allOrganizationSectors' => Sector::active()->orderBy('name')->get(['id', 'business_unit_id', 'name']),
             'organizationSectors' => Sector::active()
-                ->when($businessUnitId, fn ($query) => $query->where('business_unit_id', $businessUnitId))
+                ->when($businessUnitId, function ($query) use ($businessUnitId) {
+                    return $query->where('business_unit_id', $businessUnitId);
+                })
                 ->orderBy('name')
                 ->get(['id', 'business_unit_id', 'name']),
         ];
