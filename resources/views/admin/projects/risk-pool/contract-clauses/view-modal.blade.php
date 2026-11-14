@@ -5,7 +5,7 @@
     </div>
     <div class="overflow-hidden rounded-xl border border-slate-100">
         <div class="grid grid-cols-1 divide-y divide-slate-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-            @foreach(['Item' => $clause->item, 'PPA' => $clause->ppa, 'FIDIC Red' => $clause->fidic_red, 'FIDIC Yellow' => $clause->fidic_yellow, 'FIDIC Silver' => $clause->fidic_silver] as $label => $value)
+            @foreach(['Item' => $clause->item, 'PPA 2011' => $clause->ppa, 'FIDIC 1999' => $clause->fidic_red, 'FIDIC 2017' => $clause->fidic_yellow] as $label => $value)
                 <div class="p-4"><p class="text-[8px] font-black uppercase tracking-widest text-slate-400">{{ $label }}</p><p class="mt-1 text-xs font-semibold text-slate-800">{{ filled($value) ? $value : '—' }}</p></div>
             @endforeach
         </div>

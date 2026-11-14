@@ -194,7 +194,7 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Contract Budget</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Baseline Start</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Baseline Finish</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Project Duration</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Duration</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Budget</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Cost</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Schedule</th>
@@ -234,8 +234,8 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-900 text-[11px] font-black tabular-nums tracking-tight shadow-sm">
-                                        <span class="text-slate-500 font-bold mr-1">ETB</span>
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] font-black tabular-nums tracking-wider text-black shadow-sm group-hover:border-slate-300 group-hover:shadow-md transition-all duration-200">
+                                        <span class="text-slate-500 font-bold mr-1.5">ETB</span>
                                         {{ number_format($project->contract_budget) }}
                                     </span>
                                 </td>
@@ -256,10 +256,9 @@
                                             $duration = abs($project->baseline_finish_date->diffInDays($project->baseline_start_date)) + 1;
                                         }
                                     @endphp
-                                    <span class="inline-flex px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm">
+                                    <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-white/70 backdrop-blur-sm border border-slate-200 text-slate-700 shadow-sm">
                                         {{ $duration }}
                                     </span>
-                                </td>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     @php

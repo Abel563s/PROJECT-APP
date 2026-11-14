@@ -38,37 +38,37 @@
         </div>
 
         <section aria-label="Filtered revenue totals" class="grid grid-cols-1 gap-3 md:grid-cols-3">
-            <div class="progress-revenue-card progress-revenue-card--planned group relative overflow-hidden rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 via-emerald-100 to-emerald-200 p-5 text-emerald-900 shadow-sm shadow-emerald-100/40">
-                <div class="progress-revenue-glow absolute -right-6 -top-8 h-28 w-28 rounded-full bg-emerald-100/30 transition-transform duration-300 group-hover:scale-125"></div>
+            <div class="progress-revenue-card progress-revenue-card--planned group relative overflow-hidden rounded-2xl border border-emerald-200/50 bg-gradient-to-br from-emerald-50 via-emerald-100 to-emerald-200 dark:border-amber-900/30 dark:bg-gradient-to-br dark:from-amber-950/20 dark:via-amber-900/10 dark:to-amber-800/10 p-5 text-emerald-900 dark:text-emerald-400 shadow-sm shadow-emerald-100/40 dark:shadow-amber-900/20">
+                <div class="progress-revenue-glow absolute -right-6 -top-8 h-28 w-28 rounded-full bg-emerald-100/30 dark:bg-amber-900/10 transition-transform duration-300 group-hover:scale-125"></div>
                 <div class="relative flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-[9px] font-black uppercase tracking-[0.18em] text-emerald-600">Revenue Planned</p>
-                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-emerald-700">ETB</span>{{ number_format($totalRevenuePlannedWeekly, 2) }}</p>
-                        <p class="mt-1 text-[9px] font-semibold text-emerald-600/80">Weekly · Data Date: {{ $latestDataDate ? \Carbon\Carbon::parse($latestDataDate)->format('d-M-Y') : '---' }}</p>
+                        <p class="text-[9px] font-black uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-400">Revenue Planned</p>
+                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">ETB</span><span class="text-black dark:text-white">{{ number_format($totalRevenuePlannedWeekly, 2) }}</span></p>
+                        <p class="mt-1 text-[9px] font-semibold text-emerald-600/80 dark:text-emerald-400/60">Weekly · Data Date: {{ $latestDataDate ? \Carbon\Carbon::parse($latestDataDate)->format('d-M-Y') : '---' }}</p>
                     </div>
-                    <span class="progress-revenue-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-200/40 shadow-inner"><i data-lucide="banknote" class="h-5 w-5 text-emerald-700"></i></span>
+                    <span class="progress-revenue-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-200/40 dark:border-amber-800/30 dark:bg-amber-800/20 shadow-inner"><i data-lucide="banknote" class="h-5 w-5 text-emerald-700 dark:text-emerald-300"></i></span>
                 </div>
             </div>
-            <div class="progress-revenue-card progress-revenue-card--actual group relative overflow-hidden rounded-2xl border border-cyan-100 bg-gradient-to-br from-cyan-50 via-cyan-100 to-cyan-200 p-5 text-cyan-900 shadow-sm shadow-cyan-100/40">
-                <div class="progress-revenue-glow absolute -right-6 -top-8 h-28 w-28 rounded-full bg-cyan-100/30 transition-transform duration-300 group-hover:scale-125"></div>
+            <div class="progress-revenue-card progress-revenue-card--actual group relative overflow-hidden rounded-2xl border border-cyan-200/50 bg-gradient-to-br from-cyan-50 via-cyan-100 to-cyan-200 dark:border-amber-900/30 dark:bg-gradient-to-br dark:from-amber-950/20 dark:via-amber-900/10 dark:to-amber-800/10 p-5 text-cyan-900 dark:text-cyan-400 shadow-sm shadow-cyan-100/40 dark:shadow-amber-900/20">
+                <div class="progress-revenue-glow absolute -right-6 -top-8 h-28 w-28 rounded-full bg-cyan-100/30 dark:bg-amber-900/10 transition-transform duration-300 group-hover:scale-125"></div>
                 <div class="relative flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-600">Revenue Actual</p>
-                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-cyan-700">ETB</span>{{ number_format($totalRevenueActualWeekly, 2) }}</p>
-                        <p class="mt-1 text-[9px] font-semibold text-cyan-600/80">Weekly · Data Date: {{ $latestDataDate ? \Carbon\Carbon::parse($latestDataDate)->format('d-M-Y') : '---' }}</p>
+                        <p class="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-600 dark:text-cyan-400">Revenue Actual</p>
+                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-cyan-700 dark:text-cyan-300">ETB</span><span class="text-black dark:text-white">{{ number_format($totalRevenueActualWeekly, 2) }}</span></p>
+                        <p class="mt-1 text-[9px] font-semibold text-cyan-600/80 dark:text-cyan-400/60">Weekly · Data Date: {{ $latestDataDate ? \Carbon\Carbon::parse($latestDataDate)->format('d-M-Y') : '---' }}</p>
                     </div>
-                    <span class="progress-revenue-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-cyan-200 bg-cyan-200/40 shadow-inner"><i data-lucide="circle-dollar-sign" class="h-5 w-5 text-cyan-700"></i></span>
+                    <span class="progress-revenue-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-cyan-200 bg-cyan-200/40 dark:border-amber-800/30 dark:bg-amber-800/20 shadow-inner"><i data-lucide="circle-dollar-sign" class="h-5 w-5 text-cyan-700 dark:text-cyan-300"></i></span>
                 </div>
             </div>
-            <div class="progress-revenue-card progress-revenue-card--spi group relative overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 via-amber-100 to-amber-200 p-5 text-amber-900 shadow-sm shadow-amber-100/40">
-                <div class="progress-revenue-glow absolute -right-6 -top-8 h-28 w-28 rounded-full bg-amber-100/30 transition-transform duration-300 group-hover:scale-125"></div>
+            <div class="progress-revenue-card progress-revenue-card--spi group relative overflow-hidden rounded-2xl border border-amber-200/50 bg-gradient-to-br from-amber-50 via-amber-100 to-amber-200 dark:border-amber-900/30 dark:bg-gradient-to-br dark:from-amber-950/20 dark:via-amber-900/10 dark:to-amber-800/10 p-5 text-amber-900 dark:text-amber-50 shadow-sm shadow-amber-100/40 dark:shadow-amber-900/20">
+                <div class="progress-revenue-glow absolute -right-6 -top-8 h-28 w-28 rounded-full bg-amber-100/30 dark:bg-amber-900/10 transition-transform duration-300 group-hover:scale-125"></div>
                 <div class="relative flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-[9px] font-black uppercase tracking-[0.18em] text-amber-600">Average SPI (Weekly)</p>
-                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-amber-700">SPI</span>{{ number_format($avgSpiWeekly, 1) }}%</p>
-                        <p class="mt-1 text-[9px] font-semibold text-amber-600/80">Weighted avg · Data Date: {{ $latestDataDate ? \Carbon\Carbon::parse($latestDataDate)->format('d-M-Y') : '---' }}</p>
+                        <p class="text-[9px] font-black uppercase tracking-[0.18em] text-amber-600 dark:text-amber-400">Average SPI (Weekly)</p>
+                        <p class="mt-2 text-2xl font-black tracking-tight tabular-nums"><span class="mr-1 text-xs font-bold text-amber-700 dark:text-amber-300">SPI</span><span class="text-black dark:text-white">{{ number_format($avgSpiWeekly, 1) }}%</span></p>
+                        <p class="mt-1 text-[9px] font-semibold text-amber-600/80 dark:text-amber-400/60">Weighted avg · Data Date: {{ $latestDataDate ? \Carbon\Carbon::parse($latestDataDate)->format('d-M-Y') : '---' }}</p>
                     </div>
-                    <span class="progress-revenue-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-amber-200 bg-amber-200/40 shadow-inner"><i data-lucide="trending-up" class="h-5 w-5 text-amber-700"></i></span>
+                    <span class="progress-revenue-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-amber-200 bg-amber-200/40 dark:border-amber-800/30 dark:bg-amber-800/20 shadow-inner"><i data-lucide="trending-up" class="h-5 w-5 text-amber-700 dark:text-amber-300"></i></span>
                 </div>
             </div>
         </section>

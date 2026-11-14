@@ -411,9 +411,9 @@ class DashboardController extends Controller
         $costStatuses = ['Below Allowable Cost', 'Within Allowable Cost', 'Above Allowable Cost'];
 
         $variationGroups = [
-            'Projects with Addition' => $completedProjects->filter(fn($p) => $p['variation'] > 0),
-            'Projects with Omission' => $completedProjects->filter(fn($p) => $p['variation'] < 0),
-            'Projects with No Variation' => $completedProjects->filter(fn($p) => $p['variation'] == 0),
+            'Addition' => $completedProjects->filter(fn($p) => $p['variation'] > 0),
+            'Omission' => $completedProjects->filter(fn($p) => $p['variation'] < 0),
+            'No Variation' => $completedProjects->filter(fn($p) => $p['variation'] == 0),
         ];
 
         $variationLabels = array_keys($variationGroups);
@@ -474,7 +474,7 @@ class DashboardController extends Controller
         ];
         $sectorGroupTotals = [];
         foreach ($sectors as $sector) {
-            $sectorLabels[] = $sector === 'Client / Engineering Team' ? 'Client Engineering Team' : ($sector === 'Private' ? 'Private Consultancy' : 'Government Consultancy');
+            $sectorLabels[] = $sector === 'Client / Engineering Team' ? 'Client Eng' : ($sector === 'Private' ? 'Private' : 'Government');
             $sectorProjects = $completedProjects->where('consultancy_sector', $sector);
             $groupTotal = $sectorProjects->count();
             $sectorGroupTotals[] = $groupTotal;
@@ -498,7 +498,7 @@ class DashboardController extends Controller
         $sectorTimeLabels = [];
         $sectorTimeGroupTotals = [];
         foreach ($sectors as $sector) {
-            $sectorTimeLabels[] = $sector === 'Client / Engineering Team' ? 'Client Engineering Team' : ($sector === 'Private' ? 'Private Consultancy' : 'Government Consultancy');
+            $sectorTimeLabels[] = $sector === 'Client / Engineering Team' ? 'Client Eng' : ($sector === 'Private' ? 'Private' : 'Government');
             $sectorProjects = $completedProjects->where('consultancy_sector', $sector);
             $groupTotal = $sectorProjects->count();
             $sectorTimeGroupTotals[] = $groupTotal;

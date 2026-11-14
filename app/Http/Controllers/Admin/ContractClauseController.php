@@ -22,7 +22,7 @@ class ContractClauseController extends Controller
 
     public function index(Request $request)
     {
-        $query = ContractClause::query()->latest('row_number');
+        $query = ContractClause::query()->orderBy('row_number', 'asc');
         if ($request->filled('search')) {
             $term = trim($request->string('search')->toString());
             $query->where(function ($builder) use ($term) {

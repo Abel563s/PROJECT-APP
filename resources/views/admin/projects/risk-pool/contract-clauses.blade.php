@@ -18,9 +18,9 @@
 
         <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
             <div class="overflow-x-auto">
-                <table class="w-full min-w-[1120px] table-fixed text-left">
+                <table class="w-full min-w-[1120px] text-left">
                     <thead><tr class="border-b border-[#00515f]/30 bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black uppercase tracking-widest text-white">
-                        <th class="w-36 px-2 py-3">Contract Reference ID</th><th class="w-44 px-2 py-3">Item</th><th class="w-64 px-2 py-3">Explanation for Planners</th><th class="w-28 px-2 py-3">PPA</th><th class="w-28 px-2 py-3">FIDIC Red</th><th class="w-28 px-2 py-3">FIDIC Yellow</th><th class="w-28 px-2 py-3">FIDIC Silver</th><th class="w-28 px-2 py-3 text-right">Actions</th>
+                        <th class="w-40 px-2 py-3">Contract Reference ID</th><th class="w-60 px-2 py-3">Item</th><th class="px-2 py-3">Explanation for Planners</th><th class="w-36 px-2 py-3">PPA 2011</th><th class="w-36 px-2 py-3">FIDIC 1999</th><th class="w-36 px-2 py-3">FIDIC 2017</th><th class="w-40 px-2 py-3 text-right">Actions</th>
                     </tr></thead>
                     <tbody class="divide-y divide-slate-50">
                         @forelse($clauses as $clause)
@@ -30,16 +30,15 @@
                                 <td class="px-2 py-3"><p class="line-clamp-2 break-words text-[10px] font-medium leading-4 text-slate-600" title="{{ $clause->planner_explanation }}">{{ $clause->planner_explanation }}</p></td>
                                 <td class="px-2 py-3 text-[10px] font-semibold text-slate-600"><span class="block truncate" title="{{ $clause->ppa }}">{{ $clause->ppa ?: '—' }}</span></td>
                                 <td class="px-2 py-3 text-[10px] font-semibold text-slate-600"><span class="block truncate" title="{{ $clause->fidic_red }}">{{ $clause->fidic_red ?: '—' }}</span></td>
-                                <td class="px-2 py-3 text-[10px] font-semibold text-slate-600"><span class="block truncate" title="{{ $clause->fidic_yellow }}">{{ $clause->fidic_yellow ?: '—' }}</span></td>
-                                <td class="px-2 py-3 text-[10px] font-semibold text-slate-600"><span class="block truncate" title="{{ $clause->fidic_silver }}">{{ $clause->fidic_silver ?: '—' }}</span></td>
-                                <td class="px-2 py-3 text-right"><div class="flex items-center justify-end gap-1.5">
+<td class="px-2 py-3 text-[10px] font-semibold text-slate-600"><span class="block truncate" title="{{ $clause->fidic_yellow }}">{{ $clause->fidic_yellow ?: '—' }}</span></td>
+<td class="px-2 py-3 text-right"><div class="flex items-center justify-end gap-1.5">
                                     <button type="button" onclick="openClauseView({{ $clause->id }})" class="rounded-md border border-slate-200 bg-white p-1.5 text-slate-400 transition hover:border-sky-500 hover:text-sky-500" title="View"><i data-lucide="eye" class="h-3.5 w-3.5"></i></button>
                                     @if($canEditClauses)<button type="button" onclick="openClauseEdit({{ $clause->id }})" class="rounded-md border border-slate-200 bg-white p-1.5 text-slate-400 transition hover:border-amber-500 hover:text-amber-500" title="Edit"><i data-lucide="pencil" class="h-3.5 w-3.5"></i></button>@endif
                                     @if($canDeleteClauses)<button type="button" onclick="deleteClause({{ $clause->id }})" class="rounded-md border border-slate-200 bg-white p-1.5 text-slate-400 transition hover:border-rose-500 hover:text-rose-500" title="Delete"><i data-lucide="trash-2" class="h-3.5 w-3.5"></i></button>@endif
                                 </div></td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="px-4 py-16 text-center"><div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-200"><i data-lucide="file-text" class="h-7 w-7"></i></div><h3 class="mt-3 text-sm font-black text-slate-800">No contract clauses found</h3><p class="mt-1 text-xs text-slate-500">Add a clause or adjust the search.</p></td></tr>
+                            <tr><td colspan="7" class="px-4 py-16 text-center"><div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-200"><i data-lucide="file-text" class="h-7 w-7"></i></div><h3 class="mt-3 text-sm font-black text-slate-800">No contract clauses found</h3><p class="mt-1 text-xs text-slate-500">Add a clause or adjust the search.</p></td></tr>
                         @endforelse
                     </tbody>
                 </table>
