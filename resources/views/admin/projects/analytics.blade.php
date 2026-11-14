@@ -401,21 +401,6 @@
                                 </div>
                             </div>
 
-                            <div class="relative p-4 rounded-2xl border border-rose-100 bg-gradient-to-br from-rose-50 to-rose-50/50 dark:from-rose-950 dark:to-slate-900 dark:border-rose-800 overflow-hidden group hover:shadow-lg hover:border-rose-200 dark:hover:border-rose-600 transition-all duration-300">
-                                <div class="absolute top-0 right-0 w-14 h-14 bg-rose-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                                <div class="relative z-10 flex items-start gap-2">
-                                    <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-rose-500/20 shrink-0">
-                                        <i data-lucide="credit-card" class="w-3.5 h-3.5"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="text-[7px] font-black text-slate-500 dark:text-rose-200 uppercase tracking-widest">Total Planned Cost</p>
-                                        <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
-                                            <span class="text-[8px] font-black text-slate-400 dark:text-rose-300 mr-0.5">ETB</span>{{ number_format($totalCostPlanned / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-rose-300 ml-0.5">M</span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="relative p-4 rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 to-amber-50/50 dark:from-amber-950 dark:to-slate-900 dark:border-amber-800 overflow-hidden group hover:shadow-lg hover:border-amber-200 dark:hover:border-amber-600 transition-all duration-300">
                                 <div class="absolute top-0 right-0 w-14 h-14 bg-amber-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                                 <div class="relative z-10 flex items-start gap-2">
@@ -426,6 +411,21 @@
                                         <p class="text-[7px] font-black text-slate-500 dark:text-amber-200 uppercase tracking-widest">Total Actual Cost</p>
                                         <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
                                             <span class="text-[8px] font-black text-slate-400 dark:text-amber-300 mr-0.5">ETB</span>{{ number_format($totalCostActual / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-amber-300 ml-0.5">M</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="relative p-4 rounded-2xl border border-rose-100 bg-gradient-to-br from-rose-50 to-rose-50/50 dark:from-rose-950 dark:to-slate-900 dark:border-rose-800 overflow-hidden group hover:shadow-lg hover:border-rose-200 dark:hover:border-rose-600 transition-all duration-300">
+                                <div class="absolute top-0 right-0 w-14 h-14 bg-rose-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                                <div class="relative z-10 flex items-start gap-2">
+                                    <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-rose-500/20 shrink-0">
+                                        <i data-lucide="credit-card" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[7px] font-black text-slate-500 dark:text-rose-200 uppercase tracking-widest">Total Planned Cost</p>
+                                        <p class="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mt-1">
+                                            <span class="text-[8px] font-black text-slate-400 dark:text-rose-300 mr-0.5">ETB</span>{{ number_format($totalCostPlanned / 1000000, 1) }}<span class="text-[8px] font-black text-slate-400 dark:text-rose-300 ml-0.5">M</span>
                                         </p>
                                     </div>
                                 </div>
