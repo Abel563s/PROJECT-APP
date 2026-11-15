@@ -18,7 +18,7 @@
         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
         <option value="">All Organizational Sectors</option>
         @foreach($organizationSectors as $sector)
-            <option value="{{ $sector->id }}" @selected(request('sector_id') == $sector->id || ($effectiveSectorId && !$request->filled('sector_id') && $effectiveSectorId == $sector->id))>{{ $sector->name }}</option>
+            <option value="{{ $sector->id }}" @selected(request('sector_id') == $sector->id || ($effectiveSectorId && !request()->filled('sector_id') && $effectiveSectorId == $sector->id))>{{ $sector->name }}</option>
         @endforeach
     </select>
 </label>
