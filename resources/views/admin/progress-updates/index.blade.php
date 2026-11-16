@@ -244,9 +244,10 @@
                                 </td>
                                  <td class="px-6 py-4 text-right">
                                      <div class="flex items-center justify-end gap-1.5">
-                                         <a href="{{ route('admin.projects.issues.manage', $update->project_id) }}"
-                                             class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-[#00515f] hover:text-white hover:border-[#00515f] transition-all duration-200"
-                                             title="Project Issues">
+<a href="{{ route('admin.projects.issues.manage', $update->project_id) }}"
+    onclick="event.stopPropagation()"
+    class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-[#00515f] hover:text-white hover:border-[#00515f] transition-all duration-200"
+    title="Project Issues">
                                              <i data-lucide="layout" class="w-3.5 h-3.5"></i>
                                          </a>
                                          <button onclick="event.stopPropagation(); openViewModal({{ $update->id }})"
