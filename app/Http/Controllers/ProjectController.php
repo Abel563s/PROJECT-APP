@@ -714,6 +714,7 @@ class ProjectController extends Controller
         }
 
         $canManageProject = request()->user()->canManageProject($project);
+        $project->load('coordinators');
         $risks = ProjectRisk::where('project_id', $project->id);
 
         if (request()->filled('search')) {

@@ -248,6 +248,10 @@
     <section class="step-panel hidden" data-step="4">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div>
+                <label class="{{ $labelClass }}" for="materialized_date">Materialized Date</label>
+                <input id="materialized_date" name="materialized_date" type="date" value="{{ old('materialized_date', $risk->materialized_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
+            </div>
+            <div id="risk_urgency_wrapper" class="hidden">
                 <label class="{{ $labelClass }}" for="risk_urgency">Risk Urgency</label>
                 <select id="risk_urgency" name="risk_urgency" class="{{ $fieldClass }}">
                     <option value="">Select urgency</option>
@@ -263,10 +267,6 @@
                         <option value="{{ $status }}" @selected(old('action_status', $risk->action_status) === $status)>{{ $status }}</option>
                     @endforeach
                 </select>
-            </div>
-            <div>
-                <label class="{{ $labelClass }}" for="materialized_date">Materialized Date</label>
-                <input id="materialized_date" name="materialized_date" type="date" value="{{ old('materialized_date', $risk->materialized_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
             </div>
             <div>
                 <label class="{{ $labelClass }}" for="last_review_date">Last Review Date</label>

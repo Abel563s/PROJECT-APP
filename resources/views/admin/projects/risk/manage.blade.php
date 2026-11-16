@@ -10,10 +10,26 @@
                     <h2 class="text-xl font-bold leading-none tracking-tight text-slate-900">
                         Risk <span class="font-black">Register</span>
                     </h2>
-                    <p class="mt-1 text-[8px] font-black uppercase tracking-[0.3em] text-[#00ADC5]">{{ $project->project_name }} - {{ $project->project_code }}</p>
+                    <p class="mt-1 text-[8px] font-black uppercase tracking-[0.3em] text-[#00ADC5]">{{ $project->project_code }}</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="hidden lg:flex justify-center">
+                @php
+                    $coordinators = $project->coordinators->map(fn ($c) => $c->name ?? $c->email ?? 'Coordinator');
+                @endphp
+                @if($coordinators->count())
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#00ADC5]/10 border border-[#00ADC5]/20 text-[#00515f] text-[9px] font-black uppercase tracking-widest shadow-sm">
+                        <i data-lucide="user" class="w-3 h-3"></i>
+                        {{ $coordinators->implode(', ') }}
+                    </span>
+                @else
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-500 text-[9px] font-black uppercase tracking-widest shadow-sm">
+                        <i data-lucide="user" class="w-3 h-3"></i>
+                        No Coordinator Assigned
+                    </span>
+                @endif
+            </div>
+            <div class="flex items-center gap-2 justify-end lg:justify-self-end">
                 @if($canManageProject)
                     <button onclick="openCreateModal()"
                         class="group/btn relative overflow-hidden rounded-xl bg-slate-900 px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-white shadow-lg shadow-slate-900/20 transition-all hover:scale-105 active:scale-95">
@@ -152,7 +168,8 @@
                 <table class="w-full text-left">
                     <thead>
                         <tr class="border-b border-[#00515f]/30 bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black uppercase tracking-widest text-white">
-                            <th class="px-4 py-3 text-center"># / Risk ID</th>
+                            <th class="px-4 py-3 text-center w-[32px]">#</th>
+                            <th class="px-4 py-3 text-center w-[100px]">Risk ID</th>
                             <th class="px-4 py-3">Category</th>
                             <th class="px-4 py-3">Risk Sub Category</th>
                             <th class="px-4 py-3 text-center">Type</th>
@@ -179,7 +196,8 @@
                                 ];
                             @endphp
                             <tr class="transition-colors hover:bg-slate-50/80">
-                                <td class="px-4 py-3 text-center"><span class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-[10px] font-black tabular-nums text-slate-900">{{ $risks->firstItem() + $loop->index }}<br><span class="text-[8px] font-bold text-slate-600">{{ $risk->pool_risk_id ?: '---' }}</span></span></td>
+                                <td class="px-4 py-3 text-center w-[32px]"><span class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-[10px] font-black tabular-nums text-slate-900">{{ $risks->firstItem() + $loop->index }}</span></td>
+                                <td class="px-4 py-3 text-center w-[100px]"><span class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-[10px] font-bold text-slate-600 tabular-nums">{{ $risk->pool_risk_id ?: '---' }}</span></td>
                                 <td class="px-4 py-3"><span class="inline-flex rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[9px] font-black text-slate-700">{{ $risk->risk_category }}</span></td>
                                 <td class="max-w-xs px-4 py-3">
                                     <p class="text-xs font-black leading-tight text-slate-900">{{ $risk->risk_name }}</p>
@@ -230,7 +248,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-4 py-16 text-center">
+                                <td colspan="10" class="px-4 py-16 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50 text-slate-200"><i data-lucide="alert-triangle" class="h-8 w-8"></i></div>
                                         <div><h3 class="text-lg font-black text-slate-900">No Risks Registered</h3><p class="mt-1 text-[9px] font-black uppercase tracking-widest text-slate-400">Create a risk to start tracking this project.</p></div>
@@ -344,6 +362,7 @@
                     initPoolRiskPicker(document.getElementById('createModalContent'));
                     initEotPicker(document.getElementById('createModalContent'));
                     initRiskExposure(document.getElementById('createModalContent'));
+                    initRiskUrgency(document.getElementById('createModalContent'));
                     initRiskStepper(document.getElementById('createModalContent'));
                 })
                 .catch(error => {
@@ -714,6 +733,20 @@
             updateExposure();
         }
 
+        function initRiskUrgency(container) {
+            const materializedDate = container.querySelector('#materialized_date');
+            const urgencyWrapper = container.querySelector('#risk_urgency_wrapper');
+            if (!materializedDate || !urgencyWrapper) return;
+
+            function toggleUrgency() {
+                urgencyWrapper.classList.toggle('hidden', !materializedDate.value);
+            }
+
+            materializedDate.addEventListener('change', toggleUrgency);
+            materializedDate.addEventListener('input', toggleUrgency);
+            toggleUrgency();
+        }
+
         function initRiskStepper(container) {
             const panels = container.querySelectorAll('.step-panel');
             if (!panels.length) return;
@@ -838,6 +871,7 @@
                     initPoolRiskPicker(document.getElementById('editModalContent'));
                     initEotPicker(document.getElementById('editModalContent'));
                     initRiskExposure(document.getElementById('editModalContent'));
+                    initRiskUrgency(document.getElementById('editModalContent'));
                     initRiskStepper(document.getElementById('editModalContent'));
                 })
                 .catch(error => {

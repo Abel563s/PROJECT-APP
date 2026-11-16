@@ -147,56 +147,11 @@
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Constraints and issues</p>
             </div>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 gap-3">
             <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Top Constraints</label>
-                <textarea name="top_constraints" rows="2"
+                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Top 5 Constraints</label>
+                <textarea name="top_constraints" rows="3"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $update->top_constraints }}</textarea>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Client Issues</label>
-                <textarea name="client_issue" rows="2"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $update->client_issue }}</textarea>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Design Completion</label>
-                <textarea name="design_completion_approval" rows="2"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $update->design_completion_approval }}</textarea>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Material Submittal</label>
-                <textarea name="material_submittal_approval" rows="2"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $update->material_submittal_approval }}</textarea>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Material Delivery</label>
-                <textarea name="material_delivery" rows="2"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $update->material_delivery }}</textarea>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Labor</label>
-                <textarea name="labor" rows="2"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $update->labor }}</textarea>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Machinery</label>
-                <textarea name="machinery_equipment" rows="2"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $update->machinery_equipment }}</textarea>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Subcontractor</label>
-                <textarea name="subcontractor" rows="2"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $update->subcontractor }}</textarea>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Finance</label>
-                <textarea name="finance" rows="2"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $update->finance }}</textarea>
-            </div>
-            <div class="space-y-1">
-                <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Constraints</label>
-                <textarea name="operation_constraint" rows="2"
-                    class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all">{{ $update->operation_constraint }}</textarea>
             </div>
         </div>
     </div>

@@ -231,46 +231,10 @@
                 <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Constraints and issues</p>
             </div>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 gap-3">
             <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Top Constraints</p>
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Top 5 Constraints</p>
                 <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $update->top_constraints ?: '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Client Issues</p>
-                <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $update->client_issue ?: '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Design Completion</p>
-                <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $update->design_completion_approval ?: '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Material Submittal</p>
-                <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $update->material_submittal_approval ?: '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Material Delivery</p>
-                <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $update->material_delivery ?: '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Labor</p>
-                <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $update->labor ?: '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Machinery</p>
-                <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $update->machinery_equipment ?: '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Subcontractor</p>
-                <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $update->subcontractor ?: '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Finance</p>
-                <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $update->finance ?: '---' }}</p>
-            </div>
-            <div>
-                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Constraints</p>
-                <p class="text-xs font-black text-slate-900 leading-relaxed">{{ $update->operation_constraint ?: '---' }}</p>
             </div>
         </div>
     </div>

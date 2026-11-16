@@ -57,8 +57,10 @@
 
         <form action="{{ route('admin.projects.issues.report') }}" method="GET" class="report-no-print rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             @php
-                $reportAdvancedActive = request()->anyFilled(['project_id', 'status', 'impact', 'issue_type', 'from_date', 'to_date']);
-                $reportFiltersActive = request()->anyFilled(['project_id', 'status', 'impact', 'issue_type', 'from_date', 'to_date', 'business_unit_id', 'sector_id', 'search']);
+                $effectiveBuId = \App\Support\ProjectOrganizationFilters::effectiveBusinessUnitId(request());
+                $effectiveSectorId = \App\Support\ProjectOrganizationFilters::effectiveSectorId(request());
+                $reportAdvancedActive = request()->anyFilled(['project_id', 'status', 'impact', 'issue_type', 'from_date', 'to_date']) || $effectiveBuId || $effectiveSectorId;
+                $reportFiltersActive = $reportAdvancedActive || request()->filled('search');
             @endphp
             <div class="admin-filter-grid gap-3">
                     <label class="space-y-1">

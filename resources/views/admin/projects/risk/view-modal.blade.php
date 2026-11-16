@@ -224,14 +224,20 @@
         <h4 class="text-sm font-black text-slate-900">4. Risk Evaluation</h4>
         <div class="grid grid-cols-2 gap-3">
             <div>
+                <p class="{{ $labelClass }}">Materialized Date</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->materialized_date?->format('M d, Y') ?: '---' }}</p>
+            </div>
+            @if($risk->materialized_date)
+            <div>
+                <p class="{{ $labelClass }}">Risk Urgency</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->risk_urgency ?: '---' }}</p>
+            </div>
+            @endif
+            <div>
                 <p class="{{ $labelClass }}">Risk Action Status</p>
                 <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $statusClasses[$risk->action_status] ?? 'border-slate-200 bg-slate-100 text-slate-500' }}">
                     {{ $risk->action_status ?: '---' }}
                 </span>
-            </div>
-            <div>
-                <p class="{{ $labelClass }}">Materialized Date</p>
-                <p class="text-xs font-black text-slate-900">{{ $risk->materialized_date?->format('M d, Y') ?: '---' }}</p>
             </div>
             <div>
                 <p class="{{ $labelClass }}">Last Review Date</p>

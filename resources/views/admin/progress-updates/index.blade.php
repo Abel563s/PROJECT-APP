@@ -279,7 +279,7 @@
                             <tr class="constraints-row bg-slate-50/60 hidden">
                                 <td colspan="12" class="px-6 py-3">
                                     <div class="flex items-start gap-2">
-                                        <span class="text-[8px] font-black text-[#00515f] uppercase tracking-widest mt-0.5 shrink-0">Top Constraints</span>
+                                        <span class="text-[8px] font-black text-[#00515f] uppercase tracking-widest mt-0.5 shrink-0">Top 5 Constraints</span>
                                         <p class="text-xs font-black text-[#00515f] leading-relaxed">{{ $update->top_constraints ?: '-' }}</p>
                                     </div>
                                 </td>
