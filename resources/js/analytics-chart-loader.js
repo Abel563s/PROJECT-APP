@@ -351,15 +351,16 @@ function initializeAnalyticsCharts(data = {}) {
             data: {
                 labels: projectLabels,
                 datasets: [
-                    { label: 'Planned Progress', data: plannedValues, backgroundColor: '#3b82f6', borderColor: '#2563eb' },
-                    { label: 'Actual Progress', data: actualValues, backgroundColor: '#10b981', borderColor: '#059669' }
+                    { label: 'Planned Progress', data: plannedValues, backgroundColor: '#3b82f6', borderColor: '#2563eb', borderWidth: 1, borderRadius: 8 },
+                    { label: 'Actual Progress', data: actualValues, backgroundColor: '#10b981', borderColor: '#059669', borderWidth: 1, borderRadius: 8 }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, max: 100 }
+                    y: { beginAtZero: true, max: 100, ticks: { color: '#64748b' } }
                 }
             }
         });

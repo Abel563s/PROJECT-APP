@@ -476,6 +476,8 @@ class ProjectController extends Controller
                     'latest_update' => $item->latest_update,
                 ];
             })
+            ->values()
+            ->sortByDesc('planned')
             ->values();
 
         return view('admin.projects.analytics', compact(
