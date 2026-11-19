@@ -24,7 +24,6 @@
         <!-- Search & Filter -->
         @php
             $riskFiltersActive = request()->anyFilled(['search', 'project_id', 'impact', 'risk_type', 'risk_status', 'business_unit_id', 'sector_id']);
-            $riskAdvancedFiltersActive = request()->anyFilled(['project_id', 'impact', 'risk_type', 'risk_status']);
         @endphp
         <form action="{{ route('admin.projects.risk.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
             <div class="admin-filter-grid gap-3">
@@ -37,18 +36,6 @@
                     </span>
                 </label>
                 @include('admin.partials.project-organization-filters')
-                <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
-                    <button type="button" aria-controls="riskAdvancedFilters" aria-expanded="{{ $riskAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'riskAdvancedFilters')"
-                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
-                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>More filters
-                        <i data-lucide="chevron-down" class="filter-panel-chevron h-3.5 w-3.5 transition-transform {{ $riskAdvancedFiltersActive ? 'rotate-180' : '' }}"></i>
-                    </button>
-                    @if($riskFiltersActive)
-                        <a href="{{ route('admin.projects.risk.index') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white"><i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters</a>
-                    @endif
-                </div>
-                <div id="riskAdvancedFilters" class="admin-filter-advanced-panel {{ $riskAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                    <div class="admin-filter-advanced-grid gap-3">
                 <label class="space-y-1">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Status</span>
                     <select name="risk_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
@@ -85,8 +72,11 @@
                         @endforeach
                     </select>
                 </label>
+                @if($riskFiltersActive)
+                    <div class="flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white">
+                        <i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters
                     </div>
-                </div>
+                @endif
             </div>
         </form>
         @include('admin.partials.filter-panel-toggle-script')

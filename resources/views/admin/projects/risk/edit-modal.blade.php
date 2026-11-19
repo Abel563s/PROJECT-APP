@@ -24,6 +24,7 @@
             $poolCostDesc = $poolRisk?->impact_on_cost_description ?? '';
             $poolQuality = $poolRisk?->overall_impact_level ?? '';
             $poolQualityDesc = $poolRisk?->impact_on_quality_description ?? '';
+            $poolOtherImpact = $poolRisk?->other_potential_impact ?? '';
             $showPoolImpact = (bool) $risk->pool_risk_id;
         @endphp
         <div id="poolImpactSummary" class="{{ $showPoolImpact ? '' : 'hidden' }} mt-3">
@@ -39,11 +40,16 @@
                     <span id="poolImpactCost" class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolCost] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">{{ $poolCost ?: '—' }}</span>
                     <p id="poolImpactCostDesc" class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words {{ $poolCostDesc ? '' : 'hidden' }}">{{ $poolCostDesc }}</p>
                 </div>
-                <div>
-                    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
-                    <span id="poolImpactQuality" class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolQuality] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">{{ $poolQuality ?: '—' }}</span>
-                    <p id="poolImpactQualityDesc" class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words {{ $poolQualityDesc ? '' : 'hidden' }}">{{ $poolQualityDesc }}</p>
-                </div>
+<div>
+    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
+    <span id="poolImpactQuality" class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolQuality] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">{{ $poolQuality ?: '—' }}</span>
+    <p id="poolImpactQualityDesc" class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words {{ $poolQualityDesc ? '' : 'hidden' }}">{{ $poolQualityDesc }}</p>
+</div>
+<div>
+    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Other Impact</p>
+    <span id="poolImpactOther" class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolOtherImpact] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">{{ $poolOtherImpact ?: '—' }}</span>
+    <p id="poolImpactOtherDesc" class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words {{ $poolOtherImpact ? '' : 'hidden' }}">{{ $poolOtherImpact }}</p>
+</div>
             </div>
         </div>
     </div>
@@ -66,7 +72,7 @@
     @endphp
 
     <!-- Step indicator -->
-    <div class="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4" role="navigation" aria-label="Risk form steps">
+    <div class="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-5" role="navigation" aria-label="Risk form steps">
         <button type="button" class="step-indicator group flex min-w-0 items-center gap-2 rounded-xl border border-cyan-200 bg-cyan-50 px-3 py-2 text-left text-cyan-800 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow" data-step-target="1" aria-current="step">
             <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-cyan-700 text-[10px] font-black text-white">1</span><span class="text-[8px] font-black uppercase tracking-wider sm:text-[9px]">Identification</span>
         </button>
@@ -74,10 +80,13 @@
             <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-black text-slate-600">2</span><span class="text-[8px] font-black uppercase tracking-wider sm:text-[9px]">Assessment</span>
         </button>
         <button type="button" class="step-indicator group flex min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-slate-500 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:text-cyan-800 hover:shadow" data-step-target="3">
-            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-black text-slate-600">3</span><span class="text-[8px] font-black uppercase tracking-wider sm:text-[9px]">Response</span>
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-black text-slate-600">3</span><span class="text-[8px] font-black uppercase tracking-wider sm:text-[9px]">Response &amp; treatment</span>
         </button>
         <button type="button" class="step-indicator group flex min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-slate-500 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:text-cyan-800 hover:shadow" data-step-target="4">
-            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-black text-slate-600">4</span><span class="text-[8px] font-black uppercase tracking-wider sm:text-[9px]">Evaluation</span>
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-black text-slate-600">4</span><span class="text-[8px] font-black uppercase tracking-wider sm:text-[9px]">Risk Monitoring &amp; Review</span>
+        </button>
+        <button type="button" class="step-indicator hidden group flex min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-slate-500 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-200 hover:text-cyan-800 hover:shadow" data-step-target="5" id="step5Indicator">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-black text-slate-600">5</span><span class="text-[8px] font-black uppercase tracking-wider sm:text-[9px]">EOT Claim</span>
         </button>
     </div>
 
@@ -131,7 +140,7 @@
     <section class="step-panel hidden" data-step="2">
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-                <label class="{{ $labelClass }}" for="likelihood">Likelihood of Occurrence (P)</label>
+                <label class="{{ $labelClass }}" for="likelihood">Likelihood of occurrence =Probability (P)</label>
                 <div class="flex items-center gap-3">
                     <span class="text-[9px] font-bold text-slate-400">Low</span>
                     <input id="likelihood" name="likelihood" type="range" min="1" max="5" step="1" value="{{ old('likelihood', $risk->likelihood) }}" class="w-full accent-cyan-600" oninput="updateRiskRating(this.closest('#editModalContent'))">
@@ -140,7 +149,7 @@
                 </div>
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="severity">Severity of the Impact (I)</label>
+                <label class="{{ $labelClass }}" for="severity">Severity of Impact (I)= Impact (I)</label>
                 <div class="flex items-center gap-3">
                     <span class="text-[9px] font-bold text-slate-400">Low</span>
                     <input id="severity" name="severity" type="range" min="1" max="5" step="1" value="{{ old('severity', $risk->severity) }}" class="w-full accent-cyan-600" oninput="updateRiskRating(this.closest('#editModalContent'))">
@@ -168,7 +177,7 @@
                 </select>
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="intent_to_claim">Intent to Claim</label>
+                <label class="{{ $labelClass }}" for="intent_to_claim">EOT applicability</label>
                 <select id="intent_to_claim" name="intent_to_claim" required class="{{ $fieldClass }}">
                     <option value="">Select intent to claim</option>
                     <option value="1" @selected(old('intent_to_claim', $risk->intent_to_claim) == '1')>Yes</option>
@@ -177,7 +186,7 @@
             </div>
             <div id="eotClaimFields" class="hidden md:col-span-2 grid grid-cols-1 gap-3 md:grid-cols-2">
                 <div>
-                    <label class="{{ $labelClass }}" for="eot_base_of_risk">Base of EOT</label>
+                    <label class="{{ $labelClass }}" for="eot_base_of_risk">Baseline for EOT</label>
                     <select id="eot_base_of_risk" name="eot_category_id" class="{{ $fieldClass }}" data-selected-category="{{ old('eot_category_id', $risk->eotEntry?->eot_category_id) }}">
                         <option value="">Select base of risk</option>
                         @foreach($eotOptions['categories'] as $category)
@@ -226,19 +235,19 @@
                 </select>
             </div>
             <div class="md:col-span-2">
-                <label class="{{ $labelClass }}" for="existing_control">Existing Control, If the Risk is Materialized</label>
+                <label class="{{ $labelClass }}" for="existing_control">Existing controls/Preventive and detective controls</label>
                 <textarea id="existing_control" name="existing_control" rows="3" class="{{ $areaClass }}">{{ old('existing_control', $risk->existing_control) }}</textarea>
             </div>
             <div class="md:col-span-2">
-                <label class="{{ $labelClass }}" for="residual_risk">Residual Risk, If Risk is Materialized</label>
+                <label class="{{ $labelClass }}" for="residual_risk">Residual risk after treatment</label>
                 <textarea id="residual_risk" name="residual_risk" rows="3" class="{{ $areaClass }}">{{ old('residual_risk', $risk->residual_risk) }}</textarea>
             </div>
             <div class="md:col-span-2">
-                <label class="{{ $labelClass }}" for="mitigation_plan">Response / Mitigation Plan / Risk Treatment (Additional if Residual Risk Remains)</label>
+                <label class="{{ $labelClass }}" for="mitigation_plan">Risk treatment/Mitigation actions</label>
                 <textarea id="mitigation_plan" name="mitigation_plan" rows="3" class="{{ $areaClass }}">{{ old('mitigation_plan', $risk->mitigation_plan) }}</textarea>
             </div>
             <div class="md:col-span-2">
-                <label class="{{ $labelClass }}" for="contingency_plan">Risk Contingency Plan</label>
+                <label class="{{ $labelClass }}" for="contingency_plan">Contingency actions if the risk materializes</label>
                 <textarea id="contingency_plan" name="contingency_plan" rows="3" class="{{ $areaClass }}">{{ old('contingency_plan', $risk->contingency_plan) }}</textarea>
             </div>
         </div>
@@ -300,87 +309,95 @@
                 <label class="{{ $labelClass }}" for="recommendation">Recommendation / Lesson Learned</label>
                 <textarea id="recommendation" name="recommendation" rows="3" class="{{ $areaClass }}">{{ old('recommendation', $risk->recommendation) }}</textarea>
             </div>
-            <div id="eotClaimEvaluationFields" class="{{ old('intent_to_claim', $risk->intent_to_claim) ? '' : 'hidden' }} md:col-span-2 rounded-xl border border-cyan-100 bg-cyan-50/40 p-4">
-                <h4 class="mb-3 text-xs font-black uppercase tracking-wider text-cyan-900">EOT Claim Details</h4>
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    <div class="md:col-span-2">
-                        <label class="{{ $labelClass }}" for="detail_reason_for_eot">Detail Reason for EOT</label>
-                        <textarea id="detail_reason_for_eot" name="detail_reason_for_eot" rows="2" class="{{ $areaClass }}">{{ old('detail_reason_for_eot', $risk->detail_reason_for_eot) }}</textarea>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="{{ $labelClass }}" for="project_case_event_description">Project Case Event Description</label>
-                        <textarea id="project_case_event_description" name="project_case_event_description" rows="2" class="{{ $areaClass }}">{{ old('project_case_event_description', $risk->project_case_event_description) }}</textarea>
-                    </div>
-                    <div class="flex flex-col gap-3">
-                        <div class="w-full">
-                            <label class="{{ $labelClass }}" for="contract_document_type">Contract Document Type</label>
-                            <select id="contract_document_type" name="contract_document_type" class="{{ $fieldClass }} w-full">
-                                <option value="">Select document type</option>
-                                <option value="PPA" @selected(old('contract_document_type', $risk->contract_document_type) === 'PPA')>PPA</option>
-                                <option value="FIDIC Yellow" @selected(old('contract_document_type', $risk->contract_document_type) === 'FIDIC Yellow')>FIDIC Yellow</option>
-                                <option value="FIDIC Red" @selected(old('contract_document_type', $risk->contract_document_type) === 'FIDIC Red')>FIDIC Red</option>
-                                <option value="FIDIC Silver" @selected(old('contract_document_type', $risk->contract_document_type) === 'FIDIC Silver')>FIDIC Silver</option>
-                            </select>
-                        </div>
-                        <div class="w-full">
-                            <label class="{{ $labelClass }}" for="project_contract_clause">Project Contract Clause</label>
-                            <select id="project_contract_clause" name="project_contract_clause" class="{{ $fieldClass }} w-full">
-                                <option value="">Select contract clause</option>
-                                @foreach($contractClauses as $clause)
-                                    <option value="{{ $clause->item }}" @selected(old('project_contract_clause', $risk->project_contract_clause) === $clause->item)>[{{ $clause->row_number }}] {{ $clause->item }} - {{ $clause->planner_explanation }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="w-full">
-                            <label class="{{ $labelClass }}" for="reference_contract_clause_no">Reference Contract Clause No.</label>
-                            <input id="reference_contract_clause_no" name="reference_contract_clause_no" type="text" value="{{ old('reference_contract_clause_no', $risk->reference_contract_clause_no) }}" class="{{ $fieldClass }} w-full">
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-3 flex-1 mb-4">
-                        <div class="flex-1">
-                            <label class="{{ $labelClass }}" for="affected_activities">Affected Activities</label>
-                            <textarea id="affected_activities" name="affected_activities" rows="2" class="{{ $areaClass }} h-full">{{ old('affected_activities', $risk->affected_activities) }}</textarea>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="{{ $labelClass }}" for="itc_notification_status">ITC/Notification</label>
-                        <select id="itc_notification_status" name="itc_notification_status" class="{{ $fieldClass }}">
-                            <option value="">Select status</option>
-                            @foreach(['Submitted', 'Not Submitted'] as $status)
-                                <option value="{{ $status }}" @selected(old('itc_notification_status', $risk->itc_notification_status) === $status)>{{ $status }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div id="itcNotificationDateField" class="{{ old('itc_notification_status', $risk->itc_notification_status) === 'Submitted' ? '' : 'hidden' }}">
-                        <label class="{{ $labelClass }}" for="itc_notification_date">ITC/Notification Date <span class="normal-case tracking-normal">(required when submitted)</span></label>
-                        <input id="itc_notification_date" name="itc_notification_date" type="date" value="{{ old('itc_notification_date', $risk->itc_notification_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
-                    </div>
-                    <div>
-                        <label class="{{ $labelClass }}" for="eot_status">EOT Status</label>
-                        <select id="eot_status" name="eot_status" class="{{ $fieldClass }}">
-                            <option value="">Select EOT status</option>
-                            @foreach(['Submitted', 'Not Submitted', 'Agreed', 'Rejected', 'Approved'] as $status)
-                                <option value="{{ $status }}" @selected(old('eot_status', $risk->eot_status) === $status)>{{ $status }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div id="eotSubmittedDateField" class="{{ old('eot_status', $risk->eot_status) === 'Submitted' ? '' : 'hidden' }}">
-                        <label class="{{ $labelClass }}" for="eot_submitted_date">EOT Submitted Date <span class="normal-case tracking-normal">(required when submitted)</span></label>
-                        <input id="eot_submitted_date" name="eot_submitted_date" type="date" value="{{ old('eot_submitted_date', $risk->eot_submitted_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
-                    </div>
-                    <div id="eotResponseDateField" class="{{ old('eot_status', $risk->eot_status) === 'Submitted' ? '' : 'hidden' }}">
-                        <label class="{{ $labelClass }}" for="eot_response_date">EOT Response Date</label>
-                        <input id="eot_response_date" name="eot_response_date" type="date" value="{{ old('eot_response_date', $risk->eot_response_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
-                    </div>
-                    <div id="eotRequestedDaysField" class="{{ old('eot_status', $risk->eot_status) === 'Submitted' ? '' : 'hidden' }}">
-                        <label class="{{ $labelClass }}" for="eot_requested_days">EOT Requested (Days)</label>
-                        <input id="eot_requested_days" name="eot_requested_days" type="number" min="0" step="1" value="{{ old('eot_requested_days', $risk->eot_requested_days) }}" class="{{ $fieldClass }}">
-                    </div>
-                    <div id="eotApprovedDaysField" class="{{ old('eot_status', $risk->eot_status) === 'Submitted' ? '' : 'hidden' }}">
-                        <label class="{{ $labelClass }}" for="eot_approved_days">EOT Approved (Days)</label>
-                        <input id="eot_approved_days" name="eot_approved_days" type="number" min="0" step="1" value="{{ old('eot_approved_days', $risk->eot_approved_days) }}" class="{{ $fieldClass }}">
-                    </div>
+        </div>
+    </section>
+
+    <!-- Step 5 - EOT Claim Details (shows only when EOT applicability = Yes) -->
+    <section class="step-panel hidden" data-step="5" id="eotClaimStep5">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <h4 class="md:col-span-2 text-xs font-black uppercase tracking-wider text-cyan-900">EOT Claim Details</h4>
+            <div class="md:col-span-2">
+                <label class="{{ $labelClass }}" for="detail_reason_for_eot">Detail Reason for EOT</label>
+                <textarea id="detail_reason_for_eot" name="detail_reason_for_eot" rows="2" class="{{ $areaClass }}">{{ old('detail_reason_for_eot', $risk->detail_reason_for_eot) }}</textarea>
+            </div>
+            <div class="md:col-span-2">
+                <label class="{{ $labelClass }}" for="project_case_event_description">Project Case Event Description</label>
+                <textarea id="project_case_event_description" name="project_case_event_description" rows="2" class="{{ $areaClass }}">{{ old('project_case_event_description', $risk->project_case_event_description) }}</textarea>
+            </div>
+            <div class="flex flex-col gap-3">
+                <div class="w-full">
+                    <label class="{{ $labelClass }}" for="contract_document_type">Contract Document Type</label>
+                    <select id="contract_document_type" name="contract_document_type" class="{{ $fieldClass }} w-full">
+                        <option value="">Select document type</option>
+                        <option value="PPA" @selected(old('contract_document_type', $risk->contract_document_type) === 'PPA')>PPA</option>
+                        <option value="FIDIC Yellow" @selected(old('contract_document_type', $risk->contract_document_type) === 'FIDIC Yellow')>FIDIC Yellow</option>
+                        <option value="FIDIC Red" @selected(old('contract_document_type', $risk->contract_document_type) === 'FIDIC Red')>FIDIC Red</option>
+                        <option value="FIDIC Silver" @selected(old('contract_document_type', $risk->contract_document_type) === 'FIDIC Silver')>FIDIC Silver</option>
+                    </select>
                 </div>
+                <div class="w-full">
+                    <label class="{{ $labelClass }}" for="project_contract_clause">Project Contract Clause</label>
+                    <select id="project_contract_clause" name="project_contract_clause" class="{{ $fieldClass }} w-full">
+                        <option value="">Select contract clause</option>
+                        @foreach($contractClauses as $clause)
+                            <option value="{{ $clause->item }}" @selected(old('project_contract_clause', $risk->project_contract_clause) === $clause->item)>[{{ $clause->row_number }}] {{ $clause->item }} - {{ $clause->planner_explanation }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="w-full">
+                    <label class="{{ $labelClass }}" for="reference_contract_clause_no">Reference Contract Clause No.</label>
+                    <input id="reference_contract_clause_no" name="reference_contract_clause_no" type="text" value="{{ old('reference_contract_clause_no', $risk->reference_contract_clause_no) }}" class="{{ $fieldClass }} w-full">
+                </div>
+            </div>
+            <div class="flex flex-col gap-3 flex-1 mb-4">
+                <div class="flex-1">
+                    <label class="{{ $labelClass }}" for="affected_activities">Affected Activities</label>
+                    <textarea id="affected_activities" name="affected_activities" rows="2" class="{{ $areaClass }} h-full">{{ old('affected_activities', $risk->affected_activities) }}</textarea>
+                </div>
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="itc_notification_status">Notice of delay / Intent to claim</label>
+                <select id="itc_notification_status" name="itc_notification_status" class="{{ $fieldClass }}">
+                    <option value="">Select status</option>
+                    @foreach(['Submitted', 'Not Submitted'] as $status)
+                        <option value="{{ $status }}" @selected(old('itc_notification_status', $risk->itc_notification_status) === $status)>{{ $status }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div id="itcNotificationDateField" class="{{ old('itc_notification_status', $risk->itc_notification_status) === 'Submitted' ? '' : 'hidden' }}">
+                <label class="{{ $labelClass }}" for="itc_notification_date">Notice of delay / Intent to claim Date <span class="normal-case tracking-normal">(required when submitted)</span></label>
+                <input id="itc_notification_date" name="itc_notification_date" type="date" value="{{ old('itc_notification_date', $risk->itc_notification_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
+            </div>
+            <div>
+                <label class="{{ $labelClass }}" for="eot_status">EOT Status</label>
+                <select id="eot_status" name="eot_status" class="{{ $fieldClass }}">
+                    <option value="">Select EOT status</option>
+                    @php
+                        $eotStatuses = ['Pending submission', 'Submitted', 'Under review', 'Approved', 'Partially approved', 'Rejected', 'Withdrawn'];
+                        if (old('risk_type', $risk->risk_type) === 'Opportunity') {
+                            $eotStatuses[] = 'Accept & Escalate';
+                        }
+                    @endphp
+                    @foreach($eotStatuses as $status)
+                        <option value="{{ $status }}" @selected(old('eot_status', $risk->eot_status) === $status)>{{ $status }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div id="eotSubmittedDateField" class="{{ old('eot_status', $risk->eot_status) === 'Submitted' ? '' : 'hidden' }}">
+                <label class="{{ $labelClass }}" for="eot_submitted_date">EOT Submitted Date <span class="normal-case tracking-normal">(required when submitted)</span></label>
+                <input id="eot_submitted_date" name="eot_submitted_date" type="date" value="{{ old('eot_submitted_date', $risk->eot_submitted_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
+            </div>
+            <div id="eotResponseDateField" class="{{ old('eot_status', $risk->eot_status) === 'Submitted' ? '' : 'hidden' }}">
+                <label class="{{ $labelClass }}" for="eot_response_date">EOT Response Date</label>
+                <input id="eot_response_date" name="eot_response_date" type="date" value="{{ old('eot_response_date', $risk->eot_response_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
+            </div>
+            <div id="eotRequestedDaysField" class="{{ old('eot_status', $risk->eot_status) === 'Submitted' ? '' : 'hidden' }}">
+                <label class="{{ $labelClass }}" for="eot_requested_days">EOT Requested (Days)</label>
+                <input id="eot_requested_days" name="eot_requested_days" type="number" min="0" step="1" value="{{ old('eot_requested_days', $risk->eot_requested_days) }}" class="{{ $fieldClass }}">
+            </div>
+            <div id="eotApprovedDaysField" class="{{ old('eot_status', $risk->eot_status) === 'Submitted' ? '' : 'hidden' }}">
+                <label class="{{ $labelClass }}" for="eot_approved_days">EOT Approved (Days)</label>
+                <input id="eot_approved_days" name="eot_approved_days" type="number" min="0" step="1" value="{{ old('eot_approved_days', $risk->eot_approved_days) }}" class="{{ $fieldClass }}">
             </div>
         </div>
     </section>

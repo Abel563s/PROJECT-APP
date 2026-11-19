@@ -26,6 +26,7 @@
     $poolCostDesc = $poolRisk?->impact_on_cost_description ?? '';
     $poolQuality = $poolRisk?->overall_impact_level ?? '';
     $poolQualityDesc = $poolRisk?->impact_on_quality_description ?? '';
+    $poolOtherImpact = $poolRisk?->other_potential_impact ?? '';
 @endphp
 
 <div class="space-y-4">
@@ -62,15 +63,24 @@
                             <p class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words">{{ $poolCostDesc }}</p>
                         @endif
                     </div>
-                    <div>
-                        <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
-                        <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolQuality] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
-                            {{ $poolQuality ?: '—' }}
-                        </span>
-                        @if($poolQualityDesc)
-                            <p class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words">{{ $poolQualityDesc }}</p>
-                        @endif
-                    </div>
+<div>
+    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Quality</p>
+    <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolQuality] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
+        {{ $poolQuality ?: '—' }}
+    </span>
+    @if($poolQualityDesc)
+        <p class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words">{{ $poolQualityDesc }}</p>
+    @endif
+</div>
+<div>
+    <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Other Impact</p>
+    <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolOtherImpact] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
+        {{ $poolOtherImpact ?: '—' }}
+    </span>
+    @if($poolOtherImpact)
+        <p class="mt-1 text-[10px] font-semibold text-slate-700 whitespace-pre-wrap break-words">{{ $poolOtherImpact }}</p>
+    @endif
+</div>
                 </div>
             </div>
         @endif
@@ -134,11 +144,11 @@
         <h4 class="text-sm font-black text-slate-900">2. Risk Assessment</h4>
         <div class="grid grid-cols-2 gap-3">
             <div>
-                <p class="{{ $labelClass }}">Likelihood (P)</p>
+                <p class="{{ $labelClass }}">Likelihood of occurrence =Probability (P)</p>
                 <p class="text-xs font-black text-slate-900">{{ $risk->likelihood }}/5</p>
             </div>
             <div>
-                <p class="{{ $labelClass }}">Severity (I)</p>
+                <p class="{{ $labelClass }}">Severity of Impact (I)= Impact (I)</p>
                 <p class="text-xs font-black text-slate-900">{{ $risk->severity }}/5</p>
             </div>
             <div>
@@ -152,14 +162,14 @@
                 <p class="text-xs font-black text-slate-900">{{ $risk->risk_urgency ?: '---' }}</p>
             </div>
             <div>
-                <p class="{{ $labelClass }}">Intent to Claim</p>
+                <p class="{{ $labelClass }}">EOT applicability</p>
                 <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $risk->intent_to_claim ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200' }}">
                     {{ $risk->intent_to_claim ? 'Yes' : 'No' }}
                 </span>
             </div>
             @if($risk->eotEntry)
                 <div>
-                    <p class="{{ $labelClass }}">Base of EOT</p>
+                    <p class="{{ $labelClass }}">Baseline for EOT</p>
                     <p class="text-xs font-black text-slate-900">{{ $risk->eotEntry->baseOfRisk?->name ?: '---' }}</p>
                 </div>
                 <div class="col-span-2">
@@ -201,17 +211,17 @@
                 </span>
             </div>
             <div class="col-span-2">
-                <p class="{{ $labelClass }}">Existing Control</p>
+                <p class="{{ $labelClass }}">Existing controls/Preventive and detective controls</p>
                 <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->existing_control ?: '---' }}</p>
             </div>
-            <div class="col-span-2">
-                <p class="{{ $labelClass }}">Residual Risk</p>
-                <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->residual_risk ?: '---' }}</p>
-            </div>
-            <div class="col-span-2">
-                <p class="{{ $labelClass }}">Mitigation Plan</p>
-                <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->mitigation_plan ?: '---' }}</p>
-            </div>
+<div class="col-span-2">
+    <p class="{{ $labelClass }}">Residual risk after treatment</p>
+    <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->residual_risk ?: '---' }}</p>
+</div>
+<div class="col-span-2">
+    <p class="{{ $labelClass }}">Risk treatment/Mitigation actions</p>
+    <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->mitigation_plan ?: '---' }}</p>
+</div>
             <div class="col-span-2">
                 <p class="{{ $labelClass }}">Contingency Plan</p>
                 <p class="text-xs font-black text-slate-900 whitespace-pre-wrap">{{ $risk->contingency_plan ?: '---' }}</p>
@@ -296,11 +306,11 @@
                             </div>
                         </div>
                         <div>
-                            <p class="{{ $labelClass }}">ITC/Notification</p>
+                            <p class="{{ $labelClass }}">Notice of delay / Intent to claim</p>
                             <p class="text-xs font-bold text-slate-800">{{ $risk->itc_notification_status ?: '---' }}</p>
                         </div>
                         <div>
-                            <p class="{{ $labelClass }}">ITC/Notification Date</p>
+                            <p class="{{ $labelClass }}">Notice of delay / Intent to claim Date</p>
                             <p class="text-xs font-bold text-slate-800">{{ $risk->itc_notification_date?->format('d-M-y') ?: '---' }}</p>
                         </div>
                         <div>

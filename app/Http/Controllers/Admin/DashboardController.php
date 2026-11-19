@@ -306,10 +306,10 @@ class DashboardController extends Controller
                 'total' => $filteredProjects->where('status', 'completed')->count(),
             ],
             'contract_variation' => [
-                'addition' => $filteredProjects->where('variation', '>', 0)->count(),
-                'omission' => $filteredProjects->where('variation', '<', 0)->count(),
-                'no_variation' => $filteredProjects->where('variation', 0)->count(),
-                'total' => $totalProjects,
+                'addition' => $filteredProjects->where('status', 'completed')->where('variation', '>', 0)->count(),
+                'omission' => $filteredProjects->where('status', 'completed')->where('variation', '<', 0)->count(),
+                'no_variation' => $filteredProjects->where('status', 'completed')->where('variation', 0)->count(),
+                'total' => $filteredProjects->where('status', 'completed')->count(),
             ],
             'consultancy_sector' => [
                 'private' => $filteredProjects->where('status', 'completed')->where('consultancy_sector', 'Private')->count(),

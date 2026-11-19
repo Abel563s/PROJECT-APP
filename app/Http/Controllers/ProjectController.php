@@ -856,6 +856,7 @@ class ProjectController extends Controller
             'impact_on_cost_description' => $r->impact_on_cost_description,
             'overall_impact_level' => $r->overall_impact_level,
             'impact_on_quality_description' => $r->impact_on_quality_description,
+            'other_potential_impact' => $r->other_potential_impact,
             'risk_category' => $r->risk_category,
             'risk_type' => $r->risk_type,
         ])->values());

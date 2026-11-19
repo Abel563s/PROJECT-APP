@@ -430,6 +430,8 @@
             const impactCostDesc = container.querySelector('#poolImpactCostDesc');
             const impactQuality = container.querySelector('#poolImpactQuality');
             const impactQualityDesc = container.querySelector('#poolImpactQualityDesc');
+            const impactOther = container.querySelector('#poolImpactOther');
+            const impactOtherDesc = container.querySelector('#poolImpactOtherDesc');
             if (!type || !cat || !idSelect) return;
 
             const impactClasses = {
@@ -448,10 +450,11 @@
                 }
             }
 
-            function showImpact(timeline, cost, quality, timelineDesc = '', costDesc = '', qualityDesc = '') {
+            function showImpact(timeline, cost, quality, otherImpact, timelineDesc = '', costDesc = '', qualityDesc = '', otherImpactDesc = '') {
                 if (impactTimeline) applyImpact(impactTimeline, timeline);
                 if (impactCost) applyImpact(impactCost, cost);
                 if (impactQuality) applyImpact(impactQuality, quality);
+                if (impactOther) applyImpact(impactOther, otherImpact);
                 if (impactTimelineDesc) {
                     impactTimelineDesc.textContent = timelineDesc || '';
                     impactTimelineDesc.classList.toggle('hidden', !timelineDesc);
@@ -463,6 +466,10 @@
                 if (impactQualityDesc) {
                     impactQualityDesc.textContent = qualityDesc || '';
                     impactQualityDesc.classList.toggle('hidden', !qualityDesc);
+                }
+                if (impactOtherDesc) {
+                    impactOtherDesc.textContent = otherImpactDesc || '';
+                    impactOtherDesc.classList.toggle('hidden', !otherImpactDesc);
                 }
                 if (impactSummary) {
                     const hasSelected = Boolean(idSelect.value);
@@ -477,6 +484,7 @@
                 if (impactTimelineDesc) { impactTimelineDesc.textContent = ''; impactTimelineDesc.classList.add('hidden'); }
                 if (impactCostDesc) { impactCostDesc.textContent = ''; impactCostDesc.classList.add('hidden'); }
                 if (impactQualityDesc) { impactQualityDesc.textContent = ''; impactQualityDesc.classList.add('hidden'); }
+                if (impactOtherDesc) { impactOtherDesc.textContent = ''; impactOtherDesc.classList.add('hidden'); }
             }
 
             async function loadRisks(category, riskType, selectedId = '') {
@@ -500,6 +508,7 @@
                         o.dataset.costDesc = r.impact_on_cost_description || '';
                         o.dataset.quality = r.overall_impact_level || '';
                         o.dataset.qualityDesc = r.impact_on_quality_description || '';
+                        o.dataset.otherImpact = r.other_potential_impact || '';
                         idSelect.appendChild(o);
                     });
                     if (selectedId && [...idSelect.options].some(option => option.value === selectedId)) {
@@ -560,9 +569,11 @@
                     opt.dataset.timeline,
                     opt.dataset.cost,
                     opt.dataset.quality,
+                    opt.dataset.otherImpact,
                     opt.dataset.timelineDesc,
                     opt.dataset.costDesc,
-                    opt.dataset.qualityDesc
+                    opt.dataset.qualityDesc,
+                    opt.dataset.otherImpact || ''
                 );
             });
 
@@ -614,10 +625,9 @@
             const preview = container.querySelector('#eot_entry_preview');
 
             function updateClaimTracking(claiming = intent.value === '1') {
-                const evaluationFields = container.querySelector('#eotClaimEvaluationFields');
+                const evaluationFields = container.querySelector('#eotClaimStep5');
                 if (!evaluationFields) return;
 
-                evaluationFields.classList.toggle('hidden', !claiming);
                 evaluationFields.querySelectorAll('input, select, textarea').forEach(input => {
                     input.disabled = !claiming;
                 });
@@ -689,6 +699,12 @@
                 }
                 updateClaimTracking(claiming);
                 updateEntryPreview();
+
+                // Show/hide Step 5 indicator based on Intent to Claim
+                const step5Indicator = container.querySelector('#step5Indicator');
+                if (step5Indicator) {
+                    step5Indicator.classList.toggle('hidden', !claiming);
+                }
             }
 
             base.addEventListener('change', () => loadEntries(base.value));

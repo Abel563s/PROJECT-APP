@@ -101,7 +101,7 @@ class ProjectRisk extends Model
         return $this->belongsTo(EotEntry::class);
     }
 
-    public const ACTION_STATUSES = ['Risk', 'Issue', 'Resolved'];
+    public const ACTION_STATUSES = ['Potential Risk', 'Resolved through mitigation', 'Risk has Materialized (Materialized Issue)', 'Risk no longer applicable.', 'Risk expired without materializing', 'Issue resolved'];
 
     public const RESPONSE_STRATEGIES = [
         'Threat' => ['Avoid', 'Mitigate', 'Transfer', 'Accept', 'Escalate'],
