@@ -29,7 +29,7 @@
         @endphp
         <div id="poolImpactSummary" class="{{ $showPoolImpact ? '' : 'hidden' }} mt-3">
             <p class="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">From Risk Repository</p>
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-4 gap-2">
                 <div>
                     <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Time</p>
                     <span id="poolImpactTimeline" class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolTimeline] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">{{ $poolTimeline ?: '—' }}</span>
@@ -140,7 +140,7 @@
     <section class="step-panel hidden" data-step="2">
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-                <label class="{{ $labelClass }}" for="likelihood">Likelihood of occurrence =Probability (P)</label>
+                <label class="{{ $labelClass }}" for="likelihood">Probability (P)</label>
                 <div class="flex items-center gap-3">
                     <span class="text-[9px] font-bold text-slate-400">Low</span>
                     <input id="likelihood" name="likelihood" type="range" min="1" max="5" step="1" value="{{ old('likelihood', $risk->likelihood) }}" class="w-full accent-cyan-600" oninput="updateRiskRating(this.closest('#editModalContent'))">
@@ -149,7 +149,7 @@
                 </div>
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="severity">Severity of Impact (I)= Impact (I)</label>
+                <label class="{{ $labelClass }}" for="severity">Impact (I)</label>
                 <div class="flex items-center gap-3">
                     <span class="text-[9px] font-bold text-slate-400">Low</span>
                     <input id="severity" name="severity" type="range" min="1" max="5" step="1" value="{{ old('severity', $risk->severity) }}" class="w-full accent-cyan-600" oninput="updateRiskRating(this.closest('#editModalContent'))">
@@ -257,8 +257,12 @@
     <section class="step-panel hidden" data-step="4">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div>
-                <label class="{{ $labelClass }}" for="materialized_date">Materialized Date</label>
-                <input id="materialized_date" name="materialized_date" type="date" value="{{ old('materialized_date', $risk->materialized_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
+                <label class="{{ $labelClass }}" for="action_status">Risk Action Status</label>
+                <select id="action_status" name="action_status" required class="{{ $fieldClass }}">
+                    @foreach(\App\Models\ProjectRisk::ACTION_STATUSES as $status)
+                        <option value="{{ $status }}" @selected(old('action_status', $risk->action_status) === $status)>{{ $status }}</option>
+                    @endforeach
+                </select>
             </div>
             <div id="risk_urgency_wrapper" class="hidden">
                 <label class="{{ $labelClass }}" for="risk_urgency">Risk Urgency</label>
@@ -270,12 +274,8 @@
                 </select>
             </div>
             <div>
-                <label class="{{ $labelClass }}" for="action_status">Risk Action Status</label>
-                <select id="action_status" name="action_status" required class="{{ $fieldClass }}">
-                    @foreach(\App\Models\ProjectRisk::ACTION_STATUSES as $status)
-                        <option value="{{ $status }}" @selected(old('action_status', $risk->action_status) === $status)>{{ $status }}</option>
-                    @endforeach
-                </select>
+                <label class="{{ $labelClass }}" for="materialized_date">Materialized Date</label>
+                <input id="materialized_date" name="materialized_date" type="date" value="{{ old('materialized_date', $risk->materialized_date?->format('Y-m-d')) }}" class="{{ $fieldClass }}">
             </div>
             <div>
                 <label class="{{ $labelClass }}" for="last_review_date">Last Review Date</label>
@@ -330,9 +330,8 @@
                     <select id="contract_document_type" name="contract_document_type" class="{{ $fieldClass }} w-full">
                         <option value="">Select document type</option>
                         <option value="PPA" @selected(old('contract_document_type', $risk->contract_document_type) === 'PPA')>PPA</option>
-                        <option value="FIDIC Yellow" @selected(old('contract_document_type', $risk->contract_document_type) === 'FIDIC Yellow')>FIDIC Yellow</option>
-                        <option value="FIDIC Red" @selected(old('contract_document_type', $risk->contract_document_type) === 'FIDIC Red')>FIDIC Red</option>
-                        <option value="FIDIC Silver" @selected(old('contract_document_type', $risk->contract_document_type) === 'FIDIC Silver')>FIDIC Silver</option>
+                        <option value="FIDIC 1999" @selected(old('contract_document_type', $risk->contract_document_type) === 'FIDIC 1999')>FIDIC 1999</option>
+                        <option value="FIDIC 2017" @selected(old('contract_document_type', $risk->contract_document_type) === 'FIDIC 2017')>FIDIC 2017</option>
                     </select>
                 </div>
                 <div class="w-full">

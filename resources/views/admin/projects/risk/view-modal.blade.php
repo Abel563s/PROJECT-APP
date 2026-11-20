@@ -44,7 +44,7 @@
         @if($risk->pool_risk_id)
             <div id="poolImpactSummary" class="mt-3">
                 <p class="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">From Risk Repository</p>
-                <div class="grid grid-cols-3 gap-2">
+                <div class="grid grid-cols-4 gap-2">
                     <div>
                         <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact on Time</p>
                         <span class="mt-1 inline-flex rounded-lg border px-2 py-1 text-[9px] font-black uppercase tracking-wider {{ $impactClasses[$poolTimeline] ?? 'border-slate-200 bg-slate-100 text-slate-400' }}">
@@ -144,11 +144,11 @@
         <h4 class="text-sm font-black text-slate-900">2. Risk Assessment</h4>
         <div class="grid grid-cols-2 gap-3">
             <div>
-                <p class="{{ $labelClass }}">Likelihood of occurrence =Probability (P)</p>
+                <p class="{{ $labelClass }}">Probability (P)</p>
                 <p class="text-xs font-black text-slate-900">{{ $risk->likelihood }}/5</p>
             </div>
             <div>
-                <p class="{{ $labelClass }}">Severity of Impact (I)= Impact (I)</p>
+                <p class="{{ $labelClass }}">Impact (I)</p>
                 <p class="text-xs font-black text-slate-900">{{ $risk->severity }}/5</p>
             </div>
             <div>
@@ -234,20 +234,18 @@
         <h4 class="text-sm font-black text-slate-900">4. Risk Evaluation</h4>
         <div class="grid grid-cols-2 gap-3">
             <div>
-                <p class="{{ $labelClass }}">Materialized Date</p>
-                <p class="text-xs font-black text-slate-900">{{ $risk->materialized_date?->format('M d, Y') ?: '---' }}</p>
-            </div>
-            @if($risk->materialized_date)
-            <div>
-                <p class="{{ $labelClass }}">Risk Urgency</p>
-                <p class="text-xs font-black text-slate-900">{{ $risk->risk_urgency ?: '---' }}</p>
-            </div>
-            @endif
-            <div>
                 <p class="{{ $labelClass }}">Risk Action Status</p>
                 <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $statusClasses[$risk->action_status] ?? 'border-slate-200 bg-slate-100 text-slate-500' }}">
                     {{ $risk->action_status ?: '---' }}
                 </span>
+            </div>
+            <div id="risk_urgency_wrapper" @if(!$risk->materialized_date) class="hidden" @endif>
+                <p class="{{ $labelClass }}">Risk Urgency</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->risk_urgency ?: '---' }}</p>
+            </div>
+            <div>
+                <p class="{{ $labelClass }}">Materialized Date</p>
+                <p class="text-xs font-black text-slate-900">{{ $risk->materialized_date?->format('M d, Y') ?: '---' }}</p>
             </div>
             <div>
                 <p class="{{ $labelClass }}">Last Review Date</p>
@@ -323,7 +321,9 @@
                         </div>
                         <div>
                             <p class="{{ $labelClass }}">EOT Response Date</p>
-                            <p class="text-xs font-bold text-slate-800">{{ $risk->eot_response_date?->format('d-M-y') ?: '---' }}</p>
+                            @if(in_array($risk->eot_status, ['Approved', 'Partially approved', 'Rejected']))
+                                <p class="text-xs font-bold text-slate-800">{{ $risk->eot_response_date?->format('d-M-y') ?: '---' }}</p>
+                            @endif
                         </div>
                         <div>
                             <p class="{{ $labelClass }}">EOT Requested (Days)</p>
@@ -331,7 +331,9 @@
                         </div>
                         <div>
                             <p class="{{ $labelClass }}">EOT Approved (Days)</p>
-                            <p class="text-xs font-bold text-slate-800">{{ $risk->eot_approved_days ?? '---' }}</p>
+                            @if(in_array($risk->eot_status, ['Approved', 'Partially approved']))
+                                <p class="text-xs font-bold text-slate-800">{{ $risk->eot_approved_days ?? '---' }}</p>
+                            @endif
                         </div>
                     </div>
                 </div>

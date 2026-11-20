@@ -56,9 +56,8 @@
                 <select name="contract_document_type"
                     class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 focus:ring-2 focus:ring-cyan-100/50 focus:bg-white focus:border-[#00ADC5]/20 transition-all cursor-pointer">
                     <option value="PPA" {{ $project->contract_document_type == 'PPA' ? 'selected' : '' }}>PPA</option>
-                    <option value="FIDIC Yellow" {{ $project->contract_document_type == 'FIDIC Yellow' ? 'selected' : '' }}>FIDIC Yellow</option>
-                    <option value="FIDIC Red" {{ $project->contract_document_type == 'FIDIC Red' ? 'selected' : '' }}>FIDIC Red</option>
-                    <option value="FIDIC Silver" {{ $project->contract_document_type == 'FIDIC Silver' ? 'selected' : '' }}>FIDIC Silver</option>
+                    <option value="FIDIC 1999" {{ $project->contract_document_type == 'FIDIC 1999' ? 'selected' : '' }}>FIDIC 1999</option>
+                    <option value="FIDIC 2017" {{ $project->contract_document_type == 'FIDIC 2017' ? 'selected' : '' }}>FIDIC 2017</option>
                 </select>
             </div>
             <div class="space-y-1">

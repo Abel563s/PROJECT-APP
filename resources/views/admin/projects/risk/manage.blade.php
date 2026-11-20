@@ -85,12 +85,11 @@
 
          <!-- Search & Filter -->
          @php
-            $riskManageAdvancedFiltersActive = request()->anyFilled(['risk_level', 'risk_urgency', 'action_status']);
             $riskManageFiltersActive = request()->anyFilled(['search', 'risk_category', 'risk_type', 'risk_level', 'risk_urgency', 'action_status']);
         @endphp
         <form action="{{ route('admin.projects.risk.manage', $project) }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="admin-filter-grid gap-3">
-                <label class="space-y-1">
+            <div class="flex flex-wrap items-center gap-3">
+                <label class="space-y-1 flex-1 min-w-0">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Risks</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
@@ -98,7 +97,7 @@
                             class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                     </span>
                 </label>
-                <label class="space-y-1">
+                <label class="space-y-1 flex-1 min-w-0">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Category</span>
                     <select name="risk_category" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Categories</option>
@@ -107,7 +106,7 @@
                         @endforeach
                     </select>
                 </label>
-                <label class="space-y-1">
+                <label class="space-y-1 flex-1 min-w-0">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Type</span>
                     <select name="risk_type" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="">All Types</option>
@@ -116,68 +115,58 @@
                         @endforeach
                     </select>
                 </label>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" aria-controls="riskManageAdvancedFilters" aria-expanded="{{ $riskManageAdvancedFiltersActive ? 'true' : 'false' }}" onclick="toggleFilterPanel(this, 'riskManageAdvancedFilters')"
-                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[9px] font-bold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-[#00515f]">
-                        <i data-lucide="sliders-horizontal" class="h-3.5 w-3.5"></i>More filters
-                        <i data-lucide="chevron-down" class="filter-panel-chevron h-3.5 w-3.5 transition-transform {{ $riskManageAdvancedFiltersActive ? 'rotate-180' : '' }}"></i>
-                    </button>
-                    @if($riskManageFiltersActive)
-                        <a href="{{ route('admin.projects.risk.manage', $project) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white">
-                            <i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters
-                        </a>
-                    @endif
-                </div>
-                <div id="riskManageAdvancedFilters" class="admin-filter-advanced-panel {{ $riskManageAdvancedFiltersActive ? '' : 'hidden' }} rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                    <div class="admin-filter-advanced-grid">
-                        <label class="space-y-1">
-                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Rating</span>
-                            <select name="risk_level" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                                <option value="">All Ratings</option>
-                                @foreach(['Low', 'Medium', 'High', 'Extreme'] as $level)
-                                    <option value="{{ $level }}" @selected(request('risk_level') === $level)>{{ $level }}</option>
-                                @endforeach
-                            </select>
-                        </label>
-                        <label class="space-y-1">
-                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Urgency</span>
-                            <select name="risk_urgency" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                                <option value="">All Urgencies</option>
-                                @foreach(['Very Urgent', 'Urgent', 'Moderate', 'Low'] as $urgency)
-                                    <option value="{{ $urgency }}" @selected(request('risk_urgency') === $urgency)>{{ $urgency }}</option>
-                                @endforeach
-                            </select>
-                        </label>
-                        <label class="space-y-1">
-                            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
-                            <select name="action_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
-                                <option value="">All Statuses</option>
-                                @foreach(\App\Models\ProjectRisk::ACTION_STATUSES as $status)
-                                    <option value="{{ $status }}" @selected(request('action_status') === $status)>{{ $status }}</option>
-                                @endforeach
-                            </select>
-                        </label>
+                <label class="space-y-1 flex-1 min-w-0">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Rating</span>
+                    <select name="risk_level" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Ratings</option>
+                        @foreach(['Low', 'Medium', 'High', 'Extreme'] as $level)
+                            <option value="{{ $level }}" @selected(request('risk_level') === $level)>{{ $level }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="space-y-1 flex-1 min-w-0">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Urgency</span>
+                    <select name="risk_urgency" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Urgencies</option>
+                        @foreach(['Very Urgent', 'Urgent', 'Moderate', 'Low'] as $urgency)
+                            <option value="{{ $urgency }}" @selected(request('risk_urgency') === $urgency)>{{ $urgency }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="space-y-1 flex-1 min-w-0">
+                    <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
+                    <select name="action_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                        <option value="">All Statuses</option>
+                        @foreach(\App\Models\ProjectRisk::ACTION_STATUSES as $status)
+                            <option value="{{ $status }}" @selected(request('action_status') === $status)>{{ $status }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                @if($riskManageFiltersActive)
+                    <div class="flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-rose-600 transition hover:bg-rose-500 hover:text-white">
+                        <i data-lucide="x" class="h-3.5 w-3.5"></i>Clear filters
                     </div>
-                </div>
+                @endif
             </div>
         </form>
         @include('admin.partials.filter-panel-toggle-script')
 
         <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
             <div class="overflow-x-auto">
-                <table class="w-full text-left">
+                <table class="w-full table-fixed text-left">
                     <thead>
                         <tr class="border-b border-[#00515f]/30 bg-gradient-to-b from-[#00515f] to-black text-[9px] font-black uppercase tracking-widest text-white">
-                            <th class="px-4 py-3 text-center w-[32px]">#</th>
-                            <th class="px-4 py-3 text-center w-[100px]">Risk ID</th>
-                            <th class="px-4 py-3">Category</th>
-                            <th class="px-4 py-3">Risk Sub Category</th>
-                            <th class="px-4 py-3 text-center">Type</th>
-                            <th class="px-4 py-3 text-center">Rating (P × I)</th>
-                            <th class="px-4 py-3 text-center">Urgency</th>
-                            <th class="px-4 py-3 text-center">Status</th>
-                            <th class="px-4 py-3">Risk Owner</th>
-                            <th class="px-4 py-3 text-right">Action</th>
+                            <th class="px-4 py-3 text-center w-[32px] whitespace-nowrap">#</th>
+                            <th class="px-4 py-3 text-center w-[100px] whitespace-nowrap">Risk ID</th>
+                            <th class="px-4 py-3 whitespace-nowrap">Category</th>
+                            <th class="px-4 py-3 whitespace-nowrap">Risk Sub Category</th>
+                            <th class="px-4 py-3 text-center whitespace-nowrap">Type</th>
+                            <th class="px-4 py-3 text-center w-[70px] whitespace-nowrap">Probability</th>
+                            <th class="px-4 py-3 text-center w-[70px] whitespace-nowrap">Impact</th>
+                            <th class="px-4 py-3 text-center w-[90px] whitespace-nowrap">Rating (P × I)</th>
+                            <th class="px-4 py-3 text-center whitespace-nowrap">Status</th>
+                            <th class="px-4 py-3 whitespace-nowrap">Risk Owner</th>
+                            <th class="px-4 py-3 text-right whitespace-nowrap">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50">
@@ -204,13 +193,22 @@
                                     <p class="mt-1 line-clamp-2 text-[10px] text-slate-500">{{ $risk->risk_description }}</p>
                                 </td>
                                 <td class="px-4 py-3 text-center"><span class="text-[10px] font-bold text-slate-700">{{ $risk->risk_type }}</span></td>
-                                <td class="px-4 py-3 text-center">
+                                <td class="px-4 py-3 text-center w-[70px]">
+                                    <span class="inline-flex rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1 text-[10px] font-black text-slate-700">
+                                        {{ $risk->risk_score ?: '0' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-center w-[70px]">
+                                    <span class="inline-flex rounded-lg border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider {{ $ratingClasses[$risk->risk_level] }}">
+                                        {{ $risk->risk_level }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-center w-[90px]">
                                     <span class="inline-flex flex-col items-center rounded-lg border px-2.5 py-1 {{ $ratingClasses[$risk->risk_level] }}">
-                                        <span class="text-[10px] font-black">{{ $risk->risk_score }}</span>
+                                        <span class="text-[10px] font-black">{{ $risk->risk_score ?: '0' }}</span>
                                         <span class="text-[8px] font-black uppercase tracking-wider">{{ $risk->risk_level }}</span>
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-center text-[10px] font-bold text-slate-600">{{ $risk->risk_urgency ?: '---' }}</td>
                                 <td class="px-4 py-3 text-center">
                                     <span class="inline-flex rounded-lg border px-2.5 py-1 text-[9px] font-black uppercase tracking-wider {{ $statusClasses[$risk->action_status] ?? 'border-slate-200 bg-slate-100 text-slate-500' }}">
                                         {{ $risk->action_status }}
@@ -248,7 +246,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="px-4 py-16 text-center">
+                                <td colspan="11" class="px-4 py-16 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50 text-slate-200"><i data-lucide="alert-triangle" class="h-8 w-8"></i></div>
                                         <div><h3 class="text-lg font-black text-slate-900">No Risks Registered</h3><p class="mt-1 text-[9px] font-black uppercase tracking-widest text-slate-400">Create a risk to start tracking this project.</p></div>
@@ -642,26 +640,30 @@
                         status: evaluationFields.querySelector('#eot_status'),
                         date: evaluationFields.querySelector('#eot_submitted_date'),
                         wrapper: evaluationFields.querySelector('#eotSubmittedDateField'),
+                        condition: val => val === 'Submitted',
                     },
                     {
                         status: evaluationFields.querySelector('#eot_status'),
                         wrapper: evaluationFields.querySelector('#eotResponseDateField'),
+                        condition: val => ['Approved', 'Partially approved', 'Rejected'].includes(val),
                     },
                     {
                         status: evaluationFields.querySelector('#eot_status'),
                         wrapper: evaluationFields.querySelector('#eotRequestedDaysField'),
+                        condition: val => val === 'Submitted',
                     },
                     {
                         status: evaluationFields.querySelector('#eot_status'),
                         wrapper: evaluationFields.querySelector('#eotApprovedDaysField'),
+                        condition: val => ['Approved', 'Partially approved'].includes(val),
                     },
-                ].forEach(({ status, date, wrapper }) => {
+                ].forEach(({ status, date, wrapper, condition }) => {
                     if (!status || !wrapper) return;
-                    const submitted = claiming && status.value === 'Submitted';
-                    wrapper.classList.toggle('hidden', !submitted);
+                    const shouldShow = claiming && condition(status.value);
+                    wrapper.classList.toggle('hidden', !shouldShow);
                     if (date) {
-                        date.disabled = !submitted;
-                        date.required = submitted;
+                        date.disabled = !shouldShow;
+                        date.required = shouldShow;
                     }
                 });
             }

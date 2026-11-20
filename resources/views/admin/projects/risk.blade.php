@@ -26,8 +26,8 @@
             $riskFiltersActive = request()->anyFilled(['search', 'project_id', 'impact', 'risk_type', 'risk_status', 'business_unit_id', 'sector_id']);
         @endphp
         <form action="{{ route('admin.projects.risk.index') }}" method="GET" class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <div class="admin-filter-grid gap-3">
-                <label class="space-y-1">
+            <div class="flex flex-wrap items-center gap-3">
+                <label class="space-y-1 flex-1 min-w-0">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Search Projects</span>
                     <span class="relative block">
                         <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
@@ -36,7 +36,7 @@
                     </span>
                 </label>
                 @include('admin.partials.project-organization-filters')
-                <label class="space-y-1">
+                <label class="space-y-1 flex-1 min-w-0">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Status</span>
                     <select name="risk_status" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="all">All Statuses</option>
@@ -45,7 +45,7 @@
                         @endforeach
                     </select>
                 </label>
-                <label class="space-y-1">
+                <label class="space-y-1 flex-1 min-w-0">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Project</span>
                     <select name="project_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="all">All Projects</option>
@@ -54,7 +54,7 @@
                         @endforeach
                     </select>
                 </label>
-                <label class="space-y-1">
+                <label class="space-y-1 flex-1 min-w-0">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Impact</span>
                     <select name="impact" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="all">All Impacts</option>
@@ -63,7 +63,7 @@
                         @endforeach
                     </select>
                 </label>
-                <label class="space-y-1">
+                <label class="space-y-1 flex-1 min-w-0">
                     <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Risk Type</span>
                     <select name="risk_type" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         <option value="all">All Risk Types</option>

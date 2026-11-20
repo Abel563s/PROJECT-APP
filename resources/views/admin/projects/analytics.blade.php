@@ -367,8 +367,6 @@
                     </div>
 
                     <div class="border-t border-slate-50 pt-4">
-                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em] mb-4">All projects included.</p>
-
                         <!-- Summary KPI Cards -->
                         <div class="grid grid-cols-4 gap-3 mb-6">
                             <div class="relative p-4 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-blue-50/50 dark:from-blue-950 dark:to-slate-900 dark:border-blue-800 overflow-hidden group hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-600 transition-all duration-300">
@@ -459,7 +457,7 @@
                         </div>
                         <div>
                             <h3 class="text-base font-black text-slate-900 tracking-tight">Planned vs Actual Schedule Performance</h3>
-                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Compare planned progress against actual progress for all active projects</p>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Physical progress update for active projects</p>
                         </div>
                     </div>
                     <div class="flex flex-wrap items-center gap-3">
@@ -475,8 +473,6 @@
                 </div>
 
                 <div class="border-t border-slate-50 pt-4">
-                    <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.25em] mb-4">All projects included.</p>
-
                     <!-- Chart -->
                     <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-3 relative h-[360px] w-full">
                         @php
@@ -543,10 +539,32 @@
                             <span class="text-[9px] font-black text-slate-600 uppercase tracking-wider">CPI</span>
                         </div>
                     </div>
-                </div>
+                    </div>
 
-                <div class="border-t border-slate-50 pt-4">
-                    <!-- KPI trend indicators -->
+                    <!-- S-Curve Date Filter -->
+                    <form action="{{ route('admin.projects.analytics') }}" method="GET" class="border-t border-slate-50 pt-4 pb-4 bg-slate-50 rounded-xl">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 items-end">
+                            <div>
+                                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">From Date</p>
+                                <input type="date" name="s_curve_from" value="{{ request('s_curve_from') ?? ($dataDate ?? '') }}" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                            </div>
+                            <div>
+                                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">To Date</p>
+                                <input type="date" name="s_curve_to" value="{{ request('s_curve_to') ?? ($dataDate ?? '') }}" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                            </div>
+                            <div class="flex items-end gap-2">
+                                <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100 transition-all hover:bg-cyan-50">
+                                    <i data-lucide="search" class="h-3 w-3"></i> Apply
+                                </button>
+                                <a href="{{ route('admin.projects.analytics') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100">
+                                    <i data-lucide="x" class="h-3 w-3"></i> Clear
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="border-t border-slate-50 pt-4">
+                        <!-- KPI trend indicators -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
                         <div class="p-3 rounded-2xl border border-blue-100 bg-blue-50 flex items-center gap-3">
                             <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20">

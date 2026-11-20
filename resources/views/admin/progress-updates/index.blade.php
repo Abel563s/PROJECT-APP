@@ -77,6 +77,8 @@
         @php
             $progressUpdateFiltersActive = request()->anyFilled(['search', 'project_id', 'project_sector', 'data_date', 'business_unit_id', 'sector_id']);
             $progressAdvancedFiltersActive = request()->anyFilled(['project_id', 'project_sector', 'data_date']);
+            $now = \Carbon\Carbon::now();
+            $defaultDataDate = request('data_date') ?: $now->copy()->subDays($now->dayOfWeek % 7)->format('Y-m-d');
         @endphp
         <form action="{{ route('admin.progress-updates.index') }}" method="GET" class="progress-update-filters rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
             <div class="admin-filter-grid gap-3">
@@ -124,7 +126,7 @@
                         </label>
                         <label class="space-y-1">
                             <span class="text-[8px] font-black uppercase tracking-widest text-slate-400">Data Date</span>
-                            <input type="date" name="data_date" value="{{ request('data_date') }}" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
+                            <input type="date" name="data_date" value="{{ request('data_date') ?? $defaultDataDate }}" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 focus:border-cyan-300 focus:bg-white focus:ring-cyan-100">
                         </label>
                     </div>
                 </div>

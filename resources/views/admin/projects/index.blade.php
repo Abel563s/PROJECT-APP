@@ -194,6 +194,7 @@
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-right">Contract Budget</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Baseline Start</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Baseline Finish</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Revised Finish</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30">Duration</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Budget</th>
                             <th class="px-6 py-3 text-[9px] font-black text-white uppercase tracking-widest border-b border-[#00515f]/30 text-center">Cost</th>
@@ -247,6 +248,11 @@
                                 <td class="whitespace-nowrap px-6 py-4 text-center">
                                     <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
                                         {{ $project->baseline_finish_date ? $project->baseline_finish_date->format('d-M-y') : '---' }}
+                                    </span>
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-4 text-center">
+                                    <span class="inline-flex px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-900 text-[10px] font-black tabular-nums tracking-tight shadow-sm justify-center">
+                                        {{ $project->approved_eot ? $project->approved_eot->format('d-M-y') : '---' }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
