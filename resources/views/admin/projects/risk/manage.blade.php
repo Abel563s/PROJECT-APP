@@ -631,11 +631,12 @@
                 });
 
                 [
-                    {
-                        status: evaluationFields.querySelector('#itc_notification_status'),
-                        date: evaluationFields.querySelector('#itc_notification_date'),
-                        wrapper: evaluationFields.querySelector('#itcNotificationDateField'),
-                    },
+                {
+                    status: evaluationFields.querySelector('#itc_notification_status'),
+                    date: evaluationFields.querySelector('#itc_notification_date'),
+                    wrapper: evaluationFields.querySelector('#itcNotificationDateField'),
+                    condition: () => true,
+                },
                     {
                         status: evaluationFields.querySelector('#eot_status'),
                         date: evaluationFields.querySelector('#eot_submitted_date'),
